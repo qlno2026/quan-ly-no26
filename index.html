@@ -200,8 +200,8 @@ body.light-mode .card-list { gap: 3px; }
 body.light-mode .kh-name { color: #2563eb; font-weight: 500; font-size: 16px; }
   @media (max-width: 639.98px) { body.light-mode .kh-name { font-size: 16px; } }
 body.light-mode .kh-ma-line, body.light-mode .kh-phone-line { color: #475569; font-weight: 500; font-size: 15px; }
-body.light-mode .kh-ma { color: #000000 !important; font-weight: 500; font-size: 16px; }
-body.light-mode .kh-danhso { color: #000000; font-weight: 500; font-size: 16px; }
+body.light-mode .kh-ma { color: #000000 !important; font-weight: 600 !important; font-size: 16px; }
+body.light-mode .kh-danhso { color: #000000 !important; font-weight: 600 !important; font-size: 16px; }
 body.light-mode .kh-sogcs { color: #64748b; font-weight: 400; font-size: 16px; }
 body.light-mode .kh-phone { color: #64748b !important; font-weight: 400; font-size: 16px; text-decoration: none !important; }
 body.light-mode .kh-thang { color: #64748b; font-weight: 400; font-size: 16px; }
@@ -210,7 +210,7 @@ body.light-mode .badge-blue { background: rgba(37,99,235,0.15); color: #1e40af !
 body.light-mode .kh-address { color: #64748b; font-weight: 400; font-size: 16px; }
 body.light-mode .kh-addr-line { color: #64748b; font-weight: 400; font-size: 16px; }
 body.light-mode .kh-ghichu { background: #f8fafc; border-color: #7e22ce; color: #334155; font-weight: 500; }
-body.light-mode .count-info { color: #334155; font-weight: 400; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e2e8f0; }
+body.light-mode .count-info { color: #334155; font-weight: 500; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e2e8f0; }
 body.light-mode .page-btn { background: #e2e5ea; border-color: #d1d5db; color: #6b7280; font-weight: 400; }
 body.light-mode .page-btn.active { background: #3b82f6; color: #ffffff; font-weight: 600; }
 body.light-mode .pagination { color: #9ca3af; background: #e8eaed; font-weight: 400; border-radius: 8px; margin: 0 8px; }
@@ -225,18 +225,18 @@ body.light-mode .info-row { border-bottom-color: #e2e8f0; }
 body.light-mode .info-label { color: #64748b; }
 body.light-mode .info-value { color: #0f172a; font-weight: 500; }
 /* Lighter rows: STT(1), Số TBI(11) */
-body.light-mode .info-row:nth-child(1) .info-value, body.light-mode .info-row:nth-child(11) .info-value { color: #b0b8c4 !important; font-weight: 500 !important; }
+body.light-mode .info-row:nth-child(1) .info-value, body.light-mode .info-row:nth-child(11) .info-value { color: #b0b8c4 !important; font-weight: 400 !important; }
 /* Địa chỉ(4), Mã Số(5) - slightly brighter */
-body.light-mode .info-row:nth-child(4) .info-value, body.light-mode .info-row:nth-child(5) .info-value { color: #94a3b8 !important; font-weight: 500 !important; }
-body.light-mode .info-row:nth-child(6) .info-value { color: #475569 !important; font-weight: 500 !important; }
+body.light-mode .info-row:nth-child(4) .info-value, body.light-mode .info-row:nth-child(5) .info-value { color: #94a3b8 !important; font-weight: 400 !important; }
+body.light-mode .info-row:nth-child(6) .info-value { color: #475569 !important; font-weight: 400 !important; }
 /* Mã KH(2), Tên KH(3), Tiền Nợ(8) - thinner */
-body.light-mode .info-row:nth-child(2) .info-value, body.light-mode .info-row:nth-child(2) .ma-kh { color: #475569 !important; font-weight: 500 !important; font-size: 15px !important; }
-body.light-mode .info-row:nth-child(3) .info-value { color: #111827 !important; font-weight: 500 !important; font-size: 15px !important; }
-body.light-mode .info-row:nth-child(8) .info-value { font-weight: 500 !important; font-size: 15px !important; }
+body.light-mode .info-row:nth-child(2) .info-value, body.light-mode .info-row:nth-child(2) .ma-kh { color: #475569 !important; font-weight: 400 !important; font-size: 15px !important; }
+body.light-mode .info-row:nth-child(3) .info-value { color: #111827 !important; font-weight: 400 !important; font-size: 15px !important; }
+body.light-mode .info-row:nth-child(8) .info-value { font-weight: 400 !important; font-size: 15px !important; }
 body.light-mode .info-row:nth-child(8) .info-value .tien-no.low { color: #16a34a !important; }
 body.light-mode .info-row:nth-child(8) .info-value .tien-no.high { color: #dc2626 !important; }
 /* Số TBI(10) - slightly darker */
-body.light-mode .info-row:nth-child(10) .info-value { color: #334155 !important; font-weight: 600 !important; }
+body.light-mode .info-row:nth-child(10) .info-value { color: #334155 !important; font-weight: 400 !important; }
 body.light-mode .modal-name, body.light-mode .modal-header h2 { color: #000000 !important; font-weight: 300 !important; font-size: 15px !important; }
 body:not(.light-mode) .modal-header h2, body:not(.light-mode) .modal-name { font-weight: 300 !important; }
 body.light-mode .tien-no { font-weight: 400 !important; }
@@ -295,8 +295,8 @@ body.light-mode .kh-tien.low { font-weight: 500; }
 body.light-mode .kh-tien.high { color: #ef4444; font-weight: 600; }
 body.light-mode .kh-tien.low { color: #10b981; font-weight: 600; }
 body.light-mode .kh-tien .mil-digit { color: #ea580c; }
-body.light-mode .count-kh-hd { color: #2563eb; font-weight: 400; }
-body.light-mode .count-tien { color: #dc2626; font-weight: 400; }
+body.light-mode .count-kh-hd { color: #2563eb; font-weight: 500; }
+body.light-mode .count-tien { color: #dc2626; font-weight: 500; }
 
 #fileInput { display: none; }
 
@@ -599,6 +599,7 @@ body.light-mode .nhom-sel-name {
 .count-info {
   font-size: 15px;
   color: var(--text-dim);
+  font-weight: 500;
   padding: 0 2px;
   margin-top: 8px;
   padding-top: 8px;
@@ -607,7 +608,7 @@ body.light-mode .nhom-sel-name {
 
 .count-info span { font-weight: 500; }
 .count-info .count-kh-hd { color: #60a5fa; }
-.count-info .count-tien { color: #ff8888; font-weight: 600; }
+.count-info .count-tien { color: #ff8888; font-weight: 500; }
 
 /* ── CARD LIST (mobile view) ─────────────── */
 .card-list { display: flex; flex-direction: column; gap: 6px; }
@@ -774,7 +775,7 @@ body.light-mode .th-resizer:hover::after, body.light-mode .th-resizer.active::af
 .cell-ghi { font-size: 15px; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fb923c; }
 .cell-abc { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #94a3b8; font-weight: 400; }
 body.light-mode .cell-abc { color: #475569; }
-.cell-old-ky { color: #fb923c; font-weight: 500; font-size: 14px; white-space: nowrap; }
+.cell-old-ky { color: #fdba74; font-weight: 500; font-size: 14px; white-space: nowrap; }
 body.light-mode .cell-old-ky { color: #c2410c; }
 .kh-old-ky-line { margin-top: 2px; font-size: 15px; font-weight: 500; color: #94a3b8; white-space: nowrap; }
 body.light-mode .kh-old-ky-line { color: #475569; }
@@ -1034,36 +1035,38 @@ function changeBackgroundColor(newColor) {
 .info-row {
   display: flex;
   gap: 12px;
-  padding: 6px 0;
+  padding: 2px 0;
   border-bottom: 1px solid var(--border);
   align-items: flex-start;
 }
 .info-row:last-child { border-bottom: none; }
 .info-label { font-size: 15px; font-weight: 400; font-family: 'Inter', sans-serif; letter-spacing: 0.03em; color: #b0bdd0; min-width: 100px; margin-top: 2px; flex-shrink: 0; }
-.info-value { font-size: 15px; color: var(--text); font-family: 'Inter', sans-serif; flex: 1; word-break: break-word; font-weight: 500; }
-/* Dark mode: lighter rows - STT(1) */
-.info-row:nth-child(1) .info-value { color: #475569; font-weight: 500; }
-/* Địa chỉ(4), Mã Số(5) - slightly brighter */
-.info-row:nth-child(4) .info-value, .info-row:nth-child(5) .info-value { color: #64748b; font-weight: 500; }
+.info-value { font-size: 15px; color: var(--text); font-family: 'Inter', sans-serif; flex: 1; word-break: break-word; font-weight: 400; }
+/* Dark mode: muted rows - STT(1) */
+.info-row:nth-child(1) .info-value { color: #475569; font-weight: 400; }
+/* Địa chỉ(4), Mã Số(5) - muted */
+.info-row:nth-child(4) .info-value, .info-row:nth-child(5) .info-value { color: #64748b; font-weight: 400; }
 .modal .info-row:last-child .badge { background: none; border: none; color: var(--text); font-weight: 400; padding: 0; }
 /* Mã KH(2) */
-.info-row:nth-child(2) .info-value, .info-row:nth-child(2) .ma-kh { color: #c8d0dc; font-weight: 500; font-size: 15px; }
+.info-row:nth-child(2) .info-value, .info-row:nth-child(2) .ma-kh { color: #c8d0dc; font-weight: 400; font-size: 15px; }
 /* Tên KH(3) */
-.info-row:nth-child(3) .info-value { font-size: 15px; font-weight: 500 !important; color: #c8d0dc !important; letter-spacing: 0.02em; }
-/* Tháng(7) - bigger */
-.info-row:nth-child(7) .info-value { font-size: 15px; font-weight: 500; }
-/* Tiền Nợ(8) - bigger */
-.info-row:nth-child(8) .info-value { color: #ffffff; font-weight: 500; font-size: 15px; }
+.info-row:nth-child(3) .info-value { font-size: 15px; font-weight: 400; color: #c8d0dc; letter-spacing: 0.02em; }
+/* Tháng(7) */
+.info-row:nth-child(7) .info-value { font-size: 15px; font-weight: 400; }
+.info-row:nth-child(7) .info-value .badge { font-size: 15px; font-weight: 400; }
+/* Tiền Nợ(8) */
+.info-row:nth-child(8) .info-value { color: #ffffff; font-weight: 400; font-size: 15px; }
 .info-row:nth-child(8) .info-value .tien-no.low { color: #86efac; }
 .info-row:nth-child(8) .info-value .tien-no.high { color: #ff8888; }
-/* Mã Số GCS(5), Danh Số(6) */
-.info-row:nth-child(5) .info-value { font-size: 15px; }
-.info-row:nth-child(6) .info-value { font-size: 15px; color: #c8d0dc; }
-/* Số TBI(10), Ghi Chú(11) */
-.info-row:nth-child(10) .info-value { font-size: 15px; }
-.info-row:nth-child(11) .info-value { font-size: 15px; }
-.info-row:nth-child(10) .info-value { color: #c8d0dc; font-weight: 500; font-size: 15px; }
-.info-row:nth-child(11) .info-value { font-size: 15px; }
+.info-row:nth-child(8) .info-value .tien-no { font-weight: 400; }
+.modal .info-row .tien-no { font-weight: 400; }
+/* Mã Số GCS(5), Danh Số(6), Số TBI(10), Ghi Chú(11) */
+.info-row:nth-child(5) .info-value { font-size: 15px; font-weight: 400; }
+.info-row:nth-child(6) .info-value { font-size: 15px; font-weight: 400; color: #c8d0dc; }
+.info-row:nth-child(10) .info-value { color: #c8d0dc; font-weight: 400; font-size: 15px; }
+.info-row:nth-child(11) .info-value { font-size: 15px; font-weight: 400; }
+/* Badges inside the modal (Tháng, per-month sub-rows) */
+.modal .info-row .badge { font-size: 15px; font-weight: 400; }
 
 /* Phone call link */
 .call-link {
@@ -1074,9 +1077,9 @@ function changeBackgroundColor(newColor) {
   padding: 6px 12px;
   border-radius: 8px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 400;
   font-family: 'Inter', sans-serif;
-  margin-top: 4px;
+  margin-top: 1px;
 }
 
 mark { background: rgba(251,191,36,0.3); color: #fde68a; border-radius: 2px; padding: 0 1px; }
@@ -1147,8 +1150,10 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; font-we
   .info-label { font-size: 15px; }
   .info-value { font-size: 15px; }
   .cell-abc { font-size: 14px; }
-  .ghi-chu-table { font-size: 14px; color: #fb923c; border-color: #fb923c; }
-  .ghi-chu-table:not(:placeholder-shown) { color: #fb923c; }
+  .ghi-chu-table { font-size: 14px; color: #fdba74; border-color: #fdba74; }
+  .ghi-chu-table:not(:placeholder-shown) { color: #fdba74; }
+  .ghi-chu-table::placeholder { color: #fdba74; }
+  .ghi-chu-table:focus { border-color: #fdba74; }
   .phone { font-size: 14px; }
   thead th { font-size: 14px; padding: 10px 8px; background: #2d3748; color: #ffffff; }
   table thead tr { background: #2d3748; }
@@ -2974,7 +2979,7 @@ function showDetailRow(r) {
   const hasMultiMonth = custRecords.length > 1;
   let monthDetail = '';
   if (hasMultiMonth) {
-    monthDetail = '<div style="margin-top:6px;font-size:15px;line-height:1.8">' +
+    monthDetail = '<div style="margin-top:2px;font-size:15px;line-height:1.5">' +
       custRecords.map(x =>
         `<div style="display:flex;justify-content:space-between;gap:8px;padding:2px 0;border-bottom:1px solid var(--border)">
           <span class="badge badge-blue" style="font-size:15px">${esc(x.thang_no)||'—'}</span>
@@ -2985,8 +2990,8 @@ function showDetailRow(r) {
 
   const rows = [
     ['STT', esc(r.stt)||'—'],
-    ['Mã KH', `<span class="ma-kh" style="font-size:15px;font-weight:500;letter-spacing:0.02em;color:#c8d0dc">${esc(r.ma_khach_hang)}</span>`],
-    ['Tên KH', `<span class="modal-ten-kh" style="font-weight:500;font-size:15px;letter-spacing:0.02em">${esc(r.ten_khach_hang)||'—'}</span>`],
+    ['Mã KH', `<span class="ma-kh" style="font-size:15px;letter-spacing:0.02em;color:#c8d0dc">${esc(r.ma_khach_hang)}</span>`],
+    ['Tên KH', `<span class="modal-ten-kh" style="font-size:15px;letter-spacing:0.02em">${esc(r.ten_khach_hang)||'—'}</span>`],
     ['Địa chỉ', esc(r.dia_chi)||'—'],
     ['Mã Số GCS', esc(r.ma_sogcs)||'—'],
     ['Danh Số', esc(r.danh_so)||'—'],
