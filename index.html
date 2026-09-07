@@ -2614,11 +2614,9 @@ function renderCards(q='') {
       ${r.dia_chi ? `<div class="kh-addr-line"><svg class="addr-ico" width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" style="vertical-align:middle;margin-right:6px"><path d="M12 2C8.13 2 5 5.13 5 8.5c0 4.8 6.12 11.06 6.36 11.31.18.19.46.19.64 0 .24-.25 6.36-6.51 6.36-11.31C19 5.13 15.87 2 12 2zm0 9a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>${hi(trimDiaChi(r.dia_chi),q)}</div>` : ''}
       <div class="kh-card-mid">
         ${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class='phone-icon' width='11' height='11' viewBox='0 0 24 24' fill='#ef4444' style='vertical-align:middle;margin-right:9px'><path d='M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.57.57a1 1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1.02l-2.2 2.2z'/></svg>${hi(phone,q)}</a>` : ''}
-        ${r.nhan_vien && phone ? `<span class="kh-sep">-</span>` : ''}
-        ${r.nhan_vien ? `<span class="kh-nv-badge">${hi(r.nhan_vien,q)}</span>` : ''}
-        ${(r.nhan_vien || phone) && r.abc ? `<span class="kh-sep">-</span>` : ''}
+        ${phone && r.abc ? `<span class="kh-sep">-</span>` : ''}
         ${r.abc ? `<span class="kh-abc">${hi(r.abc,q)}</span>` : ''}
-        ${(r.abc || r.nhan_vien || phone) && r.ghi_chu ? `<span class="kh-sep">-</span>` : ''}
+        ${(r.abc || phone) && r.ghi_chu ? `<span class="kh-sep">-</span>` : ''}
         ${r.ghi_chu ? `<span class="kh-ghichu">${hi(r.ghi_chu,q)}</span>` : ''}
       </div>
     </div>`;
@@ -3051,31 +3049,42 @@ let _ghiChuSaveTimer = null;
 function saveGhiChu(input) {
   const ma = input.dataset.ma;
   const val = input.value;
-  // Update allData immediately
+  // Update allData AND filtered (filtered holds per-KH COPIES created by applyFilters)
+  // immediately — otherwise the modal and re-rendered cards keep showing the old note.
   allData.forEach(r => { if (r.ma_khach_hang === ma) r.ghi_chu = val; });
+  filtered.forEach(r => { if (r.ma_khach_hang === ma) r.ghi_chu = val; });
   // Save to localStorage
   let notes = {};
   try { notes = JSON.parse(localStorage.getItem('qlno_notes') || '{}'); } catch(e) {}
   notes[ma] = val;
   localStorage.setItem('qlno_notes', JSON.stringify(notes));
-  // Live update the card's ghi chú display (mobile)
-  const card = document.querySelector(`.kh-card[data-ma="${CSS.escape(ma)}"]`);
-  if (card) {
+  // Live update ALL cards showing this customer — the same customer can appear in
+  // both the current list and the old-debt list, so patch every match (querySelector
+  // would only patch the first one, leaving the other card stale).
+  document.querySelectorAll(`.kh-card[data-ma="${CSS.escape(ma)}"]`).forEach(card => {
     const gcEl = card.querySelector('.kh-ghichu');
     if (val) {
-      if (gcEl) { gcEl.innerHTML = hi(val); }
-      else {
-        const phoneEl = card.querySelector('.kh-phone');
-        const span = document.createElement('span');
-        span.className = 'kh-ghichu';
-        span.innerHTML = hi(val);
-        if (phoneEl) phoneEl.parentNode.insertBefore(span, null);
-        else card.querySelector('.kh-card-mid')?.appendChild(span);
+      if (gcEl) {
+        gcEl.innerHTML = hi(val);
+      } else {
+        const mid = card.querySelector('.kh-card-mid');
+        if (mid) {
+          const sep = document.createElement('span');
+          sep.className = 'kh-sep';
+          sep.textContent = '-';
+          const span = document.createElement('span');
+          span.className = 'kh-ghichu';
+          span.innerHTML = hi(val);
+          mid.appendChild(sep);
+          mid.appendChild(span);
+        }
       }
     } else if (gcEl) {
+      const prev = gcEl.previousElementSibling;
+      if (prev && prev.classList.contains('kh-sep')) prev.remove();
       gcEl.remove();
     }
-  }
+  });
   // Live sync: update desktop table input if editing from mobile, or vice versa
   document.querySelectorAll(`.ghi-chu-table[data-ma="${CSS.escape(ma)}"]`).forEach(el => { if (el !== input) el.value = val; });
   document.querySelectorAll(`.ghi-chu-input[data-ma="${CSS.escape(ma)}"]`).forEach(el => { if (el !== input) el.value = val; });
