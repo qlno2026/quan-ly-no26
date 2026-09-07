@@ -77,7 +77,7 @@ body {
 }
 
 .header-title { font-size: 18px; font-weight: 400; letter-spacing: 0.3px; color: #ffffff; }
-.header-sub { font-size: 10px; color: var(--text-dim); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+.header-sub { font-size: 10px; color: #cbd5e1; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; font-weight: 400; }
 
 .upload-btn-header {
   background: transparent;
@@ -197,7 +197,7 @@ body.light-mode #sortSoGCS.active { background: #047857; color: #ffffff; box-sha
 body.light-mode #sortTenKH.active { background: #5b21b6; color: #ffffff; box-shadow: 0 0 4px rgba(168,85,247,0.35), 0 0 8px rgba(168,85,247,0.15); }
 body.light-mode .kh-card { background: #f0f1f4; border: 1.5px solid #c5cad1; }
 body.light-mode .card-list { gap: 3px; }
-body.light-mode .kh-name { color: #1d4ed8; font-weight: 600; font-size: 16px; }
+body.light-mode .kh-name { color: #1d4ed8; font-weight: 700; font-size: 16px; }
   @media (max-width: 639.98px) { body.light-mode .kh-name { font-size: 16px; } }
 body.light-mode .kh-ma-line, body.light-mode .kh-phone-line { color: #475569; font-weight: 500; font-size: 15px; }
 body.light-mode .kh-ma { color: #000000 !important; font-weight: 500 !important; font-size: 16px; }
@@ -289,7 +289,7 @@ body.light-mode .tien-no.high { color: #dc2626 !important; }
 body.light-mode .tien-no.low { color: #16a34a !important; }
 body.light-mode .tien-no.mid { color: #166534 !important; }
 body.light-mode .tien-no .mil-digit { color: #dc2626 !important; }
-body.light-mode .kh-tien { color: #b91c1c; font-weight: 600; font-size: 16px; }
+body.light-mode .kh-tien { color: #b91c1c; font-weight: 700; font-size: 16px; }
 body.light-mode .kh-tien.high { font-weight: 500; }
 body.light-mode .kh-tien.low { font-weight: 500; }
 body.light-mode .kh-tien.high { color: #ef4444; font-weight: 600; }
@@ -634,8 +634,8 @@ body.light-mode .kh-card.highlighted-purple { background: #cfe3ff; border-color:
   .kh-danhso-row .kh-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 1px; min-width: 0; }
   .kh-danhso-row .kh-danhso { white-space: nowrap; flex-shrink: 0; }
   .kh-danhso-row .kh-line .kh-sep { margin: 0 6px; }
-.kh-danhso { font-size: 16px; color: #e2e8f0; font-weight: 500 !important; }
-.kh-name { font-size: 16px; font-weight: 400; flex: 1; line-height: 1.3; color: #60a5fa; }
+.kh-danhso { font-size: 16px; color: #e2e8f0; font-weight: 400 !important; }
+.kh-name { font-size: 16px; font-weight: 500; flex: 1; line-height: 1.3; color: #60a5fa; }
 .kh-tien-col { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
 .kh-tien { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 500; color: #ffa0a0; white-space: nowrap; flex-shrink: 0; }
 .kh-tien.low { color: #86efac; }
@@ -647,7 +647,7 @@ body.light-mode .kh-card.highlighted-purple { background: #cfe3ff; border-color:
 
 .kh-ma-line { margin-bottom: 4px; }
 .kh-card-mid { display: flex; gap: 1px; flex-wrap: nowrap; margin-bottom: 5px; align-items: center; overflow: hidden; }
-.kh-ma { font-family: 'Inter', sans-serif; font-size: 16px; color: #e2e8f0; font-weight: 500 !important; white-space: nowrap; }
+.kh-ma { font-family: 'Inter', sans-serif; font-size: 16px; color: #e2e8f0; font-weight: 400 !important; white-space: nowrap; }
 .kh-sogcs { font-family: 'Inter', sans-serif; font-size: 16px; color: #94a3b8; font-weight: 400; white-space: nowrap; }
 .kh-tbi { font-family: 'Inter', sans-serif; font-size: 16px; color: #94a3b8; font-weight: 400; white-space: nowrap; }
 body.light-mode .kh-tbi { color: #334155; font-weight: 500; }
@@ -1299,8 +1299,8 @@ body.light-mode .alarm-total-label { color: #334155; }
 /* Tất cả chữ trên card: nét 400 (light & dark) */
 .kh-card * { font-weight: 400 !important; }
 /* Exclude Danh Số & Mã KH — giữ đậm */
-.kh-card .kh-danhso { font-weight: 500 !important; }
-.kh-card .kh-ma { font-weight: 500 !important; }
+.kh-card .kh-danhso { font-weight: 400 !important; }
+.kh-card .kh-ma { font-weight: 400 !important; }
 </style>
 </head>
 <body>
