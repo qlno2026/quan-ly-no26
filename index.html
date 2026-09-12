@@ -1880,7 +1880,7 @@ function processFile(file) {
       const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
       const keys = Object.keys(rows[0] || {});
 
-      function _norm(s) { return s.normalize('NFD').replace(/[Đđ]/g,'D').replace(/\p{Diacritic}/gu,'').toUpperCase().replace(/[_\s]/g,''); }
+      function _norm(s) { try { return s.normalize('NFD').replace(/[Đđ]/g,'D').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[_\s]/g,''); } catch(e) { return s.toUpperCase().replace(/[^A-Z0-9]/g,''); } }
       function fc(...names) {
         for (const n of names) {
           const f = keys.find(k =>
