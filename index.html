@@ -2800,19 +2800,19 @@ function exportExcel() {
   if (!allData.length) { alert('Chưa có dữ liệu để xuất!'); return; }
   const data = allData.map(r => ({
     'STT': r.stt || '',
-    'Mã KH': r.ma_khach_hang || '',
-    'Tên KH': r.ten_khach_hang || '',
-    'Địa chỉ': r.dia_chi || '',
-    'Số GCS': r.ma_sogcs || '',
-    'Danh Số': r.danh_so || '',
-    'Tháng': r.thang_no || '',
-    'Tiền Nợ': r.tien_no || '',
-    'SĐT': r.dien_thoai || '',
-    'Số TBI': r.so_tbi || '',
-    'Ghi chú': r.ghi_chu || '',
+    'MA KH': r.ma_khach_hang || '',
+    'TEN KH': r.ten_khach_hang || '',
+    'DIA CHI': r.dia_chi || '',
+    'MA SO GCS': r.ma_sogcs || '',
+    'DANH SO': r.danh_so || '',
+    'THANG NO': r.thang_no || '',
+    'TIEN NO': r.tien_no || '',
+    'SDT': r.dien_thoai || '',
+    'SO TBI': r.so_tbi || '',
+    'GHI CHU': r.ghi_chu || '',
     'ABC': r.abc || '',
-    'Nhân viên': r.nhan_vien || '',
-    'Mã nhóm': r.ma_nhom || ''
+    'NHAN VIEN': r.nhan_vien || '',
+    'MA NHOM': r.ma_nhom || ''
   }));
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
