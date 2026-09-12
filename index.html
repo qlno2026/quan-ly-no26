@@ -1880,11 +1880,12 @@ function processFile(file) {
       const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
       const keys = Object.keys(rows[0] || {});
 
+      function _norm(s) { return s.normalize('NFD').replace(/[Đđ]/g,'D').replace(/\p{Diacritic}/gu,'').toUpperCase().replace(/[_\s]/g,''); }
       function fc(...names) {
         for (const n of names) {
           const f = keys.find(k =>
             k.trim().toUpperCase()===n.toUpperCase() ||
-            k.replace(/[_\s]/g,'').toUpperCase()===n.replace(/[_\s]/g,'').toUpperCase()
+            _norm(k)===_norm(n)
           );
           if (f) return f;
         }
@@ -1895,7 +1896,7 @@ function processFile(file) {
       const cMa    = fc('MA_KHANG','MAKHANG','MA KH','MAKH');
       const cTen   = fc('TEN_KHANG','TENKHANG','TEN KH','TENKH');
       const cDchi  = fc('DCHI_KHANG','DCHIKHANG','DIA CHI','DIACHI');
-      const cSoGcs = fc('MA_SOGCS','MASOGCS','MA SO GCS');
+      const cSoGcs = fc('MA_SOGCS','MASOGCS','MA SO GCS','SO GCS','SOGCS');
       const cDanhSo= fc('DANH SỐ','DANH SO','DANHSO');
       const cDt    = fc('DTHOAI_DVU','DTHOAIDVU','SĐT','SDT','DIEN THOAI');
       const cThang = fc('THANG NO','THANGNO','THANG_NO','THANG');
@@ -1941,7 +1942,7 @@ function processFile(file) {
           for (const n of names) {
             const f = keys2.find(k =>
               k.trim().toUpperCase()===n.toUpperCase() ||
-              k.replace(/[_\s]/g,'').toUpperCase()===n.replace(/[_\s]/g,'').toUpperCase()
+              _norm(k)===_norm(n)
             );
             if (f) return f;
           }
