@@ -626,8 +626,8 @@ body.light-mode .nhom-sel-name {
   user-select: none;
 }
 .kh-card:active { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.16); }
-.kh-card.highlighted { background: rgba(251,191,110,0.2); border: 2px solid #fbbf24; box-shadow: none; }
-body.light-mode .kh-card.highlighted { background: #fef3c7; border: 2px solid #d97706; box-shadow: none; }
+.kh-card.highlighted { background: rgba(251,191,110,0.05); border: 2px solid #fbbf24; box-shadow: none; }
+body.light-mode .kh-card.highlighted { background: rgba(251,191,110,0.08); border: 2px solid #d97706; box-shadow: none; }
 .kh-card.highlighted-purple { background: rgba(30,64,175,0.22); border-color: #00e5ff; border-width: 2px; box-shadow: none; }
 body.light-mode .kh-card.highlighted-purple { background: #cfe3ff; border-color: #1d4ed8; border-width: 2px; box-shadow: 0 0 0 2.5px rgba(29,78,216,0.20); }
 
@@ -675,9 +675,9 @@ body:not(.light-mode) .kh-ghichu { color: #cbd5e1; border-color: #a855f7; }
   flex: 1;
   min-width: 80px;
   font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  color: #cbd5e1;
-  background: transparent;
+  font-size: 15px;
+  color: #fb923c;
+  background: #111827;
   border: none;
   border-bottom: 1px dotted #3b82f6;
   border-radius: 0;
@@ -690,7 +690,7 @@ body:not(.light-mode) .kh-ghichu { color: #cbd5e1; border-color: #a855f7; }
 }
 .kh-ghichu-input::placeholder { color: #3b82f6; opacity: 0.6; }
 .kh-ghichu-input:focus { border-bottom-color: #60a5fa; background: rgba(59,130,246,0.05); }
-body.light-mode .kh-ghichu-input { color: #334155; background: transparent; border-bottom-color: #2563eb; }
+body.light-mode .kh-ghichu-input { color: #111827; background: #ffffff; border-bottom-color: #2563eb; }
 body.light-mode .kh-ghichu-input::placeholder { color: #3b82f6; opacity: 0.6; }
 .ghi-chu-input { background: rgba(71,85,105,0.35); border: 1.5px solid #3b82f6; border-radius: 6px; padding: 8px 12px; color: #ffffff; font-size: 15px; font-weight: 400; font-family: 'Inter', sans-serif; width: 100%; min-width: 200px; outline: none; resize: vertical; }
 .ghi-chu-input::placeholder { color: #6b7280; opacity: 0.7; }
@@ -1324,7 +1324,9 @@ body.light-mode .summary-table thead th { font-size: 15px !important; }
             <div class="nhom-option" data-val="1tr" onclick="selectLoai('1tr')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Nợ 1Tr đến 3Tr</div>
             <div class="nhom-option" data-val="oldky" onclick="selectLoai('oldky')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Nợ cũ, nhiều kỳ</div>
             <div class="nhom-option" data-val="summary" onclick="selectLoai('summary')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Tổng hợp nợ</div>
-            <div class="nhom-option" data-val="marked" onclick="selectLoai('marked')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Ghi chú</div>
+            <div class="nhom-option" data-val="marked" onclick="selectLoai('marked')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Chú ý</div>
+            <div class="nhom-option" data-val="called" onclick="selectLoai('called')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:#10b981">📞</span> KH đã gọi</div>
+            <div class="nhom-option" data-val="notcalled" onclick="selectLoai('notcalled')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:#ef4444">📱</span> KH chưa gọi</div>
           </div>
           <input type="hidden" id="filterLoai" value="">
         </div>
@@ -1978,7 +1980,7 @@ let currentTab = 'detail';
 function switchTab(tab) {
  // chế độ Cảnh báo chỉ ở bảng Chi tiết nợ
   currentTab = tab;
-  const showDetail = (tab === 'detail' || tab === 'marked');
+  const showDetail = (tab === 'detail' || tab === 'marked' || tab === 'called' || tab === 'notcalled');
   const showOld = (tab === 'old' || tab === 'oldky' || tab === '1tr');
   document.getElementById('detailView').style.display = showDetail ? 'block' : 'none';
   document.getElementById('summaryView').style.display = tab === 'summary' ? 'block' : 'none';
@@ -2159,7 +2161,7 @@ function toggleLoaiDropdown() {
     });
   }
 }
-const loaiNames = { oldky: 'Nợ cũ, nhiều kỳ', old: 'Nợ ≥ 3Tr', '1tr': 'Nợ 1Tr đến 3Tr', summary: 'Tổng hợp nợ', marked: 'Ghi chú' };
+const loaiNames = { oldky: 'Nợ cũ, nhiều kỳ', old: 'Nợ ≥ 3Tr', '1tr': 'Nợ 1Tr đến 3Tr', summary: 'Tổng hợp nợ', marked: 'Chú ý', called: 'KH đã gọi', notcalled: 'KH chưa gọi' };
 function abbrevName(full) {
   if (!full) return full;
   if (window.innerWidth >= 640) return full;
@@ -2201,6 +2203,8 @@ function selectLoai(val) {
   else if (val === 'oldky') switchTab('oldky');
   else if (val === '1tr') switchTab('1tr');
   else if (val === 'marked') switchTab('marked');
+  else if (val === 'called') switchTab('called');
+  else if (val === 'notcalled') switchTab('notcalled');
   else {
     window._highDebtFilter = false;
     switchTab('detail');
@@ -2356,6 +2360,12 @@ function applyFilters() {
       const hlIds = getHighlightedIds();
       if (!hlIds.includes(r.ma_khach_hang)) return false;
     }
+    if (currentTab === 'called') {
+      if (!r.ghi_chu || r.ghi_chu.trim() === '') return false;
+    }
+    if (currentTab === 'notcalled') {
+      if (r.ghi_chu && r.ghi_chu.trim() !== '') return false;
+    }
     if (window._highDebtFilter && r.tien_no < 2000000) return false;
     if (q) {
       const hay = normVn(r.stt+r.ma_khach_hang+r.ten_khach_hang+r.dia_chi+r.ma_sogcs+r.danh_so+r.dien_thoai+r.thang_no+r.so_tbi+r.ghi_chu+r.nhan_vien+r.abc);
@@ -2388,7 +2398,7 @@ function applyFilters() {
 
   // Group per KH in the detail-like tabs (incl. the 2 old-debt tabs + các tab khoảng nợ) so a KH with
   // several hoá đơn shows as ONE card/row (tiền cộng dồn, tháng gộp lại)
-  if (currentTab === 'detail' || currentTab === 'marked' || currentTab === 'old' || currentTab === 'oldky' || is1TrTab) {
+  if (currentTab === 'detail' || currentTab === 'marked' || currentTab === 'called' || currentTab === 'notcalled' || currentTab === 'old' || currentTab === 'oldky' || is1TrTab) {
     const groupMap = {};
     const groupOrder = [];
     filtered.forEach(r => {
@@ -2435,6 +2445,7 @@ function applyFilters() {
   renderCards(q2);
   renderTable(q2);
   renderPagination();
+  restoreHighlights();
   updateStats();
   // 🔔 Banner Cảnh báo + badge chuông
   }
@@ -2726,7 +2737,7 @@ function showDetailRow(r) {
     ['Tiền nợ', `<span class="tien-no${r.tien_no >= 2000000 ? ' high' : ' low'}" style="font-size:15px">${fmtHtml(r.tien_no)}</span>` + monthDetail],
     ['SĐT', phoneHtml],
     ['Số TBi', esc(r.so_tbi)||'—'],
-    ['Ghi chú', `<input type="text" class="ghi-chu-input" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" placeholder="Nhập ghi chú..." oninput="saveGhiChu(this)">`],
+    ['Chú ý', `<input type="text" class="ghi-chu-input" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" placeholder="Nhập ghi chú..." oninput="saveGhiChu(this)">`],
     ['ABC', esc(r.abc)||'—'],
   ];
 
