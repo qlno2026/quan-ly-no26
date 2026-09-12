@@ -1908,22 +1908,34 @@ function processFile(file) {
       const cMaNhom= fc('MA NHOM','MANHOM','MA_NHOM');
       const cABC    = fc('ABC');
 
-      allData = rows.map(r => ({
-        stt: String(r[cStt]||'').trim(),
-        ma_khach_hang: String(r[cMa]||'').trim(),
-        ten_khach_hang: String(r[cTen]||'').trim(),
-        dia_chi: String(r[cDchi]||'').trim(),
-        ma_sogcs: String(r[cSoGcs]||'').trim(),
-        danh_so: String(r[cDanhSo]||'').trim(),
-        thang_no: String(r[cThang]||'').trim(),
-        tien_no: parseVnNumber(r[cTien]),
-        dien_thoai: String(r[cDt]||'').trim().replace(/\.0$/,''),
-        so_tbi: String(r[cSoTbi]||'').trim(),
-        ghi_chu: String(r[cGhiChu]||'').trim(),
-        nhan_vien: String(r[cNV]||'').trim(),
-        ma_nhom: String(r[cMaNhom]||r[cNhom]||'').trim(),
-        abc: String(r[cABC]||'').trim(),
-      })).filter(r => r.ma_khach_hang || r.ten_khach_hang);
+      // Giữ lại ghi chú cũ từ file trước (theo mã KH)
+      const oldGhiChu = {};
+      if (allData.length > 0) {
+        allData.forEach(r => {
+          if (r.ghi_chu && r.ghi_chu.trim()) oldGhiChu[r.ma_khach_hang || r.ten_khach_hang] = r.ghi_chu.trim();
+        });
+      }
+
+      allData = rows.map(r => {
+        const key = String(r[cMa]||'').trim() || String(r[cTen]||'').trim();
+        const fileGhiChu = String(r[cGhiChu]||'').trim();
+        return {
+          stt: String(r[cStt]||'').trim(),
+          ma_khach_hang: String(r[cMa]||'').trim(),
+          ten_khach_hang: String(r[cTen]||'').trim(),
+          dia_chi: String(r[cDchi]||'').trim(),
+          ma_sogcs: String(r[cSoGcs]||'').trim(),
+          danh_so: String(r[cDanhSo]||'').trim(),
+          thang_no: String(r[cThang]||'').trim(),
+          tien_no: parseVnNumber(r[cTien]),
+          dien_thoai: String(r[cDt]||'').trim().replace(/\.0$/,''),
+          so_tbi: String(r[cSoTbi]||'').trim(),
+          ghi_chu: fileGhiChu || oldGhiChu[key] || '',
+          nhan_vien: String(r[cNV]||'').trim(),
+          ma_nhom: String(r[cMaNhom]||r[cNhom]||'').trim(),
+          abc: String(r[cABC]||'').trim(),
+        };
+      }).filter(r => r.ma_khach_hang || r.ten_khach_hang);
 
       document.getElementById('fileLabel').textContent = file.name;
 
