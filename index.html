@@ -306,15 +306,11 @@ body.light-mode .count-tien { color: #dc2626; font-weight: 500; }
 .main { padding: 0 8px calc(100px + env(safe-area-inset-bottom, 0px)); max-width: 1400px; margin: 0 auto; }
 
 .toolbar-top { display: flex; flex-wrap: wrap; gap: 0; padding: 0; margin-bottom: 0; align-items: stretch; }
-.toolbar-top .search-box { flex: 1 1 100%; min-width: 0; margin-top: 4px; }
-.toolbar-top .filter-row { flex: 1 1 0; min-width: 0; }
-@media (min-width: 640px) {
-  .toolbar-top .search-box { flex: 2; min-width: 0; }
-  .toolbar-top .filter-row { flex: 1; min-width: 0; flex-wrap: nowrap; gap: 0; }
-  .toolbar-top .filter-select { flex: 1; min-width: 0; font-size: 16px; }   .sort-row { flex: 1; gap: 2px; width: 100%; }   .sort-btn { padding: 10px 12px; font-size: 16px; flex: 1; }
-  .sort-btn .sort-arrow { font-size: 13px; }
-  .sort-label { font-size: 16px; }
-}
+.search-export-row { display: flex; gap: 6px; align-items: center; flex: 1 1 100%; min-width: 0; margin-bottom: 4px; }
+.toolbar-top .search-box { flex: 1; min-width: 0; margin-top: 4px; }
+.toolbar-top .filter-row { width: calc(50% - 3px); min-width: 0; margin-bottom: 0; }
+#exportBtn { flex: 0 0 42px; align-self: center; }
+/* desktop media query moved to later in file */
 
 /* ── WELCOME ────────────────────────────── */
 .welcome-state {
@@ -493,14 +489,14 @@ body.light-mode .search-clear { background: rgba(0,0,0,0.1); color: #000000; }
 body.light-mode .search-clear:hover { background: rgba(239,68,68,0.2); color: #dc2626; }
 body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
 
-.filter-row { display: flex; gap: 8px; }
+.filter-row { display: flex; gap: 2px; }
 .filter-select {
   flex: 1;
   background: rgba(71,85,105,0.35);
   border: 1px solid transparent;
   border-radius: 10px;
-  padding: 8px 12px;
-  height: 42px;
+  padding: 6px 4px;
+  height: 38px;
   color: var(--text);
   font-size: 16px;
   font-weight: 400;
@@ -524,7 +520,7 @@ body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
 }
 
 /* Sort quick-buttons */
-.sort-row { display: flex; gap: 2px; margin-top: 1px; background: rgba(15,23,42,0.6); border-radius: 10px; padding: 4px; }
+.sort-row { display: flex; gap: 2px; margin-top: 0; background: rgba(15,23,42,0.6); border-radius: 10px; padding: 1px; }
 .sort-btn {
   flex: 1;
   padding: 6px 14px;
@@ -626,7 +622,7 @@ body.light-mode .nhom-sel-name {
   user-select: none;
 }
 .kh-card:active { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.16); }
-.kh-card.highlighted { background: rgba(251,191,110,0.05); border: 2px solid #fbbf24; box-shadow: none; }
+.kh-card.highlighted { background: rgba(251,191,110,0.03); border: 2px solid #fbbf24; box-shadow: none; }
 body.light-mode .kh-card.highlighted { background: rgba(251,191,110,0.08); border: 2px solid #d97706; box-shadow: none; }
 .kh-card.highlighted-purple { background: rgba(30,64,175,0.22); border-color: #00e5ff; border-width: 2px; box-shadow: none; }
 body.light-mode .kh-card.highlighted-purple { background: #cfe3ff; border-color: #1d4ed8; border-width: 2px; box-shadow: 0 0 0 2.5px rgba(29,78,216,0.20); }
@@ -1142,11 +1138,11 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; font-we
   .page-btn { width: 34px; height: 34px; font-size: 14px; }
   .page-btns { flex-wrap: wrap; justify-content: center; }
 
-  .toolbar-top { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px 0; }
-  body:not(.light-mode) .toolbar-top { padding-top: 4px; }
+  .toolbar-top { display: flex; flex-wrap: wrap; gap: 0; padding: 2px 0; align-items: center; }
+  body:not(.light-mode) .toolbar-top { padding-top: 2px; }
   body:not(.light-mode) .toolbar-top .search-box { margin-top: 0; }
-  .toolbar-top .search-box { grid-column: 1 / -1; min-width: 0; padding: 0 2px; }
-  .toolbar-top .filter-row { min-width: 0; padding: 0 2px; }
+  .search-export-row { flex: 0 0 100%; }
+  .toolbar-top .filter-row { flex: 0 0 calc(50% - 1px); min-width: 0; padding: 0; }
   .filter-select { flex: 1; min-width: 0; }
 
   .modal-close { padding: 10px 12px; font-size: 18px; }
@@ -1163,11 +1159,16 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; font-we
   .toolbar { flex-direction: column; gap: 4px; padding-top: 6px; }
   body.light-mode .toolbar-top { padding-top: 4px; }
   .search-box { width: 100%; }
-  .toolbar-top { display: flex; flex-wrap: nowrap; gap: 2px; align-items: stretch; }
-  .toolbar-top .search-box { flex: 3; min-width: 0; margin-top: 0; }
+  .search-export-row { flex: 1 1 auto; }
+  .toolbar-top { display: flex; flex-wrap: wrap; gap: 2px; align-items: stretch; }
+  .toolbar-top .search-box { flex: 2; min-width: 0; margin-top: 0; }
   .toolbar-top .search-box input { font-size: 16px; }
-  .filter-row { flex: 1 1 0; min-width: 0; flex-wrap: nowrap; gap: 2px; }
+  .filter-row { flex: 1 1 0; min-width: 0; gap: 4px; }
   .filter-select { flex: 1; min-width: 0; font-size: 16px; }
+  .sort-row { flex: 1; gap: 2px; width: 100%; }
+  .sort-btn { padding: 10px 12px; font-size: 16px; flex: 1; }
+  .sort-btn .sort-arrow { font-size: 13px; }
+  .sort-label { font-size: 16px; }
   .tab-nav { flex: 3; min-width: 0; display: flex; gap: 1px; }
   .tab-btn { flex: 1; padding: 5px 6px; font-size: 16px; font-weight: 400; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .header-sub { max-width: 300px; }
@@ -1299,12 +1300,15 @@ body.light-mode .summary-table thead th { font-size: 15px !important; }
     <!-- Toolbar (sticky) -->
     <div class="toolbar">
       <div class="toolbar-top">
-        <div class="search-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" placeholder="Tìm tên, mã KH, SĐT, địa chỉ..." oninput="handleSearch()" autocomplete="off" autocorrect="off" autocapitalize="off">
-          <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+        <div class="search-export-row">
+          <div class="search-box" style="margin-top:0;">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Tìm tên, mã KH, SĐT, địa chỉ..." oninput="handleSearch()" autocomplete="off" autocorrect="off" autocapitalize="off">
+            <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+          </div>
+          <button id="exportBtn" onclick="exportExcel()" style="display:none;align-items:center;justify-content:center;width:42px;height:42px;cursor:pointer;background:transparent;border:none;outline:none;flex-shrink:0;border-radius:10px;"><span style="font-size:22px;">📥</span></button>
         </div>
-        <div class="filter-row" style="position:relative">
+        <div class="filter-row" style="position:relative;">
           <div class="filter-select" id="filterNhomBtn" onclick="toggleNhomDropdown()" style="display:flex;align-items:center;gap:4px;cursor:pointer;position:relative">
             <span id="filterNhomLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:#3b82f6">📁</span> DS nhóm</span>
           </div>
@@ -1319,7 +1323,6 @@ body.light-mode .summary-table thead th { font-size: 15px !important; }
           </div>
           <div class="nhom-dropdown" id="loaiDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
             <div class="nhom-option" data-val="" onclick="selectLoai('')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Chi tiết nợ</div>
-
             <div class="nhom-option" data-val="old" onclick="selectLoai('old')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Nợ ≥ 3Tr</div>
             <div class="nhom-option" data-val="1tr" onclick="selectLoai('1tr')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Nợ 1Tr đến 3Tr</div>
             <div class="nhom-option" data-val="oldky" onclick="selectLoai('oldky')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Nợ cũ, nhiều kỳ</div>
@@ -1330,7 +1333,6 @@ body.light-mode .summary-table thead th { font-size: 15px !important; }
           </div>
           <input type="hidden" id="filterLoai" value="">
         </div>
-
       </div>
         <div class="sort-row">
           <button class="sort-btn" id="sortDanhSo" onclick="sortBy('danh_so')">
@@ -1719,6 +1721,7 @@ async function clearSavedData() {
   document.getElementById('fileLabel').textContent = 'Chưa có dữ liệu';
   document.getElementById('dataView').style.display = 'none';
   document.getElementById('welcomeState').style.display = 'block';
+  document.getElementById('exportBtn').style.display = 'none';
   document.querySelector('.stats-row').classList.remove('collapsed');
   document.getElementById('nvScope').classList.remove('collapsed');
   updateStats();
@@ -1754,6 +1757,7 @@ async function restoreData() {
 
   document.getElementById('welcomeState').style.display = 'none';
   document.getElementById('dataView').style.display = 'block';
+  document.getElementById('exportBtn').style.display = 'flex';
   loadGhiChu(); initFilters(); updateStats(); applyFilters();
   if (!summaryData.length) computeSummaryFromDetail();
   else renderSummary();
@@ -1852,6 +1856,7 @@ function processFile(file) {
   document.getElementById('welcomeState').style.display = 'none';
   document.getElementById('loadingState').style.display = 'block';
   document.getElementById('dataView').style.display = 'none';
+  document.getElementById('exportBtn').style.display = 'flex';
   document.getElementById('fileLabel').textContent = file.name;
 
   // Reset all state carried over from a previous file
@@ -2791,6 +2796,30 @@ function loadGhiChu() {
 
 }
 
+function exportExcel() {
+  if (!allData.length) { alert('Chưa có dữ liệu để xuất!'); return; }
+  const data = allData.map(r => ({
+    'STT': r.stt || '',
+    'Mã KH': r.ma_khach_hang || '',
+    'Tên KH': r.ten_khach_hang || '',
+    'Địa chỉ': r.dia_chi || '',
+    'Số GCS': r.ma_sogcs || '',
+    'Danh Số': r.danh_so || '',
+    'Tháng': r.thang_no || '',
+    'Tiền Nợ': r.tien_no || '',
+    'SĐT': r.dien_thoai || '',
+    'Số TBI': r.so_tbi || '',
+    'Ghi chú': r.ghi_chu || '',
+    'ABC': r.abc || '',
+    'Nhân viên': r.nhan_vien || '',
+    'Mã nhóm': r.ma_nhom || ''
+  }));
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Danh sách nợ');
+  const date = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, `DS_TongNo_${date}.xlsx`);
+}
 function closeModal(e) { if (e.target===document.getElementById('modal')) closeModalDirect(); }
 function closeModalDirect() {
   document.getElementById('modal').classList.remove('open');
