@@ -2776,20 +2776,34 @@ let _ghiChuSaveTimer = null;
 function saveGhiChu(input) {
   const ma = input.dataset.ma;
   const val = input.value;
-  // Update allData AND filtered (filtered holds per-KH COPIES created by applyFilters)
-  // immediately — otherwise the modal and re-rendered cards keep showing the old note.
-  allData.forEach(r => { if (r.ma_khach_hang === ma) r.ghi_chu = val; });
-  filtered.forEach(r => { if (r.ma_khach_hang === ma) r.ghi_chu = val; });
+  // Find the phone number of this customer
+  const currentRow = allData.find(r => r.ma_khach_hang === ma);
+  const phone = currentRow ? (currentRow.dien_thoai || '').trim() : '';
+  // Collect all customers with the same phone number (if phone exists)
+  const samePhoneMAs = [ma];
+  if (phone) {
+    allData.forEach(r => {
+      if (r.ma_khach_hang !== ma && (r.dien_thoai || '').trim() === phone) {
+        samePhoneMAs.push(r.ma_khach_hang);
+      }
+    });
+  }
+  // Update allData AND filtered for ALL customers with the same phone
+  samePhoneMAs.forEach(m => {
+    allData.forEach(r => { if (r.ma_khach_hang === m) r.ghi_chu = val; });
+    filtered.forEach(r => { if (r.ma_khach_hang === m) r.ghi_chu = val; });
+  });
   // Save to localStorage
   let notes = {};
   try { notes = JSON.parse(localStorage.getItem('qlno_notes') || '{}'); } catch(e) {}
-  notes[ma] = val;
+  samePhoneMAs.forEach(m => { notes[m] = val; });
   localStorage.setItem('qlno_notes', JSON.stringify(notes));
-  // Live sync: update ALL card note inputs for this customer (current + old-debt lists),
-  // plus the desktop table input and the modal input if editing from elsewhere.
-  document.querySelectorAll(`.kh-ghichu-input[data-ma="${CSS.escape(ma)}"]`).forEach(el => { if (el !== input) el.value = val; });
-  document.querySelectorAll(`.ghi-chu-table[data-ma="${CSS.escape(ma)}"]`).forEach(el => { if (el !== input) el.value = val; });
-  document.querySelectorAll(`.ghi-chu-input[data-ma="${CSS.escape(ma)}"]`).forEach(el => { if (el !== input) el.value = val; });
+  // Live sync: update ALL card note inputs for all customers with the same phone
+  samePhoneMAs.forEach(m => {
+    document.querySelectorAll(`.kh-ghichu-input[data-ma="${CSS.escape(m)}"]`).forEach(el => { if (el !== input) el.value = val; });
+    document.querySelectorAll(`.ghi-chu-table[data-ma="${CSS.escape(m)}"]`).forEach(el => { if (el !== input) el.value = val; });
+    document.querySelectorAll(`.ghi-chu-input[data-ma="${CSS.escape(m)}"]`).forEach(el => { if (el !== input) el.value = val; });
+  });
   // Debounce save only — do NOT re-render table/card here to avoid losing input focus
   clearTimeout(_ghiChuSaveTimer);
   _ghiChuSaveTimer = setTimeout(() => {
@@ -2800,13 +2814,22 @@ function loadGhiChu() {
   let notes = {};
   try { notes = JSON.parse(localStorage.getItem('qlno_notes') || '{}'); } catch(e) {}
   allData.forEach(r => { if (notes[r.ma_khach_hang] !== undefined) r.ghi_chu = notes[r.ma_khach_hang]; });
+  // Sync by phone: if one customer with same phone has ghi chú, apply to all
+  allData.forEach(r => {
+    if (!r.ghi_chu && r.dien_thoai) {
+      const phone = r.dien_thoai.trim();
+      if (phone) {
+        const match = allData.find(x => x.dien_thoai && x.dien_thoai.trim() === phone && x.ghi_chu && x.ma_khach_hang !== r.ma_khach_hang);
+        if (match) { r.ghi_chu = match.ghi_chu; }
+      }
+    }
+  });
   // Sync desktop table inputs with loaded data
   allData.forEach(r => {
     document.querySelectorAll(`.kh-ghichu-input[data-ma="${CSS.escape(r.ma_khach_hang)}"]`).forEach(el => { el.value = r.ghi_chu || ''; });
     document.querySelectorAll(`.ghi-chu-table[data-ma="${CSS.escape(r.ma_khach_hang)}"]`).forEach(el => { el.value = r.ghi_chu || ''; });
     document.querySelectorAll(`.ghi-chu-input[data-ma="${CSS.escape(r.ma_khach_hang)}"]`).forEach(el => { el.value = r.ghi_chu || ''; });
   });
-
 }
 
 function exportExcel() {
