@@ -77,7 +77,7 @@ body {
 }
 
 .header-title { font-size: 18px; font-weight: 400; letter-spacing: 0.3px; color: #ffffff; }
-.header-sub { font-size: 10px; color: #cbd5e1; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; font-weight: 400; }
+.header-sub { font-size: 10px; color: #e2e8f0; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; font-weight: 400; }
 
 .upload-btn-header {
   background: transparent;
@@ -113,7 +113,6 @@ body {
   background: conic-gradient(#ef6b6b, #f0a848, #e0e050, #50c878, #509ee0, #a870e0, #ef6b6b);
   box-shadow: 0 0 8px rgba(0,0,0,0.3);
   overflow: hidden;
-  animation: spin-rainbow 4s linear infinite;
 }
 @keyframes spin-rainbow {
   to { transform: rotate(360deg); }
@@ -142,7 +141,7 @@ body.light-mode .header {
   box-shadow: 0 3px 10px rgba(30,64,175,0.35);
 }
 body.light-mode .header-title { color: #ffffff; font-weight: 400; }
-body.light-mode .header-sub { color: #94a3b8; font-weight: 400; }
+body.light-mode .header-sub { color: #e2e8f0; font-weight: 400; }
 body.light-mode .logo-icon { display: none; }
 body.light-mode .upload-btn-header { background: transparent; color: #ffffff; border: none; font-weight: 600; }
 body.light-mode .theme-toggle { box-shadow: 0 0 8px rgba(0,0,0,0.2); }
@@ -160,8 +159,8 @@ body.light-mode .nhom-dropdown { background: #ffffff !important; border-color: #
 .nhom-option { font-weight: 400 !important; font-size: 16px !important; }
 body.light-mode .nhom-option { color: #000000 !important; border-bottom: 1px solid #94a3b8 !important; background: #ffffff !important; font-weight: 400 !important; }
 body.light-mode .nhom-option:hover { background: rgba(59,130,246,0.1) !important; }
-body.light-mode .rainbow-border { border-color: #dc2626; animation: rainbow-border-color-light 16s linear infinite; }
-body.light-mode .rainbow-border .rainbow-text, body.light-mode .rainbow-border > .rainbow-text { animation: rainbow-text-color-light 16s linear infinite; }
+body.light-mode .rainbow-border { border-color: #dc2626; }
+body.light-mode .rainbow-border .rainbow-text, body.light-mode .rainbow-border > .rainbow-text { }
 @keyframes rainbow-border-color-light {
   0%   { border-color: #dc2626; box-shadow: 0 0 6px rgba(220,38,38,0.4); }
   16%  { border-color: #ea580c; box-shadow: 0 0 6px rgba(234,88,12,0.4); }
@@ -195,15 +194,17 @@ body.light-mode #sortDanhSo.active { background: #1e40af; color: #ffffff; box-sh
 body.light-mode #sortTienNo.active { background: #c2410c; color: #ffffff; box-shadow: 0 0 4px rgba(249,115,22,0.35), 0 0 8px rgba(249,115,22,0.15); }
 body.light-mode #sortSoGCS.active { background: #047857; color: #ffffff; box-shadow: 0 0 4px rgba(16,185,129,0.35), 0 0 8px rgba(16,185,129,0.15); }
 body.light-mode #sortTenKH.active { background: #5b21b6; color: #ffffff; box-shadow: 0 0 4px rgba(168,85,247,0.35), 0 0 8px rgba(168,85,247,0.15); }
-body.light-mode .kh-card { background: #f0f1f4; border: 1.5px solid #c5cad1; }
+body.light-mode .kh-card { background: #f8f9fa; border: 1.5px solid #c5cad1; }
 body.light-mode .card-list { gap: 3px; }
-body.light-mode .kh-name { color: #1d4ed8; font-weight: 700; font-size: 16px; }
+body.light-mode .kh-name { color: #1e3a8a; font-weight: 700; font-size: 16px; }
   @media (max-width: 639.98px) { body.light-mode .kh-name { font-size: 16px; } }
 body.light-mode .kh-ma-line, body.light-mode .kh-phone-line { color: #475569; font-weight: 500; font-size: 15px; }
-body.light-mode .kh-ma { color: #000000 !important; font-weight: 500 !important; font-size: 16px; }
+body.light-mode .kh-ma { color: #1e3a8a !important; font-weight: 500 !important; font-size: 16px; background: #dbeafe; padding: 1px 7px; border-radius: 5px; }
 body.light-mode .kh-danhso { color: #000000 !important; font-weight: 500 !important; font-size: 16px; }
 body.light-mode .kh-sogcs { color: #334155; font-weight: 500; font-size: 16px; }
-body.light-mode .kh-phone { color: #334155 !important; font-weight: 500; font-size: 16px; text-decoration: none !important; }
+body.light-mode .kh-phone { color: #1e3a8a !important; font-weight: 500; font-size: 16px; text-decoration: none !important; background: #dbeafe; padding: 1px 7px; border-radius: 5px; }
+body:not(.light-mode) .kh-ma { background: #1e3a5f; padding: 1px 7px; border-radius: 5px; color: #bfdbfe !important; }
+body:not(.light-mode) .kh-phone { background: #0f2438; padding: 1px 7px; border-radius: 5px; color: #bfdbfe !important; font-weight: 500 !important; }
 body.light-mode .kh-thang { color: #334155; font-weight: 500; font-size: 16px; }
 body.light-mode .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #3b82f6; text-underline-offset: 3px; text-decoration-thickness: 2px; }
 body.light-mode .badge-blue { background: rgba(37,99,235,0.15); color: #1e40af !important; font-weight: 500; }
@@ -587,11 +588,9 @@ body.light-mode .nhom-sel-name {
 }
 .rainbow-border {
   border: 2px solid #ef6b6b;
-  animation: rainbow-border-color 8s linear infinite;
 }
 .rainbow-border .rainbow-text,
 .rainbow-border > .rainbow-text {
-  animation: rainbow-text-color 8s linear infinite;
 }
 
 .count-info {
