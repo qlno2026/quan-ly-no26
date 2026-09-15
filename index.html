@@ -26,6 +26,25 @@
   --card: rgba(255,255,255,0.04);
   --radius: 12px;
   --header-h: 56px;
+
+  /* ── Viên (pill) trên card: mã KH, danh số, SĐT — dark mode mặc định ── */
+  --vien-bg: #1e3a5f;
+  --vien-fg: #bfdbfe;
+  --vien-vien: transparent;
+  --vien-sdt-bg: #0f2438;
+  --vien-sdt-vien: rgba(191,219,254,0.35);
+  --vien-pad-x: 6px;
+  --vien-radius: 5px;
+  --vien-weight: 400;
+}
+
+/* ── Viên (pill) trên card — light mode ── */
+body.light-mode {
+  --vien-bg: #dbeafe;
+  --vien-fg: #1e3a8a;
+  --vien-vien: transparent;
+  --vien-sdt-bg: #dbeafe;
+  --vien-sdt-vien: #ffffff;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -196,15 +215,16 @@ body.light-mode #sortSoGCS.active { background: #047857; color: #ffffff; box-sha
 body.light-mode #sortTenKH.active { background: #5b21b6; color: #ffffff; box-shadow: 0 0 4px rgba(168,85,247,0.35), 0 0 8px rgba(168,85,247,0.15); }
 body.light-mode .kh-card { background: #f8f9fa; border: 1.5px solid #c5cad1; }
 body.light-mode .card-list { gap: 3px; }
-body.light-mode .kh-name { color: #1e3a8a; font-weight: 700; font-size: 16px; }
+body.light-mode .kh-name { color: #2563eb; font-weight: 700; font-size: 16px; }
   @media (max-width: 639.98px) { body.light-mode .kh-name { font-size: 16px; } }
 body.light-mode .kh-ma-line, body.light-mode .kh-phone-line { color: #475569; font-weight: 500; font-size: 15px; }
-body.light-mode .kh-ma { color: #1e3a8a !important; font-weight: 500 !important; font-size: 16px; background: #dbeafe; padding: 1px 7px; border-radius: 5px; }
-body.light-mode .kh-danhso { color: #000000 !important; font-weight: 500 !important; font-size: 16px; }
+body.light-mode .kh-ma { color: var(--vien-fg) !important; font-weight: var(--vien-weight) !important; font-size: 16px; background: var(--vien-bg); border: 1px solid var(--vien-vien); padding: 0 var(--vien-pad-x); border-radius: var(--vien-radius); }
+body.light-mode .kh-danhso { color: var(--vien-fg) !important; font-weight: var(--vien-weight) !important; font-size: 16px; background: var(--vien-bg); border: 1px solid var(--vien-vien); padding: 0 var(--vien-pad-x); border-radius: var(--vien-radius); }
 body.light-mode .kh-sogcs { color: #334155; font-weight: 500; font-size: 16px; }
-body.light-mode .kh-phone { color: #1e3a8a !important; font-weight: 500; font-size: 16px; text-decoration: none !important; background: #dbeafe; padding: 1px 7px; border-radius: 5px; }
-body:not(.light-mode) .kh-ma { background: #1e3a5f; padding: 1px 7px; border-radius: 5px; color: #bfdbfe !important; }
-body:not(.light-mode) .kh-phone { background: #0f2438; padding: 1px 7px; border-radius: 5px; color: #bfdbfe !important; font-weight: 500 !important; }
+body.light-mode .kh-phone { color: var(--vien-fg) !important; font-weight: var(--vien-weight); font-size: 16px; text-decoration: none !important; background: var(--vien-sdt-bg); border: 1px solid var(--vien-sdt-vien); padding: 0 var(--vien-pad-x); border-radius: var(--vien-radius); }
+body:not(.light-mode) .kh-ma { background: var(--vien-bg); border: 1px solid var(--vien-vien); padding: 0 var(--vien-pad-x); border-radius: var(--vien-radius); color: var(--vien-fg) !important; font-weight: var(--vien-weight) !important; }
+body:not(.light-mode) .kh-danhso { background: var(--vien-bg); border: 1px solid var(--vien-vien); padding: 0 var(--vien-pad-x); border-radius: var(--vien-radius); color: var(--vien-fg) !important; font-weight: var(--vien-weight) !important; }
+body:not(.light-mode) .kh-phone { background: var(--vien-sdt-bg); border: 1px solid var(--vien-sdt-vien); padding: 0 var(--vien-pad-x); border-radius: var(--vien-radius); color: var(--vien-fg) !important; font-weight: var(--vien-weight) !important; }
 body.light-mode .kh-thang { color: #334155; font-weight: 500; font-size: 16px; }
 body.light-mode .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #3b82f6; text-underline-offset: 3px; text-decoration-thickness: 2px; }
 body.light-mode .badge-blue { background: rgba(37,99,235,0.15); color: #1e40af !important; font-weight: 500; }
@@ -2518,8 +2538,8 @@ function renderCards(q='') {
         </div>
       </div>
       <div class="kh-danhso-row">
-        ${(r.danh_so || r.ma_sogcs) ? `<div class="kh-line">${r.danh_so ? `<span class="kh-danhso">${hi(r.danh_so,q)}</span>` : ''}${r.danh_so && r.ma_sogcs ? `<span class="kh-sep">-</span>` : ''}${r.ma_sogcs ? `<span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span>` : ''}</div>` : ''}
-        ${(r.ma_khach_hang || r.so_tbi) ? `<div class="kh-line">${r.ma_khach_hang ? `<span class="kh-ma" onclick="event.stopPropagation();copyToClip('${esc(r.ma_khach_hang)}',this)" style="cursor:pointer">${hi(r.ma_khach_hang,q)}</span>` : ''}${r.ma_khach_hang && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}${r.so_tbi ? `<span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}</div>` : ''}
+        ${(r.danh_so || r.ma_khach_hang) ? `<div class="kh-line">${r.danh_so ? `<span class="kh-danhso">${hi(r.danh_so,q)}</span>` : ''}${r.danh_so && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="event.stopPropagation();copyToClip('${esc(r.ma_khach_hang)}',this)" style="cursor:pointer">${hi(r.ma_khach_hang,q)}</span>` : ''}</div>` : ''}
+        ${(r.ma_sogcs || r.so_tbi) ? `<div class="kh-line">${r.ma_sogcs ? `<span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span>` : ''}${r.ma_sogcs && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}${r.so_tbi ? `<span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}</div>` : ''}
       </div>
 
       ${r.dia_chi ? `<div class="kh-addr-line"><svg class="addr-ico" width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" style="vertical-align:middle;margin-right:6px"><path d="M12 2C8.13 2 5 5.13 5 8.5c0 4.8 6.12 11.06 6.36 11.31.18.19.46.19.64 0 .24-.25 6.36-6.51 6.36-11.31C19 5.13 15.87 2 12 2zm0 9a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>${hi(trimDiaChi(r.dia_chi),q)}</div>` : ''}
