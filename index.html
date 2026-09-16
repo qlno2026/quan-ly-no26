@@ -28,9 +28,9 @@
   --header-h: 56px;
 
   /* ── Viên (pill) trên card: mã KH, danh số, SĐT — dark mode mặc định ── */
-  --vien-bg: #1e3a5f;
+  --vien-bg: #0f2438;
   --vien-fg: #bfdbfe;
-  --vien-vien: transparent;
+  --vien-vien: rgba(191,219,254,0.35);
   --vien-sdt-bg: #0f2438;
   --vien-sdt-vien: rgba(191,219,254,0.35);
   --vien-pad-x: 6px;
@@ -40,12 +40,14 @@
 
 /* ── Viên (pill) trên card — light mode ── */
 body.light-mode {
-  --vien-bg: #dbeafe;
+  --vien-bg: #f0f6ff;
   --vien-fg: #1e3a8a;
-  --vien-vien: transparent;
-  --vien-sdt-bg: #dbeafe;
-  --vien-sdt-vien: #ffffff;
+  --vien-vien: #93b8e8;
+  --vien-sdt-bg: #f0f6ff;
+  --vien-sdt-vien: #93b8e8;
 }
+
+
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -663,7 +665,8 @@ body.light-mode .kh-card.highlighted-purple { background: #cfe3ff; border-color:
 .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #60a5fa; text-underline-offset: 3px; text-decoration-thickness: 2px; }
 
 .kh-ma-line { margin-bottom: 4px; }
-.kh-card-mid { display: flex; gap: 1px; flex-wrap: nowrap; margin-bottom: 5px; align-items: center; overflow: hidden; }
+.kh-card-mid { display: flex; gap: 1px; flex-wrap: wrap; margin-bottom: 5px; align-items: center; }
+.kh-mid-row { display: flex; align-items: center; gap: 1px; flex: 0 0 100%; min-width: 0; flex-wrap: wrap; }
 .kh-ma { font-family: 'Inter', sans-serif; font-size: 16px; color: #e2e8f0; font-weight: 400 !important; white-space: nowrap; }
 .kh-sogcs { font-family: 'Inter', sans-serif; font-size: 16px; color: #94a3b8; font-weight: 400; white-space: nowrap; }
 .kh-tbi { font-family: 'Inter', sans-serif; font-size: 16px; color: #94a3b8; font-weight: 400; white-space: nowrap; }
@@ -674,6 +677,7 @@ body.light-mode .kh-tbi { color: #334155; font-weight: 500; }
 .kh-ma-line .badge-danhso { font-size: 11px; padding: 3px 10px; color: #fff; border: none !important; box-shadow: none !important; }
 .kh-sep { font-size: 12px; color: var(--text-dim); font-weight: 400; margin: 0 1px; }
 .kh-abc { font-size: 16px; color: #94a3b8; font-weight: 400; white-space: nowrap; border: none; border-radius: 3px; padding: 0px 2px; background: transparent; }
+.kh-abc-line { margin-top: 4px; }
 body.light-mode .kh-abc { color: #475569; }
 .kh-nv-badge { font-size: 16px; color: #a78bfa; font-weight: 400; white-space: nowrap; border: 1px solid rgba(139,92,246,0.3); border-radius: 3px; padding: 0px 4px; background: rgba(139,92,246,0.1); }
 body.light-mode .kh-nv-badge { background: rgba(139,92,246,0.12); border-color: rgba(139,92,246,0.35); color: #7c3aed; }
@@ -1691,9 +1695,11 @@ function toggleTheme() {
   const saved = localStorage.getItem('qlno_theme');
   if (saved === 'light') {
     document.body.classList.add('light-mode');
-    // logo stays — no text swap needed
   }
+
 })();
+
+
 
 // Persist the parsed data: compressed into localStorage, IndexedDB as fallback
 async function saveData() {
@@ -2537,17 +2543,17 @@ function renderCards(q='') {
           ${r.thang_no ? `<div class="kh-thang${r.thang_no.split(",").length >= 4 ? " multi-month" : ""}">${hi(shortMonths(r.thang_no),q)}${omShow ? ' (' + oldKind + ')' : ''}</div>` : (omShow ? `<div class="kh-thang">(${oldKind})</div>` : '')}
         </div>
       </div>
-      <div class="kh-danhso-row">
-        ${(r.danh_so || r.ma_khach_hang) ? `<div class="kh-line">${r.danh_so ? `<span class="kh-danhso">${hi(r.danh_so,q)}</span>` : ''}${r.danh_so && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="event.stopPropagation();copyToClip('${esc(r.ma_khach_hang)}',this)" style="cursor:pointer">${hi(r.ma_khach_hang,q)}</span>` : ''}</div>` : ''}
-        ${(r.ma_sogcs || r.so_tbi) ? `<div class="kh-line">${r.ma_sogcs ? `<span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span>` : ''}${r.ma_sogcs && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}${r.so_tbi ? `<span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}</div>` : ''}
-      </div>
-
       ${r.dia_chi ? `<div class="kh-addr-line"><svg class="addr-ico" width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" style="vertical-align:middle;margin-right:6px"><path d="M12 2C8.13 2 5 5.13 5 8.5c0 4.8 6.12 11.06 6.36 11.31.18.19.46.19.64 0 .24-.25 6.36-6.51 6.36-11.31C19 5.13 15.87 2 12 2zm0 9a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>${hi(trimDiaChi(r.dia_chi),q)}</div>` : ''}
+
       <div class="kh-card-mid">
-        ${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class='phone-icon' width='11' height='11' viewBox='0 0 24 24' fill='#ef4444' style='vertical-align:middle;margin-right:9px'><path d='M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.57.57a1 1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1.02l-2.2 2.2z'/></svg>${hi(phone,q)}</a>` : ''}
-        ${phone && r.abc ? `<span class="kh-sep">-</span>` : ''}
-        ${r.abc ? `<span class="kh-abc">${hi(r.abc,q)}</span>` : ''}
+        ${r.danh_so ? `<span class="kh-danhso">${hi(r.danh_so,q)}</span>` : ''}
+        ${r.danh_so && r.ma_sogcs ? `<span class="kh-sep">-</span>` : ''}
+        ${r.ma_sogcs ? `<span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span>` : ''}
+        ${r.ma_sogcs && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}
+        ${r.so_tbi ? `<span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}
+        ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class='phone-icon' width='11' height='11' viewBox='0 0 24 24' fill='#ef4444' style='vertical-align:middle;margin-right:9px'><path d='M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.57.57a1 1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1.02l-2.2 2.2z'/></svg>${hi(phone,q)}</a>` : ''}${phone && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="event.stopPropagation();copyToClip('${esc(r.ma_khach_hang)}',this)" style="cursor:pointer"><svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='#3b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align:middle;margin-right:4px'><path d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'/><rect x='8' y='2' width='8' height='4' rx='1' ry='1'/></svg>${hi(r.ma_khach_hang,q)}</span>` : ''}</span>` : ''}
       </div>
+      ${r.abc ? `<div class="kh-abc-line"><span class="kh-abc"><svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='#3b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align:middle;margin-right:4px'><path d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'/><rect x='8' y='2' width='8' height='4' rx='1' ry='1'/></svg>${hi(r.abc,q)}</span></div>` : ''}
       <div class="kh-ghichu-row">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;flex-shrink:0"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
         <input type="text" class="kh-ghichu-input" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" oninput="saveGhiChu(this)" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()" onpointerdown="event.stopPropagation()" onpointerup="event.stopPropagation()">
