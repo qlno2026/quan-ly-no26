@@ -649,7 +649,7 @@ body.light-mode .kh-card.highlighted { background: rgba(251,191,110,0.08); borde
 body.light-mode .kh-card.highlighted-purple { background: #cfe3ff; border-color: #1d4ed8; border-width: 2px; box-shadow: 0 0 0 2.5px rgba(29,78,216,0.20); }
 
 
-.kh-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }.kh-danhso-row { display: flex; flex-direction: column; gap: 2px; margin-bottom: 10px; align-items: flex-start; }
+.kh-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }.kh-danhso-row { display: flex; flex-direction: column; gap: 2px; margin-bottom: 16px; align-items: flex-start; }
   .kh-danhso-row .kh-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 1px; min-width: 0; }
   .kh-danhso-row .kh-danhso { white-space: nowrap; flex-shrink: 0; }
   .kh-danhso-row .kh-line .kh-sep { margin: 0 6px; }
@@ -2551,7 +2551,7 @@ function renderCards(q='') {
         ${r.ma_sogcs ? `<span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span>` : ''}
         ${r.ma_sogcs && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}
         ${r.so_tbi ? `<span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}
-        ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><span style='font-size:13px;line-height:1;vertical-align:middle;margin-right:4px'>📲</span>${hi(phone,q)}</a>` : ''}${phone && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="event.stopPropagation();copyToClip('${esc(r.ma_khach_hang)}',this)" style="cursor:pointer"><span style='font-size:13px;line-height:1;vertical-align:middle;margin-right:4px'>📋</span>${hi(r.ma_khach_hang,q)}</span>` : ''}</span>` : ''}
+        ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><span style='font-size:13px;line-height:1;vertical-align:middle;margin-right:4px'>📞</span>${hi(phone,q)}</a>` : ''}${phone && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="event.stopPropagation();copyToClip('${esc(r.ma_khach_hang)}',this)" style="cursor:pointer"><span style='font-size:13px;line-height:1;vertical-align:middle;margin-right:4px'>🏷️</span>${hi(r.ma_khach_hang,q)}</span>` : ''}</span>` : ''}
       </div>
       ${r.abc ? `<div class="kh-abc-line"><span class="kh-abc"><span style='font-size:13px;line-height:1;vertical-align:middle;margin-right:4px'>🔤</span>${hi(r.abc,q)}</span></div>` : ''}
       <div class="kh-ghichu-row">
