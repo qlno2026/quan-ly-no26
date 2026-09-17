@@ -221,11 +221,11 @@ body.light-mode .kh-name { color: #2563eb; font-weight: 700; font-size: 16px; }
   @media (max-width: 639.98px) { body.light-mode .kh-name { font-size: 16px; } }
 body.light-mode .kh-ma-line, body.light-mode .kh-phone-line { color: #475569; font-weight: 500; font-size: 15px; }
 body.light-mode .kh-ma { color: var(--vien-fg) !important; font-weight: var(--vien-weight) !important; font-size: 16px; background: var(--vien-bg); border: 1px solid var(--vien-vien); padding: 0 var(--vien-pad-x); border-radius: var(--vien-radius); }
-body.light-mode .kh-danhso { color: var(--vien-fg) !important; font-weight: var(--vien-weight) !important; font-size: 16px; background: none; border: none; padding: 0; border-radius: 0; }
+body.light-mode .kh-danhso { color: var(--vien-fg) !important; font-weight: var(--vien-weight) !important; font-size: 16px; background: #e8f1fd; border: none; padding: 0 var(--vien-pad-x); border-radius: var(--vien-radius); }
 body.light-mode .kh-sogcs { color: #334155; font-weight: 500; font-size: 16px; }
 body.light-mode .kh-phone { color: var(--vien-fg) !important; font-weight: var(--vien-weight); font-size: 16px; text-decoration: none !important; background: var(--vien-sdt-bg); border: 1px solid var(--vien-sdt-vien); padding: 0 var(--vien-pad-x); border-radius: var(--vien-radius); }
 body:not(.light-mode) .kh-ma { background: var(--vien-bg); border: 1px solid var(--vien-vien); padding: 0 var(--vien-pad-x); border-radius: var(--vien-radius); color: var(--vien-fg) !important; font-weight: var(--vien-weight) !important; }
-body:not(.light-mode) .kh-danhso { background: none; border: none; padding: 0; border-radius: 0; color: var(--vien-fg) !important; font-weight: var(--vien-weight) !important; }
+body:not(.light-mode) .kh-danhso { background: rgba(59,130,246,0.14); border: none; padding: 0 var(--vien-pad-x); border-radius: var(--vien-radius); color: #d1d5db !important; font-weight: var(--vien-weight) !important; }
 body:not(.light-mode) .kh-phone { background: var(--vien-sdt-bg); border: 1px solid var(--vien-sdt-vien); padding: 0 var(--vien-pad-x); border-radius: var(--vien-radius); color: var(--vien-fg) !important; font-weight: var(--vien-weight) !important; }
 body.light-mode .kh-thang { color: #334155; font-weight: 500; font-size: 16px; }
 body.light-mode .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #3b82f6; text-underline-offset: 3px; text-decoration-thickness: 2px; }
@@ -666,7 +666,7 @@ body.light-mode .kh-card.highlighted-purple { background: #cfe3ff; border-color:
 
 .kh-ma-line { margin-bottom: 4px; }
 .kh-card-mid { display: flex; gap: 1px; flex-wrap: wrap; margin-bottom: 5px; align-items: center; }
-.kh-mid-row { display: flex; align-items: center; gap: 1px; flex: 0 0 100%; min-width: 0; flex-wrap: wrap; }
+.kh-mid-row { display: flex; align-items: center; gap: 1px; flex: 0 0 100%; min-width: 0; flex-wrap: wrap; margin-top: 0; }
 .kh-ma { font-family: 'Inter', sans-serif; font-size: 16px; color: #e2e8f0; font-weight: 400 !important; white-space: nowrap; }
 .kh-sogcs { font-family: 'Inter', sans-serif; font-size: 16px; color: #94a3b8; font-weight: 400; white-space: nowrap; }
 .kh-tbi { font-family: 'Inter', sans-serif; font-size: 16px; color: #94a3b8; font-weight: 400; white-space: nowrap; }
@@ -691,11 +691,12 @@ body:not(.light-mode) .kh-ghichu { color: #cbd5e1; border-color: #a855f7; }
   border-top: 1px dotted rgba(59,130,246,0.4);
 }
 .kh-ghichu-input {
-  flex: 1;
-  min-width: 80px;
+  flex: 0 1 150px;
+  width: 150px;
+  min-width: 90px;
   font-family: 'Inter', sans-serif;
   font-size: 15px;
-  color: #fb923c;
+  color: #60a5fa;
   background: #111827;
   border: none;
   border-bottom: 1px dotted #3b82f6;
@@ -709,7 +710,7 @@ body:not(.light-mode) .kh-ghichu { color: #cbd5e1; border-color: #a855f7; }
 }
 .kh-ghichu-input::placeholder { color: #3b82f6; opacity: 0.6; }
 .kh-ghichu-input:focus { border-bottom-color: #60a5fa; background: rgba(59,130,246,0.05); }
-body.light-mode .kh-ghichu-input { color: #111827; background: #ffffff; border-bottom-color: #2563eb; }
+body.light-mode .kh-ghichu-input { color: #2563eb; background: #ffffff; border-bottom-color: #2563eb; }
 body.light-mode .kh-ghichu-input::placeholder { color: #3b82f6; opacity: 0.6; }
 .ghi-chu-input { background: rgba(71,85,105,0.35); border: 1.5px solid #3b82f6; border-radius: 6px; padding: 8px 12px; color: #ffffff; font-size: 15px; font-weight: 400; font-family: 'Inter', sans-serif; width: 100%; min-width: 200px; outline: none; resize: vertical; }
 .ghi-chu-input::placeholder { color: #6b7280; opacity: 0.7; }
@@ -719,7 +720,7 @@ body.light-mode .ghi-chu-input::placeholder { color: #94a3b8; opacity: 0.65; }
 body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #94a3b8; }
 .ghi-chu-input:focus { border-color: #60a5fa; }
 
-.kh-addr-line { font-size: 16px; color: #94a3b8; font-weight: 400; margin-bottom: 6px; white-space: normal; word-wrap: break-word; }
+.kh-addr-line { font-size: 16px; color: #94a3b8; font-weight: 400; margin-bottom: 5px; white-space: normal; word-wrap: break-word; }
 
 .kh-card-bot { display: flex; justify-content: space-between; align-items: center; }
 .kh-nv { font-size: 16px; color: var(--text-dim); }
@@ -2543,20 +2544,19 @@ function renderCards(q='') {
           ${r.thang_no ? `<div class="kh-thang${r.thang_no.split(",").length >= 4 ? " multi-month" : ""}">${hi(shortMonths(r.thang_no),q)}${omShow ? ' (' + oldKind + ')' : ''}</div>` : (omShow ? `<div class="kh-thang">(${oldKind})</div>` : '')}
         </div>
       </div>
-      ${r.dia_chi ? `<div class="kh-addr-line"><svg class="addr-ico" width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" style="vertical-align:middle;margin-right:6px"><path d="M12 2C8.13 2 5 5.13 5 8.5c0 4.8 6.12 11.06 6.36 11.31.18.19.46.19.64 0 .24-.25 6.36-6.51 6.36-11.31C19 5.13 15.87 2 12 2zm0 9a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>${hi(trimDiaChi(r.dia_chi),q)}</div>` : ''}
-
       <div class="kh-card-mid">
-        ${r.danh_so ? `<span class="kh-danhso"><svg width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" style="vertical-align:middle;margin-right:4px"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H6V4h2v8l2.5-1.5L13 12V4h5v16z"/></svg>${hi(r.danh_so,q)}</span>` : ''}
+        ${r.danh_so ? `<span class="kh-danhso"><svg width="14" height="14" viewBox="0 0 24 24" fill="#60a5fa" style="vertical-align:middle;margin-right:4px"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/></svg>${hi(r.danh_so,q)}</span>` : ''}
         ${r.danh_so && r.ma_sogcs ? `<span class="kh-sep">-</span>` : ''}
         ${r.ma_sogcs ? `<span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span>` : ''}
         ${r.ma_sogcs && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}
         ${r.so_tbi ? `<span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}
+        ${r.dia_chi ? `<div class="kh-addr-line" style="flex:0 0 100%;margin-top:5px"><svg class="addr-ico" width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" style="vertical-align:middle;margin-right:6px"><path d="M12 2C8.13 2 5 5.13 5 8.5c0 4.8 6.12 11.06 6.36 11.31.18.19.46.19.64 0 .24-.25 6.36-6.51 6.36-11.31C19 5.13 15.87 2 12 2zm0 9a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>${hi(trimDiaChi(r.dia_chi),q)}</div>` : ''}
         ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg width="14" height="14" viewBox="0 0 24 24" fill="#ef4444" style="vertical-align:middle;margin-right:4px"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>${hi(phone,q)}</a>` : ''}${phone && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="event.stopPropagation();copyToClip('${esc(r.ma_khach_hang)}',this)" style="cursor:pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="#f59e0b" style="vertical-align:middle;margin-right:4px"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>${hi(r.ma_khach_hang,q)}</span>` : ''}</span>` : ''}
       </div>
-      ${r.abc ? `<div class="kh-abc-line"><span class="kh-abc"><svg width="13" height="13" viewBox="0 0 24 24" fill="#3b82f6" style="vertical-align:middle;margin-right:4px"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>${hi(r.abc,q)}</span></div>` : ''}
       <div class="kh-ghichu-row">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;flex-shrink:0"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
         <input type="text" class="kh-ghichu-input" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" oninput="saveGhiChu(this)" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()" onpointerdown="event.stopPropagation()" onpointerup="event.stopPropagation()">
+        ${r.abc ? `<span style="margin-left:8px;display:flex;align-items:center;gap:4px;flex-shrink:0;min-width:0"><svg width="13" height="13" viewBox="0 0 24 24" fill="#3b82f6" style="vertical-align:middle"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg><span class="kh-abc" style="font-size:16px">${hi(r.abc,q)}</span></span>` : ''}
       </div>
     </div>`;
   }).join('');
