@@ -211,7 +211,10 @@ body.light-mode .export-btn { background: #eef2ff; border-color: #c7d2fe; color:
    (trước đây ô lọc là xám #e2e8f0 còn ô tìm kiếm là #eef2ff — hai hệ màu khác nhau). */
 body.light-mode .filter-row select, body.light-mode .filter-select { color: #000000; background: #eef2ff; border: 1px solid #c7d2fe; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='%235b6777'%3E%3Cpath d='M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
 body.light-mode .nhom-dropdown { background: #ffffff !important; border-color: #cbd5e1 !important; }
-.nhom-option { font-weight: 400 !important; font-size: 16px !important; }
+/* font-size ở đây có !important nên ĐÈ mọi inline font-size của các .nhom-option
+   (markup + chuỗi innerHTML trong JS). Đổi cỡ chữ dropdown phải sửa CẢ 2 nơi:
+   rule này, và 10 chỗ inline `font-size:18px` trong markup/JS. */
+.nhom-option { font-weight: 500 !important; font-size: 18px !important; }
 body.light-mode .nhom-option { color: #000000 !important; border-bottom: 1px solid #94a3b8 !important; background: #ffffff !important; }
 body.light-mode .nhom-option:hover { background: rgba(59,130,246,0.1) !important; }
 body.light-mode .rainbow-border { border-color: #dc2626; }
@@ -303,7 +306,9 @@ body.light-mode .info-row:nth-child(10) .info-value { color: #334155 !important;
 body.light-mode .modal-header h2 { color: #000000 !important; }
 body:not(.light-mode) .modal-header h2 { font-weight: 300 !important; }
 body.light-mode .call-link { background: rgba(16,185,129,0.15); color: #166534; }
-body.light-mode .table-view th { background: #d1d5db; color: #000000; border-color: #d1d5db; position: sticky; top: 0; z-index: 10; }
+body.light-mode .table-view th { background: #d1d5db; color: #000000; border-color: #d1d5db; }
+/* `position`/`top`/`z-index` của th KHÔNG còn khai ở đây — đã chuyển sang rule chung
+   `.table-view thead th` (không theo theme) ngay cạnh `table thead th`. */
 
 body.light-mode .table-view th.sorted { color: #2563eb !important; border-bottom: 2px solid #2563eb !important; }
 body.light-mode .table-view td { border-color: #94a3b8; color: #334155; border-bottom: 1px solid #94a3b8; }
@@ -367,10 +372,12 @@ body.light-mode .count-tien.mid { color: #b45309; }
 .main { padding: 0 8px calc(100px + env(safe-area-inset-bottom, 0px)); max-width: 1400px; margin: 0 auto; }
 
 .toolbar-top { display: flex; flex-wrap: wrap; gap: 0; padding: 0; margin-bottom: 0; align-items: stretch; }
-.search-export-row { display: flex; gap: 6px; align-items: center; flex: 1 1 100%; min-width: 0; margin-bottom: 4px; }
+/* margin-bottom: 0 — khoảng cách dọc giữa hàng tìm kiếm và hàng lọc do `gap` của
+   .toolbar-top quyết định (2px), không cộng thêm margin ở đây nữa. */
+.search-export-row { display: flex; gap: 6px; align-items: center; flex: 1 1 100%; min-width: 0; margin-bottom: 0; }
 .toolbar-top .search-box { flex: 1; min-width: 0; margin-top: 4px; }
 .toolbar-top .filter-row { width: calc(50% - 3px); min-width: 0; margin-bottom: 0; }
-#exportBtn { flex: 0 0 42px; align-self: center; }
+#exportBtn { flex: 0 0 auto; align-self: flex-end; margin-bottom: 4px; }
 /* desktop media query moved to later in file */
 
 /* ── WELCOME ────────────────────────────── */
@@ -527,7 +534,8 @@ body.light-mode .count-tien.mid { color: #b45309; }
   padding: 8px 12px 8px 40px;
   height: 42px;
   color: var(--text);
-  font-size: 17px;
+  font-size: 18px;
+  font-weight: 500;
   font-family: 'Inter', sans-serif;
   outline: none;
   transition: border-color 0.2s;
@@ -545,9 +553,10 @@ body.light-mode .count-tien.mid { color: #b45309; }
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 42px;
-  height: 42px;
-  padding: 0;
+  width: auto;                          /* có nhãn “Xuất” → bề rộng theo nội dung (trước là 40px) */
+  height: 40px;
+  padding: 0 12px;                      /* trước là `padding: 0` khi nút còn vuông 40×40 */
+  gap: 6px;                             /* icon ↔ nhãn */
   background: rgba(71,85,105,0.35);
   border: 1px solid var(--ctl-vien);
   border-radius: 10px;
@@ -556,6 +565,11 @@ body.light-mode .count-tien.mid { color: #b45309; }
   outline: none;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
+.export-btn svg { flex: 0 0 auto; }     /* icon không được co lại khi hàng chật */
+/* Nhãn chữ trong nút: cỡ RIÊNG của nút này — nhỏ hơn `.count-info` (17px) và nhỏ hơn
+   control thanh công cụ (18px) để không tranh chấp thị giác với số tiền bên trái.
+   Màu thừa hưởng `color` của `.export-btn` (dark `var(--text-dim)`, light `#475569`). */
+.export-btn-label { font-size: 15px; font-weight: 500; line-height: 1; white-space: nowrap; }
 @media (hover: hover) {
   .export-btn:hover { border-color: #3b82f6; color: #ffffff; background: rgba(59,130,246,0.16); }
 }
@@ -595,8 +609,8 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
   /* 42px cho bằng ô tìm kiếm và hàng nút sắp xếp (trước là 38px → hàng lọc thấp hơn 4px) */
   height: 42px;
   color: var(--text);
-  font-size: 17px;
-  font-weight: 400;
+  font-size: 18px;
+  font-weight: 500;
   font-family: 'Inter', sans-serif;
   outline: none;
   cursor: pointer;
@@ -620,7 +634,8 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
 }
 
 /* Sort quick-buttons */
-.sort-row { display: flex; gap: 2px; margin-top: 0; background: rgba(15,23,42,0.6); border-radius: 10px; padding: 1px; }
+/* gap: 2px 4px = dọc 2px, NGANG 4px (khoảng cách giữa 4 nút). */
+.sort-row { display: flex; gap: 2px 4px; margin-top: 0; background: rgba(15,23,42,0.6); border-radius: 10px; padding: 1px; }
 .sort-btn {
   flex: 1;
   display: flex;
@@ -635,8 +650,8 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
   padding: 6px 4px;
   white-space: nowrap;
   color: rgba(255,255,255,0.55);
-  font-size: 15px;   /* thấp hơn ô tìm kiếm/ô lọc (16px) để hàng sắp xếp đọc là cấp phụ */
-  font-weight: 400;
+  font-size: 18px;   /* cùng cỡ 18px với ô tìm kiếm và 2 ô lọc (yêu cầu người dùng) */
+  font-weight: 500;
   font-family: 'Inter', sans-serif;
   cursor: pointer;
   transition: border-color 0.2s, background-color 0.2s, color 0.2s;
@@ -686,7 +701,7 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
   font-weight: 600;
 }
 .nhom-sel-name {
-  font-weight: 400;
+  font-weight: 500;
   color: var(--text);
 }
 body.light-mode .nhom-sel-name {
@@ -704,12 +719,37 @@ body.light-mode .nhom-sel-name {
   color: var(--text-dim);
   font-weight: 500;
   padding: 0 2px;
-  margin-top: 8px;
-  padding-top: 8px;
+  /* track sắp xếp → hàng kẻ = **4px TỔNG CỘNG**, gồm 2 phần:
+       1px  = `border-bottom` của `.toolbar`
+     + 3px  = `margin-top` này
+     ĐỪNG đổi thành 4px: `.sort-row` là con của `.toolbar`, còn `.count-info` là con của
+     `main`, nên 1px viền của `.toolbar` nằm CHEN GIỮA hai thứ đó — muốn tổng là 4px thì
+     margin phải là 3px. */
+  margin-top: 3px;
+  padding-top: 4px;                     /* hàng kẻ → chữ "Tổng" ĐÚNG 4px (trước là 8px).
+                                           Đo bằng: `line1.top - (.count-info.top + border-top-width)` */
   border-top: 1px solid rgba(255,255,255,0.1);
 }
 
 .count-info span { font-weight: 500; }
+/* Dòng 1: số KH / số HĐ · Dòng 2: tổng tiền bên trái, nút xuất file sát mép phải.
+   Hàng 2 cao ĐÚNG 29px = dòng chữ 21px + 4px×2, nên chữ tiền cách dòng 1 đúng 4px.
+   Chốt cứng chiều cao hàng là để nút KHÔNG tự quyết định chiều cao hàng nữa.
+   Nút 40px > hàng 29px nên KHÔNG căn giữa: `align-self: flex-end` + `margin-bottom: 4px`
+   neo ĐÁY nút ngang ĐÁY dòng chữ tiền → nút tràn 15px LÊN TRÊN (rơi vào khoảng trắng
+   bên phải dòng 1, không va chữ vì “Tổng … KH / … HĐ” ngắn) và tràn ĐÚNG 0px xuống dưới.
+   .count-info KHÔNG có margin-bottom → đáy dòng chữ tiền = mép trên thẻ đầu tiên, nên
+   chữ tiền cách thẻ đầu tiên đúng 4px (4px đó là phần dòng chữ canh giữa trong hàng 29px).
+   ⚠️ ĐỔI CỠ CHỮ dòng tổng thì số 29 này sai ngay — phải đo lại (21px chính là
+   chiều cao dòng chữ hiện tại). ⚠️ Nút cao hơn 29px thì phải chỉnh `margin-bottom`
+   tương ứng, nếu không đáy nút lòi xuống chạm thẻ đầu tiên. */
+.count-line2 { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 0; height: 29px; }
+/* "Tiền" là NHÃN chứ không phải số → thừa hưởng `color: var(--text-dim)` của
+   `.count-info`, y hệt "Tổng"/"KH"/"HĐ" ở dòng 1; số vẫn đỏ qua `.count-tien`.
+   ⚠️ Phải BỌC nhãn + số vào `.count-tien-wrap`: `.count-line2` dùng `justify-content:
+   space-between` với ĐÚNG 2 con — thêm một con thứ ba là nút xuất file bị đẩy vào giữa.
+   `align-items: baseline` để hai chữ khác cỡ vẫn ngồi chung một dòng cơ sở. */
+.count-tien-wrap { display: inline-flex; align-items: baseline; gap: 4px; }
 .count-info .count-kh-hd { color: #60a5fa; }
 .count-info .count-tien { color: #ff8888; font-weight: 500; }
 /* Số tổng đổi màu theo quy mô: <100tr xanh · 100tr–1tỷ vàng · ≥1tỷ đỏ (mặc định) */
@@ -858,6 +898,23 @@ body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
 
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; position: relative; } .table-scroll table { overflow: visible; }
 table thead th { position: relative; overflow: visible; }
+/* Ghim header bảng — khai MỘT LẦN, KHÔNG theo theme.
+   Trước đây CHỈ `body.light-mode .table-view th` có `position: sticky; top: 0; z-index: 10`,
+   còn dark thừa hưởng `position: relative` từ `table thead th` ở trên → dark và light khác
+   nhau về HÀNH VI dù hình học y hệt (đúng loại lệch mà mục HỢP ĐỒNG ở trên cấm).
+   Specificity của rule này (0,1,2) > (0,0,3) của `table thead th` nên nó thắng rule nền.
+   `position: sticky` KHÔNG đổi layout (khác `absolute`/`fixed`: phần tử vẫn nằm trong flow),
+   và `top: 0` chỉ dịch chuyển khi scroll container cuộn → hình học giống hệt `relative`.
+   ⚠️ ĐO ĐƯỢC: `sticky` ở đây KHÔNG ghim thật, ở CẢ HAI theme — scroll container gần nhất là
+   `.table-scroll` (`overflow-x: auto` nên `overflow-y` tính thành `auto`) nhưng nó KHÔNG
+   cuộn dọc được (`scrollHeight == clientHeight == 1718`, đặt `scrollTop = 400` bị từ chối
+   về 0), và cuộn TRANG thì th header đi theo trang (270px → −529px) chứ không đứng lại.
+   Trước đây light “có ghim” còn dark “không” — thực ra cả hai đều không ghim, nên lệch
+   theme này là lệch VÔ HÌNH, không ai thấy.
+   Muốn ghim THẬT thì phải cho `.table-scroll` một `max-height` + `overflow-y: auto`
+   (bảng thành vùng cuộn nội bộ — thay đổi UX, cần người dùng quyết) — sửa ở đó thì rule
+   này tự động đúng cho CẢ HAI theme, không phải sửa thêm gì. */
+.table-view thead th { position: sticky; top: 0; z-index: 10; }
 table thead tr { background: transparent; }
 
 table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -1259,10 +1316,10 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
 
 /* Mobile-only refinements */
 @media (max-width: 639.98px) {
-  .filter-select { font-size: 16px; padding-top: 6px; padding-bottom: 6px; }
-  .sort-btn { font-size: 15px; }
+  .filter-select { font-size: 18px; padding-top: 6px; padding-bottom: 6px; }
+  .sort-btn { font-size: 18px; }
   .tab-btn { font-size: 16px; }
-  .search-box input { font-size: 16px; }
+  .search-box input { font-size: 18px; }
   .kh-name { font-size: 17px; }
   .kh-tien { font-size: 17px; }
   .kh-danhso { font-size: 16px; }
@@ -1274,15 +1331,33 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
   .page-btn { width: 34px; height: 34px; font-size: 14px; }
   .page-btns { flex-wrap: wrap; justify-content: center; }
 
-  .toolbar-top { display: flex; flex-wrap: wrap; gap: 0; padding: 2px 0; align-items: center; }
-  body:not(.light-mode) .toolbar-top { padding-top: 2px; }
+  /* gap: 2px 4px = DỌC 2px (hàng tìm kiếm ↔ hàng lọc), NGANG 4px (giữa 2 ô lọc),
+     đồng nhất với .sort-row. 2 ô lọc khai flex-basis calc(50% - 2px) để
+     2×(50%−2px) + 4px = 100%, vừa khít không lệch. Đổi column-gap thì PHẢI đổi
+     flex-basis theo cùng một nửa hiệu số, nếu không hàng sẽ hụt hoặc tràn. */
+  /* padding-top 4px = khoảng hở giữa header xanh và ô tìm kiếm khi xem trên điện thoại.
+     Lịch sử: 2px → 8px → 14px → **4px** (hạ xuống 4px theo yêu cầu, cùng giá trị với desktop).
+     CHỈ khai ở đỉnh, GIỮ đáy 2px — đáy chính là khoảng cách hàng lọc ↔ track nút sắp
+     xếp, đừng gộp thành `padding: 4px 0`. */
+  .toolbar-top { display: flex; flex-wrap: wrap; gap: 2px 4px; padding: 4px 0 2px; align-items: center; }
+  /* Đã bỏ `body:not(.light-mode) .toolbar-top { padding-top: 2px }`: nó có độ ưu tiên
+     cao hơn rule .toolbar-top ngay trên nên ở dark sẽ đè padding-top → light 8px /
+     dark 2px. Bỏ đi để CẢ HAI theme cùng thừa hưởng một khai báo duy nhất. */
   body:not(.light-mode) .toolbar-top .search-box { margin-top: 0; }
   .search-export-row { flex: 0 0 100%; }
-  .toolbar-top .filter-row { flex: 0 0 calc(50% - 1px); min-width: 0; padding: 0; }
+  .toolbar-top .filter-row { flex: 0 0 calc(50% - 2px); min-width: 0; padding: 0; }
   .filter-select { flex: 1; min-width: 0; }
 
   .modal-close { padding: 10px 12px; font-size: 18px; }
   .modal { padding-bottom: env(safe-area-inset-bottom, 0px); }
+}
+
+/* Hàng nút sắp xếp ở cỡ chữ 18px + column-gap 4px cần tối thiểu ~373px cho 4 nút;
+   dưới ngưỡng này cho xuống 2 hàng (2 nút/hàng) thay vì để nút "Tên KH" bị cắt ở mép
+   phải. Trước đây (15px, gap 2px) chỉ cần ~322px nên chưa lộ vấn đề này. */
+@media (max-width: 393.98px) {
+  .sort-row { flex-wrap: wrap; }
+  .sort-btn { flex: 1 1 calc(50% - 2px); }
 }
 
 /* Desktop: table */
@@ -1292,20 +1367,30 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
   .main { padding: 0 20px 40px; }
   .stats-row { grid-template-columns: repeat(3, 1fr); gap: 14px; }
   .stat-card:first-child { grid-column: auto; }
-  .toolbar { flex-direction: column; gap: 4px; padding-top: 6px; }
-  /* khoảng đệm này phải giống nhau ở cả 2 theme (xem HỢP ĐỒNG ở mục LIGHT MODE) */
+  /* `.toolbar` cố ý KHÔNG có `padding-top` — xem khối comment ngay dưới. */
+  .toolbar { flex-direction: column; gap: 2px; }
+  /* Khoảng hở header xanh ↔ ô tìm kiếm khai MỘT NƠI DUY NHẤT, giống hệt mobile:
+     `padding-top` của `.toolbar-top` = **4px** (mobile cũng 4px, chỉ khác là khai bằng
+     shorthand `padding: 4px 0 2px`).
+     Lịch sử: trước đây khoảng hở này là **tổng của 2 số** — `.toolbar` `padding-top: 6px`
+     + `.toolbar-top` `padding-top: 4px` = **10px**, tức desktop HẸP HƠN mobile 4px, và
+     con số `4px` ở đây rất dễ bị đọc nhầm thành "khoảng hở header". Sau đó gộp về một chỗ
+     rồi nâng lên 14px cho khớp mobile, cuối cùng hạ CẢ HAI breakpoint xuống **4px**.
+     ⚠️ KHÔNG theme nào được khai lại `padding-top` ở đây (xem HỢP ĐỒNG ở mục LIGHT MODE).
+     Đổi giá trị này thì chiều cao thanh công cụ đổi theo, nhưng `updateToolbar()` đo lúc
+     chạy nên tự đúng — không có hằng số nào cần sửa. */
   .toolbar-top { padding-top: 4px; }
   .search-box { width: 100%; }
   .search-export-row { flex: 1 1 auto; }
-  .toolbar-top { display: flex; flex-wrap: wrap; gap: 2px; align-items: stretch; }
+  .toolbar-top { display: flex; flex-wrap: wrap; gap: 2px 4px; align-items: stretch; }
   .toolbar-top .search-box { flex: 2; min-width: 0; margin-top: 0; }
-  .toolbar-top .search-box input { font-size: 16px; }
+  .toolbar-top .search-box input { font-size: 18px; }
   .filter-row { flex: 1 1 0; min-width: 0; gap: 4px; }
-  .filter-select { flex: 1; min-width: 0; font-size: 16px; }
-  .sort-row { flex: 1; gap: 2px; width: 100%; }
-  .sort-btn { padding: 10px 12px; font-size: 15px; flex: 1; }
+  .filter-select { flex: 1; min-width: 0; font-size: 18px; }
+  .sort-row { flex: 1; gap: 2px 4px; width: 100%; }
+  .sort-btn { padding: 10px 12px; font-size: 18px; flex: 1; }
   .sort-btn .sort-arrow { width: 14px; height: 14px; }
-  .sort-label { font-size: 17px; }
+  .sort-label { font-size: 18px; }
   .tab-nav { flex: 3; min-width: 0; display: flex; gap: 1px; }
   .tab-btn { flex: 1; padding: 5px 6px; font-size: 16px; font-weight: 400; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .header-sub { max-width: 300px; }
@@ -1496,14 +1581,13 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
             <input type="text" id="searchInput" placeholder="Tìm tên, mã KH, SĐT, địa chỉ..." oninput="handleSearch()" autocomplete="off" autocorrect="off" autocapitalize="off">
             <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
           </div>
-          <button id="exportBtn" class="export-btn" onclick="exportExcel()" title="Xuất file Excel" aria-label="Xuất file Excel"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg></button>
         </div>
         <div class="filter-row" style="position:relative;">
           <div class="filter-select" id="filterNhomBtn" onclick="toggleNhomDropdown()" style="display:flex;align-items:center;gap:4px;cursor:pointer;position:relative">
             <span id="filterNhomLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> DS nhóm</span>
           </div>
           <div class="nhom-dropdown" id="nhomDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
-            <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> DS nhóm</div>
+            <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> DS nhóm</div>
           </div>
           <input type="hidden" id="filterNhom" value="">
         </div>
@@ -1512,14 +1596,14 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
             <span id="filterLoaiLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Chi tiết nợ</span>
           </div>
           <div class="nhom-dropdown" id="loaiDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
-            <div class="nhom-option" data-val="" onclick="selectLoai('')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Chi tiết nợ</div>
-            <div class="nhom-option" data-val="old" onclick="selectLoai('old')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Nợ ≥ 3Tr</div>
-            <div class="nhom-option" data-val="1tr" onclick="selectLoai('1tr')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Nợ 1Tr đến 3Tr</div>
-            <div class="nhom-option" data-val="oldky" onclick="selectLoai('oldky')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Nợ cũ, nhiều kỳ</div>
-            <div class="nhom-option" data-val="summary" onclick="selectLoai('summary')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Tổng hợp nợ</div>
-            <div class="nhom-option" data-val="marked" onclick="selectLoai('marked')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Chú ý</div>
-            <div class="nhom-option" data-val="called" onclick="selectLoai('called')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:#10b981">📞</span> KH đã gọi</div>
-            <div class="nhom-option" data-val="notcalled" onclick="selectLoai('notcalled')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:#ef4444">📱</span> KH chưa gọi</div>
+            <div class="nhom-option" data-val="" onclick="selectLoai('')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Chi tiết nợ</div>
+            <div class="nhom-option" data-val="old" onclick="selectLoai('old')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Nợ ≥ 3Tr</div>
+            <div class="nhom-option" data-val="1tr" onclick="selectLoai('1tr')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Nợ 1Tr đến 3Tr</div>
+            <div class="nhom-option" data-val="oldky" onclick="selectLoai('oldky')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Nợ cũ, nhiều kỳ</div>
+            <div class="nhom-option" data-val="summary" onclick="selectLoai('summary')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Tổng hợp nợ</div>
+            <div class="nhom-option" data-val="marked" onclick="selectLoai('marked')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Chú ý</div>
+            <div class="nhom-option" data-val="called" onclick="selectLoai('called')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:#10b981">📞</span> KH đã gọi</div>
+            <div class="nhom-option" data-val="notcalled" onclick="selectLoai('notcalled')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:#ef4444">📱</span> KH chưa gọi</div>
           </div>
           <input type="hidden" id="filterLoai" value="">
         </div>
@@ -1541,8 +1625,12 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
       </div>
     </div>
 
-    <div class="count-info" style="margin-bottom:10px">
-      Tổng <span id="countKH" class="count-kh-hd">0</span> KH / <span id="countHoaDon" class="count-kh-hd">0</span> HĐ - <span id="countTongTien" class="count-tien low">0đ</span>
+    <div class="count-info">
+      <div class="count-line1">Tổng <span id="countKH" class="count-kh-hd">0</span> KH / <span id="countHoaDon" class="count-kh-hd">0</span> HĐ</div>
+      <div class="count-line2">
+        <span class="count-tien-wrap"><span class="count-tien-label">Tiền</span> <span id="countTongTien" class="count-tien low">0đ</span></span>
+        <button id="exportBtn" class="export-btn" onclick="exportExcel()" title="Xuất file Excel" aria-label="Xuất file Excel"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg><span class="export-btn-label">Xuất</span></button>
+      </div>
     </div>
 
 
@@ -2441,7 +2529,7 @@ function initFilters() {
   const nhomSet = [...new Set(allData.map(r=>r.ma_nhom).filter(Boolean))].sort();
   const dd = document.getElementById('nhomDropdown');
   // keep the first option (Tất cả)
-  dd.innerHTML = '<div class="nhom-option" data-val="" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none" onmouseenter="this.style.background=\'rgba(59,130,246,0.15)\'" onmouseleave="this.style.background=\'\'" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> DS nhóm</div>';
+  dd.innerHTML = '<div class="nhom-option" data-val="" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none" onmouseenter="this.style.background=\'rgba(59,130,246,0.15)\'" onmouseleave="this.style.background=\'\'" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> DS nhóm</div>';
   nhomSet.forEach(v => {
     const d = document.createElement('div');
     d.className = 'nhom-option';
