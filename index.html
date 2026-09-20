@@ -45,6 +45,8 @@ body.light-mode {
   --vien-vien: #93b8e8;
   --vien-sdt-bg: #f0f6ff;
   --vien-sdt-vien: #93b8e8;
+  /* Chữ phụ trên nền sáng: #94a3b8 quá nhạt (~2.4:1) -> dùng xám đậm hơn (~5.4:1) */
+  --text-dim: #5b6777;
 }
 
 
@@ -204,13 +206,13 @@ body.light-mode .toolbar { background: #ffffff; border-bottom-color: #e2e8f0; pa
 body.light-mode .toolbar.stuck { box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
 body.light-mode .tab-btn { background: #3b82f6; color: #ffffff; border-color: #ffffff; font-weight: 400; }
 body.light-mode .tab-btn.active { background: #2563eb; color: #ffffff; border-color: #ffffff; box-shadow: 0 0 8px rgba(59,130,246,0.5); }
-body.light-mode .sort-btn { background: transparent; color: #6b7280; border-color: #cbd5e1; font-weight: 400; }
-body.light-mode .sort-btn:not(.active) .sort-arrow { color: #6b7280; }
+body.light-mode .sort-btn { background: transparent; color: #4b5563; border-color: #cbd5e1; font-weight: 400; }
+body.light-mode .sort-btn:not(.active) .sort-arrow { color: #4b5563; }
 body.light-mode .sort-row { background: #f3f4f6; border-radius: 10px; }
-body.light-mode #sortDanhSo { background: rgba(148,163,184,0.15); color: #6b7280; border-color: #cbd5e1; }
-body.light-mode #sortTienNo { background: rgba(148,163,184,0.15); color: #6b7280; border-color: #cbd5e1; }
-body.light-mode #sortSoGCS { background: rgba(148,163,184,0.15); color: #6b7280; border-color: #cbd5e1; }
-body.light-mode #sortTenKH { background: rgba(148,163,184,0.15); color: #6b7280; border-color: #cbd5e1; }
+body.light-mode #sortDanhSo { background: rgba(148,163,184,0.15); color: #4b5563; border-color: #cbd5e1; }
+body.light-mode #sortTienNo { background: rgba(148,163,184,0.15); color: #4b5563; border-color: #cbd5e1; }
+body.light-mode #sortSoGCS { background: rgba(148,163,184,0.15); color: #4b5563; border-color: #cbd5e1; }
+body.light-mode #sortTenKH { background: rgba(148,163,184,0.15); color: #4b5563; border-color: #cbd5e1; }
 body.light-mode #sortDanhSo.active { background: #1e40af; color: #ffffff; box-shadow: 0 0 4px rgba(59,130,246,0.35), 0 0 8px rgba(59,130,246,0.15); }
 body.light-mode #sortTienNo.active { background: #c2410c; color: #ffffff; box-shadow: 0 0 4px rgba(249,115,22,0.35), 0 0 8px rgba(249,115,22,0.15); }
 body.light-mode #sortSoGCS.active { background: #047857; color: #ffffff; box-shadow: 0 0 4px rgba(16,185,129,0.35), 0 0 8px rgba(16,185,129,0.15); }
@@ -234,7 +236,7 @@ body.light-mode .kh-address { color: #334155; font-weight: 500; font-size: 16px;
 body.light-mode .kh-addr-line { color: #334155; font-weight: 500; font-size: 16px; }
 body.light-mode .kh-ghichu { background: #f8fafc; border-color: #7e22ce; color: #334155; font-weight: 500; }
 body.light-mode .count-info { color: #334155; font-weight: 500; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e2e8f0; }
-body.light-mode .page-btn { background: #e2e5ea; border-color: #d1d5db; color: #6b7280; font-weight: 400; }
+body.light-mode .page-btn { background: #e2e5ea; border-color: #d1d5db; color: #4b5563; font-weight: 400; }
 body.light-mode .page-btn.active { background: #3b82f6; color: #ffffff; font-weight: 600; }
 body.light-mode .pagination { color: #9ca3af; background: #e8eaed; font-weight: 400; border-radius: 8px; margin: 0 8px; }
 body.light-mode .modal { background: #f0f1f4; }
@@ -248,16 +250,16 @@ body.light-mode .info-row { border-bottom-color: #e2e8f0; }
 body.light-mode .info-label { color: #64748b; }
 body.light-mode .info-value { color: #0f172a; font-weight: 500; }
 /* Lighter rows: STT(1), Số TBI(11) */
-body.light-mode .info-row:nth-child(1) .info-value, body.light-mode .info-row:nth-child(11) .info-value { color: #b0b8c4 !important; font-weight: 400 !important; }
+body.light-mode .info-row:nth-child(1) .info-value, body.light-mode .info-row:nth-child(11) .info-value { color: #475569 !important; font-weight: 400 !important; }
 /* Địa chỉ(4), Mã Số(5) - slightly brighter */
-body.light-mode .info-row:nth-child(4) .info-value, body.light-mode .info-row:nth-child(5) .info-value { color: #94a3b8 !important; font-weight: 400 !important; }
+body.light-mode .info-row:nth-child(4) .info-value, body.light-mode .info-row:nth-child(5) .info-value { color: #475569 !important; font-weight: 400 !important; }
 body.light-mode .info-row:nth-child(6) .info-value { color: #475569 !important; font-weight: 400 !important; }
 /* Mã KH(2), Tên KH(3), Tiền Nợ(8) - thinner */
 body.light-mode .info-row:nth-child(2) .info-value, body.light-mode .info-row:nth-child(2) .ma-kh { color: #475569 !important; font-weight: 400 !important; font-size: 15px !important; }
 body.light-mode .info-row:nth-child(3) .info-value { color: #111827 !important; font-weight: 400 !important; font-size: 15px !important; }
 body.light-mode .info-row:nth-child(8) .info-value { font-weight: 400 !important; font-size: 15px !important; }
-body.light-mode .info-row:nth-child(8) .info-value .tien-no.low { color: #16a34a !important; }
-body.light-mode .info-row:nth-child(8) .info-value .tien-no.high { color: #dc2626 !important; }
+body.light-mode .info-row:nth-child(8) .info-value .tien-no.low { color: #047857 !important; }
+body.light-mode .info-row:nth-child(8) .info-value .tien-no.high { color: #b91c1c !important; }
 /* Số TBI(10) - slightly darker */
 body.light-mode .info-row:nth-child(10) .info-value { color: #334155 !important; font-weight: 400 !important; }
 body.light-mode .modal-name, body.light-mode .modal-header h2 { color: #000000 !important; font-weight: 300 !important; font-size: 15px !important; }
@@ -274,13 +276,13 @@ body.light-mode .table-view td:nth-child(4).cell-addr { color: #475569 !importan
 body.light-mode .table-view td:nth-child(5).cell-dim { color: #475569 !important; font-weight: 400; }
 body.light-mode .table-view td:nth-child(6).cell-dim { color: #475569 !important; font-weight: 400; }
 body.light-mode .table-view td:nth-child(10).cell-dim { color: #475569 !important; font-weight: 400; }
-body.light-mode .table-view tr:hover { background: #172f4f; }
+body.light-mode .table-view tr:hover { background: #e8eefc; }
 body.light-mode .table-view .phone { color: #000000 !important; font-weight: 400; }
-body.light-mode .table-view .cell-ghi { color: #fb923c !important; font-weight: 400; }
+body.light-mode .table-view .cell-ghi { color: #c2410c !important; font-weight: 400; }
 body.light-mode .table-view .ghi-chu-table { color: #dc2626 !important; font-weight: 400; border: 1.5px solid #3b82f6 !important; font-size: 13px; }
 body.light-mode .table-view .tien-no { color: #ffa0a0 !important; font-weight: 400; }
 body.light-mode .table-view .cell-tenkh { color: #000000 !important; font-weight: 400; }
-body.light-mode .table-view .cell-abc { color: #94a3b8 !important; font-weight: 400; }
+body.light-mode .table-view .cell-abc { color: #475569 !important; font-weight: 400; }
 body.light-mode .table-view td.cell-old-ky { color: #c2410c !important; font-weight: 500; }
 body.light-mode .summary-wrap { background: #f8fafc; border-color: #cbd5e1; }
 body.light-mode .main { background: #ffffff; }
@@ -310,16 +312,16 @@ body.light-mode .summary-table .num-cell { font-size: 15px; font-weight: 500; }
 body.light-mode .summary-table .tien-no-cell { color: #c2410c; font-weight: 500; font-size: 15px; background: #e2e8f0 !important; }
 body.light-mode .tien-no { font-weight: 900; }
 body.light-mode .tien-no { color: #166534 !important; }
-body.light-mode .tien-no.high { color: #dc2626 !important; }
-body.light-mode .tien-no.low { color: #16a34a !important; }
+body.light-mode .tien-no.high { color: #b91c1c !important; }
+body.light-mode .tien-no.low { color: #047857 !important; }
 body.light-mode .tien-no.mid { color: #166534 !important; }
 body.light-mode .tien-no .mil-digit { color: #dc2626 !important; }
 body.light-mode .kh-tien { color: #b91c1c; font-weight: 700; font-size: 17px; }
 body.light-mode .kh-tien.high { font-weight: 500; }
 body.light-mode .kh-tien.low { font-weight: 500; }
-body.light-mode .kh-tien.high { color: #ef4444; font-weight: 600; }
-body.light-mode .kh-tien.low { color: #10b981; font-weight: 600; }
-body.light-mode .kh-tien .mil-digit { color: #ea580c; }
+body.light-mode .kh-tien.high { color: #b91c1c; font-weight: 600; }
+body.light-mode .kh-tien.low { color: #047857; font-weight: 600; }
+body.light-mode .kh-tien .mil-digit { color: #c2410c; }
 body.light-mode .count-kh-hd { color: #2563eb; font-weight: 500; }
 body.light-mode .count-tien { color: #dc2626; font-weight: 500; }
 
@@ -706,16 +708,16 @@ body:not(.light-mode) .kh-ghichu { color: #cbd5e1; border-color: #a855f7; }
   -webkit-user-select: text;
   user-select: text;
 }
-.kh-ghichu-input::placeholder { color: #3b82f6; opacity: 0.6; }
+.kh-ghichu-input::placeholder { color: #94a3b8; opacity: 1; }
 .kh-ghichu-input:focus { border-bottom-color: #60a5fa; background: rgba(59,130,246,0.05); }
 body.light-mode .kh-ghichu-input { color: #2563eb; background: #ffffff; border-bottom-color: #2563eb; }
-body.light-mode .kh-ghichu-input::placeholder { color: #3b82f6; opacity: 0.6; }
+body.light-mode .kh-ghichu-input::placeholder { color: #64748b; opacity: 1; }
 .ghi-chu-input { background: rgba(71,85,105,0.35); border: 1.5px solid #3b82f6; border-radius: 6px; padding: 8px 12px; color: #ffffff; font-size: 15px; font-weight: 400; font-family: 'Inter', sans-serif; width: 100%; min-width: 200px; outline: none; resize: vertical; }
-.ghi-chu-input::placeholder { color: #6b7280; opacity: 0.7; }
+.ghi-chu-input::placeholder { color: #94a3b8; opacity: 1; }
 .ghi-chu-input:not(:placeholder-shown) { color: #ffffff; }
-body.light-mode .ghi-chu-input { color: #94a3b8; background: #f1f5f9; border: 1.5px solid #3b82f6; font-size: 15px; font-weight: 400; }
-body.light-mode .ghi-chu-input::placeholder { color: #94a3b8; opacity: 0.65; }
-body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #94a3b8; }
+body.light-mode .ghi-chu-input { color: #1f2937; background: #f1f5f9; border: 1.5px solid #3b82f6; font-size: 15px; font-weight: 400; }
+body.light-mode .ghi-chu-input::placeholder { color: #64748b; opacity: 1; }
+body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
 .ghi-chu-input:focus { border-color: #60a5fa; }
 
 .kh-addr-line { font-size: 16px; color: #94a3b8; font-weight: 400; margin-bottom: 5px; white-space: normal; word-wrap: break-word; }
@@ -868,7 +870,7 @@ body.light-mode .kh-old-ky-line { color: #475569; }
   flex-wrap: wrap;
   gap: 8px;
 }
-.page-info { font-size: 14px; color: #b0bec5; }
+.page-info { font-size: 14px; color: var(--text-dim); }
 .page-btns { display: flex; gap: 4px; }
 .page-btn {
   width: 34px; height: 34px;
@@ -1096,9 +1098,9 @@ function changeBackgroundColor(newColor) {
 .info-label { font-size: 15px; font-weight: 400; font-family: 'Inter', sans-serif; letter-spacing: 0.03em; color: #b0bdd0; min-width: 100px; margin-top: 2px; flex-shrink: 0; }
 .info-value { font-size: 15px; color: var(--text); font-family: 'Inter', sans-serif; flex: 1; word-break: break-word; font-weight: 400; }
 /* Dark mode: muted rows - STT(1) */
-.info-row:nth-child(1) .info-value { color: #475569; font-weight: 400; }
+.info-row:nth-child(1) .info-value { color: #c8d0dc; font-weight: 400; }
 /* Địa chỉ(4), Mã Số(5) - muted */
-.info-row:nth-child(4) .info-value, .info-row:nth-child(5) .info-value { color: #64748b; font-weight: 400; }
+.info-row:nth-child(4) .info-value, .info-row:nth-child(5) .info-value { color: #a9b7c9; font-weight: 400; }
 .modal .info-row:last-child .badge { background: none; border: none; color: var(--text); font-weight: 400; padding: 0; }
 /* Mã KH(2) */
 .info-row:nth-child(2) .info-value, .info-row:nth-child(2) .ma-kh { color: #c8d0dc; font-weight: 400; font-size: 15px; }
