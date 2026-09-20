@@ -24,6 +24,9 @@
   --text-dim: #94a3b8;
   --border: rgba(255,255,255,0.08);
   --card: rgba(255,255,255,0.04);
+  /* Viền control của thanh công cụ (ô tìm kiếm, 2 ô lọc, nút xuất file).
+     --border (8% trắng) gần như vô hình trên nền toolbar nên control bị "phẳng". */
+  --ctl-vien: rgba(148,163,184,0.28);
   --radius: 12px;
   --header-h: 56px;
 
@@ -171,14 +174,18 @@ body {
    reflow toàn trang mỗi lần bật/tắt sáng-tối, và lệch cỡ chữ giữa 2 theme.
    Mọi rule trong media query cũng phải theo hợp đồng này. */
 body.light-mode {
-  background: #f8f9fa;
+  /* Nền trang tối hơn thẻ để thẻ trắng nổi lên; trước đây trang và thẻ cùng #f8f9fa
+     nên thẻ chỉ còn được nhận ra nhờ viền 1.56:1 (dưới ngưỡng 3:1). */
+  background: #e9eef5;
   color: #000000;
 }
 body.light-mode .header {
   background:
     linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0) 42%),
     linear-gradient(135deg, #1d4ed8, #1e3a8a);
-  border-bottom: none;
+  /* KHÔNG dùng border-bottom: none — bỏ 1px viền làm hộp nội dung cao thêm 1px và
+     các con (align-items: center) dịch đi 0.36px so với dark. Chỉ đổi màu viền. */
+  border-bottom-color: transparent;
   box-shadow: 0 3px 10px rgba(30,64,175,0.35);
 }
 body.light-mode .header-title { color: #ffffff; }
@@ -187,17 +194,22 @@ body.light-mode .logo-icon { display: none; }
 body.light-mode .upload-btn-header { background: transparent; color: #ffffff; border: none; }
 /* (đã bỏ rule box-shadow:none ở đây: cả 2 theme đều không dùng box-shadow cho nút này) */
 body.light-mode .toolbar-top .search-box { margin-top: 0; }
-body.light-mode .search-box { background: #eef2ff; border: none; border-radius: 10px; box-shadow: inset 0 0 0 1.5px #c7d2fe; }
+/* 1px cho bằng viền của 2 ô lọc và nút xuất file (trước là 1.5px → ô tìm kiếm dày hơn) */
+body.light-mode .search-box { background: #eef2ff; border: none; border-radius: 10px; box-shadow: inset 0 0 0 1px #c7d2fe; }
 /* giữ nguyên độ dày border 1px như dark (chỉ đổi màu → trong suốt):
    bỏ hẳn border sẽ đổi bề rộng nội tại của input, kéo theo chia lại flex của cả hàng */
 body.light-mode .search-box input { color: #1e293b; border-color: transparent; background: transparent; caret-color: #1e293b; }
 body.light-mode .search-box input::placeholder { color: #5b6777; }
 body.light-mode .search-box input:focus { border-color: transparent; outline: none; }
-body.light-mode .search-box:focus-within { border: none; border-radius: 10px; box-shadow: inset 0 0 0 1.5px #3b82f6; }
+body.light-mode .search-box:focus-within { border: none; border-radius: 10px; box-shadow: inset 0 0 0 1px #3b82f6; }
 body.light-mode .filter-row { background: transparent; }
-body.light-mode #filterLoaiBtn { border: 1.5px solid #3b82f6 !important; box-shadow: none !important; }
-body:not(.light-mode) #filterLoaiBtn { border: 1.5px solid #3b82f6 !important; box-shadow: none !important; }
-body.light-mode .filter-row select, body.light-mode .filter-select { color: #000000; background: #e2e8f0; border: 1px solid #cbd5e1; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+/* (đã bỏ 2 rule luôn tô viền xanh cho #filterLoaiBtn ở mọi theme — nó làm ô "Chi tiết nợ"
+   trông như đang được chọn trong khi ô "DS nhóm" thì không. Viền xanh giờ chỉ hiện khi
+   bộ lọc thực sự có giá trị, do selectLoai()/selectNhom() đặt.) */
+body.light-mode .export-btn { background: #eef2ff; border-color: #c7d2fe; color: #475569; }
+/* Cùng một bề mặt cho mọi control: nền xanh nhạt + viền tím nhạt, khớp với ô tìm kiếm
+   (trước đây ô lọc là xám #e2e8f0 còn ô tìm kiếm là #eef2ff — hai hệ màu khác nhau). */
+body.light-mode .filter-row select, body.light-mode .filter-select { color: #000000; background: #eef2ff; border: 1px solid #c7d2fe; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='%235b6777'%3E%3Cpath d='M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
 body.light-mode .nhom-dropdown { background: #ffffff !important; border-color: #cbd5e1 !important; }
 .nhom-option { font-weight: 400 !important; font-size: 16px !important; }
 body.light-mode .nhom-option { color: #000000 !important; border-bottom: 1px solid #94a3b8 !important; background: #ffffff !important; }
@@ -237,7 +249,9 @@ body.light-mode #sortDanhSo.active { background: #1e40af; color: #ffffff; box-sh
 body.light-mode #sortTienNo.active { background: #c2410c; color: #ffffff; box-shadow: 0 0 4px rgba(249,115,22,0.35), 0 0 8px rgba(249,115,22,0.15); }
 body.light-mode #sortSoGCS.active { background: #047857; color: #ffffff; box-shadow: 0 0 4px rgba(16,185,129,0.35), 0 0 8px rgba(16,185,129,0.15); }
 body.light-mode #sortTenKH.active { background: #5b21b6; color: #ffffff; box-shadow: 0 0 4px rgba(168,85,247,0.35), 0 0 8px rgba(168,85,247,0.15); }
-body.light-mode .kh-card { background: #f8f9fa; border: 1px solid #c5cad1; }
+/* Thẻ: nền trắng trên nền trang xám xanh, viền đủ đậm để phân định (3.1:1).
+   border-width vẫn 1px như dark — chỉ đổi màu, không đổi metric. */
+body.light-mode .kh-card { background: #ffffff; border: 1px solid #8593a6; box-shadow: 0 1px 3px rgba(15,23,42,0.08); }
 body.light-mode .kh-name { color: #2563eb; }
 body.light-mode .kh-ma-line, body.light-mode .kh-phone-line { color: #475569; }
 /* viên Mã KH / Danh Số / SĐT: chỉ đổi màu — cỡ chữ, padding, border-width,
@@ -267,7 +281,8 @@ body.light-mode .modal-body { color: #000000; }
 body.light-mode .modal-handle { background: rgba(0,0,0,0.15); }
 body.light-mode .modal-close { background: #e2e8f0; color: #334155; }
 body.light-mode .info-row { border-bottom-color: #e2e8f0; }
-body.light-mode .info-label { color: #64748b; }
+/* nhãn trong modal: #64748b trên nền #f0f1f4 chỉ đạt 4.21:1 (< 4.5) → dùng xám đậm hơn (~5.1:1) */
+body.light-mode .info-label { color: #5b6777; }
 body.light-mode .info-value { color: #0f172a; }
 /* Lighter rows: STT(1), Số TBI(11) */
 body.light-mode .info-row:nth-child(1) .info-value, body.light-mode .info-row:nth-child(11) .info-value { color: #475569 !important; }
@@ -277,7 +292,9 @@ body.light-mode .info-row:nth-child(6) .info-value { color: #475569 !important; 
 /* Mã KH(2), Tên KH(3), Tiền Nợ(8) */
 body.light-mode .info-row:nth-child(2) .info-value, body.light-mode .info-row:nth-child(2) .ma-kh { color: #475569 !important; }
 body.light-mode .info-row:nth-child(3) .info-value { color: #2563eb !important; }
-body.light-mode .info-row:nth-child(8) .info-value { }
+/* Ô Tiền nợ: rule nền là color #ffffff (dành cho dark); ở light phải đổi màu chữ,
+   nếu không mọi chữ nằm trực tiếp trong ô sẽ trắng trên nền sáng */
+body.light-mode .info-row:nth-child(8) .info-value { color: #0f172a; }
 body.light-mode .info-row:nth-child(8) .info-value .tien-no.low { color: #047857 !important; }
 body.light-mode .info-row:nth-child(8) .info-value .tien-no.high { color: #b91c1c !important; }
 /* Số TBI(10) - slightly darker */
@@ -503,7 +520,9 @@ body.light-mode .count-tien.mid { color: #b45309; }
 .search-box input {
   width: 100%;
   background: rgba(71,85,105,0.35);
-  border: 1px solid var(--border);
+  /* Viền dùng chung một màu cho MỌI control của thanh công cụ (xem --ctl-vien)
+     để ô tìm kiếm, 2 ô lọc và nút xuất file trông cùng một hệ. */
+  border: 1px solid var(--ctl-vien);
   border-radius: 10px;
   padding: 8px 12px 8px 40px;
   height: 42px;
@@ -518,7 +537,29 @@ body.light-mode .count-tien.mid { color: #b45309; }
 }
 .search-box input:focus { border: 1px solid #3b82f6; outline: none; }
 .search-box input::placeholder { color: #94a3b8; }
-.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 18px; pointer-events: none; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-dim); pointer-events: none; display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; }
+
+/* Nút xuất Excel: trước đây là emoji 📥 trôi tự do, không có bề mặt nút nào. */
+.export-btn {
+  display: none;                        /* JS bật bằng display:flex khi có dữ liệu */
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  background: rgba(71,85,105,0.35);
+  border: 1px solid var(--ctl-vien);
+  border-radius: 10px;
+  color: var(--text-dim);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+@media (hover: hover) {
+  .export-btn:hover { border-color: #3b82f6; color: #ffffff; background: rgba(59,130,246,0.16); }
+}
+.export-btn:active { background: rgba(59,130,246,0.28); }
 .search-clear {
   position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
   width: 20px; height: 20px; border-radius: 50%;
@@ -535,16 +576,24 @@ body.light-mode .search-clear:hover { background: rgba(239,68,68,0.2); color: #d
 body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
 
 .filter-row { display: flex; gap: 2px; }
+/* Chấm màu nhóm trong ô lọc (thay emoji) */
+.nhom-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; vertical-align: middle; }
+/* Ô lọc đang thực sự có giá trị: nền đậm hơn + viền accent. Dùng data-active thay vì
+   chỉ đổi viền, vì viền mặc định đã là màu accent nhạt — đổi mỗi viền thì không
+   phân biệt được với trạng thái chưa lọc. */
+.filter-select[data-active="1"] { border-color: #3b82f6; background-color: rgba(59,130,246,0.20); }
+body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; border-color: #2563eb; }
 .filter-select {
   flex: 1;
   /* `background` ở đây chứa mũi tên SVG data-URI: chỉ animate background-color
      để tránh raster lại ảnh mỗi frame khi đổi theme. */
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   background: rgba(71,85,105,0.35);
-  border: 1px solid transparent;
+  border: 1px solid var(--ctl-vien);
   border-radius: 10px;
   padding: 6px 4px;
-  height: 38px;
+  /* 42px cho bằng ô tìm kiếm và hàng nút sắp xếp (trước là 38px → hàng lọc thấp hơn 4px) */
+  height: 42px;
   color: var(--text);
   font-size: 17px;
   font-weight: 400;
@@ -552,7 +601,10 @@ body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
   outline: none;
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='%23e2e8f0'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  /* Mũi tên dropdown: chevron cùng họ với mũi tên sắp xếp (trước là hình tam giác
+     đặc), màu mờ đi để không sáng hơn chữ của chính nút. Data-URI không dùng được
+     currentColor nên phải ghi màu theo từng theme (xem rule light bên dưới). */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='%2394a3b8'%3E%3Cpath d='M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
   padding-right: 30px;
@@ -571,37 +623,44 @@ body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
 .sort-row { display: flex; gap: 2px; margin-top: 0; background: rgba(15,23,42,0.6); border-radius: 10px; padding: 1px; }
 .sort-btn {
   flex: 1;
-  padding: 6px 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.04);
+  /* viền dùng chung var(--ctl-vien) với ô tìm kiếm/ô lọc; trước đây là
+     rgba(255,255,255,0.04) nên gần như không thấy cạnh nút */
+  border: 1px solid var(--ctl-vien);
   border-radius: 8px;
   padding: 6px 4px;
   white-space: nowrap;
   color: rgba(255,255,255,0.55);
-  font-size: 17px;
+  font-size: 15px;   /* thấp hơn ô tìm kiếm/ô lọc (16px) để hàng sắp xếp đọc là cấp phụ */
   font-weight: 400;
   font-family: 'Inter', sans-serif;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   height: 42px;
 }
-.sort-btn .sort-arrow { font-size: 12px; color: var(--text-dim); }
+.sort-label { overflow: hidden; text-overflow: ellipsis; }
+/* Hộp cố định 13×13 cho mũi tên: glyph ↕/↓/↑ trước đây rộng 6px vs 10px nên mỗi lần
+   đổi cột sắp xếp là nhãn bị đẩy đi và cả hàng chia lại (flex:1). SVG cũng nét ở
+   mọi màn hình, không phụ thuộc font hệ thống. */
+.sort-btn .sort-arrow { width: 13px; height: 13px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text-dim); }
 .sort-btn.active { color: #ffffff; }
 .sort-btn.active .sort-arrow { color: #ffffff; }
+/* Bỏ quầng sáng 2 lớp của nút đang sắp xếp: nền đặc + viền cùng màu đã đủ nổi,
+   quầng neon làm hàng nút trông nặng nề. */
 #sortDanhSo { background: rgba(59,130,246,0.10); }
-#sortDanhSo.active { border-color: #3b82f6; background: #1e40af; box-shadow: 0 0 4px rgba(59,130,246,0.35), 0 0 8px rgba(59,130,246,0.15); }
+#sortDanhSo.active { border-color: #3b82f6; background: #1e40af; box-shadow: none; }
 #sortTienNo { background: rgba(194,65,12,0.10); }
-#sortTienNo.active { border-color: #f97316; background: #b45009; box-shadow: 0 0 4px rgba(249,115,22,0.35), 0 0 8px rgba(249,115,22,0.15); }
+#sortTienNo.active { border-color: #f97316; background: #b45009; box-shadow: none; }
 #sortSoGCS { background: rgba(2,100,70,0.10); }
-#sortSoGCS.active { border-color: #10b981; background: #026646; box-shadow: 0 0 4px rgba(16,185,129,0.35), 0 0 8px rgba(16,185,129,0.15); }
+#sortSoGCS.active { border-color: #10b981; background: #026646; box-shadow: none; }
 #sortTenKH { background: rgba(76,25,160,0.10); }
-#sortTenKH.active { border-color: #a855f7; background: #4c19a0; box-shadow: 0 0 4px rgba(168,85,247,0.35), 0 0 8px rgba(168,85,247,0.15); }
+#sortTenKH.active { border-color: #a855f7; background: #4c19a0; box-shadow: none; }
 .sort-btn:active { background: rgba(59,130,246,0.22); }
 
 /* Rainbow animation — muted tones, border + text synced */
@@ -661,8 +720,12 @@ body.light-mode .nhom-sel-name {
 .card-list { display: flex; flex-direction: column; gap: 6px; }
 
 .kh-card {
-  background: #1a2332;
-  border: 1px solid var(--border);
+  background: #1f2836;
+  /* Viền dùng màu riêng của thẻ, KHÔNG dùng --border (8% trắng): nền thẻ #1f2836
+     chỉ cách nền trang #111318 1.3:1 nên viền phải gánh việc phân định thẻ
+     (yêu cầu 3:1 cho biên của control — WCAG 1.4.11). */
+  border: 1px solid rgba(255,255,255,0.34);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.45);
   border-radius: 10px;
   padding: 10px 14px;
   cursor: pointer;
@@ -671,10 +734,26 @@ body.light-mode .nhom-sel-name {
   user-select: none;
 }
 .kh-card:active { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.16); }
-.kh-card.highlighted { background: rgba(251,191,110,0.03); border: 2px solid #fbbf24; box-shadow: none; }
-body.light-mode .kh-card.highlighted { background: rgba(251,191,110,0.08); border: 2px solid #d97706; box-shadow: none; }
-.kh-card.highlighted-purple { background: rgba(30,64,175,0.22); border-color: #00e5ff; border-width: 2px; box-shadow: none; }
-body.light-mode .kh-card.highlighted-purple { background: #cfe3ff; border-color: #1d4ed8; border-width: 2px; box-shadow: 0 0 0 2.5px rgba(29,78,216,0.20); }
+/* Nền thẻ đánh dấu phải ĐỤC (không dùng rgba): trước đây `rgba(251,191,110,0.03/.08)`
+   bị pha với nền TRANG chứ không phải nền thẻ, nên ở light mode thẻ "Chú ý" thành xám
+   #eaeaea lẫn vào nền trang (1.03:1), còn ở dark thành #18181b tối hơn cả thẻ thường.
+   Đo được ở light: tên 4.31 và tiền đỏ 4.02 (dưới 4.5), viền 2.65 (dưới 3). */
+.kh-card.highlighted { background: #2e2412; border: 2px solid #fbbf24; box-shadow: 0 1px 3px rgba(0,0,0,0.45); }
+body.light-mode .kh-card.highlighted { background: #fef3c7; border: 2px solid #b45309; box-shadow: 0 1px 3px rgba(146,64,14,0.25); }
+/* Trên nền vàng/xanh (đậm hơn trắng) chữ đỏ #dc2626 tụt xuống 4.34:1 → dùng #b91c1c;
+   tên KH #2563eb tụt xuống 4.64 ở nền vàng / 4.09 ở nền xanh → dùng #1d4ed8. */
+/* Tên KH trên thẻ: nền vàng là bổ sắc với xanh dương nên chữ xanh bị "bẩn" màu
+   (blue on amber) — dùng nâu đậm cùng họ với nền; nền xanh thì giữ chữ xanh đậm. */
+body.light-mode .kh-card.highlighted .kh-name { color: #422006; }
+body.light-mode .kh-card.highlighted-purple .kh-name { color: #1d4ed8; }
+body.light-mode .kh-card.highlighted .kh-tien,
+body.light-mode .kh-card.highlighted .kh-tien.high,
+body.light-mode .kh-card.highlighted .kh-tien .mil-digit,
+body.light-mode .kh-card.highlighted-purple .kh-tien,
+body.light-mode .kh-card.highlighted-purple .kh-tien.high,
+body.light-mode .kh-card.highlighted-purple .kh-tien .mil-digit { color: #b91c1c !important; }
+.kh-card.highlighted-purple { background: #17233f; border-color: #00e5ff; border-width: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.45); }
+body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color: #1d4ed8; border-width: 2px; box-shadow: 0 0 0 2.5px rgba(29,78,216,0.20); }
 
 
 .kh-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }.kh-danhso-row { display: flex; flex-direction: column; gap: 2px; margin-bottom: 16px; align-items: flex-start; }
@@ -741,11 +820,11 @@ body:not(.light-mode) .kh-ghichu { color: #cbd5e1; border-color: #a855f7; }
 body.light-mode .kh-ghichu-input { color: #2563eb; background: #ffffff; border: 1px solid #3b82f6; border-radius: 5px; }
 body.light-mode .kh-ghichu-input:focus { border-color: #1d4ed8; background: #f5f9ff; }
 body.light-mode .kh-ghichu-input::placeholder { color: #64748b; opacity: 1; }
-.ghi-chu-input { background: rgba(71,85,105,0.35); border: 1.5px solid #3b82f6; border-radius: 6px; padding: 8px 12px; color: #ffffff; font-size: 15px; font-weight: 400; font-family: 'Inter', sans-serif; width: 100%; min-width: 200px; outline: none; resize: vertical; }
+.ghi-chu-input { background: rgba(71,85,105,0.35); border: 1.5px solid #3b82f6; border-radius: 6px; padding: 8px 12px; color: #ffffff; font-size: 19px; font-weight: 400; font-family: 'Inter', sans-serif; width: 100%; min-width: 200px; outline: none; resize: vertical; }
 .ghi-chu-input::placeholder { color: #94a3b8; opacity: 1; }
 .ghi-chu-input:not(:placeholder-shown) { color: #ffffff; }
 body.light-mode .ghi-chu-input { color: #1f2937; background: #f1f5f9; border: 1.5px solid #3b82f6; }
-body.light-mode .ghi-chu-input::placeholder { color: #64748b; opacity: 1; }
+body.light-mode .ghi-chu-input::placeholder { color: #5b6777; opacity: 1; }
 body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
 .ghi-chu-input:focus { border-color: #60a5fa; }
 
@@ -1125,33 +1204,36 @@ function changeBackgroundColor(newColor) {
   align-items: flex-start;
 }
 .info-row:last-child { border-bottom: none; }
-.info-label { font-size: 15px; font-weight: 400; font-family: 'Inter', sans-serif; letter-spacing: 0.03em; color: #b0bdd0; min-width: 100px; margin-top: 2px; flex-shrink: 0; }
-.info-value { font-size: 15px; color: var(--text); font-family: 'Inter', sans-serif; flex: 1; word-break: break-word; font-weight: 400; }
+/* Cỡ chữ bảng trong modal: nhãn 18px, giá trị 19px, tên KH 22px (xem thêm các rule
+   nth-child bên dưới và các inline style trong showDetail — phải đổi cùng nhau) */
+.info-label { font-size: 18px; font-weight: 400; font-family: 'Inter', sans-serif; letter-spacing: 0.03em; color: #b0bdd0; min-width: 100px; margin-top: 2px; flex-shrink: 0; }
+.info-value { font-size: 19px; color: var(--text); font-family: 'Inter', sans-serif; flex: 1; word-break: break-word; font-weight: 400; }
 /* Dark mode: muted rows - STT(1) */
 .info-row:nth-child(1) .info-value { color: #c8d0dc; font-weight: 400; }
 /* Địa chỉ(4), Mã Số(5) - muted */
 .info-row:nth-child(4) .info-value, .info-row:nth-child(5) .info-value { color: #a9b7c9; font-weight: 400; }
 .modal .info-row:last-child .badge { background: none; border: none; color: var(--text); font-weight: 400; padding: 0; }
 /* Mã KH(2) */
-.info-row:nth-child(2) .info-value, .info-row:nth-child(2) .ma-kh { color: #c8d0dc; font-weight: 400; font-size: 15px; }
+.info-row:nth-child(2) .info-value, .info-row:nth-child(2) .ma-kh { color: #c8d0dc; font-weight: 400; font-size: 19px; }
 /* Tên KH(3) */
-.info-row:nth-child(3) .info-value { font-size: 17px; font-weight: 600; color: #60a5fa; letter-spacing: 0.02em; }
+.info-row:nth-child(3) .info-value { font-size: 22px; font-weight: 600; color: #60a5fa; letter-spacing: 0.02em; }
 /* Tháng(7) */
-.info-row:nth-child(7) .info-value { font-size: 15px; font-weight: 400; }
-.info-row:nth-child(7) .info-value .badge { font-size: 15px; font-weight: 400; }
+.info-row:nth-child(7) .info-value { font-size: 19px; font-weight: 400; }
+.info-row:nth-child(7) .info-value .badge { font-size: 19px; font-weight: 400; }
 /* Tiền Nợ(8) */
-.info-row:nth-child(8) .info-value { color: #ffffff; font-weight: 400; font-size: 15px; }
+.info-row:nth-child(8) .info-value { color: #ffffff; font-weight: 400; font-size: 19px; }
 .info-row:nth-child(8) .info-value .tien-no.low { color: #86efac; }
 .info-row:nth-child(8) .info-value .tien-no.high { color: #ff8888; }
 .info-row:nth-child(8) .info-value .tien-no { font-weight: 400; }
-.modal .info-row .tien-no { font-weight: 400; }
+/* Tiền nợ trong modal: rule nền toàn cục là 15px, phải nâng theo cỡ giá trị của modal */
+.modal .info-row .tien-no { font-size: 19px; font-weight: 400; }
 /* Mã Số GCS(5), Danh Số(6), Số TBI(10), Ghi Chú(11) */
-.info-row:nth-child(5) .info-value { font-size: 15px; font-weight: 400; }
-.info-row:nth-child(6) .info-value { font-size: 15px; font-weight: 400; color: #c8d0dc; }
-.info-row:nth-child(10) .info-value { color: #c8d0dc; font-weight: 400; font-size: 15px; }
-.info-row:nth-child(11) .info-value { font-size: 15px; font-weight: 400; }
+.info-row:nth-child(5) .info-value { font-size: 19px; font-weight: 400; }
+.info-row:nth-child(6) .info-value { font-size: 19px; font-weight: 400; color: #c8d0dc; }
+.info-row:nth-child(10) .info-value { color: #c8d0dc; font-weight: 400; font-size: 19px; }
+.info-row:nth-child(11) .info-value { font-size: 19px; font-weight: 400; }
 /* Badges inside the modal (Tháng, per-month sub-rows) */
-.modal .info-row .badge { font-size: 15px; font-weight: 400; }
+.modal .info-row .badge { font-size: 19px; font-weight: 400; }
 
 /* Phone call link */
 .call-link {
@@ -1161,7 +1243,7 @@ function changeBackgroundColor(newColor) {
   text-decoration: none;
   padding: 6px 12px;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 400;
   font-family: 'Inter', sans-serif;
   margin-top: 1px;
@@ -1178,7 +1260,7 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
 /* Mobile-only refinements */
 @media (max-width: 639.98px) {
   .filter-select { font-size: 16px; padding-top: 6px; padding-bottom: 6px; }
-  .sort-btn { font-size: 16px; }
+  .sort-btn { font-size: 15px; }
   .tab-btn { font-size: 16px; }
   .search-box input { font-size: 16px; }
   .kh-name { font-size: 17px; }
@@ -1221,8 +1303,8 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
   .filter-row { flex: 1 1 0; min-width: 0; gap: 4px; }
   .filter-select { flex: 1; min-width: 0; font-size: 16px; }
   .sort-row { flex: 1; gap: 2px; width: 100%; }
-  .sort-btn { padding: 10px 12px; font-size: 16px; flex: 1; }
-  .sort-btn .sort-arrow { font-size: 13px; }
+  .sort-btn { padding: 10px 12px; font-size: 15px; flex: 1; }
+  .sort-btn .sort-arrow { width: 14px; height: 14px; }
   .sort-label { font-size: 17px; }
   .tab-nav { flex: 3; min-width: 0; display: flex; gap: 1px; }
   .tab-btn { flex: 1; padding: 5px 6px; font-size: 16px; font-weight: 400; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1237,9 +1319,9 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
   .cell-addr { font-size: 14px; }
   .cell-tenkh { font-size: 14px; }
   .cell-ghi { font-size: 14px; }
-  /* Desktop: modal 15px */
-  .info-label { font-size: 15px; }
-  .info-value { font-size: 15px; }
+  /* Desktop: cỡ chữ bảng modal (nhãn 18px, giá trị 19px — bằng mức mobile) */
+  .info-label { font-size: 18px; }
+  .info-value { font-size: 19px; }
   .cell-abc { font-size: 14px; }
   .ghi-chu-table { font-size: 14px; color: #ffffff; border-color: #3b82f6; }
   .ghi-chu-table:not(:placeholder-shown) { color: #ffffff; }
@@ -1410,23 +1492,23 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
       <div class="toolbar-top">
         <div class="search-export-row">
           <div class="search-box" style="margin-top:0;">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"/></svg></span>
             <input type="text" id="searchInput" placeholder="Tìm tên, mã KH, SĐT, địa chỉ..." oninput="handleSearch()" autocomplete="off" autocorrect="off" autocapitalize="off">
             <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
           </div>
-          <button id="exportBtn" onclick="exportExcel()" style="display:none;align-items:center;justify-content:center;width:42px;height:42px;cursor:pointer;background:transparent;border:none;outline:none;flex-shrink:0;border-radius:10px;"><span style="font-size:22px;">📥</span></button>
+          <button id="exportBtn" class="export-btn" onclick="exportExcel()" title="Xuất file Excel" aria-label="Xuất file Excel"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg></button>
         </div>
         <div class="filter-row" style="position:relative;">
           <div class="filter-select" id="filterNhomBtn" onclick="toggleNhomDropdown()" style="display:flex;align-items:center;gap:4px;cursor:pointer;position:relative">
-            <span id="filterNhomLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:#3b82f6">📁</span> DS nhóm</span>
+            <span id="filterNhomLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> DS nhóm</span>
           </div>
           <div class="nhom-dropdown" id="nhomDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
-            <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:#3b82f6">📁</span> DS nhóm</div>
+            <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> DS nhóm</div>
           </div>
           <input type="hidden" id="filterNhom" value="">
         </div>
         <div class="filter-row" style="position:relative">
-          <div class="filter-select" id="filterLoaiBtn" onclick="toggleLoaiDropdown()" style="display:flex;align-items:center;gap:4px;cursor:pointer;position:relative;border:1.5px solid #3b82f6;box-shadow:none;">
+          <div class="filter-select" id="filterLoaiBtn" onclick="toggleLoaiDropdown()" style="display:flex;align-items:center;gap:4px;cursor:pointer;position:relative">
             <span id="filterLoaiLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Chi tiết nợ</span>
           </div>
           <div class="nhom-dropdown" id="loaiDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
@@ -1444,16 +1526,16 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
       </div>
         <div class="sort-row">
           <button class="sort-btn" id="sortDanhSo" onclick="sortBy('danh_so')">
-            <span class="sort-label">Danh Số</span><span class="sort-arrow">↕</span>
+            <span class="sort-label">Danh Số</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
           </button>
           <button class="sort-btn" id="sortTienNo" onclick="sortBy('tien_no')">
-            <span class="sort-label">Tiền Nợ</span><span class="sort-arrow">↕</span>
+            <span class="sort-label">Tiền Nợ</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
           </button>
           <button class="sort-btn" id="sortSoGCS" onclick="sortBy('ma_sogcs')">
-            <span class="sort-label">Mã Sổ</span><span class="sort-arrow">↕</span>
+            <span class="sort-label">Mã Sổ</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
           </button>
           <button class="sort-btn" id="sortTenKH" onclick="sortBy('ten_khach_hang')">
-            <span class="sort-label">Tên KH</span><span class="sort-arrow">↕</span>
+            <span class="sort-label">Tên KH</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
           </button>
         </div>
       </div>
@@ -1980,7 +2062,7 @@ function processFile(file) {
   document.querySelector('.stats-row').classList.remove('collapsed');
   document.getElementById('nvScope').classList.remove('collapsed');
   document.getElementById('filterNhom').value = '';
-  document.getElementById('filterNhomLabel').innerHTML = '<span style="color:#3b82f6">📁</span> DS nhóm';
+  document.getElementById('filterNhomLabel').innerHTML = '<span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> DS nhóm';
   updateSortButtons();
   document.querySelectorAll('.sa').forEach(el => { el.textContent = '↕'; el.closest('th').classList.remove('sorted'); });
 
@@ -2259,14 +2341,17 @@ function selectNhom(val) {
     const c = getNhomColor(val);
     const c2 = getNhomColor(val + '_2');
     const displayVal = abbrevName((window._nhomFullNameMap && window._nhomFullNameMap[val]) || val);
-    label.innerHTML = '<span style="color:' + c + '">👨‍💼</span> <span class="nhom-sel-name">' + displayVal + '</span>';
+    // Chấm màu theo màu nhóm thay cho emoji 👨‍💼 (emoji nhiều màu, không đổi theo nhóm được)
+    label.innerHTML = '<span class="nhom-dot" style="background:' + c + '"></span> <span class="nhom-sel-name">' + displayVal + '</span>';
     btn.classList.remove('rainbow-border');
+    btn.dataset.active = '1';
     btn.style.borderColor = c;
     btn.style.boxShadow = '';
     btn.style.background = '';
   } else {
-    label.innerHTML = '<span style="color:#3b82f6">📁</span> DS nhóm';
+    label.innerHTML = '<span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> DS nhóm';
     btn.classList.remove('rainbow-border');
+    btn.dataset.active = '';
     btn.style.borderColor = '';
     btn.style.boxShadow = '';
     btn.style.background = '';
@@ -2308,12 +2393,16 @@ function selectLoai(val) {
   const isLight = document.body.classList.contains('light-mode');
   if (val) {
     label.innerHTML = loaiNames[val];
+    btn.dataset.active = '1';
     btn.style.borderColor = '#3b82f6';
     btn.style.boxShadow = 'none';
     btn.style.background = '';
   } else {
     label.innerHTML = 'Chi tiết nợ';
-    btn.style.borderColor = '#3b82f6';
+    // Trả viền về mặc định của theme (--ctl-vien / #c7d2fe); trước đây luôn để #3b82f6
+    // nên ô "Chi tiết nợ" trông như đang được chọn dù chưa lọc gì.
+    btn.dataset.active = '';
+    btn.style.borderColor = '';
     btn.style.boxShadow = 'none';
     btn.style.background = '';
   }
@@ -2352,7 +2441,7 @@ function initFilters() {
   const nhomSet = [...new Set(allData.map(r=>r.ma_nhom).filter(Boolean))].sort();
   const dd = document.getElementById('nhomDropdown');
   // keep the first option (Tất cả)
-  dd.innerHTML = '<div class="nhom-option" data-val="" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none" onmouseenter="this.style.background=\'rgba(59,130,246,0.15)\'" onmouseleave="this.style.background=\'\'" ><span style="color:#3b82f6">📁</span> DS nhóm</div>';
+  dd.innerHTML = '<div class="nhom-option" data-val="" style="padding:8px 12px;cursor:pointer;font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none" onmouseenter="this.style.background=\'rgba(59,130,246,0.15)\'" onmouseleave="this.style.background=\'\'" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> DS nhóm</div>';
   nhomSet.forEach(v => {
     const d = document.createElement('div');
     d.className = 'nhom-option';
@@ -2362,7 +2451,7 @@ function initFilters() {
     d.onmouseleave = function(){ this.style.background=''; };
     const nc = getNhomColor(v);
     const displayName = abbrevName(nhomFullNameMap[v] || v);
-    d.innerHTML = '<span style="color:' + nc + '">👨‍💼</span> ' + displayName;
+    d.innerHTML = '<span class="nhom-dot" style="background:' + nc + '"></span> ' + displayName;
     dd.appendChild(d);
   });
 }
@@ -2596,6 +2685,13 @@ function sortBy(col) {
 }
 
 // Sync the two quick sort buttons with the current sort state
+// Mũi tên là SVG (không dùng glyph ↕/↓/↑ vì bề rộng khác nhau 6px vs 10px làm nhãn
+// bị đẩy đi mỗi lần đổi cột, và glyph phụ thuộc font hệ thống).
+const SORT_ICONS = {
+  none: '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg>',
+  asc:  '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6 1.41 1.41z"/></svg>',
+  desc: '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>'
+};
 function updateSortButtons() {
   const map = { 'danh_so':'sortDanhSo', 'tien_no':'sortTienNo', 'thang_no':'sortThang', 'ma_sogcs':'sortSoGCS', 'ten_khach_hang':'sortTenKH' };
   Object.entries(map).forEach(([col, id]) => {
@@ -2604,7 +2700,8 @@ function updateSortButtons() {
     const arrow = btn.querySelector('.sort-arrow');
     const active = sortCol===col;
     btn.classList.toggle('active', active);
-    arrow.textContent = active ? (sortDir===1?'↑':'↓') : '↕';
+    arrow.innerHTML = SORT_ICONS[active ? (sortDir===1 ? 'asc' : 'desc') : 'none'];
+    btn.setAttribute('aria-sort', active ? (sortDir===1 ? 'ascending' : 'descending') : 'none');
   });
 }
 updateSortButtons();
@@ -2851,24 +2948,24 @@ function showDetailRow(r) {
   const hasMultiMonth = custRecords.length > 1;
   let monthDetail = '';
   if (hasMultiMonth) {
-    monthDetail = '<div style="margin-top:2px;font-size:15px;line-height:1.5">' +
+    monthDetail = '<div style="margin-top:2px;line-height:1.5">' +
       custRecords.map(x =>
         `<div style="display:flex;justify-content:space-between;gap:8px;padding:2px 0;border-bottom:1px solid var(--border)">
-          <span class="badge badge-blue" style="font-size:15px">${esc(x.thang_no)||'—'}</span>
-          <span class="tien-no${x.tien_no >= 2000000 ? ' high' : ' low'}" style="font-size:15px">${fmt(x.tien_no)}</span>
+          <span class="badge badge-blue">${esc(x.thang_no)||'—'}</span>
+          <span class="tien-no${x.tien_no >= 2000000 ? ' high' : ' low'}">${fmt(x.tien_no)}</span>
         </div>`
       ).join('') + '</div>';
   }
 
   const rows = [
     ['STT', esc(r.stt)||'—'],
-    ['Mã KH', `<span class="ma-kh" style="font-size:15px;letter-spacing:0.02em;color:#c8d0dc">${esc(r.ma_khach_hang)}</span>`],
-    ['Tên KH', `<span class="modal-ten-kh" style="font-size:15px;letter-spacing:0.02em">${esc(r.ten_khach_hang)||'—'}</span>`],
+    ['Mã KH', `<span class="ma-kh" style="letter-spacing:0.02em">${esc(r.ma_khach_hang)}</span>`],
+    ['Tên KH', `<span class="modal-ten-kh" style="letter-spacing:0.02em">${esc(r.ten_khach_hang)||'—'}</span>`],
     ['Địa chỉ', esc(r.dia_chi)||'—'],
     ['Mã Số GCS', esc(r.ma_sogcs)||'—'],
     ['Danh Số', esc(r.danh_so)||'—'],
     ['Tháng', r.thang_no ? `<span class="badge badge-blue">${esc(shortMonths(r.thang_no))}</span>` : '—'],
-    ['Tiền nợ', `<span class="tien-no${r.tien_no >= 2000000 ? ' high' : ' low'}" style="font-size:15px">${fmtHtml(r.tien_no)}</span>` + monthDetail],
+    ['Tiền nợ', `<span class="tien-no${r.tien_no >= 2000000 ? ' high' : ' low'}">${fmtHtml(r.tien_no)}</span>` + monthDetail],
     ['SĐT', phoneHtml],
     ['Số TBi', esc(r.so_tbi)||'—'],
     ['Chú ý', `<input type="text" class="ghi-chu-input" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" placeholder="Nhập ghi chú..." oninput="saveGhiChu(this)">`],
@@ -3038,7 +3135,7 @@ function handleNhomFilter() {
 function clearNvScope() {
   nvScope = '';
   document.getElementById('filterNhom').value = '';
-  document.getElementById('filterNhomLabel').innerHTML = '<span style="color:#3b82f6">📁</span> DS nhóm';
+  document.getElementById('filterNhomLabel').innerHTML = '<span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> DS nhóm';
   handleFilter();
   window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -3165,7 +3262,11 @@ if (toolbarEl && headerEl) {
   function updateToolbar() {
     const sentinelTop = sentinel.getBoundingClientRect().top;
     const toolbarH = toolbarEl.offsetHeight;
-    if (sentinelTop <= headerH) {
+    // toolbarH === 0 khi lúc gọi hàm #dataView còn display:none (toolbar chưa được
+    // layout): rect và offsetHeight đều = 0 nên điều kiện dưới luôn đúng, thanh bị
+    // ghim với sentinel cao 0px → che mất phần đầu của thẻ đầu tiên cho tới lần cuộn
+    // đầu tiên. Không ghim khi chưa đo được chiều cao.
+    if (toolbarH && sentinelTop <= headerH) {
       sentinel.style.height = toolbarH + 'px';
       toolbarEl.style.position = 'fixed';
       toolbarEl.style.top = headerH + 'px';
@@ -3188,6 +3289,11 @@ if (toolbarEl && headerEl) {
     }
   }
   window.addEventListener('scroll', updateToolbar, { passive: true });
+  // Chiều cao thanh đổi theo bề rộng (flex-wrap) và theo font sau khi webfont tải
+  // xong — đo lại để sentinel luôn cao đúng bằng thanh đang ghim.
+  window.addEventListener('resize', updateToolbar, { passive: true });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateToolbar).catch(function () {});
+  window.updateToolbar = updateToolbar;
   updateToolbar();
 }
 
