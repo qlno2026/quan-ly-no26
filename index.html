@@ -100,7 +100,7 @@ body {
 }
 
 .header-title { font-size: 18px; font-weight: 400; letter-spacing: 0.3px; color: #ffffff; }
-.header-sub { font-size: 10px; color: #e2e8f0; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; font-weight: 400; }
+.header-sub { font-size: 13px; color: #e2e8f0; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; font-weight: 400; }
 
 .upload-btn-header {
   background: transparent;
@@ -256,7 +256,7 @@ body.light-mode .info-row:nth-child(4) .info-value, body.light-mode .info-row:nt
 body.light-mode .info-row:nth-child(6) .info-value { color: #475569 !important; font-weight: 400 !important; }
 /* Mã KH(2), Tên KH(3), Tiền Nợ(8) - thinner */
 body.light-mode .info-row:nth-child(2) .info-value, body.light-mode .info-row:nth-child(2) .ma-kh { color: #475569 !important; font-weight: 400 !important; font-size: 15px !important; }
-body.light-mode .info-row:nth-child(3) .info-value { color: #111827 !important; font-weight: 400 !important; font-size: 15px !important; }
+body.light-mode .info-row:nth-child(3) .info-value { color: #2563eb !important; font-weight: 600 !important; font-size: 17px !important; }
 body.light-mode .info-row:nth-child(8) .info-value { font-weight: 400 !important; font-size: 15px !important; }
 body.light-mode .info-row:nth-child(8) .info-value .tien-no.low { color: #047857 !important; }
 body.light-mode .info-row:nth-child(8) .info-value .tien-no.high { color: #b91c1c !important; }
@@ -312,18 +312,20 @@ body.light-mode .summary-table .num-cell { font-size: 15px; font-weight: 500; }
 body.light-mode .summary-table .tien-no-cell { color: #c2410c; font-weight: 500; font-size: 15px; background: #e2e8f0 !important; }
 body.light-mode .tien-no { font-weight: 900; }
 body.light-mode .tien-no { color: #166534 !important; }
-body.light-mode .tien-no.high { color: #b91c1c !important; }
+body.light-mode .tien-no.high { color: #dc2626 !important; }
 body.light-mode .tien-no.low { color: #047857 !important; }
 body.light-mode .tien-no.mid { color: #166534 !important; }
 body.light-mode .tien-no .mil-digit { color: #dc2626 !important; }
 body.light-mode .kh-tien { color: #b91c1c; font-weight: 700; font-size: 17px; }
 body.light-mode .kh-tien.high { font-weight: 500; }
-body.light-mode .kh-tien.low { font-weight: 500; }
-body.light-mode .kh-tien.high { color: #b91c1c; font-weight: 600; }
+body.light-mode .kh-tien.low { font-weight: 500; }  body.light-mode .kh-tien.high { color: #dc2626; font-weight: 600; }
 body.light-mode .kh-tien.low { color: #047857; font-weight: 600; }
 body.light-mode .kh-tien .mil-digit { color: #c2410c; }
 body.light-mode .count-kh-hd { color: #2563eb; font-weight: 500; }
 body.light-mode .count-tien { color: #dc2626; font-weight: 500; }
+/* Số tổng đổi màu theo quy mô: <100tr xanh · 100tr–1tỷ vàng · ≥1tỷ đỏ (mặc định) */
+body.light-mode .count-tien.low { color: #047857; }
+body.light-mode .count-tien.mid { color: #b45309; }
 
 #fileInput { display: none; }
 
@@ -630,6 +632,9 @@ body.light-mode .nhom-sel-name {
 .count-info span { font-weight: 500; }
 .count-info .count-kh-hd { color: #60a5fa; }
 .count-info .count-tien { color: #ff8888; font-weight: 500; }
+/* Số tổng đổi màu theo quy mô: <100tr xanh · 100tr–1tỷ vàng · ≥1tỷ đỏ (mặc định) */
+.count-info .count-tien.low { color: #86efac; }
+.count-info .count-tien.mid { color: #fde68a; }
 
 /* ── CARD LIST (mobile view) ─────────────── */
 .card-list { display: flex; flex-direction: column; gap: 6px; }
@@ -691,17 +696,17 @@ body:not(.light-mode) .kh-ghichu { color: #cbd5e1; border-color: #a855f7; }
   margin-top: 6px;
 }
 .kh-ghichu-input {
-  flex: 0 1 150px;
-  width: 150px;
-  min-width: 90px;
+  flex: 0 1 auto;
+  width: 125px;      /* cỡ mặc định trước khi JS chạy; JS căn lại cho bằng viên SĐT */
+  min-width: 80px;
+  max-width: 100%;
   font-family: 'Inter', sans-serif;
   font-size: 16px;
   color: #60a5fa;
   background: #111827;
-  border: none;
-  border-bottom: 1px dotted #3b82f6;
-  border-radius: 0;
-  padding: 2px 4px;
+  border: 1px solid rgba(59,130,246,0.5);   /* dark mode: viền xanh nhạt hơn */
+  border-radius: 5px;
+  padding: 0 6px;
   outline: none;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -709,8 +714,9 @@ body:not(.light-mode) .kh-ghichu { color: #cbd5e1; border-color: #a855f7; }
   user-select: text;
 }
 .kh-ghichu-input::placeholder { color: #94a3b8; opacity: 1; }
-.kh-ghichu-input:focus { border-bottom-color: #60a5fa; background: rgba(59,130,246,0.05); }
-body.light-mode .kh-ghichu-input { color: #2563eb; background: #ffffff; border-bottom-color: #2563eb; }
+.kh-ghichu-input:focus { border-color: #60a5fa; background: rgba(59,130,246,0.05); }
+body.light-mode .kh-ghichu-input { color: #2563eb; background: #ffffff; border: 1px solid #3b82f6; border-radius: 5px; }
+body.light-mode .kh-ghichu-input:focus { border-color: #1d4ed8; background: #f5f9ff; }
 body.light-mode .kh-ghichu-input::placeholder { color: #64748b; opacity: 1; }
 .ghi-chu-input { background: rgba(71,85,105,0.35); border: 1.5px solid #3b82f6; border-radius: 6px; padding: 8px 12px; color: #ffffff; font-size: 15px; font-weight: 400; font-family: 'Inter', sans-serif; width: 100%; min-width: 200px; outline: none; resize: vertical; }
 .ghi-chu-input::placeholder { color: #94a3b8; opacity: 1; }
@@ -1105,7 +1111,7 @@ function changeBackgroundColor(newColor) {
 /* Mã KH(2) */
 .info-row:nth-child(2) .info-value, .info-row:nth-child(2) .ma-kh { color: #c8d0dc; font-weight: 400; font-size: 15px; }
 /* Tên KH(3) */
-.info-row:nth-child(3) .info-value { font-size: 15px; font-weight: 400; color: #c8d0dc; letter-spacing: 0.02em; }
+.info-row:nth-child(3) .info-value { font-size: 17px; font-weight: 600; color: #60a5fa; letter-spacing: 0.02em; }
 /* Tháng(7) */
 .info-row:nth-child(7) .info-value { font-size: 15px; font-weight: 400; }
 .info-row:nth-child(7) .info-value .badge { font-size: 15px; font-weight: 400; }
@@ -1249,9 +1255,21 @@ body.light-mode .summary-table thead th { font-size: 15px !important; }
 /* Exclude Danh Số & Mã KH — giữ đậm */
 .kh-card .kh-danhso { font-weight: 400 !important; }
 .kh-card .kh-ma { font-weight: 400 !important; }
+/* Tên KH đậm nét 500 bằng dòng "Tổng ... KH" ở trên (cả light & dark) */
+.kh-card .kh-name { font-weight: 500 !important; }
 </style>
 </head>
 <body>
+<script>
+/* Áp lại chế độ sáng/tối người dùng đã chọn NGAY khi bắt đầu <body>:
+   - không nháy nền tối trước khi chuyển sang sáng
+   - không phụ thuộc vào script chính ở cuối trang (script đó có thể lỗi giữa đường) */
+(function() {
+  try {
+    if (localStorage.getItem('qlno_theme') === 'light') document.body.classList.add('light-mode');
+  } catch (e) {}
+})();
+</script>
 
 <!-- HEADER -->
 <div class="header">
@@ -1376,7 +1394,7 @@ body.light-mode .summary-table thead th { font-size: 15px !important; }
     </div>
 
     <div class="count-info" style="margin-bottom:10px">
-      Tổng <span id="countKH" class="count-kh-hd">0</span> KH / <span id="countHoaDon" class="count-kh-hd">0</span> HĐ - <span id="countTongTien" class="count-tien">0đ</span>
+      Tổng <span id="countKH" class="count-kh-hd">0</span> KH / <span id="countHoaDon" class="count-kh-hd">0</span> HĐ - <span id="countTongTien" class="count-tien low">0đ</span>
     </div>
 
 
@@ -1691,14 +1709,7 @@ function toggleTheme() {
   localStorage.setItem('qlno_theme', isLight ? 'light' : 'dark');
 }
 
-// Restore theme on load
-(function() {
-  const saved = localStorage.getItem('qlno_theme');
-  if (saved === 'light') {
-    document.body.classList.add('light-mode');
-  }
-
-})();
+// Restore theme on load: đã xử lý bằng script inline ngay sau <body> (chạy trước khi render)
 
 
 
@@ -2484,7 +2495,10 @@ function applyFilters() {
   const dispRows = ((is1TrTab || isOld3TrTab) && keepSet) ? rawRows.filter(r => keepSet.has(r.ma_khach_hang || r.ten_khach_hang)) : rawRows;
   document.getElementById('countKH').textContent = new Set(dispRows.map(r => r.ma_khach_hang || r.ten_khach_hang)).size.toLocaleString('vi-VN');
   document.getElementById('countHoaDon').textContent = dispRows.length.toLocaleString('vi-VN');
-  document.getElementById('countTongTien').textContent = dispRows.reduce((sum, r) => sum + (r.tien_no || 0), 0).toLocaleString('vi-VN') + 'đ';
+  const tongTien = dispRows.reduce((sum, r) => sum + (r.tien_no || 0), 0);
+  const elTongTien = document.getElementById('countTongTien');
+  elTongTien.textContent = tongTien.toLocaleString('vi-VN') + 'đ';
+  elTongTien.className = 'count-tien ' + (tongTien >= 1000000000 ? 'high' : (tongTien >= 100000000 ? 'mid' : 'low'));
   const q2 = document.getElementById('searchInput').value.trim();
   renderCards(q2);
   renderTable(q2);
@@ -2560,6 +2574,7 @@ function renderCards(q='') {
       </div>
     </div>`;
   }).join('');
+  fitGhiChuInputs();
 }
 
 // TABLE (desktop)
@@ -2798,6 +2813,44 @@ function showDetailRow(r) {
 
 // Save/load ghi chú
 let _ghiChuSaveTimer = null;
+// Ô ghi chú trên card: mặc định dài đúng bằng viên SĐT (mép phải thẳng hàng),
+// tự giãn ra khi nội dung dài hơn nhưng không đè lên phần ABC bên phải.
+function fitGhiChuInput(input) {
+  const row = input.parentElement;
+  if (!row) return;
+  // Mặc định: ô ghi chú dài đúng bằng viên SĐT — mép phải thẳng hàng với mép phải viên SĐT
+  // (ô ghi chú bị thụt vào sau icon bút chì nên bề ngang phải ngắn hơn viên SĐT)
+  const card = input.closest('.kh-card');
+  const refPill = card && (card.querySelector('.kh-phone') || card.querySelector('.kh-ma') || card.querySelector('.kh-danhso'));
+  let MIN = 125;
+  if (refPill) {
+    const pill = refPill.getBoundingClientRect();
+    const left = input.getBoundingClientRect().left;
+    if (pill.width > 0 && pill.right > left) MIN = Math.max(80, Math.round(pill.right - left));
+  }
+  const cs = getComputedStyle(input);
+  let ctx = fitGhiChuInput._ctx;
+  if (!ctx) { ctx = fitGhiChuInput._ctx = document.createElement('canvas').getContext('2d'); }
+  ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  const textW = input.value ? ctx.measureText(input.value).width : 0;
+  const need = Math.ceil(textW) + 16;   // padding 6px x2 + viền 2px + con trỏ nháy
+  // Chừa chỗ cho icon bút chì và phần ABC (nếu có) ở cuối hàng
+  let occupied = 0;
+  for (const el of row.children) {
+    if (el === input) continue;
+    const r = el.getBoundingClientRect();
+    occupied += r.width + 8;
+  }
+  const maxW = Math.max(MIN, row.clientWidth - occupied);
+  input.style.width = Math.min(maxW, Math.max(MIN, need)) + 'px';
+}
+
+function fitGhiChuInputs() {
+  document.querySelectorAll('.kh-ghichu-input').forEach(fitGhiChuInput);
+}
+
+window.addEventListener('resize', fitGhiChuInputs);
+
 function saveGhiChu(input) {
   const ma = input.dataset.ma;
   const val = input.value;
@@ -2828,6 +2881,10 @@ function saveGhiChu(input) {
     document.querySelectorAll(`.kh-ghichu-input[data-ma="${CSS.escape(m)}"]`).forEach(el => { if (el !== input) el.value = val; });
     document.querySelectorAll(`.ghi-chu-table[data-ma="${CSS.escape(m)}"]`).forEach(el => { if (el !== input) el.value = val; });
     document.querySelectorAll(`.ghi-chu-input[data-ma="${CSS.escape(m)}"]`).forEach(el => { if (el !== input) el.value = val; });
+  });
+  // Tự giãn ô ghi chú vừa gõ (và các ô được đồng bộ theo SĐT)
+  document.querySelectorAll('.kh-ghichu-input').forEach(el => {
+    if (samePhoneMAs.includes(el.dataset.ma)) fitGhiChuInput(el);
   });
   // Debounce save only — do NOT re-render table/card here to avoid losing input focus
   clearTimeout(_ghiChuSaveTimer);
