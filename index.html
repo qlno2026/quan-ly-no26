@@ -249,11 +249,18 @@ body.light-mode .tab-btn { background: #3b82f6; color: #ffffff; border-color: #f
 body.light-mode .tab-btn.active { background: #2563eb; color: #ffffff; border-color: #ffffff; box-shadow: 0 0 8px rgba(59,130,246,0.5); }
 body.light-mode .sort-btn { background: transparent; color: #4b5563; border-color: #cbd5e1; }
 body.light-mode .sort-btn:not(.active) .sort-arrow { color: #4b5563; }
-body.light-mode .sort-row { background: #f3f4f6; border-radius: 10px; }
+/* ⚠️ Nền track ở light mode trước là `#f3f4f6` — trên toolbar TRẮNG `#ffffff` nó chỉ chênh
+   **1.10:1** nên **gần như không thấy** (người dùng phản hồi đúng: nền không "to ra" được vì
+   có thấy đâu). Nay dùng `#dfe7f0` → **1.25:1** với nền trắng: thấy rõ thành một dải xám nhạt
+   mà KHÔNG nuốt 2 nút, vì nút vẫn tối hơn (`rgba(148,163,184,0.15)` ghép lên track ra `#d2dbe6`)
+   và có sẵn viền `#cbd5e1` (từ `body.light-mode .sort-btn`). Dark mode giữ nguyên dải navy
+   `rgba(15,23,42,0.6)` — cố ý: màu track khác nhau theo theme là chuyện bình thường, chỉ
+   **metric** (padding/kích thước) mới phải giống nhau. */
+body.light-mode .sort-row { background: #dfe7f0; border-radius: 10px; }
 body.light-mode #sortDanhSo { background: rgba(148,163,184,0.15); color: #4b5563; border-color: #cbd5e1; }
 body.light-mode #sortTienNo { background: rgba(148,163,184,0.15); color: #4b5563; border-color: #cbd5e1; }
 body.light-mode #sortDanhSo.active { background: #1e40af; color: #ffffff; box-shadow: 0 0 4px rgba(59,130,246,0.35), 0 0 8px rgba(59,130,246,0.15); }
-body.light-mode #sortTienNo.active { background: #c2410c; color: #ffffff; box-shadow: 0 0 4px rgba(249,115,22,0.35), 0 0 8px rgba(249,115,22,0.15); }
+body.light-mode #sortTienNo.active { background: #5b21b6; color: #ffffff; box-shadow: 0 0 4px rgba(139,92,246,0.35), 0 0 8px rgba(139,92,246,0.15); }
 /* Thẻ: nền trắng trên nền trang xám xanh, viền đủ đậm để phân định (3.1:1).
    border-width vẫn 1px như dark — chỉ đổi màu, không đổi metric. */
 body.light-mode .kh-card { background: #ffffff; border: 1px solid #8593a6; box-shadow: 0 1px 3px rgba(15,23,42,0.08); }
@@ -661,7 +668,17 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
    hàng nút sắp xếp là cấp phụ nên thấp hơn để thanh công cụ bớt nặng. Đừng "sửa"
    thành 42px cho bằng 2 ô lọc; ngược lại, LỊCH SỬ: 2 ô lọc từng là 38px và đã được
    nâng lên 42px cho bằng hàng nút khi hàng nút còn 42px. */
-.sort-row { display: flex; gap: 2px 4px; margin-top: 0; background: rgba(15,23,42,0.6); border-radius: 10px; padding: 1px; }
+/* `padding: 6px` = bề dày nền track nhìn thấy được quanh 2 nút sắp xếp (yêu cầu người dùng
+   "cho nền phía sau tab Danh Số / Tiền Nợ to ra thêm một chút"; lịch sử: **1px → 4px → 6px**).
+   Vì `.sort-row` là khối flex **toàn chiều rộng** và 2 nút đều `flex: 1`, nới padding KHÔNG
+   làm track rộng ra mà làm **nút hẹp lại** và dải nền quanh nút dày lên — đúng thứ cần thấy.
+   ⚠️ Hệ quả kéo theo (đo lại, không đoán): track **38 → 48px**, nên thanh công cụ
+   **156.64 → 166.66px** (hàm `updateToolbar()` tự đo lại, không có hằng số nào phải sửa), và
+   khoảng hở hàng lọc ↔ track thành **2px + 6px ≈ 7.9px** (trước 2.9px) vì phần nền lộ ra phía
+   trên **chính là** `padding-top` của track.
+   Đổi padding ở ĐÂY (rule nền) là đủ cho CẢ 2 theme: `body.light-mode .sort-row` chỉ đổi
+   `background`/`border-radius`, KHÔNG khai lại padding — đúng hợp đồng "chỉ đổi màu". */
+.sort-row { display: flex; gap: 2px 4px; margin-top: 0; background: rgba(15,23,42,0.6); border-radius: 10px; padding: 6px; }
 .sort-btn {
   flex: 1;
   display: flex;
@@ -706,8 +723,16 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
    quầng neon làm hàng nút trông nặng nề. */
 #sortDanhSo { background: rgba(59,130,246,0.10); }
 #sortDanhSo.active { border-color: #3b82f6; background: #1e40af; box-shadow: none; }
-#sortTienNo { background: rgba(194,65,12,0.10); }
-#sortTienNo.active { border-color: #f97316; background: #b45009; box-shadow: none; }
+/* "Tiền Nợ" dùng **TÍM ĐẬM** theo yêu cầu người dùng (trước là cam `#b45009` / viền
+   `#f97316`). Chọn đúng thang "đậm" của nút anh em `#sortDanhSo` (nền `#1e40af` = blue-800,
+   viền `#3b82f6` = blue-500) nên lấy cặp tương ứng của tím:
+     nền  `#5b21b6` (violet-800, cùng độ đậm với blue-800)
+     viền `#8b5cf6` (violet-500, cùng độ sáng với blue-500)
+   Đo lại: chữ trắng trên `#5b21b6` = **8.97:1**; viền `#8b5cf6` trên nền `.toolbar`
+   (`#111318`) = **4.43:1** — đều vượt ngưỡng (4.5 và 3:1 của WCAG 1.4.11).
+   Sang light mode dùng ĐÚNG cặp màu này (chỉ đổi quầng sáng) để 2 theme cùng độ đậm. */
+#sortTienNo { background: rgba(91,33,182,0.10); }
+#sortTienNo.active { border-color: #8b5cf6; background: #5b21b6; box-shadow: none; }
 .sort-btn:active { background: rgba(59,130,246,0.22); }
 
 /* Rainbow animation — muted tones, border + text synced */
@@ -1640,7 +1665,12 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
       <div class="toolbar-top">
         <div class="search-export-row">
           <div class="search-box" style="margin-top:0;">
-            <span class="search-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"/></svg></span>
+            <!-- Kính lúp = **emoji 🔍** (người dùng chốt "đổi tất cả icon emoji" cho cả thanh
+                 công cụ) — thay cho bản vẽ `stroke` nét 2.6 bo tròn đã dùng trước đó.
+                 ⚠️ Cỡ **18px** phải khớp đúng hộp `.search-icon` (18×18) vì `#searchInput`
+                 chừa chỗ bằng `padding-left: 40px` (icon `left: 12px` + 18px) — đổi cỡ emoji
+                 là chữ trong ô xê dịch. Emoji **không ăn theo `--text-dim`** như bản vector. -->
+            <span class="search-icon" aria-hidden="true"><span style="font-size:18px;line-height:1">🔍</span></span>
             <input type="text" id="searchInput" placeholder="Tìm tên, mã KH, SĐT, địa chỉ..." oninput="handleSearch()" autocomplete="off" autocorrect="off" autocapitalize="off">
             <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
           </div>
@@ -1649,10 +1679,10 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
              đã đúng sẵn: Danh sách nhóm → Mã sổ → Chi tiết nợ, nên KHÔNG cần đổi thứ tự. -->
         <div class="filter-row filter-row-wide" style="position:relative;">
           <div class="filter-select" id="filterNhomBtn" onclick="toggleNhomDropdown()" style="display:flex;align-items:center;gap:4px;cursor:pointer;position:relative">
-            <span id="filterNhomLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> Danh sách nhóm</span>
+            <span id="filterNhomLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><span style="font-size:16px;line-height:1">📁</span></span> Danh sách nhóm</span>
           </div>
           <div class="nhom-dropdown" id="nhomDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
-            <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;font-size:17px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> Danh sách nhóm</div>
+            <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;font-size:17px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><span style="font-size:16px;line-height:1">📁</span></span> Danh sách nhóm</div>
           </div>
           <input type="hidden" id="filterNhom" value="">
         </div>
@@ -1660,7 +1690,7 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
              "Danh sách nhóm" nên thứ tự trong hàng lọc là: Danh sách nhóm · Mã sổ · Chi tiết nợ. -->
         <div class="filter-row" style="position:relative">
           <div class="filter-select" id="filterSoGcsBtn" onclick="toggleSoGcsDropdown()" style="display:flex;align-items:center;gap:4px;cursor:pointer;position:relative">
-            <span id="filterSoGcsLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M20 10V8h-4V4h-2v4h-4V4H8v4H4v2h4v4H4v2h4v4h2v-4h4v4h2v-4h4v-2h-4v-4h4zm-6 4h-4v-4h4v4z"/></svg></span> Mã sổ</span>
+            <span id="filterSoGcsLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><span style="font-size:16px;line-height:1">📘</span></span> Mã sổ</span>
           </div>
           <div class="nhom-dropdown" id="soGcsDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
             <div class="nhom-option" data-val="" onclick="selectSoGcs('')" style="padding:8px 12px;cursor:pointer;font-size:17px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Mã sổ</div>
@@ -1669,7 +1699,7 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
         </div>
         <div class="filter-row" style="position:relative">
           <div class="filter-select" id="filterLoaiBtn" onclick="toggleLoaiDropdown()" style="display:flex;align-items:center;gap:4px;cursor:pointer;position:relative">
-            <span id="filterLoaiLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></span> Chi tiết nợ</span>
+            <span id="filterLoaiLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><span style="font-size:16px;line-height:1">📄</span></span> Chi tiết nợ</span>
           </div>
           <div class="nhom-dropdown" id="loaiDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
             <div class="nhom-option" data-val="" onclick="selectLoai('')" style="padding:8px 12px;cursor:pointer;font-size:17px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Chi tiết nợ</div>
@@ -1686,19 +1716,28 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
       </div>
         <div class="sort-row">
           <button class="sort-btn" id="sortDanhSo" onclick="sortBy('danh_so')">
-            <span class="sort-ico"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M2 17h2v.5H3v1h1v.5H2v1h3v-4H2v1zm1-9h1V4H2v1h1v3zm-1 3h1.8L2 13.1v.9h3v-1H3.2L5 10.9V10H2v1zm5-6v2h14V5H7zm0 14h14v-2H7v2zm0-6h14v-2H7v2z"/></svg></span><span class="sort-label">Danh Số</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
+            <span class="sort-ico"><span style="font-size:13px;line-height:1">🔢</span></span><span class="sort-label">Danh Số</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
           </button>
           <button class="sort-btn" id="sortTienNo" onclick="sortBy('tien_no')">
-            <span class="sort-ico"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-9-1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-6v11c0 1.1-.9 2-2 2H4v-2h17V7h2z"/></svg></span><span class="sort-label">Tiền Nợ</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
+            <span class="sort-ico"><span style="font-size:13px;line-height:1">💵</span></span><span class="sort-label">Tiền Nợ</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
           </button>
         </div>
       </div>
     </div>
 
     <div class="count-info">
-      <div class="count-line1">Tổng <span id="countKH" class="count-kh-hd">0</span> KH / <span id="countHoaDon" class="count-kh-hd">0</span> HĐ</div>
+      <!-- Dấu `-` sau "Tổng"/"Tiền" là yêu cầu người dùng. Cả 2 dòng này là markup TĨNH —
+           JS chỉ ghi số vào `#countKH` / `#countHoaDon` / `#countTongTien`, KHÔNG bao giờ ghi
+           `innerHTML` của dòng, nên thêm chữ ở đây là an toàn.
+           `.count-line1` KHÔNG phải flex (khác `.count-line2`) nên dấu cách thật trong markup
+           vẫn hiển thị — viết thẳng "Tổng - " là đủ. -->
+      <div class="count-line1">Tổng - <span id="countKH" class="count-kh-hd">0</span> KH / <span id="countHoaDon" class="count-kh-hd">0</span> HĐ</div>
       <div class="count-line2">
-        <span class="count-tien-wrap"><span class="count-tien-label">Tiền</span> <span id="countTongTien" class="count-tien low">0đ</span></span>
+        <!-- Dấu `-` nằm TRONG nhãn `Tiền` (không phải một span thứ ba) vì `.count-tien-wrap`
+             là `inline-flex` + `gap: 4px` giữa nhãn và số → "Tiền -" + 4px + số = đúng
+             "Tiền - 405.085.558đ". Thêm span thứ ba cũng bị `gap` chen vào, y như bẫy đã
+             ghi ở `.count-line2`. -->
+        <span class="count-tien-wrap"><span class="count-tien-label">Tiền -</span> <span id="countTongTien" class="count-tien low">0đ</span></span>
         <button id="exportBtn" class="export-btn" onclick="exportExcel()" title="Xuất file Excel" aria-label="Xuất file Excel"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg><span class="export-btn-label">Xuất</span></button>
       </div>
     </div>
@@ -1890,6 +1929,10 @@ let allData = [], filtered = [], summaryData = [], oldSummaryData = [];
 let nvScope = '';
 let sortCol = 'tien_no', sortDir = -1;
 let currentPage = 1;
+// Số mã sổ đang có trong dropdown "Mã sổ" (theo NHÓM đang chọn). Do
+// `buildSoGcsOptions()` ghi lại mỗi lần dựng danh sách; nút "Mã sổ" đọc nó để hiện
+// "Mã sổ (N)". 0 = chưa có dữ liệu → nút chỉ hiện "Mã sổ".
+let soGcsCount = 0;
 const PAGE_SIZE = 50;
 const SAVE_KEY = 'qlno_data_v1';
 const DB_NAME = 'qlno_db';
@@ -2220,11 +2263,14 @@ function processFile(file) {
   document.querySelector('.stats-row').classList.remove('collapsed');
   document.getElementById('nvScope').classList.remove('collapsed');
   document.getElementById('filterNhom').value = '';
-  document.getElementById('filterNhomLabel').innerHTML = '<span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> Danh sách nhóm';
+  fitAllFilterLabels();   // nhãn mặc định + đo lại theo bề rộng thật (xem `fitFilterLabel()`)
   // Ô lọc "Mã sổ" cũng phải trả về mặc định khi nạp file mới (nếu không sẽ lọc
   // theo mã sổ của file cũ và ra danh sách rỗng).
   document.getElementById('filterSoGcs').value = '';
-  document.getElementById('filterSoGcsLabel').innerHTML = filterLabelHTML(FILTER_ICONS.sogcs, 'Mã sổ');
+  // Con số trên nút đang là của DỮ LIỆU CŨ → đưa về 0 ngay, `initFilters()` chạy sau khi
+  // đọc xong file sẽ đếm lại và `buildSoGcsOptions()` ghi con số mới vào nhãn.
+  soGcsCount = 0;
+  fitSoGcsLabel();
   document.getElementById('filterSoGcsBtn').dataset.active = '';
   updateSortButtons();
   document.querySelectorAll('.sa').forEach(el => { el.textContent = '↕'; el.closest('th').classList.remove('sorted'); });
@@ -2337,6 +2383,9 @@ function processFile(file) {
       saveData();
       document.getElementById('loadingState').style.display = 'none';
       document.getElementById('dataView').style.display = 'block';
+      // `initFilters()` vừa chạy lúc `dataView` còn `display:none` nên `fitAllFilterLabels()`
+      // không đo được (xem chú thích trong hàm) — đo lại NGAY sau khi view hiện ra.
+      fitAllFilterLabels();
     } catch(err) {
       alert('Lỗi: ' + err.message);
       document.getElementById('loadingState').style.display = 'none';
@@ -2513,7 +2562,7 @@ function selectNhom(val) {
     btn.style.boxShadow = '';
     btn.style.background = '';
   } else {
-    label.innerHTML = '<span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> Danh sách nhóm';
+    fitAllFilterLabels();   // bỏ nhóm → nhãn mặc định, đo lại theo bề rộng thật
     btn.classList.remove('rainbow-border');
     btn.dataset.active = '';
     btn.style.borderColor = '';
@@ -2573,15 +2622,95 @@ const loaiNames = { oldky: 'Nợ cũ, nhiều kỳ', old: 'Nợ ≥ 3Tr', '1tr':
    đi qua `filterLabelHTML()` (hoặc cố ý ghi giá trị trần khi đã chọn), **đừng** set
    `textContent` trực tiếp nữa.
 
-   Màu icon là `var(--text-dim)` (không phải `currentColor` như `.sort-ico`): 2 ô lọc này
-   khi "đang lọc" chỉ đổi viền/nền nên icon giữ nguyên màu mờ — hợp với quy tắc "icon
-   ở thanh công cụ là trung tính". */
+   ⚠️ Icon của các ô lọc nay là **EMOJI** nên **KHÔNG** còn ăn màu `var(--text-dim)` và
+   không đổi gì khi "đang lọc" — khác hẳn bản vector trước đây. Riêng `.sort-arrow`
+   (mũi tên sắp xếp) **vẫn là SVG `currentColor`** vì nó phải đổi màu theo trạng thái
+   `active` (trắng trên nền cam) và đổi hình theo ↕/↑/↓ — emoji không làm được việc đó. */
 const FILTER_ICONS = {
-  sogcs: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M20 10V8h-4V4h-2v4h-4V4H8v4H4v2h4v4H4v2h4v4h2v-4h4v4h2v-4h4v-2h-4v-4h4zm-6 4h-4v-4h4v4z"/></svg>',
-  loai:  '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>'
+  /* **CẢ 3 icon ô lọc nay đều là EMOJI** — yêu cầu người dùng "đổi tất cả icon emoji"
+     (trước đó chỉ "Mã sổ" là emoji): 📁 Danh sách nhóm · 📘 Mã sổ · 📄 Chi tiết nợ.
+     ⚠️ Riêng "Mã sổ" đã đổi **📒 → 📘** theo lựa chọn của người dùng: 📒 đứng cạnh 📁
+     **cùng tông vàng** nên hàng lọc bị trùng màu; 📘 khác tông hẳn mà vẫn hợp tông xanh
+     của app. Đừng "sửa" về 📒 — đó là chủ ý.
+     ⚠️ Hệ quả bắt buộc nhớ, đừng "sửa lỗi" nhầm:
+       1. Emoji **không ăn theo theme** và **không mờ theo `--text-dim`** như bản vector
+          cũ — sáng hay tối, hay lúc "đang lọc", đều y hệt nhau.
+       2. Vì thế script audit tương phản phải **bỏ qua node emoji** (emoji tự tô màu,
+          `getComputedStyle` trả về `color` không liên quan tới cái mắt thấy).
+       3. Cỡ **16px** = đúng cỡ icon SVG cũ nên hàng lọc **cao y hệt**, không xê dịch
+          bố cục (đo lại: nút vẫn 181.36×35.99, toolbar 156.64). */
+  sogcs: '<span style="font-size:16px;line-height:1">📘</span>',
+  nhom:  '<span style="font-size:16px;line-height:1">📁</span>',
+  loai:  '<span style="font-size:16px;line-height:1">📄</span>'
 };
 function filterLabelHTML(icon, text) {
   return '<span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center">' + icon + '</span> ' + text;
+}
+/* Nhãn ô lọc tự **BỎ ICON** khi không đủ chỗ — dùng cho "Danh sách nhóm" và "Chi tiết nợ".
+
+   ⚠️ **Emoji rộng hơn hẳn icon SVG cũ** — đây là cái bẫy của lần đổi sang emoji, đo thật:
+   emoji khai `font-size: 16px` chiếm hộp **21.97px** (advance ≈ **1.37×** cỡ chữ), trong khi
+   SVG cũ đúng **16px**. Hệ quả: nhãn `📄 Chi tiết nợ` cần **109px** mà vùng nhãn ở panel
+   **319px** chỉ có **106px** ⇒ nếu không hạ cấp thì chữ bị cắt thành `Chi tiết ⋯`.
+   Thà mất icon còn hơn mất chữ (icon chỉ trang trí; chữ mới cho biết ô lọc là gì).
+
+   Đã chọn nhóm / chi tiết nợ rồi thì `fitAllFilterLabels()` **KHÔNG** đụng tới nhãn —
+   lúc đó nhãn là GIÁ TRỊ (hoặc chấm màu nhóm), không phải nhãn mặc định. */
+function fitFilterLabel(el, iconHTML, text) {
+  if (!el) return;
+  el.innerHTML = filterLabelHTML(iconHTML, text);
+  if (el.clientWidth === 0) return;              // đang `display:none` → chưa đo được
+  if (el.scrollWidth <= el.clientWidth) return;
+  el.innerHTML = text;                           // bỏ icon, giữ chữ
+}
+/* Gọi ở **mọi chỗ** ghi nhãn mặc định của 3 ô lọc + khi `resize` + ngay sau khi `dataView`
+   hiện ra. Ô "Mã sổ" có hàm riêng (`fitSoGcsLabel()`) vì ngoài icon nó còn phải **giữ SỐ
+   LƯỢNG** — xem 3 nấc ở chú thích hàm đó. */
+function fitAllFilterLabels() {
+  if (!document.getElementById('filterNhom').value) {
+    fitFilterLabel(document.getElementById('filterNhomLabel'), FILTER_ICONS.nhom, 'Danh sách nhóm');
+  }
+  fitSoGcsLabel();
+  if (!document.getElementById('filterLoai').value) {
+    fitFilterLabel(document.getElementById('filterLoaiLabel'), FILTER_ICONS.loai, 'Chi tiết nợ');
+  }
+}
+/* Chữ của option "tất cả" trong dropdown "Mã sổ" — kèm SỐ LƯỢNG mã sổ đang có.
+   Là **một nguồn duy nhất** cho cả option trong panel và nhãn nút `#filterSoGcsLabel`,
+   nên hai chỗ không thể lệch số. Khi chưa nạp dữ liệu (`soGcsCount` = 0) thì trả về
+   đúng chữ gốc "Mã sổ" — "Mã sổ (0)" là vô nghĩa. */
+function soGcsAllText() {
+  return soGcsCount ? 'Mã sổ (' + soGcsCount + ')' : 'Mã sổ';
+}
+/* Nhãn MẶC ĐỊNH (chưa chọn mã sổ nào) của nút "Mã sổ": icon + `soGcsAllText()`.
+   Đã chọn một mã sổ thì nút hiện đúng mã đó, KHÔNG kèm số lượng. */
+function soGcsDefaultLabelHTML() {
+  return filterLabelHTML(FILTER_ICONS.sogcs, soGcsAllText());
+}
+/* Ghi nhãn MẶC ĐỊNH cho nút "Mã sổ", **tự co theo chỗ trống** — 3 nấc:
+     1. `📘 Mã sổ (N)` — đủ chỗ.
+     2. `Mã sổ (N)`    — hụt chỗ thì **BỎ ICON, GIỮ SỐ**. Số là thứ người dùng cần, còn
+                         icon chỉ trang trí — và option nào trong panel cũng không có
+                         icon nên bỏ đi không lệch nghĩa.
+     3. `Mã sổ`        — vẫn hụt thì bỏ luôn số: thà gọn còn hơn hiện `(5…` cụt.
+
+   Số đo thật ở panel **319px** (vùng nhãn `clientWidth 106px`): nấc 1 cần **123px** (icon
+   16 + gap 4 + chữ 96.22 + dấu cách) ⇒ **bị cắt**; nấc 2 chỉ **96.22px** ⇒ **vừa**.
+   Đó là lý do phải có nấc 2 — hạ cỡ chữ không cứu được (`"(575)"` 13px vẫn còn 113px).
+
+   ⚠️ `clientWidth == 0` nghĩa là nhãn đang bị `display:none` (`dataView` chưa hiện) →
+   **không đo được**: giữ nguyên nấc 1 và để chỗ gọi đo lại sau khi view hiện ra
+   (`processFile()` làm vậy ngay sau `dataView.style.display='block'`), và `resize`
+   cũng gọi lại hàm này nên nới panel là icon tự quay về. */
+function fitSoGcsLabel() {
+  const el = document.getElementById('filterSoGcsLabel');
+  if (document.getElementById('filterSoGcs').value) return;   // đang chọn mã sổ → nhãn là mã
+  el.innerHTML = soGcsDefaultLabelHTML();
+  if (el.clientWidth === 0) return;
+  if (el.scrollWidth <= el.clientWidth) return;
+  el.innerHTML = soGcsAllText();                                // bỏ icon, giữ số
+  if (el.scrollWidth <= el.clientWidth) return;
+  el.innerHTML = 'Mã sổ';                                       // bỏ luôn số
 }
 function selectLoai(val) {
   document.getElementById('filterLoai').value = val;
@@ -2596,7 +2725,7 @@ function selectLoai(val) {
     btn.style.boxShadow = 'none';
     btn.style.background = '';
   } else {
-    label.innerHTML = filterLabelHTML(FILTER_ICONS.loai, 'Chi tiết nợ');
+    fitAllFilterLabels();   // bỏ lọc → nhãn mặc định, đo lại theo bề rộng thật
     // Trả viền về mặc định của theme (--ctl-vien / #c7d2fe); trước đây luôn để #3b82f6
     // nên ô "Chi tiết nợ" trông như đang được chọn dù chưa lọc gì.
     btn.dataset.active = '';
@@ -2655,9 +2784,8 @@ function selectSoGcs(val) {
   // Đã chọn → chỉ giá trị, KHÔNG icon (xem quy tắc icon ở khối `FILTER_ICONS`).
   // `esc(val)` vì đây là chỗ DUY NHẤT nhét dữ liệu Excel vào `innerHTML` của nhãn
   // (trước đây dùng `textContent` nên không cần escape).
-  document.getElementById('filterSoGcsLabel').innerHTML = val
-    ? esc(val)
-    : filterLabelHTML(FILTER_ICONS.sogcs, 'Mã sổ');
+  if (val) document.getElementById('filterSoGcsLabel').innerHTML = esc(val);
+  else fitSoGcsLabel();
   // Không đặt màu inline: mặc định của theme đã đủ phân biệt "đang lọc".
   document.getElementById('filterSoGcsBtn').dataset.active = val ? '1' : '';
   highlightSoGcsOptions(val);
@@ -2675,7 +2803,7 @@ function initFilters() {
   const nhomSet = [...new Set(allData.map(r=>r.ma_nhom).filter(Boolean))].sort();
   const dd = document.getElementById('nhomDropdown');
   // keep the first option (Tất cả)
-  dd.innerHTML = '<div class="nhom-option" data-val="" style="padding:8px 12px;cursor:pointer;font-size:17px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none" onmouseenter="this.style.background=\'rgba(59,130,246,0.15)\'" onmouseleave="this.style.background=\'\'" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> Danh sách nhóm</div>';
+  dd.innerHTML = '<div class="nhom-option" data-val="" style="padding:8px 12px;cursor:pointer;font-size:17px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none" onmouseenter="this.style.background=\'rgba(59,130,246,0.15)\'" onmouseleave="this.style.background=\'\'" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><span style="font-size:16px;line-height:1">📁</span></span> Danh sách nhóm</div>';
   nhomSet.forEach(v => {
     const d = document.createElement('div');
     d.className = 'nhom-option';
@@ -2693,6 +2821,9 @@ function initFilters() {
 
   // Ô lọc "Mã sổ": dựng theo NHÓM đang chọn — xem `buildSoGcsOptions()`.
   buildSoGcsOptions();
+  // Nhãn cả 3 ô lọc đều là emoji nên phải đo lại theo bề rộng THẬT — nhưng chỉ đo được khi
+  // `dataView` đã hiện; nếu chưa thì hàm tự bỏ qua và `processFile()` gọi lại ngay sau đó.
+  fitAllFilterLabels();
 }
 
 /* Dựng lại danh sách option của ô lọc "Mã sổ" THEO NHÓM đang chọn:
@@ -2733,11 +2864,11 @@ function buildSoGcsOptions() {
      `sogcsSet` vừa được tính theo nhóm đang chọn. Đếm 575 mã sổ thật, KHÔNG tính chính
      option "tất cả" (tổng option trong panel = số này + 1).
      Dùng `textContent` (option này chỉ có chữ trần, không icon) nên không cần escape. */
+  // Ghi số lượng vừa tính vào biến chung TRƯỚC khi dùng: nút "Mã sổ" (và `selectSoGcs('')`)
+  // cũng đọc qua `soGcsAllText()` nên cả hai luôn khớp với panel.
+  soGcsCount = sogcsSet.length;
   const allOpt = sdd.querySelector('.nhom-option[data-val=""]');
-  if (allOpt) allOpt.textContent = 'Mã sổ (' + sogcsSet.length + ')';
-  // Trên trang chưa nạp dữ liệu thì danh sách rỗng: hiện "Mã sổ (0)" là vô nghĩa nên
-  // trả về đúng chữ gốc, khớp với markup.
-  if (allOpt && !sogcsSet.length) allOpt.textContent = 'Mã sổ';
+  if (allOpt) allOpt.textContent = soGcsAllText();
   /* Nếu mã sổ ĐANG chọn không còn thuộc nhóm vừa chọn thì phải BỎ CHỌN ngay. Để nguyên
      thì `applyFilters()` lọc theo một mã sổ không tồn tại trong nhóm → danh sách RỖNG,
      mà nhìn vào chỉ thấy "đang lọc theo nhóm" — người dùng không hiểu vì sao trống.
@@ -2746,9 +2877,12 @@ function buildSoGcsOptions() {
   const cur = document.getElementById('filterSoGcs').value;
   if (cur && sogcsSet.indexOf(cur) === -1) {
     document.getElementById('filterSoGcs').value = '';
-    document.getElementById('filterSoGcsLabel').innerHTML = filterLabelHTML(FILTER_ICONS.sogcs, 'Mã sổ');
     document.getElementById('filterSoGcsBtn').dataset.active = '';
   }
+  // Nhãn nút kèm số lượng (yêu cầu người dùng) và **tự co theo chỗ trống**. Hàm này tự
+  // bỏ qua khi đang chọn một mã sổ (lúc đó nhãn phải là mã, không phải nhãn mặc định) nên
+  // không cần nhánh `if` nào ở đây.
+  fitSoGcsLabel();
   highlightSoGcsOptions(document.getElementById('filterSoGcs').value);
 }
 document.addEventListener('click', function(e) {
@@ -3330,6 +3464,9 @@ function fitGhiChuInputs() {
 }
 
 window.addEventListener('resize', fitGhiChuInputs);
+// Nhãn các ô lọc phải đo lại khi bề rộng panel đổi: **nới ra là emoji quay về**, thu vào là
+// bỏ icon (riêng "Mã sổ" giữ SỐ, xem 3 nấc ở `fitSoGcsLabel()`).
+window.addEventListener('resize', fitAllFilterLabels);
 
 function saveGhiChu(input) {
   const ma = input.dataset.ma;
@@ -3442,7 +3579,7 @@ function handleNhomFilter() {
 function clearNvScope() {
   nvScope = '';
   document.getElementById('filterNhom').value = '';
-  document.getElementById('filterNhomLabel').innerHTML = '<span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z"/></svg></span> Danh sách nhóm';
+  fitAllFilterLabels();   // nhãn mặc định + đo lại theo bề rộng thật (xem `fitFilterLabel()`)
   // Bỏ nhóm → danh sách "Mã sổ" phải trả về ĐẦY ĐỦ. Mã sổ đang chọn giữ nguyên vì
   // nó nằm trong danh sách đầy đủ (đây là đường BỎ nhóm, không phải nạp file mới).
   buildSoGcsOptions();
