@@ -20,6 +20,13 @@
   --gold: #f59e0b;
   --red: #ef4444;
   --green: #10b981;
+  /* Vạch "KH có ≥ 2 hoá đơn" ở mép trên thẻ khách hàng (`.kh-card.multi-hd::before`).
+     Tách riêng khỏi `--green` vì `--green` đang dùng cho badge/nhóm; đổi cái này không
+     được kéo theo chúng. Light mode override trong khối `body.light-mode`. */
+  --multi-hd: #34d399;
+  /* BỀ DÀY vạch. Khai thành token vì bề dày bị hỏi đi hỏi lại nhiều lần — đổi 1 dòng ở đây
+     là đổi cả app, không phải đi sửa `height` trong rule (xem "vạch xanh lá" ở run.md). */
+  --multi-hd-h: 5px;   /* = BỀ RỘNG của vệt DỌC ở mép trái thẻ (trước đây là bề dày vạch ngang) */
   --text: #e2e8f0;
   --text-dim: #94a3b8;
   --border: rgba(255,255,255,0.08);
@@ -37,6 +44,14 @@
      `.filter-select` content = H − 12 − 2 (phải ≥ dòng chữ 21.6px) ⇒ H ≥ 36px;
      `.search-box input` content = H − 8 − 2. Đừng nâng padding dọc cùng lúc. */
   --ctl-h: 44px;
+  /* Cỡ chữ + nét của **TOÀN BỘ control thanh công cụ** (ô tìm kiếm, 2 ô lọc, 2 nút sắp xếp,
+     và danh sách đổ xuống `.nhom-option`).
+     ⚠️ Đây là thứ tự 17 → 18 → **19px** — người dùng đã 4 lần yêu cầu “thêm 1px” cho đúng nhóm
+     chữ này, nên nó KHÔNG được khai rải rác nữa: đổi ở `--ctl-fs` là đổi cả nhóm.
+     Danh sách chỗ dùng (đủ, đừng sót): 4 rule nền (`.search-box input`, `.filter-select`,
+     `.sort-btn`, `.nhom-option`) + 7 rule trong 2 khối @media (≤639.98px: 3 · ≥640px: 4). */
+  --ctl-fs: 19px;
+  --ctl-fw: 500;
 
   /* ── BẢNG MÀU ICON (nguồn DUY NHẤT) ───────────────────────────────────────
      Icon trong sprite `#__icon-sprite` chỉ tham chiếu các biến này, KHÔNG viết mã màu
@@ -93,8 +108,19 @@ body.light-mode {
      ⚠️ Viền là **1px** ở cả 2 theme (hợp đồng theme chỉ đổi MÀU, không đổi metric) — muốn
      đậm thêm thì đổi MÀU, ĐỪNG tăng `border-width` (nó đổi metric và làm reflow mỗi lần
      bật/tắt sáng-tối). Nấc tiếp theo nếu vẫn chưa đủ: `#1f2937` (gray-800 — bắt đầu gắt
-     ở nét 1px). Đổi ở ĐÂY là đổi cả 4 chỗ dùng chung. */
-  --light-edge: #374151;
+     ở nét 1px). Đổi ở ĐÂY là đổi cả 4 chỗ dùng chung. */   --light-edge: #374151;
+
+   /* Vạch "KH có ≥ 2 hoá đơn" trên thẻ: nền thẻ light là TRẮNG nên phải dùng tông ĐẬM hơn
+      bản dark (`#34d399` — trên trắng chỉ **1.98:1**, coi như vô hình).
+      Tông đang dùng `#0f9d58` = **3.51:1** trên thẻ trắng (ngưỡng 3:1 của WCAG 1.4.11) —
+      chọn vì người dùng muốn "màu nổi hơn": nó **sáng và bão hoà hơn** `#059669` cũ (3.77:1)
+      mà vẫn còn dư ngưỡng. Đo các tông đã cân nhắc (trên nền thẻ TRẮNG):
+        `#047857` 5.48 ✓ (đậm, kém nổi)     `#059669` 3.77 ✓ (tông cũ, ngả teal/xỉn)
+        `#0f9d58` **3.51 ✓ ← đang dùng**     `#16a34a` 3.30 ✓ (ngả vàng)
+        `#00a651` 3.19 ✓ (tươi nhất trong nhóm đạt, nhưng dư ngưỡng mỏng — dễ dưới 3:1
+                         ở mép vạch do khử răng cưa)     `#10b981` 2.54 ✗   `#12b76a` 2.62 ✗
+      ⚠️ phải đo trên nền **thẻ trắng**, KHÔNG đo trên nền trang `#f8fafc` (lệch số). */
+   --multi-hd: #0f9d58;
 
   /* ── BẢNG MÀU ICON TINH CHỈNH RIÊNG CHO LIGHT MODE ────────────────────────
      Bảng `--ic-*` gốc ở `:root` vốn được chọn cho NỀN TỐI. Trên bề mặt control sáng
@@ -320,7 +346,16 @@ body.light-mode .nhom-dropdown { background: #ffffff !important; border-color: #
    📌 Cỡ nay là **18px** (17 → 18, yêu cầu người dùng "cho chữ này thêm 1px"). Vì rule
    này có `!important` nên nó **ĐÈ** mọi inline — nhưng vẫn phải sửa các inline theo để
    lần sau đọc code không tưởng dropdown là 17px. */
-.nhom-option { font-weight: 500 !important; font-size: 18px !important; }
+/* Danh sách đổ xuống của 2 ô lọc: dùng CHUNG token với control (`--ctl-fs`/`--ctl-fw`).
+   `!important` ở đây để thắng `style="…"` inline của từng option — 11 chuỗi inline đó đã được
+   BỎ HẲN `font-size`/`font-weight` (trước đây chúng ghi cứng 18px và phải đi sửa đồng loạt mỗi
+   lần đổi cỡ chữ; nay cỡ chữ chỉ còn MỘT nguồn là token này). */
+/* `user-select:none` cho MỌI hàng của CẢ HAI danh sách. Hàng do JS dựng (`#nhomDropdown`)
+   vốn đã khai trong `d.style.cssText`, còn 8 hàng TĨNH của `#loaiDropdown` thì chưa ⇒ giữ lâu
+   trên điện thoại là chữ bị bôi đen xanh, vừa xấu vừa dễ bị đọc nhầm thành trạng thái “đang
+   chọn” (trạng thái đó đã có nền xanh nhạt + vạch trái do `selectLoai()` vẽ). Khai một lần ở
+   đây cho cả hai — chỉ đổi HÀNH VI, không đổi metric. */
+.nhom-option { font-weight: var(--ctl-fw) !important; font-size: var(--ctl-fs) !important; user-select: none; -webkit-user-select: none; }
 body.light-mode .nhom-option { color: #000000 !important; border-bottom: 1px solid #94a3b8 !important; background: #ffffff !important; }
 body.light-mode .nhom-option:hover { background: rgba(59,130,246,0.1) !important; }
 body.light-mode .toolbar { background: #ffffff; border-bottom-color: #e2e8f0; }
@@ -399,21 +434,25 @@ body.light-mode .info-row { border-bottom-color: #e2e8f0; }
 /* nhãn trong modal: #64748b trên nền #f0f1f4 chỉ đạt 4.21:1 (< 4.5) → dùng xám đậm hơn (~5.1:1) */
 body.light-mode .info-label { color: #5b6777; }
 body.light-mode .info-value { color: #0f172a; }
-/* Lighter rows: STT(1), Số TBI(11) */
-body.light-mode .info-row:nth-child(1) .info-value, body.light-mode .info-row:nth-child(11) .info-value { color: #475569 !important; }
-/* Địa chỉ(4), Mã Số(5) - slightly brighter */
-body.light-mode .info-row:nth-child(4) .info-value, body.light-mode .info-row:nth-child(5) .info-value { color: #475569 !important; }
-body.light-mode .info-row:nth-child(6) .info-value { color: #475569 !important; }
-/* Mã KH(2), Tên KH(3), Tiền Nợ(8) */
-body.light-mode .info-row:nth-child(2) .info-value, body.light-mode .info-row:nth-child(2) .ma-kh { color: #475569 !important; }
-body.light-mode .info-row:nth-child(3) .info-value { color: #2563eb !important; }
+/* ⚠️ Màu riêng của từng hàng trong modal nay khai theo **LỚP `i-*`** (`i-stt`, `i-tien`…),
+   KHÔNG còn theo `:nth-child(N)` — xem giải thích đầy đủ ở block theme tối (rule `.i-stt`).
+   Thứ tự hàng hiện tại: Tên KH · Mã KH · Địa chỉ · Mã Số GCS · Danh Số · Tháng · Tiền nợ ·
+   SĐT · Số TBi · Chú ý · ABC · STT (yêu cầu người dùng: “tên kh dời lên đầu, stt dời xuống cuối”). */
+/* Lighter rows: STT, Chú ý */
+body.light-mode .i-stt .info-value, body.light-mode .i-chuy .info-value { color: #475569 !important; }
+/* Địa chỉ, Mã Số GCS - slightly brighter */
+body.light-mode .i-diachi .info-value, body.light-mode .i-sogcs .info-value { color: #475569 !important; }
+body.light-mode .i-danhso .info-value { color: #475569 !important; }
+/* Mã KH, Tên KH, Tiền Nợ */
+body.light-mode .i-makh .info-value, body.light-mode .i-makh .ma-kh { color: #475569 !important; }
+body.light-mode .i-tenkh .info-value { color: #2563eb !important; }
 /* Ô Tiền nợ: rule nền là color #ffffff (dành cho dark); ở light phải đổi màu chữ,
    nếu không mọi chữ nằm trực tiếp trong ô sẽ trắng trên nền sáng */
-body.light-mode .info-row:nth-child(8) .info-value { color: #0f172a; }
-body.light-mode .info-row:nth-child(8) .info-value .tien-no.low { color: #047857 !important; }
-body.light-mode .info-row:nth-child(8) .info-value .tien-no.high { color: #b91c1c !important; }
-/* Số TBI(10) - slightly darker */
-body.light-mode .info-row:nth-child(10) .info-value { color: #334155 !important; }
+body.light-mode .i-tien .info-value { color: #0f172a; }
+body.light-mode .i-tien .info-value .tien-no.low { color: #047857 !important; }
+body.light-mode .i-tien .info-value .tien-no.high { color: #b91c1c !important; }
+/* Số TBI - slightly darker */
+body.light-mode .i-tbi .info-value { color: #334155 !important; }
 /* .modal-header h2 đã có font-size 15px + font-weight 300 ở rule nền → ở đây chỉ đổi màu */
 body.light-mode .modal-header h2 { color: #000000 !important; }
 body:not(.light-mode) .modal-header h2 { font-weight: 300 !important; }
@@ -678,8 +717,8 @@ body.light-mode .count-tien.mid { color: #92400e; }   /* 4.81:1 trên nền tran
   /* 17 → **18px** (yêu cầu người dùng: "cho chữ này thêm 1px"). Đổi ở **4 rule nền
      + 4 rule trong 2 khối @media + 11 chuỗi inline của `.nhom-option`** — xem chú thích
      ở rule `.nhom-option`. */
-  font-size: 18px;
-  font-weight: 500;
+  font-size: var(--ctl-fs);
+  font-weight: var(--ctl-fw);
   font-family: 'Inter', sans-serif;
   outline: none;
   transition: border-color 0.2s;
@@ -696,8 +735,7 @@ body.light-mode .count-tien.mid { color: #92400e; }   /* 4.81:1 trên nền tran
   display: none;                        /* JS bật bằng display:flex khi có dữ liệu */
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  width: auto;                          /* có nhãn “Xuất” → bề rộng theo nội dung (trước là 40px) */
+  flex-shrink: 0;   width: auto;                          /* có nhãn “Xuất file” → bề rộng theo nội dung (trước là 40px vuông) */
   height: 40px;
   padding: 0 12px;                      /* trước là `padding: 0` khi nút còn vuông 40×40 */
   gap: 6px;                             /* icon ↔ nhãn */
@@ -718,6 +756,19 @@ body.light-mode .count-tien.mid { color: #92400e; }   /* 4.81:1 trên nền tran
   .export-btn:hover { border-color: #3b82f6; color: #ffffff; background: rgba(59,130,246,0.16); }
 }
 .export-btn:active { background: rgba(59,130,246,0.28); }
+/* Panel RẤT hẹp (≤ 359.98px): nút "Xuất file" phải tự THU LẠI để nhường chỗ cho dòng
+   TIỀN — dòng tiền **không được cắt** (cắt số = mất dữ liệu thật), nút thì vẫn đủ nghĩa
+   với icon + nhãn.
+   Số đo ở panel 320px khi nhãn còn là “Xuất”: nút 82.75px ⇒ cột chữ 185.18px > tiền 175.74px ✓.
+   Đổi sang “Xuất file” (+23.3px) ⇒ nút 106.08px ⇒ cột chữ 161.85px < 175.74px ⇒ **cắt 14px số tiền**.
+   Nhánh này trả lại: padding 12→8, gap 6→4, icon 20→18 ⇒ nút 94.17px ⇒ cột chữ 177.75px ✓ (dư ~2px).
+   ⚠️ Từ **360px** trở lên KHÔNG đụng gì (nút giữ nguyên như người dùng thấy).
+   ⚠️ Nếu dữ liệu lên tổng 11 chữ số thì 2px dư này cũng hết — lúc đó phải bỏ NHÃN ở panel ≤360px
+   (chỉ còn icon; `title`/`aria-label` vẫn là "Xuất file Excel") chứ **đừng** để cắt số tiền. */
+@media (max-width: 359.98px) {
+  .export-btn { padding: 0 8px; gap: 4px; }
+  .export-btn svg { width: 18px; height: 18px; }
+}
 .search-clear {
   position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
   width: 20px; height: 20px; border-radius: 50%;
@@ -767,8 +818,8 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
      lấy từ biến `--ctl-h` (xem `:root`). */
   height: var(--ctl-h);
   color: var(--text);
-  font-size: 18px;   /* 17 → 18px cùng đợt với ô tìm kiếm và nút sắp xếp */
-  font-weight: 500;
+  font-size: var(--ctl-fs);   /* 17 → 18 → **19px** — nay lấy từ token, xem `--ctl-fs` */
+  font-weight: var(--ctl-fw);
   font-family: 'Inter', sans-serif;
   outline: none;
   cursor: pointer;
@@ -836,9 +887,8 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
   padding: 6px 4px;
   white-space: nowrap;
   color: rgba(255,255,255,0.55);
-  font-size: 18px;   /* cùng cỡ với ô tìm kiếm và 2 ô lọc — 17 → **18px** cùng đợt
-                        (yêu cầu người dùng: "cho chữ này thêm 1px") */
-  font-weight: 500;
+  font-size: var(--ctl-fs);   /* cùng cỡ với ô tìm kiếm và 2 ô lọc — nay lấy từ token */
+  font-weight: var(--ctl-fw);
   font-family: 'Inter', sans-serif;
   cursor: pointer;
   transition: border-color 0.2s, background-color 0.2s, color 0.2s;
@@ -897,7 +947,15 @@ body.light-mode .nhom-sel-name {
 }
 
 .count-info {
-  font-size: 17px;
+  /* 17 → **18px** (yêu cầu người dùng: “cho chữ này 18 px”) — dùng chung cho CẢ 2 dòng
+     “Tổng - … KH / … HĐ” và “Tiền - …đ”.
+     ⚠️ Đổi cỡ chữ ở đây thì **`height: 29px` của `.count-line2` phải ĐO LẠI** (29 = dòng 21px
+     + 4px×2 khai theo cỡ 17px cũ) — xem chú thích ở `.count-line2`. */
+  font-size: 18px;
+  /* `line-height` khai TƯỜNG MINH (trước là `normal`) để chiều cao dòng không phụ thuộc
+     metric của font: 18px → `normal` cho ra 22.1px, còn số nguyên 22px mới khớp phép tính
+     của `.count-line2` (30 = 22 + 4×2). Đổi cỡ chữ thì phải đo lại cả hai số. */
+  line-height: 22px;
   color: var(--text-dim);
   font-weight: 500;
   padding: 0 2px;
@@ -947,7 +1005,7 @@ body.light-mode .nhom-sel-name {
 .count-line1 { grid-column: 1; grid-row: 1; }
 /* `.count-line2` cố ý chỉ còn **ĐÚNG 1 con** (bỏ `justify-content: space-between` vì thừa):
    nút "Xuất" đã ra cột 2. Đừng thêm con thứ hai vào đây — đó là làm lại đúng lỗi cũ. */
-.count-line2 { grid-column: 1; grid-row: 2; display: flex; align-items: center; gap: 10px; margin-top: 0; height: 29px; }
+.count-line2 { grid-column: 1; grid-row: 2; display: flex; align-items: center; gap: 10px; margin-top: 0; height: 30px; }
 /* "Tiền" là NHÃN chứ không phải số → thừa hưởng `color: var(--text-dim)` của
    `.count-info`, y hệt "Tổng"/"KH"/"HĐ" ở dòng 1; số vẫn đỏ qua `.count-tien`.
    ⚠️ Vẫn phải BỌC nhãn + số vào `.count-tien-wrap` (dù `.count-line2` nay chỉ còn 1 con và
@@ -955,11 +1013,32 @@ body.light-mode .nhom-sel-name {
    cần đi liền nhau, và `gap: 4px` bên trong mới cho đúng khoảng nhãn ↔ số.
    `align-items: baseline` để hai chữ khác cỡ vẫn ngồi chung một dòng cơ sở. */
 .count-tien-wrap { display: inline-flex; align-items: baseline; gap: 4px; }
+/* ⚠️ Nhãn “Tiền -” và SỐ **không được xuống dòng** (thêm khi chữ lên 18px — đã đo, không phải phòng xa):
+   ở panel 320px cột chữ chỉ còn **173.87px** trong khi cặp `Tiền -` + số cần **~173.9px** ⇒ flex
+   co nhãn lại ⇒ nhãn tự ngắt thành **2 dòng** ⇒ `.count-tien-wrap` cao **44px** nằm trong hàng cao
+   **30px** ⇒ `align-items: center` đẩy nó **tràn 7px LÊN TRÊN**, đè thẳng vào dòng “Tổng” đang
+   xuống 2 dòng (đo được: đáy dòng “Tổng” = 248.92, đỉnh chữ tiền = **241.92**).
+   `nowrap` giữ cặp này ĐÚNG 1 DÒNG; nếu vẫn thiếu chỗ thì nó tràn **NGANG** vào khe 10px của
+   lưới `.count-info` — **không bao giờ chạm nút Xuất** vì nút là **cột riêng** (xem chú thích
+   `.count-info`). Thà tràn ngang vài phần mười px còn hơn đè lên chữ. */
+.count-tien, .count-tien-label { white-space: nowrap; }
 .count-info .count-kh-hd { color: #60a5fa; }
 .count-info .count-tien { color: #ff8888; font-weight: 500; }
 /* Số tổng đổi màu theo quy mô: <100tr xanh · 100tr–1tỷ vàng · ≥1tỷ đỏ (mặc định) */
 .count-info .count-tien.low { color: #86efac; }
 .count-info .count-tien.mid { color: #fde68a; }
+/* Panel RẤT hẹp (≤ 359.98px): hạ cỡ chữ khối tổng về 17px (cỡ cũ).
+   LÝ DO là số đo, không phải cảm tính: ở panel **320px**, cột chữ chỉ có **173.87px** trong khi cặp
+   `Tiền -` + số ở 18px cần **185.27px** (50.81 + 4 + 130.47) ⇒ tràn **11.4px** sang phải, chạm
+   đúng nút “Xuất file” (mép trái nút ở `193.86`, mép phải số ở `195.26`). Ở 17px cặp đó cần
+   **175.22px** ⇒ lùi vào an toàn. Từ **360px** trở lên cột rộng ≥ 206px ⇒ **giữ 18px**.
+   ⚠️ `line-height: 22px` khai ở `.count-info` nên hạ cỡ chữ KHÔNG làm xê dịch dòng:
+   hàng 2 vẫn cao 30px (22 + 4×2) ⇒ bố cục bên dưới không nhích.
+   ⚠️ Cùng ngưỡng 359.98px với nhánh thu gọn của nút “Xuất file” — cố ý, để chỉ có MỘT
+   ngưỡng “rất hẹp” phải nhớ trong file. */
+@media (max-width: 359.98px) {
+  .count-info { font-size: 17px; }
+}
 
 /* ── CARD LIST (mobile view) ─────────────── */
 .card-list { display: flex; flex-direction: column; gap: 6px; }
@@ -972,6 +1051,12 @@ body.light-mode .nhom-sel-name {
   border: 1px solid rgba(255,255,255,0.34);
   box-shadow: 0 1px 3px rgba(0,0,0,0.45);
   border-radius: 10px;
+  /* `overflow: hidden` là thứ làm MỌI thứ vẽ tràn trong thẻ bị CẮT theo đúng đường bo
+     cong của viền thẻ — không có nó thì vạch `multi-hd` (và mọi nền/vạch khác) sẽ thò
+     ra 4 góc vuông ngoài đường cong. Không đổi metric, không cắt bóng của chính thẻ
+     (box-shadow của thẻ không phải phần tử con nên không bị `overflow` cắt), và đã đo:
+     không có con nào của thẻ vượt mép thẻ ở 320/362/429px (xem run.md). */
+  overflow: hidden;
   padding: 10px 14px;
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
@@ -979,6 +1064,49 @@ body.light-mode .nhom-sel-name {
   user-select: none;
 }
 .kh-card:active { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.16); }
+/* KH có **từ 2 hoá đơn trở lên** → một VỆT XANH LÁ **DỌC ở mép TRÁI** thẻ, chạy suốt chiều cao
+   thẻ ⇒ nằm **TRƯỚC TÊN KH** theo thứ tự đọc (yêu cầu người dùng: vạch này trước đây nằm NGANG
+   ở mép trên, rồi được yêu cầu “chuyển viền xanh sang hàng dọc trước tên kh”).
+   Bề rộng vệt **6px** = 1px **viền trái xanh** (xem rule ngay dưới) + 5px token `--multi-hd-h`.
+   Lịch sử bề dày: 2px → 4px → 5px (+1px viền) → nay giữ **5px + 1px viền**, chỉ đổi HƯỚNG.
+   ⚠️ Vẽ bằng `::before` tuyệt đối, **KHÔNG** dùng `border-left-width`: `::before` là lớp phủ nên
+   **không đổi metric** (thẻ rộng y hệt thẻ thường, không reflow cả danh sách), còn tăng
+   `border-left-width` sẽ làm thẻ có vệt **rộng thêm** và đẩy chữ sang phải.
+   `position: absolute` bám vào **padding box** của thẻ ⇒ vệt nằm gọn BÊN TRONG viền 1px.
+   Màu qua token `--multi-hd`, bề dày qua token `--multi-hd-h` (`:root` = dark, light override
+   trong `body.light-mode`) — ngưỡng 3:1 của biên component (WCAG 1.4.11) đã đo cho cả 2 theme.
+
+   ⚠️ **HAI ĐẦU VỆT BO CONG nhờ `overflow: hidden` của `.kh-card`, KHÔNG phải `border-radius` ở đây.**
+   Một vệt rộng 5px mà khai `border-radius: 10px` thì CSS **tự thu nhỏ bán kính** (tổng bán kính
+   NGANG 10px > bề rộng 5px ⇒ scale 0.5 ⇒ còn 5px) nên nó *không* khớp với đường cong của thẻ;
+   tệ hơn, hộp `::before` bám vào **hình chữ nhật bao** của padding box nên 2 đầu vệt thò ra
+   ngoài đường cong (vuông góc). Cách duy nhất khớp thật là để **thẻ tự cắt** phần tràn ⇒
+   vì thế `.kh-card` có `overflow: hidden`. Đừng gỡ `overflow`, và đừng "sửa" bằng cách
+   thêm `border-radius` lại vào đây.
+   ⚠️ Đổi HƯỚNG vệt thì phải đổi **CẢ HAI** chỗ cho khớp nhau: `left/top/bottom/width` của `::before`
+   **VÀ** `border-left-color` của thẻ. Lệch một chỗ là vệt bị “hở” 1px viền xám ở mép ngoài
+   (lỗi của bản ngang trước đây). */
+.kh-card.multi-hd { position: relative; }
+/* Nối vệt xanh liền mạch với VIỀN TRÁI của thẻ: đổi luôn màu viền trái thành xanh.
+   ⚠️ Đây là thứ DUY NHẤT làm vệt xanh vươn tới **mép ngoài** và bo theo **đường cong NGOÀI**
+   của thẻ — vệt `::before` bị `overflow: hidden` cắt ở **padding box** nên nó chỉ tới được
+   đường cong BÊN TRONG, luôn hở 1px viền xám phía ngoài.
+   KHÔNG đụng `border-left-width` (giữ nguyên 1px như mọi thẻ khác) ⇒ **không đổi metric**: bề
+   rộng thẻ, vị trí chữ và chiều cao thẻ y hệt thẻ không có vệt.
+   ⚠️ Loại trừ `.highlighted` / `.highlighted-purple`: 2 loại đó dùng viền để báo trạng thái
+   (vàng “Chú ý” / xanh cyan) — đè viền TRÁI thành xanh lá cũng làm lệch tín hiệu đó.
+   Chúng vẫn có vệt `::before`.
+   `:not(...)` không làm mất tác dụng chống đè: 4 lớp > 2 lớp của `body.light-mode .kh-card`,
+   nên rule này thắng cả ở light mode lẫn khi thẻ đang `:active`. */
+.kh-card.multi-hd:not(.highlighted):not(.highlighted-purple) { border-left-color: var(--multi-hd); }
+.kh-card.multi-hd::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: var(--multi-hd-h);
+  background: var(--multi-hd);
+  pointer-events: none;
+}
 /* Nền thẻ đánh dấu phải ĐỤC (không dùng rgba): trước đây `rgba(251,191,110,0.03/.08)`
    bị pha với nền TRANG chứ không phải nền thẻ, nên ở light mode thẻ "Chú ý" thành xám
    #eaeaea lẫn vào nền trang (1.03:1), còn ở dark thành #18181b tối hơn cả thẻ thường.
@@ -1481,34 +1609,38 @@ function changeBackgroundColor(newColor) {
   align-items: flex-start;
 }
 .info-row:last-child { border-bottom: none; }
-/* Cỡ chữ bảng trong modal: nhãn 18px, giá trị 19px, tên KH 22px (xem thêm các rule
-   nth-child bên dưới và các inline style trong showDetail — phải đổi cùng nhau) */
+/* Cỡ chữ bảng trong modal: nhãn 18px, giá trị 19px, tên KH 22px.
+   ⚠️ Màu/cỡ riêng của từng hàng nay khai theo **LỚP `i-*`** (`i-tenkh`, `i-tien`, `i-stt`…),
+   KHÔNG còn theo `:nth-child(N)`. Lý do: `showDetailRow()` dựng 12 hàng từ MỘT MẢNG và thứ tự
+   hàng đã bị đổi (yêu cầu người dùng: “tên kh dời lên đầu, stt dời xuống cuối”). Đổi thứ tự
+   trong mảng nay **không làm lệch màu/cỡ của hàng nào**; trước đây phải soi lại 9 rule ở theme
+   sáng + 14 rule ở theme tối, sai một con số là một hàng khác lặng lẽ đổi màu.
+   → Thêm/đổi/bỏ hàng trong `showDetailRow`: chỉ cần giữ ĐÚNG tên lớp `i-*` khai ở đây. */
 .info-label { font-size: 18px; font-weight: 400; font-family: 'Inter', sans-serif; letter-spacing: 0.03em; color: #b0bdd0; min-width: 100px; margin-top: 2px; flex-shrink: 0; }
 .info-value { font-size: 19px; color: var(--text); font-family: 'Inter', sans-serif; flex: 1; word-break: break-word; font-weight: 400; }
-/* Dark mode: muted rows - STT(1) */
-.info-row:nth-child(1) .info-value { color: #c8d0dc; font-weight: 400; }
-/* Địa chỉ(4), Mã Số(5) - muted */
-.info-row:nth-child(4) .info-value, .info-row:nth-child(5) .info-value { color: #a9b7c9; font-weight: 400; }
+/* Dark mode: muted rows - STT · Địa chỉ · Mã Số GCS */
+.i-stt .info-value { color: #c8d0dc; font-weight: 400; }
+.i-diachi .info-value, .i-sogcs .info-value { color: #a9b7c9; font-weight: 400; }
 .modal .info-row:last-child .badge { background: none; border: none; color: var(--text); font-weight: 400; padding: 0; }
-/* Mã KH(2) */
-.info-row:nth-child(2) .info-value, .info-row:nth-child(2) .ma-kh { color: #c8d0dc; font-weight: 400; font-size: 19px; }
-/* Tên KH(3) */
-.info-row:nth-child(3) .info-value { font-size: 22px; font-weight: 600; color: #60a5fa; letter-spacing: 0.02em; }
-/* Tháng(7) */
-.info-row:nth-child(7) .info-value { font-size: 19px; font-weight: 400; }
-.info-row:nth-child(7) .info-value .badge { font-size: 19px; font-weight: 400; }
-/* Tiền Nợ(8) */
-.info-row:nth-child(8) .info-value { color: #ffffff; font-weight: 400; font-size: 19px; }
-.info-row:nth-child(8) .info-value .tien-no.low { color: #86efac; }
-.info-row:nth-child(8) .info-value .tien-no.high { color: #ff8888; }
-.info-row:nth-child(8) .info-value .tien-no { font-weight: 400; }
+/* Mã KH */
+.i-makh .info-value, .i-makh .ma-kh { color: #c8d0dc; font-weight: 400; font-size: 19px; }
+/* Tên KH */
+.i-tenkh .info-value { font-size: 22px; font-weight: 600; color: #60a5fa; letter-spacing: 0.02em; }
+/* Tháng */
+.i-thang .info-value { font-size: 19px; font-weight: 400; }
+.i-thang .info-value .badge { font-size: 19px; font-weight: 400; }
+/* Tiền Nợ */
+.i-tien .info-value { color: #ffffff; font-weight: 400; font-size: 19px; }
+.i-tien .info-value .tien-no.low { color: #86efac; }
+.i-tien .info-value .tien-no.high { color: #ff8888; }
+.i-tien .info-value .tien-no { font-weight: 400; }
 /* Tiền nợ trong modal: rule nền toàn cục là 15px, phải nâng theo cỡ giá trị của modal */
 .modal .info-row .tien-no { font-size: 19px; font-weight: 400; }
-/* Mã Số GCS(5), Danh Số(6), Số TBI(10), Ghi Chú(11) */
-.info-row:nth-child(5) .info-value { font-size: 19px; font-weight: 400; }
-.info-row:nth-child(6) .info-value { font-size: 19px; font-weight: 400; color: #c8d0dc; }
-.info-row:nth-child(10) .info-value { color: #c8d0dc; font-weight: 400; font-size: 19px; }
-.info-row:nth-child(11) .info-value { font-size: 19px; font-weight: 400; }
+/* Mã Số GCS · Danh Số · Số TBI · Chú ý */
+.i-sogcs .info-value { font-size: 19px; font-weight: 400; }
+.i-danhso .info-value { font-size: 19px; font-weight: 400; color: #c8d0dc; }
+.i-tbi .info-value { color: #c8d0dc; font-weight: 400; font-size: 19px; }
+.i-chuy .info-value { font-size: 19px; font-weight: 400; }
 /* Badges inside the modal (Tháng, per-month sub-rows) */
 .modal .info-row .badge { font-size: 19px; font-weight: 400; }
 
@@ -1536,9 +1668,9 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
 
 /* Mobile-only refinements */
 @media (max-width: 639.98px) {
-  .filter-select { font-size: 18px; padding-top: 6px; padding-bottom: 6px; }
-  .sort-btn { font-size: 18px; }
-  .search-box input { font-size: 18px; }
+  .filter-select { font-size: var(--ctl-fs); padding-top: 6px; padding-bottom: 6px; }
+  .sort-btn { font-size: var(--ctl-fs); }
+  .search-box input { font-size: var(--ctl-fs); }
   /* Cỡ chữ NỘI DUNG THẺ CARD ở mobile — đã +1px (xem chú thích ở `.kh-danhso` khối nền).
      Khối này khai lại các cỡ đó nên **phải sửa cùng lúc**, không thì mobile lệch nền. */
   .kh-name { font-size: 18px; }
@@ -1627,7 +1759,7 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
   .search-export-row { flex: 1 1 auto; }
   .toolbar-top { display: flex; flex-wrap: wrap; gap: 2px 4px; align-items: stretch; }
   .toolbar-top .search-box { flex: 2; min-width: 0; margin-top: 0; }
-  .toolbar-top .search-box input { font-size: 18px; }
+  .toolbar-top .search-box input { font-size: var(--ctl-fs); }
   /* Sàn theo NỘI DUNG, không phải `min-width: 0`. Với 3 ô lọc + ô tìm kiếm trên một
      hàng ở dải viewport 640–900px, `min-width: 0` cho phép bóp mỗi ô lọc xuống **69px**
      → nhãn bị cắt ("Chi tiết n…"). `max-content` = đúng bề rộng nhãn cần
@@ -1643,14 +1775,14 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
      có độ ưu tiên cao hơn nên `min-width` khai kiểu một-class sẽ **bị đè im lặng**
      (đã dính đúng bẫy này ở lần sửa đầu: đo lại vẫn ra 69px + nhãn cắt như cũ). */
   .toolbar-top .filter-row { flex: 1 1 0; min-width: max-content; gap: 4px; }
-  .filter-select { flex: 1; min-width: 0; font-size: 18px; }
+  .filter-select { flex: 1; min-width: 0; font-size: var(--ctl-fs); }
   .sort-row { flex: 1; gap: 2px 4px; width: 100%; }
   /* padding dọc 10px → 6px cho khớp `height: 36px` (trước đây hàng cao 42px nên 10px
      không sao; nay content box chỉ còn 36 − 20 − 2 = 14px < dòng chữ 21px). */
-  .sort-btn { padding: 6px 12px; font-size: 18px; flex: 1; }
+  .sort-btn { padding: 6px 12px; font-size: var(--ctl-fs); flex: 1; }
   .sort-btn .sort-arrow { width: 14px; height: 14px; }
   .sort-btn .sort-ico { width: 14px; height: 14px; }
-  .sort-label { font-size: 18px; }
+  .sort-label { font-size: var(--ctl-fs); }
   .header-sub { max-width: 300px; }
   /* Desktop: data 14px */
   tbody td { font-size: 14px; padding: 4px 8px; }
@@ -1911,7 +2043,7 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
             <span id="filterNhomLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</span>
           </div>
           <div class="nhom-dropdown" id="nhomDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
-            <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</div>
+            <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</div>
           </div>
           <input type="hidden" id="filterNhom" value="">
         </div>
@@ -1920,14 +2052,33 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
             <span id="filterLoaiLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-receipt"/></svg></span> Chi tiết nợ</span>
           </div>
           <div class="nhom-dropdown" id="loaiDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
-            <div class="nhom-option" data-val="" onclick="selectLoai('')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Chi tiết nợ</div>
-            <div class="nhom-option" data-val="old" onclick="selectLoai('old')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Nợ ≥ 3Tr</div>
-            <div class="nhom-option" data-val="1tr" onclick="selectLoai('1tr')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Nợ 1Tr đến 3Tr</div>
-            <div class="nhom-option" data-val="oldky" onclick="selectLoai('oldky')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Nợ cũ, nhiều kỳ</div>
-            <div class="nhom-option" data-val="summary" onclick="selectLoai('summary')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Tổng hợp nợ</div>
-            <div class="nhom-option" data-val="marked" onclick="selectLoai('marked')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" >Chú ý</div>
-            <div class="nhom-option" data-val="called" onclick="selectLoai('called')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:#10b981;display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02z"/></svg></span> KH đã gọi</div>
-            <div class="nhom-option" data-val="notcalled" onclick="selectLoai('notcalled')" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:#ef4444;display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M17 1.01 7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg></span> KH chưa gọi</div>
+            <!-- ⚠️ 8 hàng của danh sách "Chi tiết nợ": MỖI hàng có ĐÚNG MỘT dấu hiệu ở đầu,
+                 đúng khuôn của danh sách nhóm `#nhomDropdown` (yêu cầu người dùng: “cho hàng
+                 này cũng có icon chấm trong như tên nhóm”):
+                   · hàng 1 `Chi tiết nợ` = icon BIÊN LAI `#i-receipt` — y như hàng 1 của danh
+                     sách nhóm dùng icon `#i-people`. Đây là hàng “tất cả”, không phải một
+                     phân loại, nên KHÔNG có chấm.
+                   · 5 hàng PHÂN LOẠI = `<span class="nhom-dot">` **chấm tròn 9px** đúng như
+                     danh sách nhóm; màu lấy theo NGHĨA của phân loại: đỏ `#ef4444` = nợ ≥ 3Tr,
+                     cam `#ea580c` = 1–3Tr, tím `#8b5cf6` = nợ cũ nhiều kỳ, xanh `#3b82f6` =
+                     tổng hợp nợ, hổ phách `#b45309` = chú ý. (KHÔNG dùng `getNhomColor()` cho
+                     5 hàng này: palette đó gán màu theo THỨ TỰ nhóm xuất hiện, đổi màu mỗi
+                     khi dữ liệu đổi ⇒ chấm mất nghĩa, còn màu cố định thì nhìn là hiểu.)
+                   · 2 hàng `KH đã gọi` / `KH chưa gọi` giữ icon ỐNG NGHE / ĐIỆN THOẠI (xanh
+                     `--ic-green` / đỏ `#ef4444`): ở đây màu icon là THÔNG TIN trạng thái gọi
+                     chứ không phải phân loại, nên không đổi thành chấm.
+                 → Muốn CẢ 8 hàng đều là chấm thì đổi 3 hàng icon (1 · 7 · 8) sang `.nhom-dot`;
+                 đừng gỡ chấm ở 5 hàng phân loại (người dùng đã yêu cầu 2 lần).
+                 ⚠️ Markup TĨNH — không có đoạn JS nào dựng lại `#loaiDropdown` (khác
+                 `#nhomDropdown` do `initFilters()` dựng lại), nên sửa chấm phải sửa Ở ĐÂY. -->
+            <div class="nhom-option" data-val="" onclick="selectLoai('')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-receipt"/></svg></span> Chi tiết nợ</div>
+            <div class="nhom-option" data-val="old" onclick="selectLoai('old')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#ef4444"></span> Nợ ≥ 3Tr</div>
+            <div class="nhom-option" data-val="1tr" onclick="selectLoai('1tr')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#ea580c"></span> Nợ 1Tr đến 3Tr</div>
+            <div class="nhom-option" data-val="oldky" onclick="selectLoai('oldky')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#8b5cf6"></span> Nợ cũ, nhiều kỳ</div>
+            <div class="nhom-option" data-val="summary" onclick="selectLoai('summary')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#3b82f6"></span> Tổng hợp nợ</div>
+            <div class="nhom-option" data-val="marked" onclick="selectLoai('marked')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#b45309"></span> Chú ý</div>
+            <div class="nhom-option" data-val="called" onclick="selectLoai('called')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:var(--ic-green);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02z"/></svg></span> KH đã gọi</div>
+            <div class="nhom-option" data-val="notcalled" onclick="selectLoai('notcalled')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:#ef4444;display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M17 1.01 7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg></span> KH chưa gọi</div>
           </div>
           <input type="hidden" id="filterLoai" value="">
         </div>
@@ -1962,7 +2113,7 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
            và **che đuôi dòng "Tổng - … KH / … HĐ"** khi panel hẹp (xem run doc).
            ⚠️ Đổi vị trí trong DOM KHÔNG ảnh hưởng JS: mọi chỗ đều gọi `getElementById`,
            và `.export-btn` vẫn được bật/tắt bằng `display: flex/none`. -->
-      <button id="exportBtn" class="export-btn" onclick="exportExcel()" title="Xuất file Excel" aria-label="Xuất file Excel"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg><span class="export-btn-label">Xuất</span></button>
+      <button id="exportBtn" class="export-btn" onclick="exportExcel()" title="Xuất file Excel" aria-label="Xuất file Excel"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg><span class="export-btn-label">Xuất file</span></button>
     </div>
 
 
@@ -3040,12 +3191,12 @@ function initFilters() {
   const nhomSet = [...new Set(allData.map(r=>r.ma_nhom).filter(Boolean))].sort();
   const dd = document.getElementById('nhomDropdown');
   // keep the first option (Tất cả)
-  dd.innerHTML = '<div class="nhom-option" data-val="" style="padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none" onmouseenter="this.style.background=\'rgba(59,130,246,0.15)\'" onmouseleave="this.style.background=\'\'" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</div>';
+  dd.innerHTML = '<div class="nhom-option" data-val="" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none" onmouseenter="this.style.background=\'rgba(59,130,246,0.15)\'" onmouseleave="this.style.background=\'\'" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</div>';
   nhomSet.forEach(v => {
     const d = document.createElement('div');
     d.className = 'nhom-option';
     d.setAttribute('data-val', v);
-    d.style.cssText = 'padding:8px 12px;cursor:pointer;font-size:18px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none';
+    d.style.cssText = 'padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none';
     d.onmouseenter = function(){ this.style.background='rgba(59,130,246,0.15)'; };
     d.onmouseleave = function(){ this.style.background=''; };
     const nc = getNhomColor(v);
@@ -3145,6 +3296,11 @@ function pickNearestMonth(listStr) {
 // Marker ghi số hoá đơn của kh: "1_HĐ", "2_HĐ", "3_HĐ"…
 let _oldMultiSet = new Set();
 let _oldKindMap = new Map();
+/* Số hoá đơn của TỪNG KH, đếm trên **toàn bộ `allData`** (không phải trên tập đang lọc).
+   Dùng cho vạch xanh `multi-hd` trên thẻ khách hàng (xem `renderCards()`).
+   ⚠️ Đựng dùng `r._count` (con số đó sinh ra trong vòng gộp theo KH và chỉ đếm các hoá đơn
+   **đang qua bộ lọc** ⇒ vừa gõ tìm kiếm là KH có 3 hoá đơn tụt xuống 1 và vạch xanh biến mất). */
+let _hdCountMap = new Map();
 function buildOldFlags() {
   const per = new Map();
   allData.forEach(x => {
@@ -3161,7 +3317,11 @@ function buildOldFlags() {
   });
   _oldMultiSet = new Set();
   _oldKindMap = new Map();
+  _hdCountMap = new Map();
   for (const [key, rec] of per.entries()) {
+    // Số hoá đơn của KH — ghi cho **mọi** KH, TRƯỚC `continue` bên dưới (nếu không thì chỉ
+    // khách có nợ cũ mới được đếm ⇒ KH nhiều hoá đơn "bình thường" mất vạch xanh).
+    _hdCountMap.set(key, rec.count);
     // Điều kiện 1: kh có nợ cũ ở các tháng khác ngoài 1-8/2026
     if (!rec.hasOld) continue;
     _oldMultiSet.add(key);
@@ -3336,7 +3496,10 @@ function renderCards(q='') {
     const phone = r.dien_thoai && r.dien_thoai!='0' ? r.dien_thoai : '';
     const oldKind = _oldKindMap.get(r.ma_khach_hang || r.ten_khach_hang);
     const omShow = !!oldKind;
-    return `<div class="kh-card" data-ma="${esc(r.ma_khach_hang)}" ondblclick="toggleOrange(event, this)" onpointerdown="longPressStart(event, this)" onpointerup="longPressEnd(this)" onpointerleave="longPressEnd(this)" onpointercancel="longPressEnd(this)">
+    /* KH có **từ 2 hoá đơn trở lên** → thêm vạch XANH LÁ mỏng ở mép trên thẻ, ngay trên
+       tên + số tiền (yêu cầu người dùng). Đếm trên TOÀN BỘ dữ liệu ⇒ không đổi theo bộ lọc. */
+    const hdCount = _hdCountMap.get(r.ma_khach_hang || r.ten_khach_hang) || 0;
+    return `<div class="kh-card${hdCount >= 2 ? ' multi-hd' : ''}" data-ma="${esc(r.ma_khach_hang)}" ondblclick="toggleOrange(event, this)" onpointerdown="longPressStart(event, this)" onpointerup="longPressEnd(this)" onpointerleave="longPressEnd(this)" onpointercancel="longPressEnd(this)">
       <div class="kh-card-top">
         <div class="kh-name" onclick="showDetail(${start+i})" style="cursor:pointer">${hi(r.ten_khach_hang,q)||'—'}</div>
         <div class="kh-tien-col">
