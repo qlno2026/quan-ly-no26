@@ -2027,9 +2027,14 @@ body.force-desktop .table-view { display: block; }
 .kh-card .kh-name { font-weight: 500 !important; }
 
 /* ── 📱 BẢNG “DẠNG MÁY TÍNH” TRÊN ĐIỆN THOẠI: mỗi KH = **2 DÒNG** ───────────────
-   Yêu cầu người dùng: “dòng trên là tên, tháng nợ, tiền nợ, dòng dưới là danh số, mã sổ,
-   mã kh”. 6 trường này LẤY TỪ CHÍNH 6 ô đã có của bảng (2 · 7 · 3 rồi 1 · 5 · 4) nên
-   **KHÔNG phải sửa `renderTable()`** — chỉ đổi CÁCH TRÌNH BÀY bằng `display: grid`.
+   Yêu cầu người dùng (bản MỚI NHẤT ghi đè bản cũ): “dòng trên là tên kh, danh số, tiền nợ.
+   dòng dưới là mã kh, mã sổ, tháng nợ”. 6 trường này LẤY TỪ CHÍNH 6 ô đã có của bảng
+   (3 · 6 · 8 rồi 2 · 5 · 7 theo THỨ TỰ CỘT MẶC ĐỊNH) nên **KHÔNG phải sửa `renderTable()`**
+   — chỉ đổi CÁCH TRÌNH BÀY bằng `display: grid`.
+
+   ⚠️ BẢN CŨ (đã bị thay): “dòng trên là tên, tháng nợ, tiền nợ, dòng dưới là danh số, mã sổ,
+   mã kh” ⇒ lưới `"ten thang tien" / "danhso sogcs makh"`. Nếu thấy tài liệu/chú thích nào
+   còn mô tả bản cũ thì chỗ đó đã lỗi thời.
 
    Vì sao phải hạ cả `<table>` xuống `display: block`: giữ `display: table` mà chỉ cho
    `tr { display: grid }` thì hộp bảng vẫn sinh hàng ẩn danh quanh grid ⇒ khoảng cách cột
@@ -2063,23 +2068,32 @@ body.force-desktop .table-view { display: block; }
   body.force-desktop .table-view tbody tr {
     display: grid;
     /* LƯỚI 3 CỘT, hai dòng DÙNG CHUNG bề rộng cột:
-         cột 1 = `minmax(74px, 1fr)`  → dòng 1: TÊN (co giãn) | dòng 2: DANH SỐ
-         cột 2 = `auto`               → dòng 1: THÁNG       | dòng 2: MÃ SỔ
-         cột 3 = `auto`               → dòng 1: TIỀN NỢ     | dòng 2: MÃ KH
-       ⚠️ `auto` = rộng theo nội dung NÊN KHÔNG BAO GIỜ CẮT (mã sổ, mã kh, tiền, tháng);
-       CỘT 1 mới là chỗ co giãn — và tên là thứ DUY NHẤT chịu cắt, vì tên còn đọc được
-       trong modal (chạm vào tên) và ở dạng thẻ, còn mã mà bị cắt thì thành một mã KHÁC.
-       ⚠️ SÀN `74px` của cột 1 là để **danh số** (cần ~73px) không bị cắt khi panel hẹp —
-       đừng bỏ sàn: không có nó thì cột này bị `auto` bóp xuống 47px và danh số thành
-       "GF-052…" (đã đo được đúng như vậy ở bản 4 cột).
+         cột 1 = `1fr`  → dòng 1: TÊN KH (co giãn) | dòng 2: MÃ KH
+         cột 2 = `auto` → dòng 1: DANH SỐ           | dòng 2: MÃ SỔ
+         cột 3 = `auto` → dòng 1: TIỀN NỢ           | dòng 2: THÁNG NỢ
+       Cả 3 cột đều có sàn theo NỘI DUNG (xem `min-width: max-content` ở khối bên dưới) nên
+       **không mã nào bị cắt**; TÊN là thứ DUY NHẤT chịu cắt — chấp nhận được vì tên còn đọc
+       được trong modal (chạm vào tên) và ở dạng thẻ, còn mã mà bị cắt thì thành một mã KHÁC.
+
+       ⛔ ĐỪNG đổi cột 1 về `minmax(74px, 1fr)` (bản cũ) — ĐÃ ĐO VÀ BỊ LOẠI: sàn `74px` cứng
+       nhỏ hơn nhu cầu của **mã KH** (đo trên dữ liệu thật: **113,9px** cho `PB15020078145`) nên
+       mã KH **tràn 24,4px đè lên mã sổ** ở panel 303px. Cột 1 PHẢI là `1fr` (tức
+       `minmax(auto, 1fr)`): chữ `auto` ở đây mới cho track lấy sàn theo nội dung, và vì ô mã KH
+       có `min-width: max-content` nên sàn = đúng bề rộng mã ⇒ tự thích ứng khi mã dài ngắn khác.
+       Đo lại sau khi sửa: cột 1 = **113,874px** = đúng nhu cầu mã KH, 0 ô bị cắt, 0 chồng lấn.
+
+       ⛔ CŨNG ĐỪNG dùng `minmax(min-content, 1fr)` hay `minmax(max-content, 1fr)`: ô TÊN có
+       `white-space: nowrap` nên min-content/max-content của nó = **cả câu** ⇒ cột 1 phình lên
+       **402,86px**, cột 3 bị bóp còn **0px** (đã đo). `min-width: 0` trên `.cell-tenkh` chỉ hạ
+       được *đóng góp* của ô xuống 0 khi track dùng `auto` — không hạ được `min-content` khai tường minh.
+
        ⚠️ Bản 4 cột (cho tên & mã kh trải 2 ô) ĐÃ THỬ VÀ BỊ LOẠI: các cột `auto` lấy hết
-       chỗ, cột `1fr` còn **47px** ⇒ danh số bị cắt. Bề rộng tên ở bản 3 cột này (~87–180px
-       tuỳ panel) là cái giá phải trả để 4 mã không bao giờ bị cắt. */
-    grid-template-columns: minmax(74px, 1fr) auto auto;
-    /* Dòng 1: tên · tháng nợ · tiền nợ   |   Dòng 2: danh số · mã sổ · mã kh */
+       chỗ, cột `1fr` còn **47px** ⇒ danh số bị cắt. */
+    grid-template-columns: 1fr auto auto;
+    /* Dòng 1: tên KH · danh số · tiền nợ   |   Dòng 2: mã kh · mã sổ · tháng nợ */
     grid-template-areas:
-      "ten    thang tien"
-      "danhso sogcs makh";
+      "ten    danhso tien"
+      "makh   sogcs  thang";
     column-gap: 10px;
     row-gap: 2px;
     align-items: center;
@@ -2104,35 +2118,111 @@ body.force-desktop .table-view { display: block; }
   body.light-mode.force-desktop .table-view tbody tr.highlighted-purple::before { background: #1d4ed8; }
   /* ⚠️ SỐ `nth-child` ở đây theo THỨ TỰ CỘT **MẶC ĐỊNH** (xem khối “BỀ RỘNG CỘT BẢNG”) —
      đây là mối nối DUY NHẤT còn lại giữa thứ tự cột và bảng 2 dòng, nên khi đổi thứ tự cột
-     thì phải sửa 6 dòng dưới (tên 3 · tháng 7 · tiền 8 · danh số 6 · mã sổ 5 · mã kh 2). */
+     thì phải sửa 6 dòng dưới (tên 3 · danh số 6 · tiền 8 · mã kh 2 · mã sổ 5 · tháng 7).
+     Căn lề đi theo CỘT, không theo nội dung: cột 1 trái (tên · mã kh) · cột 2 giữa
+     (danh số · mã sổ) · cột 3 phải (tiền · tháng) ⇒ đổi nội dung mà không phải sửa căn lề. */
   body.force-desktop .table-view tbody td:nth-child(3) { display: block; grid-area: ten; }
-  body.force-desktop .table-view tbody td:nth-child(7) { display: block; grid-area: thang; text-align: center; }
+  body.force-desktop .table-view tbody td:nth-child(6) { display: block; grid-area: danhso; text-align: center; }
   body.force-desktop .table-view tbody td:nth-child(8) { display: block; grid-area: tien;  text-align: right; }
-  body.force-desktop .table-view tbody td:nth-child(6) { display: block; grid-area: danhso; }
+  body.force-desktop .table-view tbody td:nth-child(2) { display: block; grid-area: makh;   text-align: left; }
   body.force-desktop .table-view tbody td:nth-child(5) { display: block; grid-area: sogcs;  text-align: center; }
-  body.force-desktop .table-view tbody td:nth-child(2) { display: block; grid-area: makh;   text-align: right; }
+  body.force-desktop .table-view tbody td:nth-child(7) { display: block; grid-area: thang; text-align: right; }
+
+  /* ── CỠ CHỮ CỦA BẢNG 2 DÒNG = cỡ nền **+1px** ────────────────────────────────
+     Yêu cầu người dùng: “tôi muốn bảng này tất cả nội dung tăng thêm 1 px”.
+
+     ⚠️ **PHẢI khai lại ở đây, KHÔNG được chỉ nâng `tbody td`.** `.ma-kh` (mã KH) và `.tien-no`
+     (số tiền) có `font-size: 15px` **riêng** — `font-size` không phải thuộc tính kế thừa từ ô khi
+     chính phần tử đã khai, nên nâng cỡ ô thì **mã KH và số tiền đứng nguyên** trong khi tên · mã sổ ·
+     danh số · tháng to lên ⇒ hàng bị **lệch hai cỡ chữ**. Đây là bẫy dễ nhất của việc “tăng cỡ bảng”:
+     đổi 1 dòng mà tưởng xong.
+     Viên `.badge` thì đã `font-size: inherit` ở khối ngay dưới nên tự theo, nhưng vẫn khai tường minh
+     để nếu ai sửa khối đó thì cỡ chữ không **âm thầm** tụt về 11px của `.badge`.
+     15px → **16px** (tất cả 6 ô đang hiện của dạng 2 dòng).
+
+     ⛔ Chỉ DẠNG 2 DÒNG: bảng ở màn hình rộng vẫn **14px** theo rule “Desktop: data 14px” trong
+     `@media (min-width: …)` — không đụng tới.
+     6 ô đang ẩn ở dạng này (STT 12px · SĐT 11px · Nhóm 11px · Nợ cũ 14px · …) **không** nằm trong
+     yêu cầu “bảng này” và cũng không hiện ra, nên giữ nguyên. */
+  body.force-desktop .table-view tbody td,
+  body.force-desktop .table-view tbody td .ma-kh,
+  body.force-desktop .table-view tbody td .tien-no,
+  body.force-desktop .table-view tbody td .badge { font-size: 16px; }
+
+  /* ── ĐỔI CHỖ NỀN XANH: **tháng nợ → danh số** ────────────────────────────────
+     Yêu cầu người dùng: “tháng nợ bỏ nền màu xanh, còn danh số thì cho thêm nền xanh như
+     tháng nợ”. Hai nửa của yêu cầu đó **PHẢI đi cùng nhau** — bỏ ở tháng mà không gắn sang
+     danh số thì mất hẳn điểm nhấn xanh của hàng.
+
+     ⛔ **CHỈ ÁP TRONG DẠNG 2 DÒNG NÀY.** Bảng ở màn hình rộng GIỮ NGUYÊN: tháng vẫn là viên
+     nền xanh, danh số vẫn là chữ xám. Lý do: người dùng nhiều lượt trước đã yêu cầu thứ tự
+     cột của bảng máy tính **về lại mặc định**, nên mọi thay đổi của dạng 2 dòng đều phải
+     **khu trú** ở đây. Nếu muốn đổi luôn ở bảng rộng thì phải sửa **markup** trong
+     `renderTable()` (`<span class="badge badge-blue">` đang bọc `thang_no`, còn danh số là ô
+     trơn) — và khi đó mọi thứ khác dùng `.badge-blue` (modal, bảng nợ cũ) cũng đổi theo.
+
+     Vì sao THÁNG về **chữ thường** chứ không chỉ mất nền: giữ lại `font-size: 11px` +
+     `font-weight: 600` + màu xanh `#1e40af` chỉ *bỏ nền* thì nó thành một chữ xanh nhỏ
+     lửng giữa hàng — đọc như lỗi hiển thị. Cho nó bằng đúng các ô chữ thường còn lại
+     (15px / 400 / màu `--text-dim`) là cách duy nhất để “bỏ viên xanh” ra thành “ô bình thường”.
+
+     Danh số thì GIỮ cỡ chữ của ô (15px, không lấy 11px của viên cũ): đây là **mã** — thu nhỏ
+     mã là đúng cái lỗi mà mục “KHÔNG BAO GIỜ CẮT MÃ” ngay dưới đang chống. Nền + bo tròn thì
+     chép **đúng** của `.badge-blue` để hai theme đều có cùng một sắc xanh. */
+  body.force-desktop .table-view tbody td:nth-child(7) .badge {
+    background: none !important;
+    color: var(--text-dim) !important;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+  body.light-mode.force-desktop .table-view tbody td:nth-child(7) .badge { color: #475569 !important; }
+  body.force-desktop .table-view tbody td:nth-child(6) {
+    background: rgba(59,130,246,0.15);
+    color: var(--accent-glow) !important;
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-weight: 500;
+    justify-self: center;
+  }
+  body.light-mode.force-desktop .table-view tbody td:nth-child(6) {
+    background: rgba(37,99,235,0.15);
+    color: #1e40af !important;
+  }
+
   /* Tên xuống dòng thì HÀNG CAO LÊN và phá nhịp 2 dòng — cắt bằng ellipsis như bảng thật
-     (`tbody td:not(.cell-ghi)` đã có sẵn `nowrap` + ellipsis, giữ nguyên). */
+     (`tbody td:not(.cell-ghi)` đã có sẵn `nowrap` + ellipsis, giữ nguyên).
+     ⚠️ `min-width: 0` ở đây **CHỈ hạ được sàn của cột 1 khi track khai `auto`/`1fr`** — chính nhờ
+     nó mà cột 1 lấy sàn từ mã kh chứ không từ câu tên dài. Xem khối “LƯỚI 3 CỘT” ở trên. */
   body.force-desktop .table-view tbody td.cell-tenkh { min-width: 0; }
 
-  /* ── KHÔNG BAO GIỜ CẮT MÃ ─────────────────────────────────────────────────────
-     Ba ô **mã** (danh số · mã kh · mã sổ) được đặt `min-width: max-content` ⇒ cột `auto`
-     của chúng không thể bị bóp nhỏ hơn nội dung. Vì sao cần: cột `auto` ở lưới này vẫn
-     CO ĐƯỢC vì `tbody td:not(.cell-ghi)` có `overflow: hidden` (với `overflow: hidden`, kích
-     thước tối thiểu tự động của grid item = 0) — đã đo được đúng hiện tượng đó ở panel 320px:
-     mã kh cần **119px** mà chỉ được **95px** ⇒ "PB1502007814…" = MỘT MÃ KHÁC.
-     Đo để chọn cách xử lý (panel 298px, khung bảng 280px):
-       tổng cần = danh số 76 + mã sổ 83 + mã kh 119 + khe 20 + lề 16 = **314px > 280**
+  /* ── KHÔNG BAO GIỜ CẮT MÃ (＝ sàn theo NỘI DUNG cho cả 3 cột) ───────────────────
+     `min-width: max-content` đặt lên **cả 6 ô** của lưới 2 dòng, không chỉ 3 ô mã: mỗi cột
+     giờ có 2 ô và cột nào cũng phải lấy sàn từ ô rộng nhất của nó ⇒
+       cột 1 ← mã kh (2) · cột 2 ← danh số (6) **và** mã sổ (5) · cột 3 ← tiền nợ (8) **và** tháng nợ (7)
+     Vì sao cần sàn: cột `auto` ở lưới này VẪN CO ĐƯỢC vì `tbody td:not(.cell-ghi)` có
+     `overflow: hidden` (với `overflow: hidden`, kích thước tối thiểu tự động của grid item = 0)
+     — đã đo được đúng hiện tượng đó ở panel 320px: mã kh cần **119px** mà chỉ được **95px**
+     ⇒ "PB1502007814…" = MỘT MÃ KHÁC.
+     ⚠️ Thiếu sàn ở **cột 3** là lỗi RẤT DỄ mắc sau khi đổi thứ tự ô: lúc đó tiền nợ và tháng nợ
+     bị bóp còn **45,9px** và **bị cắt** (đã đo). Đổi thứ tự ô thì phải soát lại bộ số trong
+     ngoặc ở trên, không phải chỉ đổi `grid-template-areas` + `grid-area`.
+     Đo để chọn cách xử lý (panel 303px, khung bảng 286px):
+       tổng cần = mã kh 114 + danh số/mã sổ 90 + tiền/tháng 80 + khe 20 + lề 16 = **320px > 286**
      ⇒ ở màn hẹp như vậy **không thể** vừa 6 trường trong 2 dòng. Đã cân nhắc và LOẠI:
-       · hạ cỡ chữ ô — KHÔNG ăn thua: `.ma-kh` (và badge “Tháng”) có `font-size` riêng nên
-         hạ cỡ ô không làm chúng nhỏ đi;
+       · hạ cỡ chữ ô — KHÔNG ăn thua: `.ma-kh` có `font-size` riêng nên hạ cỡ ô không làm nó nhỏ đi;
        · hạ tới 12–13px cho VỪA — đi ngược hết các lượt người dùng đòi chữ to.
      Nên: giữ nguyên cỡ chữ, giữ đủ bề rộng mã, và để `.table-scroll` **cuộn ngang** phần
-     thừa (`.table-scroll` vốn đã `overflow-x: auto`). Từ viewport ~360px trở lên (mọi máy
-     phổ thông) tổng cần ~312px ≤ khung ⇒ **không có thanh cuộn nào**. */
+     thừa (`.table-scroll` vốn đã `overflow-x: auto`) — đo được ở panel 303px: khung **286px**,
+     nội dung **312px** ⇒ thanh cuộn 26px. Từ viewport ~340px trở lên (mọi máy phổ thông)
+     tổng cần ≤ khung ⇒ **không có thanh cuộn nào**. */
   body.force-desktop .table-view tbody td:nth-child(6),
   body.force-desktop .table-view tbody td:nth-child(5),
-  body.force-desktop .table-view tbody td:nth-child(2) { min-width: max-content; }
+  body.force-desktop .table-view tbody td:nth-child(2),
+  body.force-desktop .table-view tbody td:nth-child(8),
+  body.force-desktop .table-view tbody td:nth-child(7) { min-width: max-content; }
 }
 </style>
 </head>
