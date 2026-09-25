@@ -2160,8 +2160,24 @@ body.force-desktop .table-view { display: block; }
 
        ⚠️ **Phải kiểm lại sau khi đổi:** `max(tiền.r) ≤ chiều rộng khung − lề` ở **320px** —
        đây là chỗ duy nhất có thể phát sinh vuốt ngang. */
-    grid-template-columns: minmax(0, max(12em, 58%)) minmax(6em, max-content);
-    justify-content: start;
+
+    /* ── LƯỢT “SÁT MÉP PHẢI” (MỚI NHẤT) ──────────────────────────────────────────
+       Yêu cầu người dùng: “cho số tiền, tháng nợ, mã sổ ra sát mép”.
+       Lượt trước cố định cả hai cột ⇒ **mép phải tiền nợ đứng ở 306,9px** trong khi mép
+       phải vùng NỘI DUNG của hàng là **337,7px** ⇒ thừa một khoảng trống **30,8px** bên
+       phải (chính là chỗ dư mà hệ số `58%` để lại). Người dùng muốn ba ô đó **dính mép**.
+       ⇒ Trả cột 1 về **`1fr`**: nó hút hết chỗ thừa nên cột 2 luôn kết thúc **đúng mép phải
+       vùng nội dung** — đo lại ở 375px: mép phải tiền nợ = **337,7px**, cách mép ngoài của
+       hàng đúng **6px** = lề hàng; và **giống nhau ở cả 50 hàng** (1 giá trị).
+       ⛔ **ĐÃ GỠ `justify-content: start`**: nó chỉ có nghĩa khi cột 1 KHÔNG hút hết chỗ
+       (`max-content`); với `1fr` thì hàng đã kín nên khai nó là vô nghĩa.
+       ⚠️ **Hệ quả đã biết (đánh đổi cấu trúc):** hàng có tên NGẮN sẽ có khoảng trống lớn
+       trước số tiền (đo ~190px cho tên ngắn nhất). Muốn số tiền **dính mép** thì nó
+       **không thể** đồng thời **nằm sát tên** — chọn cái nào là quyền người dùng, và lượt
+       này họ chọn **sát mép**.
+       ⚠️ Đổi lại được **lợi**: cột tên rộng hết phần còn lại (375px → ~222px) nên **không
+       tên nào bị cắt** — trong khi bản cột cố định `12em` cắt 7/1.472 hàng. */
+    grid-template-columns: 1fr auto;
     grid-template-areas:
       "ten     tien"
       "makh    thang"
@@ -2191,13 +2207,31 @@ body.force-desktop .table-view { display: block; }
        duy nhất còn tách hàng. Muốn hơn nữa thì phải **bỏ viền ngăn** (mất luôn ranh giới hàng).
        ⚠️ Hệ quả cần biết: chữ hàng trên và hàng dưới chỉ cách đường kẻ **0,72px** mỗi bên;
        ở cỡ chữ lớn (`--fs-row` 16px) hàng vẫn cao **59,65px** nên không chồng chữ — đã A/B
-       chiều cao hàng trước/sau khi nhấn giữ đánh dấu: **không đổi 0px**.
-       ⚠️ **Lề NGANG `8px → 6px`** (lượt “gọn + hết vuốt ngang”): vạch đánh dấu `::before` rộng
-       **3px** ở `left: 0` nằm TRONG lề này ⇒ **sàn thật là `3px`**, hạ xuống dưới 3px là vạch
-       đè lên chữ. Chọn **6px** = vạch 3px + **3px khe thở** giữa vạch và chữ.
-       ⛔ **ĐỪNG hạ lề ngang xuống dưới `3px`** khi vạch đánh dấu còn tồn tại.
-       ⚠️ Hàng vẫn cao **đều nhau** (mọi hàng cùng đệm) — yêu cầu “nhịp bảng đều” không bị phá. */
-    padding: 0 6px;
+       chiều cao hàng trước/sau khi nhấn giữ đánh dấu: **không đổi 0px**.        ⚠️ **Lề TRÁI `8px → 6px`** (lượt “gọn + hết vuốt ngang”): vạch đánh dấu `::before` rộng
+        **3px** ở `left: 0` nằm TRONG lề này ⇒ **sàn thật là `3px`**, hạ xuống dưới 3px là vạch
+        đè lên chữ. Chọn **6px** = vạch 3px + **3px khe thở** giữa vạch và chữ.
+        ⛔ **ĐỪNG hạ lề TRÁI xuống dưới `3px`** khi vạch đánh dấu còn tồn tại.
+        ⚠️ Hàng vẫn cao **đều nhau** (mọi hàng cùng đệm) — yêu cầu “nhịp bảng đều” không bị phá.
+
+        ── LƯỢT “LỀ PHẢI `6px → 2px`” (MỚI NHẤT) ────────────────────────────────
+        Yêu cầu người dùng: “cho số tiền, tháng nợ, mã sổ ra sát mép” rồi “thu hẹp lề phải
+        của hàng để chúng sát hơn nữa”.
+        Đo chuỗi khoảng cách ở 375px từ **chữ số ra mép panel** = **37,3px**, gồm:
+           22px  thanh cuộn dọc của trang  ← KHÔNG phải của bảng, không cắt được
+            9,3px lề phải của TRANG (`#mainContent`/`.table-wrap`) + 1px viền
+            6px  lề phải của HÀNG         ← chỉ chỗ này là của bảng
+        ⇒ Lề phải hàng hạ còn **2px** (đo lại: mép phải tiền nợ `337,7 → 341,7px`, khoảng cách
+        ra mép panel `37,3 → 33,3px`), còn lề TRÁI giữ **6px** cho vạch đánh dấu.
+        ⛔ **Lề này là `padding: 0 2px 0 6px` — KHÔNG đảo thành đối xứng:** hạ cả hai bên xuống
+        2px là **vạch đánh dấu 3px đè lên chữ** ở mép trái.
+        ⚠️ Vì sao không hạ về `0`: nền của hàng đã đánh dấu chạy tới sát mép, chữ mà chạm mép
+        thì nhìn như bị cắt; 2px là mức còn thở được. Đo ở 375px: `pr 6 → 337,7` · `4 → 339,7`
+        · `3 → 340,7` · `2 → 341,7` · `0 → 343,7`; **mọi mức đều giữ 1 giá trị duy nhất** (không
+        phá tính thẳng cột) và **không tràn** (`over ≤ 0,01px`).
+        ℹ️ Muốn sát hơn nữa thì phải đụng vào **thanh cuộn 22px** (trang) hoặc lề trang
+        `9,3px` — cả hai đều của TRANG, sửa là lệch hàng loạt thứ khác (header, thanh công cụ,
+        thẻ card) nên chỉ làm khi có yêu cầu riêng. */
+    padding: 0 2px 0 6px;
   }
   body.force-desktop .table-view tbody td { display: none; padding: 0; border-bottom: none; }
   /* ── VẠCH ĐÁNH DẤU (nhấn giữ 1,2 giây) Ở DẠNG 2 DÒNG ─────────────────────────────
