@@ -476,9 +476,12 @@ body.light-mode tbody tr { border-bottom: 2px solid rgba(0,0,0,0.25); }
    xem cặp rule `.table-view .ma-kh` / `body.light-mode .table-view .ma-kh` ngay dưới
    `.ma-kh` gốc. Dời đi để màu này không phụ thuộc `nth-child(4)` (đổi thứ tự cột là lệch ngay). */
 body.light-mode .table-view td:nth-child(4).cell-addr { color: #475569 !important; }
-body.light-mode .table-view td:nth-child(5).cell-dim { color: #475569 !important; }
-body.light-mode .table-view td:nth-child(6).cell-dim { color: #475569 !important; }
-body.light-mode .table-view td:nth-child(10).cell-dim { color: #475569 !important; }
+/* ⚠️ Ba rule `.cell-dim` này + `.ma-kh` + badge tháng = **một chùm 5 rule** của lượt
+   “light mode đậm hơn”: `#475569 → #334155` (7,48:1 → 11,40:1). Đổi lẻ một rule là đúng ô đó
+   vẫn bạc — xem chú thích đầy đủ ở rule `body.light-mode .table-view .ma-kh`. */
+body.light-mode .table-view td:nth-child(5).cell-dim { color: #334155 !important; }
+body.light-mode .table-view td:nth-child(6).cell-dim { color: #334155 !important; }
+body.light-mode .table-view td:nth-child(10).cell-dim { color: #334155 !important; }
 body.light-mode .table-view tr:hover { background: #e8eefc; }
 body.light-mode .table-view .phone { color: #000000 !important; }
 body.light-mode .table-view .cell-ghi { color: #c2410c !important; }
@@ -611,6 +614,52 @@ body.light-mode.force-desktop .view-btn { background: #bfdbfe; border-color: #25
    `display: inline-flex` bằng style inline khi có dữ liệu. */
 @media (min-width: 640px) { .view-btn { display: none !important; } }
 /* desktop media query moved to later in file */
+
+/* ── NHÃN NỔI (TOOLTIP) cho control ICON-ONLY ──────────────────────────────
+   Hộp nổi do JS tạo và gắn vào <body> (xem `initTips()` ở cuối file) — **KHÔNG có trong
+   markup**. `position: fixed` + nằm ở <body> là chủ ý: đặt nó trong `.toolbar`/`.count-btns`
+   thì ngữ cảnh xếp lớp và `overflow` của tổ tiên sẽ cắt hoặc chôn nó.
+   ⚠️ Bề rộng/canh lề do JS quyết (nó ghi `max-width` + `left/top` mỗi lần hiện, theo
+   `clientWidth` — KHÔNG theo `innerWidth`, vì thanh cuộn dọc làm lệch 22px). `max-width`
+   ở đây chỉ là giá trị khởi tạo.
+   `z-index: 250` — **chọn theo số đo đã có trong file**, không phải số tuỳ ý: phải TRÊN
+   `.toolbar` (150) và header (200), và **DƯỚI `.modal-overlay` (300)** để không bao giờ
+   vẽ đè modal. Đổi 1 trong 3 số đó thì phải xem lại số này.
+   `pointer-events: none` — hộp nổi **không được ăn cú chạm** của nút nằm dưới.
+   Nền là màu ĐẶC (đen 96%) nên hộp nổi **không phụ thuộc theme** ⇒ không cần rule
+   `body.light-mode` riêng và tương phản chữ (`#f1f5f9` trên `rgba(17,24,39,0.96)`) giống
+   hệt nhau ở cả hai theme.
+   `white-space: nowrap` cần cho cả 2 lý do: nhãn 1 dòng, và `place()` đo bề rộng bằng
+   `offsetWidth` để canh giữa nút.
+   ⚠️ ĐO trạng thái hiện/ẩn phải chờ `transition` chạy xong (tab chạy nền làm transition
+   TREO ở giá trị đầu — đúng cái bẫy đã ghi ở mục “SỌC XEN KẺ”). */
+.ui-tip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 250;
+  max-width: calc(100vw - 12px);
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: rgba(17,24,39,0.96);
+  color: #f1f5f9;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+}
+.ui-tip.show { opacity: 1; transform: translateY(0); }
+/* Hai nút icon-only: nay nhấn giữ là **XEM NHÃN NỔI** nên phải chặn menu “gọi/copy” và
+   bôi đen của hệ điều hành, không thì nó chen vào giữa thao tác (cùng lý do đã áp cho
+   `.kh-card`). Không có chữ nào bên trong hai nút nên `user-select: none` không mất gì. */
+.export-btn, .view-btn { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 
 /* ── WELCOME ────────────────────────────── */
 .welcome-state {
@@ -792,14 +841,14 @@ body.light-mode.force-desktop .view-btn { background: #bfdbfe; border-color: #25
   display: none;                        /* JS bật bằng display:flex khi có dữ liệu */
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;   width: auto;                          /* có nhãn “Xuất file” → bề rộng theo nội dung (trước là 40px vuông) */
+  flex-shrink: 0;
+  /* 📌 **ICON-ONLY** (yêu cầu “bỏ chữ xuất file”) ⇒ nút trở về **vuông như nút “về dạng thẻ”**.
+     Bề rộng khai bằng `padding` chứ KHÔNG khai `width` — đây là chủ ý, để hai nút **luôn bằng
+     nhau ở MỌI khổ**: 8 + 20(icon) + 8 + 2 viền = **38px**, và ở nhánh ≤359.98px icon còn 18px
+     ⇒ **36px**; `.view-btn` dùng đúng cùng công thức nên không bao giờ lệch nhau 1px.
+     (Nếu khai `width` cố định thì ở nhánh hẹp nút Xuất đứng 38px còn nút kia 36px — lệch thấy được.) */
   height: 40px;
-  padding: 0 10px;                      /* trước là `padding: 0` khi nút còn vuông 40×40,
-                                           rồi `0 12px` khi có nhãn; nay 0 10px theo yêu cầu
-                                           "chiều ngang ngắn lại 1 tí". LỀ NGANG chỉ đổi bề rộng,
-                                           KHÔNG đổi chiều cao (40px) ⇒ lưới `Tổng`/`Tiền` không xê dịch,
-                                           và cột chữ được thêm 2px. */
-  gap: 5px;                             /* icon ↔ nhãn (trước 6px) — bớt 1px cho gọn */
+  padding: 0 8px;
   background: rgba(71,85,105,0.35);
   border: 1px solid var(--ctl-vien);
   border-radius: 10px;
@@ -809,60 +858,30 @@ body.light-mode.force-desktop .view-btn { background: #bfdbfe; border-color: #25
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 .export-btn svg { flex: 0 0 auto; }     /* icon không được co lại khi hàng chật */
-/* Nhãn chữ trong nút: cỡ RIÊNG của nút này — nhỏ hơn `.count-info` (18px) và nhỏ hơn
-   control thanh công cụ (19px) để không tranh chấp thị giác với số tiền bên trái.
-   Màu thừa hưởng `color` của `.export-btn` (dark `var(--text-dim)`, light `#475569`).
-
-   ✂️ Nhãn xuống **2 dòng** `Xuất` / `file` (yêu cầu người dùng: “tôi muốn chữ xuất file
-   thì chữ file xuống dòng”):
-   · `white-space: normal` — bỏ `nowrap` (nếu giữ `nowrap` thi `width: min-content` bị vô hiệu).
-   · `width: min-content` — bề rộng = **chữ rộng nhất** trong nhãn (`Xuất` ≈ 31px, `file` ≈ 24px)
-     ⇒ tự ngắt đúng tại dấu cách, không cần chèn `<br>` vào chuỗi trong markup.
-   · `line-height: 1.2` (18px/dòng) ⇒ 2 dòng = **36px < 40px** của nút ⇒ **chiều cao nút KHÔNG đổi**.
-   · Bề rộng nút **hẹp lại** (~110px → ~77.8px ở panel rộng, sau khi bóp tiếp lề ngang 12→10px và
-     khe icon↔chữ 6→5px ở rule nền `.export-btn`) nên cột “Tiền …” **được thêm chỗ**
-     — nhờ vậy nhánh `@media (max-width: 359.98px)` (thu nút lại để nhường chỗ cho dòng tiền)
-     **không còn cần thiết** và đã được xoá (xem chú thích ngay dưới).
-   · `text-align: center` để dòng ngắn (`file`) canh giữa dưới dòng dài.
-   ⚠️ `title` / `aria-label` trên `#exportBtn` vẫn là `"Xuất file Excel"` — không đổi. */
-.export-btn-label { font-size: 15px; font-weight: 500; line-height: 1.2; white-space: normal; width: min-content; text-align: center; }
+/* ⚠️ `.export-btn-label` đã **XOÁ** — nhãn “Xuất file” không còn tồn tại (yêu cầu “bỏ chữ xuất
+   file”), nút là icon-only. Nghĩa của nút nằm ở `title` + `aria-label` trên `#exportBtn`
+   (vẫn là `"Xuất file Excel"` — **ĐỪNG bỏ**, mất chữ mà mất luôn nhãn là nút vô nghĩa với
+   screen reader). Muốn có lại nhãn thì phải dựng lại cả rule lẫn markup, không chỉ một chỗ. */
 @media (hover: hover) {
   .export-btn:hover { border-color: #3b82f6; color: #ffffff; background: rgba(59,130,246,0.16); }
 }
 .export-btn:active { background: rgba(59,130,246,0.28); }
-/* Panel RẤT hẹp (≤ 359.98px): nút "Xuất file" tự THU LẠI (padding 12→8, gap 6→4, icon 20→18)
-   để nhường chỗ cho dòng TIỀN — dòng tiền **không được cắt** (cắt số = mất dữ liệu thật).
+/* Panel RẤT hẹp (≤ 359.98px): CHỈ thu icon 20→18px (nút Xuất 38→36px) để nút Xuất **vẫn bằng
+   đúng nút “về dạng thẻ”** — hai nút đứng cạnh nhau nên lệch 2px là thấy ngay.
 
-   📌 **Nhánh này KHÔNG còn là "bản vá chống cắt" nữa — nay nó chỉ là BIÊN AN TOÀN.**
-   Lý do: nhãn dài thành 2 dòng `Xuất` / `file` (xem `.export-btn-label`) làm nút **hẹp hẳn đi**.
-   Đo lại ở panel 320px, dòng tiền `Tiền - 1.299.267.977đ` rộng **175.16px**, KHÔNG bị cắt:
-     · bật nhánh hẹp   ⇒ nút **70.28px**, khe nút ↔ chữ tiền **38.01px**
-     · tắt nhánh hẹp   ⇒ nút **82.27px**, khe nút ↔ chữ tiền **26.01px**  (vẫn thừa)
-   Tức bỏ nhánh đi cũng KHÔNG mất số ở dữ liệu hiện tại; giữ lại để dư địa cho tổng tiền sau này
-   lớn hơn (~11–12 chữ số), và vì nút là **cột riêng** của lưới `.count-info` nên nó không bao
-   giờ đè lên chữ (lỗi cũ đã sửa bằng cách tách cột, không phải bằng cách chỉnh số).
-   ⚠️ Từ **360px** trở lên KHÔNG đụng gì (nút giữ nguyên như người dùng thấy).
-   ⚠️ Nếu tổng tiền lên ~13 chữ số thì cả 2 trường hợp đều hết chỗ — lúc đó phải bỏ NHÃN ở panel
-   ≤360px (chỉ còn icon; `title`/`aria-label` vẫn là "Xuất file Excel") chứ **đừng** để cắt số tiền. */
+   📌 **Nhánh này KHÔNG còn là "bản vá chống cắt" nữa** (giữ lại vì SỐ ĐO, không phải vì thói quen).
+   Từ khi nút Xuất thành icon-only (38px, xem `.export-btn`), cột chữ được trả lại ~62px so với
+   bản có nhãn 2 dòng (~100px). Đo ở panel **320px** sau khi nhãn đổi thành “Tổng nợ:”:
+     cột chữ **192.16px** · cặp “Tổng nợ:” + số (17px) = **188.98px** ⇒ thừa **3.18px**,
+     cách mép trái nút Xuất **13.18px**.
+   Nếu BỎ nhánh (về 18px) thì cặp đó thành **~200.1px** > 192.16px ⇒ số thò **~8px** vào khe
+   lưới 10px ⇒ cách nút còn **~2.2px** — chưa đè nhưng dự phòng quá mỏng, nên **giữ 17px**.
+   Từ **360px** trở lên: cột chữ **228.5px** ≥ cặp **199.85px** (thừa 28.65px) ⇒ **giữ 18px**.
+   ⚠️ `title`/`aria-label` trên `#exportBtn` vẫn là “Xuất file Excel” nên nút vẫn rõ nghĩa.
+   ⚠️ Ngưỡng 339.98px đã **BỊ XOÁ** (nó chỉ dùng để ẩn nhãn ở panel rất hẹp — nhãn không còn thì
+   vô nghĩa; `gap` của `.count-btns` về lại 4px như mặc định, rộng rãi hơn 1px so với trước). */
 @media (max-width: 359.98px) {
-  .export-btn { padding: 0 8px; gap: 4px; }
   .export-btn svg { width: 18px; height: 18px; }
-}
-/* Panel RẤT hẹp (≤ 339.98px): ẨN NHÃN nút “Xuất file” (chỉ còn icon) để nhường chỗ cho nút
-   “xem dạng máy tính”. Đây chính là biện pháp dự phòng đã ghi trong run doc từ trước (“hết chỗ
-   ở ≤360px thì bỏ NHÃN, đừng để cắt số tiền”), nay có thêm nút thứ hai nên phải dùng tới.
-   SỐ ĐO quyết định ngưỡng 339.98 (không phải 359.98): ở `clientWidth` 318 (viewport 340) hai nút
-   còn chiếm `70.72 + 4 + 35 = 109.72px` ⇒ cột chữ **178.28px** mà dòng `Tiền:` cần **167.97px**
-   ⇒ vẫn thừa **10.3px** ✓ nên CHƯA cần ẩn nhãn. Xuống `clientWidth` 298 (viewport 320) thì cột
-   chỉ còn **158.28px** < 167.97px ⇒ số tiền thò **9.69px** vào khe 10px ⇒ sát nút (may là chưa
-   đè, nhưng dự phòng 0.3px là quá mỏng). Ẩn nhãn ⇒ nút Xuất còn **36px**, hai nút còn **74px**,
-   cột chữ về **194px** ⇒ thừa **26px** ✓.
-   ⚠️ `title`/`aria-label` của nút Xuất vẫn là “Xuất file Excel” nên vẫn rõ nghĩa khi mất chữ.
-   ⚠️ Ngưỡng này HẸP HƠN nhánh 359.98px ở trên — đừng gộp chung, vì gộp là mất luôn nhãn ở
-   340–360px, tức trên RẤT nhiều điện thoại thật (360/375/390/412). */
-@media (max-width: 339.98px) {
-  .export-btn-label { display: none; }
-  .count-btns { gap: 3px; }
 }
 .search-clear {
   position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
@@ -1043,7 +1062,7 @@ body.light-mode .nhom-sel-name {
 
 .count-info {
   /* 17 → **18px** (yêu cầu người dùng: “cho chữ này 18 px”) — dùng chung cho CẢ 2 dòng
-     “Tổng - … KH / … HĐ” và “Tiền - …đ”.
+     “Tổng HĐ: … · KH: …” và “Tổng nợ: …”.
      ⚠️ Đổi cỡ chữ ở đây thì **`height: 29px` của `.count-line2` phải ĐO LẠI** (29 = dòng 21px
      + 4px×2 khai theo cỡ 17px cũ) — xem chú thích ở `.count-line2`. */
   font-size: 18px;
@@ -1091,25 +1110,36 @@ body.light-mode .nhom-sel-name {
 
    Hàng 2 cao ĐÚNG 29px = dòng chữ 21px + 4px×2, nên chữ tiền cách dòng 1 đúng 4px.
    Dòng 1 **không chốt cứng chiều cao**: hẹp quá thì nó **xuống dòng** (2 dòng) — thà cao
-   thêm 21px còn hơn mất số. Cột 1 cần `227.55 + 10 + 82.27 ≈ 320px` mới giữ 1 dòng, nên
-   trên điện thoại ≥ 360px vẫn 1 dòng, chỉ hẹp hơn nữa mới xuống dòng.
+   thêm 21px còn hơn mất số. Ngưỡng HIỆN TẠI (đã đo lại sau khi nhãn dòng 1 đổi thành
+   “Tổng HĐ: … · KH: …” + nút Xuất chỉ còn icon 37,9px): dòng 1 cần **225,25px**, mà
+   `cột 1 ≈ vp − 131,5px` ⇒ **giữ 1 dòng từ vp ≈ 357px trở lên** (360px ✓, 375px ✓),
+   xuống 2 dòng ở 320px. ⛔ Số cũ `227.55 + 82.27` là của bản nút “Xuất file” CÒN NHÃN ~2 dòng
+   — đừng dùng lại.
    `.count-info` KHÔNG có margin-bottom → đáy dòng chữ tiền = mép trên thẻ đầu tiên, nên
    chữ tiền cách thẻ đầu tiên đúng 4px (4px đó là phần dòng chữ canh giữa trong hàng 29px).
    ⚠️ ĐỔI CỠ CHỮ dòng tổng thì số 29 này sai ngay — phải đo lại (21px chính là
    chiều cao dòng chữ hiện tại). */
 .count-line1 { grid-column: 1; grid-row: 1; }
+/* Dấu `·` ngăn hai nhóm “Tổng HĐ: …” và “KH: …”.
+   ⛔ KHÔNG thay bằng 2 dấu cách trong markup: đo được ở 18px, bản dấu cách cần **230,84px**
+   trong khi cột chữ ở khổ **360px** chỉ có **228,5px** ⇒ dòng 1 **xuống 2 dòng** trên đúng
+   khổ Android phổ biến nhất (375px vẫn 1 dòng). `display: inline-block` + `margin: 0 2px`
+   cho khoảng hở thấy được mà chỉ tốn **4px** thay vì **9,2px** ⇒ vừa 1 dòng ở 360px.
+   Chiều cao: `inline-block` kế thừa `line-height: 22px` của `.count-info` nên **hàng không cao thêm**
+   (`getBoundingClientRect` của `.count-line1` vẫn đúng 22px). */
+.count-sep { display: inline-block; margin: 0 2px; }
 /* `.count-line2` cố ý chỉ còn **ĐÚNG 1 con** (bỏ `justify-content: space-between` vì thừa):
    nút "Xuất" đã ra cột 2. Đừng thêm con thứ hai vào đây — đó là làm lại đúng lỗi cũ. */
 .count-line2 { grid-column: 1; grid-row: 2; display: flex; align-items: center; gap: 10px; margin-top: 0; height: 30px; }
-/* "Tiền" là NHÃN chứ không phải số → thừa hưởng `color: var(--text-dim)` của
+/* "Tổng nợ" là NHÃN chứ không phải số → thừa hưởng `color: var(--text-dim)` của
    `.count-info`, y hệt "Tổng"/"KH"/"HĐ" ở dòng 1; số vẫn đỏ qua `.count-tien`.
    ⚠️ Vẫn phải BỌC nhãn + số vào `.count-tien-wrap` (dù `.count-line2` nay chỉ còn 1 con và
-   `justify-content: space-between` đã bỏ): cặp đó là **một đơn vị** "Tiền - 405.085.558đ"
+   `justify-content: space-between` đã bỏ): cặp đó là **một đơn vị** "Tổng nợ: 405.085.558"
    cần đi liền nhau, và `gap: 4px` bên trong mới cho đúng khoảng nhãn ↔ số.
    `align-items: baseline` để hai chữ khác cỡ vẫn ngồi chung một dòng cơ sở. */
 .count-tien-wrap { display: inline-flex; align-items: baseline; gap: 4px; }
-/* ⚠️ Nhãn “Tiền -” và SỐ **không được xuống dòng** (thêm khi chữ lên 18px — đã đo, không phải phòng xa):
-   ở panel 320px cột chữ chỉ còn **173.87px** trong khi cặp `Tiền -` + số cần **~173.9px** ⇒ flex
+/* ⚠️ Nhãn “Tổng nợ:” và SỐ **không được xuống dòng** (thêm khi chữ lên 18px — đã đo, không phải phòng xa):
+   ở panel 320px cột chữ chỉ còn **173.87px** trong khi cặp `Tổng nợ:` + số cần **~173.9px** ⇒ flex
    co nhãn lại ⇒ nhãn tự ngắt thành **2 dòng** ⇒ `.count-tien-wrap` cao **44px** nằm trong hàng cao
    **30px** ⇒ `align-items: center` đẩy nó **tràn 7px LÊN TRÊN**, đè thẳng vào dòng “Tổng” đang
    xuống 2 dòng (đo được: đáy dòng “Tổng” = 248.92, đỉnh chữ tiền = **241.92**).
@@ -1123,10 +1153,12 @@ body.light-mode .nhom-sel-name {
 .count-info .count-tien.low { color: #86efac; }
 .count-info .count-tien.mid { color: #fde68a; }
 /* Panel RẤT hẹp (≤ 359.98px): hạ cỡ chữ khối tổng về 17px (cỡ cũ).
-   LÝ DO là số đo, không phải cảm tính: ở panel **320px**, cột chữ chỉ có **173.87px** trong khi cặp
-   `Tiền -` + số ở 18px cần **185.27px** (50.81 + 4 + 130.47) ⇒ tràn **11.4px** sang phải, chạm
-   đúng nút “Xuất file” (mép trái nút ở `193.86`, mép phải số ở `195.26`). Ở 17px cặp đó cần
-   **175.22px** ⇒ lùi vào an toàn. Từ **360px** trở lên cột rộng ≥ 206px ⇒ **giữ 18px**.
+   LÝ DO là số đo, không phải cảm tính: ở panel **320px**, cột chữ có **192.16px** trong khi cặp
+   `Tổng nợ:` + số ở 18px cần **~200.1px** ⇒ thò **~8px** vào khe 10px của lưới `.count-info`
+   (cách mép trái nút Xuất còn ~2.2px). Ở 17px cặp đó cần **188.98px** ⇒ thừa **3.18px**,
+   cách nút **13.18px**. Từ **360px** trở lên cột rộng **≥ 228.5px** ⇒ **giữ 18px**.
+   ⚠️ Nhãn nay là “Tổng nợ:” (dài hơn “Tiền:” ~34px) nên cặp này **sát ngưỡng hơn trước** —
+   đừng gỡ nhánh 17px mà không đo lại ở 320px.
    ⚠️ `line-height: 22px` khai ở `.count-info` nên hạ cỡ chữ KHÔNG làm xê dịch dòng:
    hàng 2 vẫn cao 30px (22 + 4×2) ⇒ bố cục bên dưới không nhích.
    ⚠️ Cùng ngưỡng 359.98px với nhánh thu gọn của nút “Xuất file” — cố ý, để chỉ có MỘT
@@ -1529,7 +1561,17 @@ body.light-mode th:hover .th-resizer::after { background: rgba(15,23,42,0.4); }
    Phạm vi CHỈ trong bảng: ở THẺ, mã KH và danh số vốn đã cùng màu (`#1e3a8a` ở light);
    trong MODAL, mã KH vẫn theo `.i-makh` (`#c8d0dc` / `#475569`) — muốn đổi hai chỗ đó thì hỏi. */
 .table-view .ma-kh { color: var(--text-dim); }
-body.light-mode .table-view .ma-kh { color: #475569; }
+/* ⚠️ LƯỢT “LIGHT MODE ĐẬM HƠN” (2026-09-25): `#475569` → **`#334155`** cho **nhóm chữ XÁM**
+   của bảng (mã KH · mã sổ · tháng nợ). Lý do là ảnh người dùng gửi: trên nền trắng, `#475569`
+   đọc như chữ bị bạc, trong khi ô TÊN đã là `#000000` nên tương phản giữa hai bậc quá xa.
+   `#334155` là bậc đậm hơn RÕ nhưng vẫn **dưới** mức của tên ⇒ thứ bậc vẫn đọc được.
+   Đo: `#475569` trên trắng = **7,48:1** → `#334155` = **11,40:1**.
+   ⛔ Đây là **CHÙM 5 RULE phải đổi CÙNG NHAU** (thiếu một rule là đúng một ô vẫn bạc):
+       1. `.ma-kh` (rule này)          · 2–4. `td:nth-child(5/6/10).cell-dim` (mã sổ · danh số · mã kh)
+       · 5. `td:nth-child(7) .badge` (tháng nợ, trong khối mobile).
+   ⛔ KHÔNG đổi màu SỐ TIỀN (`#dc2626`): nó đã đạt AA (4,83:1) và là màu ngữ nghĩa, đậm thêm
+   là việc khác người dùng chưa yêu cầu. */
+body.light-mode .table-view .ma-kh { color: #334155; }
 /* ⚠️ `.ma-kh` là rule theo **ELEMENT** (0,1,0) nên nó **THẮNG KẾ THỪA** font-size 19px của
    `.info-value`: trong bảng modal, mã KH **chỉ** đúng cỡ nhờ rule `.i-makh .ma-kh` ở dưới
    (0,2,0). Sai/thiếu lớp `i-makh` là mã KH lặng lẽ về **15px** trong khi mọi hàng khác vẫn
@@ -2248,20 +2290,54 @@ body.force-desktop .table-view { display: block; }
      ⛔ **MỨC ĐANG DÙNG: dark `0.07` · light `0.05` = TRẦN của light.** Lên `0.06` là chữ
      tiền tụt còn `4,28` (dưới AA).Ở dark còn dư nhiều (10% mới còn 5,55) nhưng 7% đã đủ
      để xen kẻ thấy rõ mà không biến hàng thành “khối xanh”.
-     ⛔ `:not(:hover):not(:active)` là BẮT BUỘC, không phải viết cho gọn: selector này có
-     **độ cụ thể CAO HƠN** `tbody tr:hover` và `tbody tr:active` ⇒ thiếu một trong hai là
-     **hover/lúc nhấn giữ chỉ còn ăn ở hàng LẺ**, hàng chẵn đứng im — lỗi rất dễ bị đoán
-     nhầm thành “hover hỏng ngẫu nhiên”.
+     ⛔ **`!important` + KHÔNG còn `:not(:hover):not(:active)`** (đổi ở lượt “bỏ màu khi chạm”):
+     trước đây sọc phải **nhường chỗ** cho màu hover nên mới có `:not(:hover):not(:active)`.
+     Nay yêu cầu là **không đổi màu khi chạm** ⇒ sọc phải **đứng vững trong lúc hover/chạm**,
+     và vì luật “không đổi màu” ở trên dùng `!important` nên sọc cũng phải `!important`; khi
+     hai bên cùng `!important` thì **độ cụ thể quyết định**, và selector này (0,5,3) cao hơn
+     luật trong suốt (0,3,3) ⇒ hàng CHẴN giữ sọc, hàng LẺ trong suốt — không hàng nào đổi màu.
+     ⛔ Đừng gỡ `!important` ở đây: gỡ là hàng chẵn mất sọc khi chạm (quay lại đúng lỗi vừa sửa).
      ⛔ `:not(.highlighted):not(.highlighted-purple)`: hàng ĐƯỢC ĐÁNH DẤU phải giữ nền
      cam/tím của nó — sọc đè lên là mất dấu (và đè cả `box-shadow` vạch mép trái).
      ℹ️ Chỉ áp cho **bảng 3 hàng trên điện thoại** (khối `@media` này + `force-desktop`).
      Bảng máy tính (≥640px) giữ nguyên — bố cục 14 cột đã ổn định, sọc xen kẻ ở đó là
      thay đổi riêng, chỉ làm khi có yêu cầu. */
-  body.force-desktop .table-view tbody tr:nth-child(even):not(.highlighted):not(.highlighted-purple):not(:hover):not(:active) {
-    background: rgba(59, 130, 246, 0.07);
+  /* ── KHÔNG ĐỔI MÀU KHI RÊ CHUỘT / CHẠM TRÊN BẢNG 3 HÀNG (yêu cầu “bỏ hiển thị màu khi chạm
+     vào ở bảng này”) — khối `@media (max-width: 639.98px)` NÀY mới là bảng trên điện thoại;
+     khối `@media (min-width: 640px)` ở trên là bảng máy tính và **KHÔNG đụng tới**.
+     Cách làm KHÔNG phải “tắt hover” mà là **trả nền về ĐÚNG nền chuẩn của hàng** — vì mỗi hàng
+     có nền chuẩn khác nhau: hàng LẺ trong suốt, hàng CHẴN có sọc, hàng ĐÁNH DẤU có cam/tím.
+     ⚠️ Rất dễ làm sai ở đây: nếu chỉ đặt `background: transparent` cho mọi hàng thì hàng CHẴN
+     sẽ **MẤT SỌC khi chạm** — vẫn là “đổi màu khi chạm”, chỉ khác chiều.
+     ⚠️ `!important` là BẮT BUỘC: phải thắng `tbody tr:hover` (0.40) và `tbody tr:active` (0.50)
+     ở rule nền (~1486) và `body.light-mode .table-view tr:hover` (`#e8eefc`) — luật này có độ
+     cụ thể cao hơn nên nếu không `!important` sẽ **thấy như chưa sửa gì**.
+     ⚠️ `:not(.highlighted):not(.highlighted-purple)` là BẮT BUỘC, không phải viết cho gọn:
+     hàng đang được đánh dấu phải giữ nền cam/tím **trong lúc ngón tay còn đè** (nhấn giữ 1,2s
+     ⇒ lúc đó hàng vừa `:active` vừa `.highlighted`; thiếu `:not()` là mất phản hồi đúng lúc
+     người dùng cần thấy nhất).
+     ℹ️ Hàng CHẴN giữ sọc nhờ rule sọc ngay dưới được nâng `!important` và BỎ
+     `:not(:hover):not(:active)` — chính `!important` + độ cụ thể cao hơn (0,5,3 so với 0,3,3)
+     của nó là thứ giữ sọc khi chạm (xem chú thích ở rule sọc). */
+  tbody tr:not(.highlighted):not(.highlighted-purple):hover,
+  tbody tr:not(.highlighted):not(.highlighted-purple):active { background: transparent !important; }
+  /* Hàng ĐÃ ĐÁNH DẤU: chạm vào không được nhạt màu.
+     ⚠️ Bốn giá trị màu dưới TRÙNG với `.table-view tbody tr.highlighted` / `.highlighted-purple`
+     ở rule nền — đổi màu đánh dấu thì phải đổi CẢ Ở ĐÂY, nếu không hàng đánh dấu sẽ lại đổi
+     màu khi chạm (đúng thứ vừa bỏ). */
+  body.force-desktop .table-view tbody tr.highlighted:hover,
+  body.force-desktop .table-view tbody tr.highlighted:active { background: #2e2412 !important; }
+  body.force-desktop .table-view tbody tr.highlighted-purple:hover,
+  body.force-desktop .table-view tbody tr.highlighted-purple:active { background: #17233f !important; }
+  body.light-mode.force-desktop .table-view tbody tr.highlighted:hover,
+  body.light-mode.force-desktop .table-view tbody tr.highlighted:active { background: #fef3c7 !important; }
+  body.light-mode.force-desktop .table-view tbody tr.highlighted-purple:hover,
+  body.light-mode.force-desktop .table-view tbody tr.highlighted-purple:active { background: #e8f0ff !important; }
+  body.force-desktop .table-view tbody tr:nth-child(even):not(.highlighted):not(.highlighted-purple) {
+    background: rgba(59, 130, 246, 0.07) !important;
   }
-  body.light-mode.force-desktop .table-view tbody tr:nth-child(even):not(.highlighted):not(.highlighted-purple):not(:hover):not(:active) {
-    background: rgba(59, 130, 246, 0.05);
+  body.light-mode.force-desktop .table-view tbody tr:nth-child(even):not(.highlighted):not(.highlighted-purple) {
+    background: rgba(59, 130, 246, 0.05) !important;
   }
   body.force-desktop .table-view tbody td { display: none; padding: 0; border-bottom: none; }
   /* ── VẠCH ĐÁNH DẤU (nhấn giữ 1,2 giây) Ở DẠNG 2 DÒNG ─────────────────────────────
@@ -2388,7 +2464,15 @@ body.force-desktop .table-view { display: block; }
      ⚠️ Sàn an toàn còn lại ở 320px: hàng cần `max(mã kh 126 + khe 4 + cột phải 94) ≈ 224px`
         trong khi khung có **268px** nên còn dư ~44px — nhưng **tên** mới là thứ bị siết trước.
      ⚠️ Nếu sau này thêm ô/chữ vào hàng: 16px là mức **sát trần** ở 320px, hãy đo lại. */
-  body.force-desktop .table-view { --fs-row: 16px; }
+  /* ── LƯỢT “CỠ 17px” (MỚI NHẤT) ────────────────────────────────────────────────
+     Yêu cầu người dùng: “tôi muốn cỡ chữ 17px light mode và dark mode …”.
+     ⚠️ Cỡ chữ **KHÔNG phụ thuộc theme** (hợp đồng của dự án: theme chỉ đổi MÀU, không đổi metric)
+     ⇒ **một chỗ sửa là đủ cho CẢ hai theme**, không tồn tại đường thứ hai cho dark/light.
+     Đổi **2 đường** như mọi lần đổi cỡ: biến này (5 ô mã/tiền) **và** `font-size` của `.cell-tenkh`
+     (ô TÊN — nó bị loại khỏi `:not(.cell-tenkh)` nên KHÔNG ăn theo biến).
+     ⚠️ Lượt “16px” đã ghi 16px là **sát trần ở 320px**; số đo lại ở lượt này ghi ngay dưới rule
+     `.cell-tenkh` — đừng nâng cỡ tiếp mà không đọc chỗ đó trước. */
+  body.force-desktop .table-view { --fs-row: 17px; }
   body.force-desktop .table-view tbody td:not(.cell-tenkh),
   body.force-desktop .table-view tbody td:not(.cell-tenkh) .ma-kh,
   body.force-desktop .table-view tbody td:not(.cell-tenkh) .tien-no,
@@ -2423,7 +2507,9 @@ body.force-desktop .table-view { display: block; }
     font-weight: 400;
     letter-spacing: normal;
   }
-  body.light-mode.force-desktop .table-view tbody td:nth-child(7) .badge { color: #475569 !important; }
+  /* Tháng nợ ở light mode: `#475569 → #334155` (lượt “light mode đậm hơn”) — rule thứ 5
+     trong chùm 5 rule, xem chú thích ở `body.light-mode .table-view .ma-kh`. */
+  body.light-mode.force-desktop .table-view tbody td:nth-child(7) .badge { color: #334155 !important; }
   body.force-desktop .table-view tbody td:nth-child(6) {
     background: rgba(59,130,246,0.15);
     color: var(--accent-glow) !important;
@@ -2464,11 +2550,13 @@ body.force-desktop .table-view { display: block; }
        Lượt “TẤT CẢ 14px” (mới nhất): `16px → 14px` — nay TRÙNG giá trị với khối mobile,
        nhưng vẫn giữ khai tường minh để hai đường không phụ thuộc nhau.
        Lượt “cỡ 15px”: `14px → 15px` — cùng lượt với `--fs-row: 15px` ⇒ **cả 6 ô = 15px**.
-       Lượt “cỡ 16px” (MỚI NHẤT): `15px → 16px` — cùng lượt với `--fs-row: 16px` ⇒ **cả 6 ô = 16px**
+       Lượt “cỡ 16px”: `15px → 16px` — cùng lượt với `--fs-row: 16px` ⇒ **cả 6 ô = 16px**
        (đã đo ở 320/375/430px: vuốt ngang **0**, hàng đều **67,57px**).
+       Lượt “cỡ 17px” (MỚI NHẤT): `16px → 17px` — cùng lượt với `--fs-row: 17px` ⇒ **cả 6 ô = 17px**
+       (đo lại ở 320/360/375/430px: vuốt ngang **0**, hàng đều **71,61px**, tên bị cắt xem run doc).
        ⚠️ Hạ cỡ ở đây từng làm `min-height: 2lh` nhỏ đi theo (`38,44 → 34,59px`); nay `2lh`
        **đã bị gỡ hẳn** ở lượt “tên không xuống hàng”. */
-    font-size: 16px;
+    font-size: 17px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2835,23 +2923,40 @@ body.force-desktop .table-view { display: block; }
     </div>
 
     <div class="count-info">
-      <!-- Dấu ngăn cách 2 dòng tổng là **DẤU HAI CHẤM** `:` (trước là dấu `-`), và dấu giữa
-           số KH với số HĐ là **DẤU GẠCH NGANG** `-` (trước là dấu `/`) — yêu cầu người dùng.
+      <!-- NHÃN ĐỨNG TRƯỚC SỐ (yêu cầu “đổi chữ Tổng HĐ:     KH:”): dòng 1 nay là
+           **`Tổng HĐ: 1.472 · KH: 1.429`** (**dấu `·` là span `.count-sep`, KHÔNG phải 2 dấu
+           cách** — lý do ở chú thích `.count-sep`) — trước đây là `Tổng: 1.429 KH·1.472 HĐ`
+           (nhãn “KH”/“HĐ” nằm SAU số, người đọc phải nhìn ngược về cuối để biết số nào là gì).
+           ⚠️ **THỨ TỰ ĐÃ ĐỔI**: HĐ lên trước KH, đúng như chuỗi người dùng viết (“Tổng HĐ: … KH:”).
+           Đổi lại thì chỉ sửa **1 dòng markup** này — JS không dựng dòng 1.
+           Dấu `·` (U+00B7) nay là **vạch ngăn hai nhóm nhãn+số**, không còn là “dấu giữa số KH với
+           số HĐ” như trước (trước đó nó thay dấu gạch ngang `-`, xa hơn nữa là dấu `/`).
            Cả 2 dòng này là markup TĨNH — JS chỉ ghi số vào `#countKH` / `#countHoaDon` /
            `#countTongTien`, KHÔNG bao giờ ghi `innerHTML` của dòng, nên thêm chữ ở đây là an toàn.
            `.count-line1` KHÔNG phải flex (khác `.count-line2`) nên dấu cách thật trong markup
            vẫn hiển thị — viết thẳng "Tổng: " là đủ.
-           ⚠️ Dấu gạch ngang viết **DÍNH SÁT hai bên** (`KH-1.472`, không còn `KH - 1.472`) theo
-           yêu cầu “tôi muốn dấu - nằm sát vô”. Đây là **bỏ 2 dấu cách trong markup**, KHÔNG phải
-           `letter-spacing`/`margin` âm — nên nếu muốn quay lại chỉ cần chèn lại 2 dấu cách.
+           Số nay **đứng NGAY SAU nhãn** của nó (`Tổng HĐ: 1.472` · `KH: 1.429`) — mỗi số tự
+           nói số đó là gì, không phải đọc tới cuối dòng mới biết.
+           ⚠️ Dấu `·` nằm trong `<span class="count-sep">` chứ KHÔNG phải 2 dấu cách: bản dùng
+           dấu cách cần **230,84px** ở 18px trong khi cột chỉ có **228,5px** ở khổ 360px ⇒
+           dòng 1 **xuống 2 dòng** trên đúng khổ Android phổ biến nhất. `margin: 0 2px` cho
+           khoảng hở nhìn thấy được mà chỉ tốn **4px** thay vì **9,2px** của 2 dấu cách.
+           ⚠️ JS **vẫn ghi số theo `id`** (`#countKH` cho 1.429 KH, `#countHoaDon` cho 1.472 HĐ)
+           — đổi vị trí hai span trong markup KHÔNG làm lẫn số, nhưng ⛔ **đừng đổi `id`**: đổi id
+           là số điền vào sai ô mà KHÔNG có lỗi nào hiện ra (chỉ hai chữ số đổi chỗ cho nhau).
            Lợi thêm: dòng 1 ngắn đi ~10px nên **ngưỡng ngắt dòng lùi về sau** (xem run doc). -->
-      <div class="count-line1">Tổng: <span id="countKH" class="count-kh-hd">0</span> KH-<span id="countHoaDon" class="count-kh-hd">0</span> HĐ</div>
+      <div class="count-line1">Tổng HĐ: <span id="countHoaDon" class="count-kh-hd">0</span><span class="count-sep">·</span>KH: <span id="countKH" class="count-kh-hd">0</span></div>
       <div class="count-line2">
-        <!-- Đấu `:` nằm TRONG nhãn `Tiền` (không phải một span thứ ba) vì `.count-tien-wrap`
-             là `inline-flex` + `gap: 4px` giữa nhãn và số → "Tiền:" + 4px + số = đúng
-             "Tiền: 405.085.558đ". Thêm span thứ ba cũng bị `gap` chen vào, y như bẫy đã
-             ghi ở `.count-line2`. -->
-        <span class="count-tien-wrap"><span class="count-tien-label">Tiền:</span> <span id="countTongTien" class="count-tien low">0đ</span></span>
+        <!-- Đấu `:` nằm TRONG nhãn `Tổng nợ` (không phải một span thứ ba) vì `.count-tien-wrap`
+             là `inline-flex` + `gap: 4px` giữa nhãn và số → "Tổng nợ:" + 4px + số = đúng
+             "Tổng nợ: 405.085.558". Thêm span thứ ba cũng bị `gap` chen vào, y như bẫy đã
+             ghi ở `.count-line2`.
+             ⚠️ Nhãn nay là **"Tổng nợ:"** (yêu cầu “sửa tiền thành Tổng nợ”) — DÀI hơn "Tiền:"
+             ~34px ở 18px, nên bề rộng yêu cầu của dòng 2 tăng theo; xem `@media` ≤359.98px
+             bên dưới `.count-info`.
+             ⚠️ Số tổng nay **KHÔNG còn hậu tố `đ`** (yêu cầu “bỏ chữ đ sau số tiền”) — cả ở
+             markup này (`0đ` → `0`) lẫn ở JS (`elTongTien.textContent`). -->
+        <span class="count-tien-wrap"><span class="count-tien-label">Tổng nợ:</span> <span id="countTongTien" class="count-tien low">0</span></span>
       </div>
       <!-- Nút "Xuất" là **anh em** của `.count-line2`, KHÔNG nằm trong nó: nó là ô của
            CỘT 2 trong lưới `.count-info`. Nằm trong `.count-line2` thì nó tràn 15px lên
@@ -2860,11 +2965,18 @@ body.force-desktop .table-view { display: block; }
            và `.export-btn` vẫn được bật/tắt bằng `display: flex/none`. -->
       <!-- Hai nút nằm CHUNG một ô lưới (`grid-column: 2` của `.count-info`) — xem `.count-btns`.
            Nút “dạng máy tính” chỉ hiện ở bố cục điện thoại (ẩn từ 640px trở lên) và chỉ hiện khi
-           đã có dữ liệu, y như nút Xuất file. Ở panel rất hẹp (≤339.98px) nhãn “Xuất file” tự ẩn
-           để nhường chỗ, xem mục “Nút xem dạng máy tính” trong run doc. -->
+           đã có dữ liệu, y như nút Xuất file. Hai nút nay cùng bề rộng (38px; 36px ở panel
+           ≤359.98px) vì đều là icon-only 20px với `padding: 0 8px` — xem `.export-btn`. -->
       <div class="count-btns">
-        <button id="exportBtn" class="export-btn" onclick="exportExcel()" title="Xuất file Excel" aria-label="Xuất file Excel"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg><span class="export-btn-label">Xuất file</span></button>
-        <button id="viewBtn" class="view-btn" onclick="toggleViewMode()" title="Xem dạng máy tính" aria-label="Xem dạng máy tính"><svg class="ic" width="20" height="20" aria-hidden="true"><use href="#i-monitor"/></svg></button>
+        <!-- Nút Xuất nay **ICON-ONLY** (yêu cầu “bỏ chữ xuất file”) và có **cùng kích thước với
+             nút “về dạng thẻ”** (`#viewBtn`) — hai nút cùng hệ hình do dùng chung công thức bề
+             rộng `.view-btn`, xem chú thích ở `.export-btn`. Nghĩa của nút nằm ở `data-tip` +
+             `aria-label` (giữ nguyên “Xuất file Excel”) — ĐỪNG bỏ 2 thuộc tính này: `data-tip`
+             là nhãn nổi cho MẮT (`initTips()`), `aria-label` là nhãn cho trình đọc màn hình.
+             ⛔ `data-tip` nay THAY `title` (xem mục “NHÃN NỔI” trong run doc) — điền CẢ HAI là
+             có hai hộp nổi chồng nhau, vì `title` vẫn hiện trên máy tính sau ~1s. -->
+        <button id="exportBtn" class="export-btn" onclick="exportExcel()" data-tip="Xuất file Excel" aria-label="Xuất file Excel"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg></button>
+        <button id="viewBtn" class="view-btn" onclick="toggleViewMode()" data-tip="Xem dạng máy tính" aria-label="Xem dạng máy tính"><svg class="ic" width="20" height="20" aria-hidden="true"><use href="#i-monitor"/></svg></button>
       </div>
     </div>
 
@@ -3596,7 +3708,10 @@ function applyViewBtnState() {
   if (!btn) return;
   const on = document.body.classList.contains('force-desktop');
   const label = on ? 'Về dạng thẻ' : 'Xem dạng máy tính';
-  btn.title = label;
+  // ⚠️ Nhãn của MẮT (`data-tip` — hộp nổi) và của trình đọc màn hình (`aria-label`) phải
+  // ĐỔI CÙNG NHAU. `data-tip` nay THAY `title`: điền cả hai là có HAI hộp nổi chồng nhau
+  // trên máy tính (`title` hiện chậm ~1s) — xem `initTips()`.
+  btn.setAttribute('data-tip', label);
   btn.setAttribute('aria-label', label);
   btn.setAttribute('aria-pressed', on ? 'true' : 'false');
 }
@@ -4281,7 +4396,9 @@ function applyFilters() {
   document.getElementById('countHoaDon').textContent = dispRows.length.toLocaleString('vi-VN');
   const tongTien = dispRows.reduce((sum, r) => sum + (r.tien_no || 0), 0);
   const elTongTien = document.getElementById('countTongTien');
-  elTongTien.textContent = tongTien.toLocaleString('vi-VN') + 'đ';
+  // ⚠️ Số tổng KHÔNG còn hậu tố `đ` (yêu cầu “bỏ chữ đ sau số tiền”) — đơn vị đã rõ từ nhãn
+  // “Tổng nợ:”. Đừng thêm lại `+ 'đ'`: chuỗi này còn đi qua `.count-tien` (đổi màu theo quy mô).
+  elTongTien.textContent = tongTien.toLocaleString('vi-VN');
   elTongTien.className = 'count-tien ' + (tongTien >= 1000000000 ? 'high' : (tongTien >= 100000000 ? 'mid' : 'low'));
   const q2 = document.getElementById('searchInput').value.trim();
   renderCards(q2);
@@ -5020,6 +5137,109 @@ function modalScrolledToTop() {
   const panel = document.getElementById('modal').querySelector('.modal');
   return panel.scrollTop <= 0;
 }
+
+// ─── NHÃN NỔI (TOOLTIP) cho các control ICON-ONLY ───────────────────────────
+// `data-tip="…"` là nhãn của MẮT; `aria-label` trên cùng element là nhãn của trình đọc
+// màn hình (giữ cả hai, chúng trả lời hai câu hỏi khác nhau).
+// Vì sao KHÔNG dùng `title`: **`title` không bao giờ hiện trên cảm ứng** ⇒ nút icon-only
+// (Xuất file · Xem dạng máy tính) sẽ vô nghĩa trên điện thoại. Module này phủ 3 đường:
+//   · RÊ CHUỘT (máy tính)        → hiện ở `pointerenter`, ẩn ở `pointerleave`
+//   · NHẤN GIỮ ≥ 450ms (cảm ứng) → hiện khi đang giữ, giữ thêm 1,2s sau khi nhả để kịp đọc
+//   · FOCUS bàn phím             → hiện/ẩn theo `focus`/`blur`
+// ⛔ Nhấn giữ CHỈ để đọc nhãn, KHÔNG kích hoạt nút — xem chỗ chặn `click` bên dưới.
+// Gọi lại được NHIỀU LẦN (cho control sinh động: gắn `data-tip` rồi gọi `initTips()` lần nữa)
+// — nhờ 2 chốt: hộp nổi **tái dùng** nếu đã có, và mỗi element được đánh dấu `tipBound`
+// nên **không bị gắn listener hai lần**.
+function initTips() {
+  const HOLD = 450, KEEP = 1200, GAP = 8, EDGE = 6;
+  let tip = document.getElementById('uiTip');
+  if (!tip) {
+    tip = document.createElement('div');
+    tip.id = 'uiTip';                        // id để soi DOM khi gỡ lỗi; CSS ăn theo `.ui-tip`
+    tip.className = 'ui-tip';
+    tip.setAttribute('aria-hidden', 'true'); // nội dung trùng `aria-label` của chính nút đó
+    document.body.appendChild(tip);
+  }
+
+  let holdTimer = null, keepTimer = null, cur = null, holdEl = null, suppress = null;
+
+  function place(el) {
+    // ⛔ Canh theo **`documentElement.clientWidth/clientHeight`**, KHÔNG phải `innerWidth/innerHeight`.
+    // `innerWidth` tính CẢ thanh cuộn dọc — đo được ở panel 375px: `innerWidth` **375** nhưng
+    // `clientWidth` **353** (thanh cuộn **22px**). Canh theo `innerWidth` thì hộp nổi của nút
+    // PHẢI NHẤT (nút “về dạng thẻ”) thò mép phải xuống **368,9px** — tức **dưới thanh cuộn**,
+    // nhìn như bị cắt chữ dù số đo “trong khổ màn hình”.
+    const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+    tip.style.left = '0px'; tip.style.top = '0px';   // về gốc TRƯỚC khi đo (bề rộng đổi theo nhãn)
+    tip.style.maxWidth = (vw - 2 * EDGE) + 'px';
+    const r = el.getBoundingClientRect();
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    // Căn giữa `Math.round` (lệch ≤ 0,5px), nhưng khi bị KẸP thì phải `Math.floor` ở mép phải:
+    // làm tròn lên 0,1px là hộp nổi đứng sát mép hơn lề cho phép.
+    const left = Math.max(EDGE, Math.min(Math.round(r.left + r.width / 2 - w / 2), Math.floor(vw - w - EDGE)));
+    let top = Math.round(r.bottom + GAP);
+    if (top + h > vh - EDGE) top = Math.max(EDGE, Math.round(r.top - h - GAP));  // hết chỗ DƯỚI ⇒ lật LÊN TRÊN
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+  }
+  function show(el) {
+    clearTimeout(holdTimer); clearTimeout(keepTimer);
+    if (cur !== el) { cur = el; tip.textContent = el.getAttribute('data-tip') || ''; }
+    tip.classList.add('show');
+    place(el);
+  }
+  function hideNow() {
+    clearTimeout(holdTimer); clearTimeout(keepTimer);
+    holdEl = null; cur = null;
+    tip.classList.remove('show');
+  }
+  function hideSoon() { clearTimeout(keepTimer); keepTimer = setTimeout(hideNow, KEEP); }
+
+  document.querySelectorAll('[data-tip]').forEach(function (el) {
+    if (el.dataset.tipBound) return;         // gọi lại `initTips()` ⇒ bỏ qua cái đã gắn
+    el.dataset.tipBound = '1';
+    el.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') show(el); });
+    el.addEventListener('pointerleave', function (e) {
+      if (e.pointerType === 'mouse') hideNow();          // rời chuột ⇒ ẩn ngay
+      else if (holdEl === el) hideSoon();               // ngón tay kéo ra ngoài ⇒ ẩn sau ít giây
+    });
+    el.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse') return;            // chuột đã có đường hover, không tính giờ
+      holdEl = null; suppress = null;
+      clearTimeout(holdTimer);
+      holdTimer = setTimeout(function () { holdEl = el; suppress = el; show(el); }, HOLD);
+    });
+    el.addEventListener('pointerup', function () {
+      clearTimeout(holdTimer);
+      if (holdEl === el) hideSoon();
+    });
+    el.addEventListener('pointercancel', function () {
+      clearTimeout(holdTimer);
+      if (holdEl === el) hideSoon();
+    });
+    el.addEventListener('focus', function () { show(el); });   // bàn phím: Tab vào là thấy nhãn
+    el.addEventListener('blur', hideNow);
+  });
+
+  // Chặn `click` khi nhấn giữ đã hiện nhãn.
+  // ⛔ Phải gắn ở **document, pha CAPTURE** — KHÔNG gắn ngay trên nút: ở element đích,
+  // listener capture và `onclick` inline chạy theo **THỨ TỰ ĐĂNG KÝ**, mà `onclick` inline
+  // đã đăng ký từ lúc parse (tức TRƯỚC) nên nó vẫn chạy. Ở document thì capture chắc chắn
+  // chạy trước khi sự kiện tới được nút, nên `stopPropagation()` cắt được đường.
+  document.addEventListener('click', function (e) {
+    const el = (e.target && e.target.closest) ? e.target.closest('[data-tip]') : null;
+    if (suppress && el === suppress) { e.preventDefault(); e.stopPropagation(); }
+    suppress = null;
+  }, true);
+
+  // Hộp nổi neo theo TOẠ ĐỘ MÀN HÌNH ⇒ cuộn/đổi khổ phải tính lại (thanh công cụ còn “dính”).
+  window.addEventListener('scroll', function () { if (cur) place(cur); }, { passive: true, capture: true });
+  window.addEventListener('resize', function () {
+    if (!cur) return;
+    if (!cur.offsetParent) hideNow(); else place(cur);   // nút bị ẩn (nút “dạng máy tính” từ 640px) ⇒ bỏ hộp nổi
+  }, { passive: true });
+}
+initTips();
 </script>
 </body>
 </html>
