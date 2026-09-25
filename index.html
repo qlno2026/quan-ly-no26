@@ -87,6 +87,57 @@
   --vien-pad-x: 6px;
   --vien-radius: 5px;
   --vien-weight: 400;
+
+  /* ── CỠ CHỮ NỘI DUNG — 3 MỨC NGƯỜI DÙNG CHỌN (nút “Aa” ở hàng sắp xếp) ─────────────
+     Đây là **NGUỒN DUY NHẤT** của cỡ chữ NỘI DUNG (thẻ khách hàng + bảng). Đổi một số ở
+     khối `body[data-fs="…"]` bên dưới là đổi cả app; đừng khai lại px ở rule nào nữa.
+     Mức đặt trên `<body data-fs="nho|chuan|to">` (xem `applyFontSize()`), lưu ở
+     `localStorage['qlno_fs']` và **áp lại ngay đầu <body>** (script inline) để không nháy cỡ.
+     ⚠️ Ba mức phải giữ NHỊP ±1px như nhau: đây là bước người dùng đã chọn và đã quen.
+     ⛔ KHÔNG đưa cỡ chữ CONTROL (`--ctl-fs`, `--sort-*`) hay cỡ trong MODAL (`--info-*`)
+     vào đây — người dùng chỉ nói về NỘI DUNG thẻ/bảng; trộn vào là mọi nút to nhỏ theo
+     và bố cục toolbar (vốn đã kín ở 320px) sẽ vỡ. */
+  --fs-card-big: 18px;   /* thẻ: TÊN KH + số tiền */
+  --fs-card: 17px;       /* thẻ: mọi ô còn lại (mã KH, mã sổ, danh số, TBI, SĐT, ABC, địa chỉ, ghi chú, tháng) */
+  --fs-card-sep: 13px;   /* thẻ: dấu "-" phân cách */
+  --fs-tb-row: 17px;     /* bảng 3 HÀNG trên điện thoại: 5 ô mã/tiền + ô TÊN + badge tháng */
+  --fs-tb: 15px;         /* bảng 14 CỘT: giá trị NỀN (ở máy tính bị khối `min-width: 640px` ghi đè) */
+  /* ── BẢNG 3 HÀNG: LỀ HÀNG (dùng CHUNG cho `padding` của hàng và cho bề rộng của dải nền
+     ở hàng “tên + tiền” — đổi 1 số ở đây là cả hai đi theo, không lệch)
+     ⟳ **`--row-pad-r`: 2px → 8px** (yêu cầu “cho hàng số tiền, tháng, mã sổ nằm xích vô 1 tí
+       vì bị thanh trượt che”). Đây là ĐẢO CHIỀU lượt “cho số tiền, tháng nợ, mã sổ ra sát mép”
+       (lượt đó hạ 6 → 4 → 3 → **2px**). Nay cột phải lùi vào **6px** so với trước.
+       ⚠️ Đo trong webview này (vp 375): mép phải ô tiền `341,7 → 335,7`, cách thanh cuộn
+       (`clientWidth`) **11 → 17,3px** (vp 320: `287 → 281`, cách **11 → 17px**) — vẫn KHÔNG
+       vuốt ngang (`cuonDuoc = 0`) và cột vẫn 1 giá trị duy nhất cho cả 50 hàng.
+       ℹ️ Vì sao vẫn phải lùi dù đã cách 11px: thanh cuộn trên máy người dùng là loại
+       **overlay** (đè LÊN nội dung, không chiếm lề) ⇒ khoảng cách 11px không bảo vệ được chữ.
+       ⛔ Đừng trả về 2px mà không hỏi lại: người dùng đã đổi ý đúng 1 lượt về việc này. */
+  --row-pad-l: 6px;
+  --row-pad-r: 8px;
+  /* Màu DẢI NỀN ở hàng “TÊN KH + số tiền” (thay sọc xen kẻ).
+     ⟳ ĐÃ TĂNG ở lượt “màu nền ở tên kh và số tiền còn nhạt quá”: dark **7% → 15%**,
+       light **5% → 14%**. Đây là token dùng chung cho CẢ HAI theme (`body.light-mode` ghi đè 1 lần).
+     Đo thật (blend alpha từ ngoài vào tới `.table-wrap`, base = TRẮNG ở light / `27,28,33` ở dark):
+       · dark 15% → nền hàng `31,44,65`: tiền `6,12` ✓ · mã sổ `5,47` ✓ · danh số `4,59` ✓ · tên `11,4` ✓
+       · light 14% → nền hàng `228,238,254`: tên `18,3` ✓ · mã kh `9,0` ✓ · mã sổ `6,6` ✓ · danh số `6,2` ✓
+         ⚠️ ĐI KÈM BẮT BUỘC: chữ TIỀN ở light mode phải là `#b91c1c` (xem khối “ZEBRA”).
+     ⛔ Trần đã đo — đừng nâng thêm mà không đo lại: light **14%** (với `#b91c1c`), dark
+       **~15%** (danh số tụt 4,51:1 ở 16% và **4,27:1 — dưới AA — ở 20%**). */
+  --row1-bg: rgba(59,130,246,0.15);
+  --fs-tb-desk: 14px;    /* bảng 14 CỘT trên MÁY TÍNH — khối `@media (min-width: 640px)`
+                            ⚠️ Tên cũ `--fs-tb-sm` dễ đọc nhầm thành “bản nhỏ ở điện thoại”, nhưng
+                            khối đó là **min-width** ⇒ đây mới là cỡ THẬT của bảng máy tính
+                            (đã đo ở 1600px: `chuan` = **14px**, hàng cao **32,64px**). */
+}
+/* Ba mức. Tên mức phải khớp mảng `FS_LEVELS` trong JS và `data-fs` trên <body>. */
+body[data-fs="nho"] {
+  --fs-card-big: 17px; --fs-card: 16px; --fs-card-sep: 12px;
+  --fs-tb-row: 16px;   --fs-tb: 14px;   --fs-tb-desk: 13px;
+}
+body[data-fs="to"] {
+  --fs-card-big: 19px; --fs-card: 18px; --fs-card-sep: 14px;
+  --fs-tb-row: 18px;   --fs-tb: 16px;   --fs-tb-desk: 15px;
 }
 
 /* ── Viên (pill) trên card — light mode ── */
@@ -100,6 +151,12 @@ body.light-mode {
      với nền ô — dưới ngưỡng 3:1 cho biên component (WCAG 1.4.11). `#eff1f5` giữ được
      **3.01:1**; đừng hạ nền thêm nữa mà không đo lại. */
   --ctl-light-bg: #eff1f5;
+
+  /* Dải nền hàng “tên + tiền” ở light mode — TRẦN CŨ **5%** đã bị vượt ở lượt
+     “màu nền ở tên kh và số tiền còn nhạt quá” (yêu cầu người dùng) ⇒ nay **14%**.
+     ⚠️ Điều kiện đi kèm KHÔNG được tháo: chữ TIỀN light mode phải là `#b91c1c` (5,51:1 trên
+     dải). Trả nó về `#dc2626` là dải 14% kéo chữ tiền xuống **4,11:1 — dưới AA 4,5:1**. */
+  --row1-bg: rgba(59,130,246,0.14);
 
   /* MỘT token cho MỌI đường bao ở light mode (thẻ khách hàng, bảng chi tiết, Sheet 2,
      nút phân trang). Trước đây thẻ dùng `#4b5563` còn panel dùng `#6b7280` → hai tầng viền
@@ -532,12 +589,12 @@ body.light-mode .summary-table tr:hover { background: #bfdbfe; }
 body.light-mode .summary-table tfoot td:nth-child(n) { color: #000000; background: #cbd5e1 !important; border-bottom: none !important; }
 body.light-mode .summary-table .tien-no-cell { color: #7c2d12; background: #e2e8f0 !important; }
 body.light-mode .tien-no { color: #166534 !important; }
-body.light-mode .tien-no.high { color: #dc2626 !important; }
+body.light-mode .tien-no.high { color: #b91c1c !important; }   /* red-700: dải nền row1 (14%) làm #dc2626 tụt 4,11:1 */
 body.light-mode .tien-no.low { color: #047857 !important; }
 body.light-mode .tien-no.mid { color: #166534 !important; }
-body.light-mode .tien-no .mil-digit { color: #dc2626 !important; }
+body.light-mode .tien-no .mil-digit { color: #b91c1c !important; }   /* cùng lý do trên — sửa LẺ rule này là số tiền hai tông */
 body.light-mode .kh-tien { color: #b91c1c; }
-body.light-mode .kh-tien.high { color: #dc2626; }
+body.light-mode .kh-tien.high { color: #b91c1c; }   /* thẻ card: 6,6:1 trên nền thẻ (trước #dc2626 = 4,83:1) */
 body.light-mode .kh-tien.low { color: #047857; }
 body.light-mode .kh-tien .mil-digit { color: #c2410c; }
 /* Màu chữ của khối tổng phải ĐO TRÊN NỀN TRANG XÁM (không còn khối trắng của `.main`):
@@ -866,6 +923,10 @@ body.light-mode.force-desktop .view-btn { background: #bfdbfe; border-color: #25
   .export-btn:hover { border-color: #3b82f6; color: #ffffff; background: rgba(59,130,246,0.16); }
 }
 .export-btn:active { background: rgba(59,130,246,0.28); }
+/* ⚠️ `.export-btn` KHÔNG còn được dùng trực tiếp: từ lượt “gom cụm tác vụ”, nút Xuất mang cả
+   hai lớp `class="page-act"` (và `#exportBtn`) ⇒ hình dáng thật do `.page-act` quyết định.
+   Giữ rule cũ lại vì `.export-btn` vẫn là mốc so sánh trong run doc và có thể dùng lại nếu
+   muốn tách nút Xuất ra khỏi cụm. */
 /* Panel RẤT hẹp (≤ 359.98px): CHỈ thu icon 20→18px (nút Xuất 38→36px) để nút Xuất **vẫn bằng
    đúng nút “về dạng thẻ”** — hai nút đứng cạnh nhau nên lệch 2px là thấy ngay.
 
@@ -1051,6 +1112,51 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
 /* (đã XOÁ `#sortTienNo { background: rgba(91,33,182,0.10) }` — cùng lý do như `#sortDanhSo`.) */
 #sortTienNo.active { border-color: #8b5cf6; background: #5b21b6; box-shadow: none; }
 .sort-btn:active { background: rgba(59,130,246,0.22); }
+
+/* ── NÚT CHỌN CỠ CHỮ NỘI DUNG (“Aa”) ─────────────────────────────────────────
+   Xem markup + lý do ĐẶT CHỖ ở `.sort-row`. `flex: 0 0 auto` là điều kiện sống còn:
+   hai `.sort-btn` bên cạnh có `flex: 1` nên phần trống được chia cho CHÚNG, còn nút này
+   giữ đúng 38px ở mọi khổ ⇒ bố cục hai tab chỉ hụt đúng 42px (38 + 4px `gap`).
+   Bề mặt/viền COPY của `.sort-btn` (cùng họ control với ô lọc) — không tự nghĩ bộ màu mới.
+   Ba chấm dưới “Aa” là chỉ mức ĐANG dùng (1=Nhỏ · 2=Chuẩn · 3=Lớn), do 3 rule
+   `body[data-fs="…"]` bên dưới bật sáng — KHÔNG vẽ chấm bằng JS, để F5 xong vẫn đúng ngay
+   cả trước khi script chính chạy.
+   ⚠️ Cỡ chữ “Aa” (`15px`) CỐ ĐỊNH — nó là nhãn của control, không phải nội dung, nên KHÔNG
+   ăn theo `--fs-card`/`--fs-tb`; nếu cho nó co giãn thì bấm tới mức “Lớn” nút sẽ tự to ra. */
+.fs-btn {
+  flex: 0 0 auto;
+  width: 38px;
+  height: var(--ctl-h);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 0;
+  background: rgba(71,85,105,0.35);
+  border: 1px solid rgba(148,163,184,0.6);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.75);
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+}
+.fs-btn:active { background: rgba(59,130,246,0.22); }
+body.light-mode .fs-btn { background: var(--ctl-light-bg); border-color: #7a80f0; color: #4b5563; }
+/* Nút “Aa” khi đứng cạnh nút “dạng bảng” trong `.count-btns` (sau yêu cầu “dời xuống kế nút
+   dạng bảng”): hạ chiều cao **44 → 40px** cho BẰNG nút bên cạnh. Base `.fs-btn` khai
+   `height: var(--ctl-h)` (44px) vì ở hàng sắp xếp nó phải cao bằng 2 tab — đừng sửa base,
+   hai nơi dùng hai chiều cao khác nhau là đúng. */
+.count-btns .fs-btn { height: 40px; }
+.fs-btn-aa { font-size: 15px; font-weight: 600; line-height: 1; letter-spacing: 0.2px; }
+.fs-btn-dots { display: flex; gap: 2px; }
+.fs-btn-dots i { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: 0.35; }
+body[data-fs="nho"] .fs-btn-dots i:nth-child(1),
+body[data-fs="chuan"] .fs-btn-dots i:nth-child(2),
+body[data-fs="to"] .fs-btn-dots i:nth-child(3) { opacity: 1; }
 
 .nhom-sel-name {
   font-weight: 500;
@@ -1262,47 +1368,56 @@ body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color:
 .kh-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
 /* Viên Danh Số / Mã KH / SĐT: metric khai 1 lần ở đây cho CẢ 2 theme;
    chỉ màu mới khai lại trong khối theme (xem HỢP ĐỒNG ở mục LIGHT MODE) */
-/* ⚠️ CỠ CHỮ NỘI DUNG THẺ CARD — đã nâng **+1px HAI LẦN** (lần 2 theo yêu cầu “ở thẻ card và
-   modal tất cả nội dung tăng thêm 1px”). Lịch sử: gốc tên/tiền `17` · viên + địa chỉ + ghi chú
-   `16` · dấu `-` `12`  →  **lần 1**: `18` / `17` / `13`  →  **lần 2 (hiện tại)**:
-   tên/tiền **`19`**, mọi thứ còn lại trong thẻ **`18`** (danh số, mã KH, mã số GCS, số TBI, SĐT,
-   ABC, địa chỉ, ô ghi chú, tháng), dấu `-` **`14`**.
+/* ⚠️ CỠ CHỮ NỘI DUNG THẺ CARD — nay **GIẢM 1px so với lượt trước** (yêu cầu “cho nội dung trong thẻ
+   card giảm 1px”). Lịch sử: gốc tên/tiền `17` · phần còn lại `16` · dấu `-` `12`
+   → *lần 1* `18`/`17`/`13` → *lần 2* `19`/`18`/`14` → **lần 3 (hiện tại): tên/tiền `18`**,
+   **mọi thứ còn lại trong thẻ `17`** (danh số, mã KH, mã số GCS, số TBI, SĐT, ABC, địa chỉ,
+   ô ghi chú, tháng), **dấu `-` `13`** — tức trở về ĐÚNG cỡ của *lần 1*.
+   ⛔ **Từ lần 3 trở đi, GIẢM 1px KHÔNG còn là “đảo ngược” của lần tăng ngay trước** — nó chỉ trùng
+   giá trị. Muốn biết chắc đang ở cỡ nào thì đọc 3 nơi dưới đây, đừng suy từ lịch sử.
    ⚠️ Phải sửa Ở CẢ 3 NƠI, nếu không sẽ lệch giữa nền và mobile:
      1. khối nền này (ngoài `@media`),
      2. khối `@media (max-width: 639.98px)` (nó khai lại: name/tien/danhso/ma/sogcs/tbi/phone/abc),
-     3. **inline** `style="font-size:18px"` trên `kh-abc` trong JS render card (`renderCards()`).
+     3. **inline** `style="font-size:17px"` trên `kh-abc` trong JS render card (`renderCards()`).
    Đừng quên `.kh-ghichu-input` (ô ghi chú) — nó cũng là nội dung trong thẻ.
-   *(Lần 2 đo được ở 320px: thẻ **309.86 → 329.77px**; ở 363px: **218.81 → 280.41px** vì hàng
-   viên SĐT + Mã KH rớt từ 1 xuống 2 dòng — xem mục tương ứng trong run.md.)*
-   **Số đo thật** (A/B trong cùng một thời điểm: chèn `!important` trả các cỡ về giá trị cũ,
-   đo, rồi gỡ ra — ở bề rộng panel ~362px, dữ liệu thật): thẻ cao **230.3 → 263.08px**
-   (+32.8px). Trong đó: `.kh-card-top` 66.3 → 70.2 (tên 3 dòng ×23.4px), `.kh-addr-line`
-   38.4 → 40.4 (địa chỉ 2 dòng), và **`.kh-card-mid` 111.0 → 138.9**: hàng
-   “viên SĐT - viên Mã KH” cần thêm ~7px nên **rớt xuống 2 dòng** ở bề rộng quanh 360px
-   (ở 320px nó đã xuống 2 dòng từ trước; ở ≥400px vẫn 1 dòng ⇒ thẻ thấp lại 195px).
-   Đây là hệ quả tự nhiên của việc chữ to lên 1px, **không phải lỗi**: không ô nào tràn,
-   không nhãn nào bị cắt (`ellipsis` = 0 ở 320/362px), trang không tràn ngang. */
-.kh-danhso { font-size: 18px; font-weight: var(--vien-weight) !important; padding: 0 var(--vien-pad-x); border: none; border-radius: var(--vien-radius); }
-.kh-name { font-size: 19px; font-weight: 500; flex: 1; line-height: 1.3; color: #60a5fa; }
+   ⛔ **KHÔNG đụng cỡ chữ trong MODAL** (`.info-value` `20px` / `.info-label` `19px` — palet riêng,
+   không dùng chung selector nào với thẻ) ⇒ modal vẫn giữ cỡ của lượt “+1px” trước.
+   ⛔ **KHÔNG đụng icon SVG** trong thẻ (14/15px). Chúng từng được nâng +1px để "cân với cỡ chữ mới";
+   nay chữ nhỏ lại 1px nhưng icon **giữ nguyên theo yêu cầu**, nên tương quan chữ/icon hơi lệch —
+   muốn cân lại thì hạ luôn icon 1px (xem run.md).
+   **Số đo A/B ở lần 3** (cùng 50 thẻ, cùng dữ liệu, panel 320px — đo trước rồi sửa, nạp lại rồi đo lại):
+     · thẻ đầu (VIETGROUP): **329,77 → 309,86px** (−19,91) — ⭐ **309,86 đúng bằng con số “trước khi +1px”
+       đã ghi ở lượt trước** ⇒ lượt này trả hình học về đúng trạng thái của *lần 1*, không phải “gần đúng”.
+       Trong đó: `.kh-card-top` 123,42 → **116,97** · `.kh-card-mid` 150,42 → **138,89** ·
+       `.kh-addr-line` 44,20 → **40,36** · `.kh-ghichu-row` 24,02 → **22,10**.
+     · thẻ ngắn: **233,62 → 219,50px** (−14,12; `.kh-card-mid` 128,32 → 118,71).
+     · tổng 50 thẻ: **12.960,12 → 11.935,01px** (−1.025,11 ≈ **−20,5px/thẻ** ⇒ mỗi màn hình thêm ~1 khách).
+     · số giá trị chiều cao khác nhau: **10 (230,42–379,14) → 9 (216,01–333,26)**.
+   **Kiểm không hồi quy:** 0 thẻ tràn nội dung · 0 nhãn bị cắt (`ellipsis`) · 0 tràn ngang trang ở
+   **320/360/375/431px** · `.kh-name` 18px và các lớp khác 17px ở MỌI bề rộng (đã đọc `getComputedStyle`).
+   Lịch sử số đo ở các lượt trước: *lần 2* ở 320px thẻ **309,86 → 329,77**; ở 363px **218,81 → 280,41**
+   (hàng viên SĐT + Mã KH rớt từ 1 xuống 2 dòng). */
+.kh-danhso { font-size: var(--fs-card); font-weight: var(--vien-weight) !important; padding: 0 var(--vien-pad-x); border: none; border-radius: var(--vien-radius); }
+.kh-name { font-size: var(--fs-card-big); font-weight: 500; flex: 1; line-height: 1.3; color: #60a5fa; }
 .kh-tien-col { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
-.kh-tien { font-family: 'Inter', sans-serif; font-size: 19px; font-weight: 500; color: #ffa0a0; white-space: nowrap; flex-shrink: 0; }
+.kh-tien { font-family: 'Inter', sans-serif; font-size: var(--fs-card-big); font-weight: 500; color: #ffa0a0; white-space: nowrap; flex-shrink: 0; }
 .kh-tien.low { color: #86efac; }
 .kh-tien.high { color: #ff8888; }
 .kh-tien.mid { color: #fde68a; }
 .mil-digit { color: #ff8888; }
-.kh-thang { font-size: 18px; color: #94a3b8; margin-top: 2px; font-weight: 400; }
+.kh-thang { font-size: var(--fs-card); color: #94a3b8; margin-top: 2px; font-weight: 400; }
 .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #60a5fa; text-underline-offset: 3px; text-decoration-thickness: 2px; }
 
 .kh-card-mid { display: flex; gap: 1px; flex-wrap: wrap; margin-bottom: 0; align-items: center; }
 .kh-mid-row { display: flex; align-items: center; gap: 1px; flex: 0 0 100%; min-width: 0; flex-wrap: wrap; margin-top: 0; }
-.kh-ma { font-family: 'Inter', sans-serif; font-size: 18px; font-weight: var(--vien-weight) !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid var(--vien-vien); border-radius: var(--vien-radius); }
-.kh-sogcs { font-family: 'Inter', sans-serif; font-size: 18px; color: #94a3b8; font-weight: 400; white-space: nowrap; }
-.kh-tbi { font-family: 'Inter', sans-serif; font-size: 18px; color: #94a3b8; font-weight: 400; white-space: nowrap; }
+.kh-ma { font-family: 'Inter', sans-serif; font-size: var(--fs-card); font-weight: var(--vien-weight) !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid var(--vien-vien); border-radius: var(--vien-radius); }
+.kh-sogcs { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: 400; white-space: nowrap; }
+.kh-tbi { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: 400; white-space: nowrap; }
 body.light-mode .kh-tbi { color: #334155; }
-.kh-phone { font-family: 'Inter', sans-serif; font-size: 18px; color: #94a3b8; font-weight: var(--vien-weight); text-decoration: none !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid var(--vien-sdt-vien); border-radius: var(--vien-radius); }
+.kh-phone { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: var(--vien-weight); text-decoration: none !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid var(--vien-sdt-vien); border-radius: var(--vien-radius); }
 .kh-card-mid .badge { font-size: 12px; font-weight: 500; white-space: nowrap; }
-.kh-sep { font-size: 14px; color: var(--text-dim); font-weight: 400; margin: 0 1px; }
-.kh-abc { font-size: 18px; color: #94a3b8; font-weight: 400; white-space: nowrap; border: none; border-radius: 3px; padding: 0px 2px; background: transparent; }
+.kh-sep { font-size: var(--fs-card-sep); color: var(--text-dim); font-weight: 400; margin: 0 1px; }
+.kh-abc { font-size: var(--fs-card); color: #94a3b8; font-weight: 400; white-space: nowrap; border: none; border-radius: 3px; padding: 0px 2px; background: transparent; }
 body.light-mode .kh-abc { color: #475569; }
 .kh-ghichu-row {
   display: flex;
@@ -1315,7 +1430,7 @@ body.light-mode .kh-abc { color: #475569; }
   min-width: 80px;
   max-width: 100%;
   font-family: 'Inter', sans-serif;
-  font-size: 18px;                           /* +1px (2 lần) — xem chú thích “CỠ CHỮ NỘI DUNG THẺ CARD” */
+  font-size: var(--fs-card);                 /* theo mức cỡ người dùng chọn — xem chú thích “CỠ CHỮ NỘI DUNG THẺ CARD” */
   color: #60a5fa;
   background: #111827;
   border: 1px solid rgba(59,130,246,0.5);   /* dark mode: viền xanh nhạt hơn */
@@ -1343,13 +1458,13 @@ body.light-mode .ghi-chu-input::placeholder { color: #5b6777; opacity: 1; }
 body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
 .ghi-chu-input:focus { border-color: #60a5fa; }
 
-.kh-addr-line { font-size: 18px; color: #94a3b8; font-weight: 400; margin-bottom: 5px; white-space: normal; word-wrap: break-word; } /* địa chỉ TRONG THẺ CARD — +1px, xem chú thích “CỠ CHỮ NỘI DUNG THẺ CARD” */
+.kh-addr-line { font-size: var(--fs-card); color: #94a3b8; font-weight: 400; margin-bottom: 5px; white-space: normal; word-wrap: break-word; } /* địa chỉ TRONG THẺ CARD — +1px, xem chú thích “CỠ CHỮ NỘI DUNG THẺ CARD” */
 
 /* ⚠️ **Khai LẦN HAI** của `.kh-thang` (bản đầu ở trên, gần `.kh-tien`): rule này khai SAU
    nên **thắng** — hệ quả là `margin-top: 2px` của bản trên vẫn áp, còn `font-size` thì lấy ở
    đây. Sửa cỡ chữ tháng phải sửa **cả hai** (đã +2 lần ⇒ **18px** ở cả hai), nếu không bạn
    sẽ sửa bản trên rồi đo lại thấy y nguyên như cũ. */
-.kh-thang { font-size: 18px; color: #94a3b8; font-weight: 400; }
+.kh-thang { font-size: var(--fs-card); color: #94a3b8; font-weight: 400; }
 
 
 /* ── TABLE (desktop view) ───────────────── */
@@ -1527,7 +1642,7 @@ body.light-mode .table-view tbody tr.highlighted-purple .tien-no.high,
 body.light-mode .table-view tbody tr.highlighted-purple .tien-no.low,
 body.light-mode .table-view tbody tr.highlighted-purple .tien-no .mil-digit { color: #b91c1c !important; }
 
-tbody td { padding: 5px 8px; font-size: 15px; vertical-align: middle; }
+tbody td { padding: 5px 8px; font-size: var(--fs-tb); vertical-align: middle; }
 tbody td:not(.cell-ghi) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ── COLUMN RESIZE HANDLES (desktop) ───── */
@@ -1550,7 +1665,7 @@ body.light-mode .th-resizer::after { background: rgba(15,23,42,0.2); }
 body.light-mode .th-resizer:hover::after, body.light-mode .th-resizer.active::after { background: #2563eb; box-shadow: 0 0 6px rgba(37,99,235,0.7); }
 body.light-mode th:hover .th-resizer::after { background: rgba(15,23,42,0.4); }
 
-.ma-kh { font-family: 'Inter', sans-serif; font-size: 15px; color: var(--accent-glow); font-weight: 400; }
+.ma-kh { font-family: 'Inter', sans-serif; font-size: var(--fs-tb); color: var(--accent-glow); font-weight: 400; }
 /* ⚠️ TRONG BẢNG, “Mã KH” mang **ĐÚNG màu chữ của “Danh Số”** (yêu cầu người dùng: “cho màu chữ
    mã kh giống màu danh số”). Hai giá trị ở đây CHÉP TỪ `.cell-dim` — danh số mang lớp đó —
    (`var(--text-dim)` = `#94a3b8`) và từ rule light mode của nó (`#475569`), **không** phải
@@ -1570,7 +1685,10 @@ body.light-mode th:hover .th-resizer::after { background: rgba(15,23,42,0.4); }
    ⛔ Đây là **CHÙM 5 RULE phải đổi CÙNG NHAU** (thiếu một rule là đúng một ô vẫn lệch tông):
        1. `.ma-kh` (rule này)          · 2–4. `td:nth-child(5/6/10).cell-dim` (mã sổ · danh số · mã kh)
        · 5. `td:nth-child(7) .badge` (tháng nợ, trong khối mobile).
-   ⛔ KHÔNG đổi màu SỐ TIỀN (`#dc2626`): đã đạt AA (4,83:1) và là màu ngữ nghĩa.
+   ⚠️ SỐ TIỀN nay LÀ `#b91c1c` — đổi ở lượt “DẢI NỀN ĐẬM HƠN”, **không phải** lượt màu xám này:
+      dải nền light 14% làm `#dc2626` xuống **4,11:1** (dưới AA) nên buộc hạ 1 nấc; trên nền
+      trắng `#b91c1c` = **6,6:1**, trên dải = **5,51:1** ✓.
+   ⛔ Đừng “trả lại” `#dc2626` cho đẹp mắt: nó chỉ an toàn khi dải nền light ≤ 5%.
    ℹ️ Muốn nhạt HƠN `#475569` nữa thì bậc kế tiếp là `#64748b` (slate-500, **4,76:1** — vẫn AA nhưng sát ngưỡng). */
 body.light-mode .table-view .ma-kh { color: #475569; }
 /* ⚠️ `.ma-kh` là rule theo **ELEMENT** (0,1,0) nên nó **THẮNG KẾ THỪA** font-size 19px của
@@ -1581,18 +1699,18 @@ body.light-mode .table-view .ma-kh { color: #475569; }
    KHÔNG dính bảng desktop) mã KH **thừa hưởng cỡ của hàng**. Đặt TRƯỚC `.i-makh .ma-kh`
    (cùng độ cụ thể 0,2,0 ⇒ rule sau thắng) nên khi lớp còn thì cỡ riêng vẫn được dùng. */
 .info-row .ma-kh { font-size: inherit; }
-.tien-no { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 400; color: #ffa0a0; white-space: nowrap; }
+.tien-no { font-family: 'Inter', sans-serif; font-size: var(--fs-tb); font-weight: 400; color: #ffa0a0; white-space: nowrap; }
 .tien-no.low { color: #86efac; }
 .tien-no.high { color: #ff8888; }
 .phone { font-family: 'Inter', sans-serif; font-size: 11px; color: #e2e8f0; font-weight: 400; }
-.cell-dim { color: var(--text-dim); font-size: 15px; font-weight: 400; white-space: nowrap; }
-.cell-addr { font-size: 15px; color: var(--text-dim); font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cell-tenkh { font-size: 15px; color: var(--text); font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cell-dim { color: var(--text-dim); font-size: var(--fs-tb); font-weight: 400; white-space: nowrap; }
+.cell-addr { font-size: var(--fs-tb); color: var(--text-dim); font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cell-tenkh { font-size: var(--fs-tb); color: var(--text); font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* TÊN KH RÚT GỌN: `.ten-ngan` **tắt mặc định** (⇒ bảng máy tính hiện tên ĐẦY ĐỦ như cũ), chỉ bật
    trong khối `@media (max-width: 639.98px)` của bảng 3 hàng — xem `tenKHNgan()` trong JS. */
 .cell-tenkh .ten-ngan { display: none; }
-.cell-ghi { font-size: 15px; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fb923c; }
-.cell-abc { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #94a3b8; font-weight: 400; }
+.cell-ghi { font-size: var(--fs-tb); font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fb923c; }
+.cell-abc { font-size: var(--fs-tb); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #94a3b8; font-weight: 400; }
 body.light-mode .cell-abc { color: #475569; }
 .cell-old-ky { color: #fdba74; font-weight: 500; font-size: 14px; white-space: nowrap; }
 body.light-mode .cell-old-ky { color: #c2410c; }
@@ -1656,6 +1774,50 @@ body.light-mode .welcome-state p { color: #414b59; }
   transition: all 0.12s;
   font-family: 'Inter', sans-serif;
   -webkit-tap-highlight-color: transparent;
+}
+/* ── CỤM TÁC VỤ CẤP-BẢNG: Xuất file · In bảng · Sao lưu ─────────────────────────────
+   Yêu cầu người dùng: “Gom các thao tác cấp-bảng thành một cụm nút gọn trong hàng phân trang,
+   tự ẩn/hiện theo bề rộng panel”.
+   · Chỗ đặt do JS quyết định (`chuyenCumTacVu()` — 4 hàng phân trang + khe `#slotSummary`).
+   · Hình: ăn đúng kích thước `.page-btn` (**34×34**, bán kính 8, cùng nền/viền) để hàng phân
+     trang chỉ còn MỘT tầng nút, không phải hai hệ hình khác nhau.
+   · ⛔ **“Tự ẩn/hiện theo bề rộng” = NHÃN ẩn/hiện**, không phải giấu cả nút: phone chỉ có icon
+     (34×34), từ 640px mới hiện chữ + nới `padding`. Giấu CẢ NÚT ở panel hẹp là giấu mất chức
+     năng trên đúng thiết bị người dùng dùng nhiều nhất — đo rồi: 3 nút + khoảng hở = **110px**,
+     còn dư chỗ cạnh dòng `1–50 / 1.429` (79px) trong khung 280px ở 320px.
+   · `margin-left: auto` giữ CẢ CỤM Ở MÉP PHẢI; cụm là MỘT khối nên `gap` bên trong mới đều
+     (tách ra thành 3 phần tử rời là mất thuộc tính này).
+   · Nền/viền/màu **sao đúng `.page-btn`** (dark `#1e293b` + `var(--border)`; light `#ffffff` +
+     `var(--light-edge)`) — lệch một nấc là hai hệ nút khác tông nằm cạnh nhau. */
+.page-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.page-actions-slot { display: flex; justify-content: flex-end; padding: 10px 4px 0; }
+.page-act {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 34px; min-width: 34px; padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #1e293b;
+  color: var(--text-dim);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
+}
+body.light-mode .page-act { background: #ffffff; border-color: var(--light-edge); color: #374151; }
+.page-act svg { flex: 0 0 auto; }
+.page-act:active { background: rgba(59,130,246,0.28); }
+@media (hover: hover) {
+  .page-act:hover { border-color: #3b82f6; color: #ffffff; background: rgba(59,130,246,0.16); }
+  body.light-mode .page-act:hover { color: #1e3a8a; }
+}
+/* Nhãn chữ: TẮT mặc định (phone), BẬT từ 640px — đây chính là “tự ẩn/hiện theo bề rộng panel”. */
+.page-act-lb { display: none; }
+@media (min-width: 640px) {
+  .page-act { padding: 0 10px; }
+  .page-act-lb { display: inline; }
 }
 .page-btn:active { background: rgba(255,255,255,0.06); }
 .page-btn.active { background: #2563eb; border-color: #2563eb; color: white; }
@@ -1915,18 +2077,17 @@ body.force-desktop .table-view { display: block; }
   .filter-select { font-size: var(--ctl-fs); padding-top: 6px; padding-bottom: 6px; }
   .sort-btn { font-size: var(--ctl-fs); }
   .search-box input { font-size: var(--ctl-fs); }
-  /* Cỡ chữ NỘI DUNG THẺ CARD ở mobile — đã +1px HAI LẦN (xem chú thích ở `.kh-danhso` khối nền).
-     Khối này khai lại các cỡ đó nên **phải sửa cùng lúc**, không thì mobile lệch nền. */
-  .kh-name { font-size: 19px; }
-  .kh-tien { font-size: 19px; }
-  .kh-danhso { font-size: 18px; }
-  .kh-ma { font-size: 18px; }
-  .kh-sogcs { font-size: 18px; }
-  .kh-tbi { font-size: 18px; }
-  .kh-phone { font-size: 18px; }
-  .kh-abc { font-size: 18px; }
+  /* ⛔ 8 DÒNG KHAI LẠI CỠ CHỮ THẺ CARD Ở ĐÂY ĐÃ BỊ XOÁ (lượt “Aa — tự chọn cỡ chữ”).
+     Lý do: chúng khai lại ĐÚNG giá trị của khối nền nên chỉ tạo ra cái bẫy “sửa một nơi,
+     mobile không đổi”. Nay cả 3 mức nằm ở token `--fs-card-big` / `--fs-card` (xem `:root`)
+     ⇒ **một chỗ sửa là cả nền lẫn mobile đổi theo**, và cỡ cũng đổi được theo mức người dùng chọn.
+     ⛔ Đừng dựng lại các rule `.kh-* { font-size: … }` trong khối này. */
   .page-btn { width: 34px; height: 34px; font-size: 14px; }
-  .page-btns { flex-wrap: wrap; justify-content: center; }
+  /* `flex: 1 1 100%` (không chỉ `flex-wrap`) là thứ ĐẨY cụm số trang xuống DÒNG RIÊNG, để dòng
+     trên còn chỗ cho `[info] … [nút Xuất]` — nút Xuất nằm trong hàng phân trang từ lượt “dời
+     nút xuất xuống kế hàng số thứ tự trang”. Thiếu `1 1 100%` thì cụm số trang chiếm hết dòng
+     và nút Xuất rớt xuống dòng 3, nằm lệch về bên TRÁI (đã đo: hàng cao 126,2px). */
+  .page-btns { flex: 1 1 100%; flex-wrap: wrap; justify-content: center; }
 
   /* gap: 2px 4px = DỌC 2px (hàng tìm kiếm ↔ hàng lọc), NGANG 4px (giữa các ô lọc),
      đồng nhất với .sort-row. Mỗi ô lọc khai flex-basis calc(50% - 2px) để
@@ -2029,19 +2190,19 @@ body.force-desktop .table-view { display: block; }
   .sort-label { font-size: var(--ctl-fs); }
   .header-sub { max-width: 300px; }
   /* Desktop: data 14px */
-  tbody td { font-size: 14px; padding: 4px 8px; }
+  tbody td { font-size: var(--fs-tb-desk); padding: 4px 8px; }
   tbody tr:hover { background: #172f4f !important; }
   body.light-mode tbody tr:hover { background: #93c5fd !important; }
-  .ma-kh { font-size: 14px; }
-  .tien-no { font-size: 14px; }
-  .cell-dim { font-size: 14px; }
-  .cell-addr { font-size: 14px; }
-  .cell-tenkh { font-size: 14px; }
-  .cell-ghi { font-size: 14px; }
+  .ma-kh { font-size: var(--fs-tb-desk); }
+  .tien-no { font-size: var(--fs-tb-desk); }
+  .cell-dim { font-size: var(--fs-tb-desk); }
+  .cell-addr { font-size: var(--fs-tb-desk); }
+  .cell-tenkh { font-size: var(--fs-tb-desk); }
+  .cell-ghi { font-size: var(--fs-tb-desk); }
   /* Desktop: cỡ chữ bảng modal (nhãn 19px, giá trị 20px — bằng mức mobile) */
   .info-label { font-size: 19px; }
   .info-value { font-size: 20px; }
-  .cell-abc { font-size: 14px; }
+  .cell-abc { font-size: var(--fs-tb-desk); }
   .ghi-chu-table { font-size: 14px; color: #ffffff; border-color: #3b82f6; }
   .ghi-chu-table:not(:placeholder-shown) { color: #ffffff; }
   .ghi-chu-table::placeholder { color: #3b82f6; }
@@ -2221,10 +2382,19 @@ body.force-desktop .table-view { display: block; }
        ⚠️ Đổi lại được **lợi**: cột tên rộng hết phần còn lại (375px → ~222px) nên **không
        tên nào bị cắt** — trong khi bản cột cố định `12em` cắt 7/1.472 hàng. */
     grid-template-columns: 1fr auto;
+    /* ⚠️ THỨ TỰ 3 HÀNG — lượt “đổi chỗ mã KH ↔ danh số” (mới nhất):
+         hàng 1: TÊN KH        · tiền nợ
+         hàng 2: **DANH SỐ**   · tháng nợ     (trước đây là mã KH)
+         hàng 3: **MÃ KH**     · mã sổ        (trước đây là danh số)
+       Đổi vị trí chỉ bằng cách đổi TÊN VÙNG ở đây — các ô tự đi theo tên vùng của chúng
+       (`td:nth-child(6) { grid-area: danhso }` vẫn nguyên, xem khối `grid-area` bên dưới),
+       nên KHÔNG phải sửa `nth-child`, căn lề hay sàn `min-width: max-content`.
+       ℹ️ Cột TRÁI vẫn là tên · danh số · mã KH (đủ 3 ô, chỉ đổi thứ tự hàng) ⇒ hai ô mới
+       vào hàng 2/3 đều đã `text-align: left` từ trước, không phải đổi căn lề. */
     grid-template-areas:
       "ten     tien"
-      "makh    thang"
-      "danhso  sogcs";
+      "danhso  thang"
+      "makh    sogcs";
     /* ── LƯỢT “GỌN + HẾT VUỐT NGANG” (mới nhất): `6px → 4px` ─────────────────────
        Khe cột là một phần của "chrome" ngang: `chrome = 2 × lề hàng + 3 × khe cột`.
        Chrome cũ **34px** (2×8 + 3×6) quá dày ⇒ cùng lúc không thể vừa đủ chỗ vừa giữ cỡ chữ.
@@ -2274,20 +2444,29 @@ body.force-desktop .table-view { display: block; }
         ℹ️ Muốn sát hơn nữa thì phải đụng vào **thanh cuộn 22px** (trang) hoặc lề trang
         `9,3px` — cả hai đều của TRANG, sửa là lệch hàng loạt thứ khác (header, thanh công cụ,
         thẻ card) nên chỉ làm khi có yêu cầu riêng. */
-    padding: 0 2px 0 6px;
+    padding: 0 var(--row-pad-r) 0 var(--row-pad-l);
   }
-  /* ── SỌC XEN KẺ “ZEBRA” ──────────────────────────────────────────────────────────
+  /* ── SỌC XEN KẺ “ZEBRA” — ⚠️ **ĐÃ BỊ THAY Ở LƯỢT MỚI NHẤT** (xem khối “DẢI NỀN Ở HÀNG
+     TÊN + TIỀN” bên dưới, chỗ 2 rule `nth-child(even)` cũ). Giữ đoạn chú thích này vì nó ghi
+     LÝ DO chọn màu pha xanh accent (đo tương phản) — màu đó nay được tái dùng cho dải nền.
+     ⛔ Đừng dựng lại `nth-child(even)`; yêu cầu mới là **bỏ xen kẻ**, không phải “đổi xen kẻ”.
      Yêu cầu người dùng: “có nên cho màu nền xen kẻ từng ô cho dễ nhìn không”.
      Bảng **3 hàng/KH** không còn cho mắt bám theo dòng như bảng 1 hàng, nên sọc xen kẻ là
      cách rẻ nhất để mắt không lạc hàng khi đã đi xa mép trái.
 
      ⚠️ Chọn SỌC PHA XANH ACCENT (không dùng xám trung tính) vì lý do ĐO ĐƯỢC — đo ở
-     light mode trên chữ TIỀN `#dc2626` (16px, ngưỡng AA 4,5:1):
-         xám `rgba(15,23,42,…)`  : 3% → 4,55 · **4% → 4,46 (ĐÃ dưới AA)**
-         xanh `rgba(59,130,246,…)`: **5% → 4,56** · 6% → ~4,5
+     light mode trên chữ TIỀN (ngưỡng AA 4,5:1):
+         xám `rgba(15,23,42,…)`      : 3% → 4,55 · **4% → 4,46 (ĐÃ dưới AA)**
+         xanh `rgba(59,130,246,…)` + `#dc2626`: **5% → 4,56** · 6% → ~4,5
      ⇒ sọc xanh vừa ĐẬM thấy rõ hơn vừa giữ được AA (xám hạ độ tương phản nhanh hơn).
-     Đo toàn bộ màu chữ trên sọc light 5%: tiền `4,56` ✓ · mã sổ/tháng `7,16` ✓ ·
-     mã kh `8,24` ✓ · tên `19,85` ✓; ở dark 7%: tiền `5,77` ✓ · tên `15,96` ✓.
+     ⟳ **CẬP NHẬT (lượt “màu nền ở tên kh và số tiền còn nhạt quá”):** dải nền nay
+     **light 14% · dark 15%** (trước 5% / 7%) — mắt người dùng còn thấy nhạt ở 5–7%.
+     ⚠️ NHƯNG alpha cao chỉ giữ được AA khi chữ tiền hạ 1 nấc `#dc2626 → #b91c1c`:
+         light 14% + `#dc2626` → **4,11:1 ✗** · light 14% + `#b91c1c` → **5,51:1 ✓**
+         dark  15% + `rgb(255,136,136)` → **6,12:1 ✓**
+     Đo toàn bộ màu chữ khi đó: light 14% → tên `18,3` ✓ · mã kh `9,0` ✓ · mã sổ `6,6` ✓ ·
+     danh số `6,2` ✓; dark 15% → tên `11,4` ✓ · mã kh `11,4` ✓ · mã sổ `5,5` ✓ · danh số `4,59` ✓.
+     ⛔ Trần: light **14%** (với `#b91c1c`) · dark **~15%** (16% → danh số 4,51:1; 20% → 4,27:1 ✗).
      ⛔ **MỨC ĐANG DÙNG: dark `0.07` · light `0.05` = TRẦN của light.** Lên `0.06` là chữ
      tiền tụt còn `4,28` (dưới AA).Ở dark còn dư nhiều (10% mới còn 5,55) nhưng 7% đã đủ
      để xen kẻ thấy rõ mà không biến hàng thành “khối xanh”.
@@ -2310,6 +2489,10 @@ body.force-desktop .table-view { display: block; }
      có nền chuẩn khác nhau: hàng LẺ trong suốt, hàng CHẴN có sọc, hàng ĐÁNH DẤU có cam/tím.
      ⚠️ Rất dễ làm sai ở đây: nếu chỉ đặt `background: transparent` cho mọi hàng thì hàng CHẴN
      sẽ **MẤT SỌC khi chạm** — vẫn là “đổi màu khi chạm”, chỉ khác chiều.
+     🔄 **CẬP NHẬT (lượt “bỏ sọc xen kẻ”):** SỌC ĐÃ BỊ XOÁ ⇒ **mọi hàng nay nền trong suốt**,
+     nên rule `transparent !important` ngay dưới đã đúng cho **MỌI** hàng — không còn ngoại lệ
+     nào phải nhớ. Dải nền hàng “tên + tiền” là `::after` của HÀNG nên **không bị rule này
+     ảnh hưởng** (nó không phải `background` của hàng) ⇒ chạm vào vẫn giữ dải, đúng yêu cầu.
      ⚠️ `!important` là BẮT BUỘC: phải thắng `tbody tr:hover` (0.40) và `tbody tr:active` (0.50)
      ở rule nền (~1486) và `body.light-mode .table-view tr:hover` (`#e8eefc`) — luật này có độ
      cụ thể cao hơn nên nếu không `!important` sẽ **thấy như chưa sửa gì**.
@@ -2317,9 +2500,8 @@ body.force-desktop .table-view { display: block; }
      hàng đang được đánh dấu phải giữ nền cam/tím **trong lúc ngón tay còn đè** (nhấn giữ 1,2s
      ⇒ lúc đó hàng vừa `:active` vừa `.highlighted`; thiếu `:not()` là mất phản hồi đúng lúc
      người dùng cần thấy nhất).
-     ℹ️ Hàng CHẴN giữ sọc nhờ rule sọc ngay dưới được nâng `!important` và BỎ
-     `:not(:hover):not(:active)` — chính `!important` + độ cụ thể cao hơn (0,5,3 so với 0,3,3)
-     của nó là thứ giữ sọc khi chạm (xem chú thích ở rule sọc). */
+     ℹ️ (Lịch sử) Hàng CHẴN từng giữ sọc nhờ rule sọc được nâng `!important` + bỏ
+     `:not(:hover):not(:active)` — nay sọc không còn nên phần đó không cần nữa. */
   tbody tr:not(.highlighted):not(.highlighted-purple):hover,
   tbody tr:not(.highlighted):not(.highlighted-purple):active { background: transparent !important; }
   /* Hàng ĐÃ ĐÁNH DẤU: chạm vào không được nhạt màu.
@@ -2334,11 +2516,40 @@ body.force-desktop .table-view { display: block; }
   body.light-mode.force-desktop .table-view tbody tr.highlighted:active { background: #fef3c7 !important; }
   body.light-mode.force-desktop .table-view tbody tr.highlighted-purple:hover,
   body.light-mode.force-desktop .table-view tbody tr.highlighted-purple:active { background: #e8f0ff !important; }
-  body.force-desktop .table-view tbody tr:nth-child(even):not(.highlighted):not(.highlighted-purple) {
-    background: rgba(59, 130, 246, 0.07) !important;
-  }
-  body.light-mode.force-desktop .table-view tbody tr:nth-child(even):not(.highlighted):not(.highlighted-purple) {
-    background: rgba(59, 130, 246, 0.05) !important;
+  /* ── DẢI NỀN Ở HÀNG “TÊN KH + SỐ TIỀN” — **THAY CHO SỌC XEN KẺ** ──────────────────────────
+     Yêu cầu người dùng: “bỏ màu xen kẻ các ô và thay vào đó là màu nền ở hàng tên kh và số tiền”.
+     ⛔ Đã XOÁ 2 rule `tbody tr:nth-child(even)` (sạch hẳn, không còn nhánh xen kẻ nào ở bảng
+     điện thoại). Hệ quả đáng nhớ: mọi hàng nay **có nền trong suốt** ⇒ rule
+     “không đổi màu khi rê/chạm” (`background: transparent !important`) đã đúng cho MỌI hàng,
+     không cần nhánh nào cho hàng chẵn nữa (xem chú thích ở khối đó).
+     ── Vì sao dùng `::after` của HÀNG chứ không tô nền 2 ô tên/tiền:
+        hai ô đó là 2 ô lưới khác nhau nên nền của chúng **hở đúng `column-gap` 4px** ở giữa,
+        và cũng **không phủ hết lề hàng** (6px trái / 2px phải). `::after` đặt ở
+        `grid-area: 1 / 1 / 2 / -1` trải **cả 2 cột trong ĐÚNG track hàng 1** ⇒ tự khớp chiều
+        cao hàng 1, tự nối qua khe, **không cần con số ma nào cho 4px đó**.
+     ⚠️ `align-self: stretch` là BẮT BUỘC: lưới có `align-items: center` nên mặc định ô này
+     bị co về **0** chiều cao (dải biến mất, mà số đo vẫn “đúng” vì không có gì để đo).
+     ⚠️ `z-index: -1` phải đi KÈM `isolation: isolate` ở `tr`: `tr` không tự tạo stacking
+     context nên `z-index: -1` sẽ tụt xuống **dưới cả nền bảng** ⇒ dải vô hình. `isolation`
+     tạo context mà KHÔNG đụng `position`/`z-index` của hàng (an toàn hơn `position: relative`).
+     ⚠️ `pointer-events: none`: dải nằm đè vùng bấm của ô TÊN mà ô đó có `onclick="showDetail()"`
+     — không tắt thì cú chạm vào tên rơi vào dải và **không mở được modal**.
+     ⛔ `:not(.highlighted):not(.highlighted-purple)`: hàng ĐƯỢC ĐÁNH DẤU đã có nền cam/tím,
+     dải đè lên là mất dấu.
+     ⚠️ Bề rộng dải lấy từ token `--row-pad-l` / `--row-pad-r` (CÙNG token với `padding` của
+     hàng) ⇒ đổi lề hàng là dải vẫn phủ khít, không hở mép.
+     ℹ️ Màu: `--row1-bg` (`:root` = dark **15%**, `body.light-mode` = light **14%**) — tông của sọc cũ,
+     đã đo AA cho chữ tiền/mã/tên trên nó. */
+  body.force-desktop .table-view tbody tr { isolation: isolate; }
+  body.force-desktop .table-view tbody tr:not(.highlighted):not(.highlighted-purple)::after {
+    content: '';
+    grid-area: 1 / 1 / 2 / -1;
+    align-self: stretch;
+    justify-self: stretch;
+    margin: 0 calc(-1 * var(--row-pad-r)) 0 calc(-1 * var(--row-pad-l));
+    background: var(--row1-bg);
+    z-index: -1;
+    pointer-events: none;
   }
   body.force-desktop .table-view tbody td { display: none; padding: 0; border-bottom: none; }
   /* ── VẠCH ĐÁNH DẤU (nhấn giữ 1,2 giây) Ở DẠNG 2 DÒNG ─────────────────────────────
@@ -2473,7 +2684,7 @@ body.force-desktop .table-view { display: block; }
      (ô TÊN — nó bị loại khỏi `:not(.cell-tenkh)` nên KHÔNG ăn theo biến).
      ⚠️ Lượt “16px” đã ghi 16px là **sát trần ở 320px**; số đo lại ở lượt này ghi ngay dưới rule
      `.cell-tenkh` — đừng nâng cỡ tiếp mà không đọc chỗ đó trước. */
-  body.force-desktop .table-view { --fs-row: 17px; }
+  body.force-desktop .table-view { --fs-row: var(--fs-tb-row); }
   body.force-desktop .table-view tbody td:not(.cell-tenkh),
   body.force-desktop .table-view tbody td:not(.cell-tenkh) .ma-kh,
   body.force-desktop .table-view tbody td:not(.cell-tenkh) .tien-no,
@@ -2511,22 +2722,33 @@ body.force-desktop .table-view { display: block; }
   /* Tháng nợ ở light mode: nay `#475569` (lượt “nhạt hơn” trả về giá trị cũ) — rule thứ 5
      trong chùm 5 rule, xem lịch sử ở `body.light-mode .table-view .ma-kh`. */
   body.light-mode.force-desktop .table-view tbody td:nth-child(7) .badge { color: #475569 !important; }
+  /* ── DANH SỐ: **ĐÃ BỎ NỀN VIÊN** — chỉ còn chữ (yêu cầu “bỏ màu nền danh số”) ───────
+     Trước đó ô này là một **viên xanh** (`background` + `border-radius: 20px` + `padding`).
+     Nay gỡ cả ba thứ đó: nền trong suốt nên bo góc và đệm cũng vô nghĩa, mà **đệm 8,5px còn
+     để lại thì danh số bị thụt vào so với ô TÊN và MÃ KH cùng cột** (lệch một cách vô cớ).
+     ⚠️ **GỠ ĐỆM LÀ CÓ CHỦ Ý** — nó làm danh số thẳng hàng với tên/mã kh. Hệ quả bắt buộc phải
+     đo lại: cột `danhso` hẹp đi ~11px (2 × 0,5em ở 17px) nên **bề rộng cột có thể chia lại**
+     (số đo A/B ở mục “BỎ NỀN VIÊN DANH SỐ” trong run doc).
+     ⛔ Nếu sau này muốn TRẢ LẠI viên thì phải thêm lại **đủ 3 dòng**: `background`,
+     `border-radius: 20px`, `padding: 0.125em 0.5em` — thiếu `padding` là viên bị chữ chạm mép.
+     ℹ️ Màu chữ vẫn là màu của thẻ card, chỉ khác là nay nằm trên DẢI NỀN thay vì trên viên:
+     dark `#d1d5db` trên nền hàng `31,44,65` = **9,2:1** ✓ · light `#1e3a8a` trên `228,238,254`
+     = **8,9:1** ✓ (trước, khi có viên, là 7,99 / 9,09 — nay còn cao hơn). */
   body.force-desktop .table-view tbody td:nth-child(6) {
-    background: rgba(59,130,246,0.15);
-    color: var(--accent-glow) !important;
-    border-radius: 20px;
-    /* ⚠️ `em` chứ không px: viên danh số phải **co theo cỡ chữ tự động** — `2px 8px` cứng
-       ở 11,6px sẽ thành viên mập lệch tỉ lệ và ăn mất ~4px bề rộng đúng lúc chật nhất.
-       Ở 16px thì `0.125em 0.5em` = **đúng 2px 8px** như trước ⇒ màn rộng không đổi gì. */
-    padding: 0.125em 0.5em;
+    background: none;
+    color: #d1d5db !important;
+    padding: 0;
     font-weight: 500;
     /* ⚠️ `start` chứ KHÔNG phải `center`/mặc định: ô này nằm ở cột `1fr`, để mặc định thì
-       viên xanh giãn hết bề rộng cột (rất xấu) mỗi khi hàng còn chỗ thừa. */
+       nó giãn hết bề rộng cột mỗi khi hàng còn chỗ thừa (chữ vẫn `text-align: left` nên
+       không sai vị trí, nhưng vùng bấm/lưới rộng ra ngoài dự kiến). */
     justify-self: start;
   }
   body.light-mode.force-desktop .table-view tbody td:nth-child(6) {
-    background: rgba(37,99,235,0.15);
-    color: #1e40af !important;
+    /* Nền đã bỏ ⇒ nhánh light nay chỉ còn MÀU CHỮ (giữ đúng màu của viên trên thẻ card để
+       danh số vẫn là một tông riêng, không lẫn với mã sổ `#475569` bên cạnh). */
+    background: none;
+    color: #1e3a8a !important;
   }
 
   /* ── TÊN DÀI: **1 DÒNG + dấu `…`** (KHÔNG xuống hàng) ─────────────────────────
@@ -2556,8 +2778,14 @@ body.force-desktop .table-view { display: block; }
        Lượt “cỡ 17px” (MỚI NHẤT): `16px → 17px` — cùng lượt với `--fs-row: 17px` ⇒ **cả 6 ô = 17px**
        (đo lại ở 320/360/375/430px: vuốt ngang **0**, hàng đều **71,61px**, tên bị cắt xem run doc).
        ⚠️ Hạ cỡ ở đây từng làm `min-height: 2lh` nhỏ đi theo (`38,44 → 34,59px`); nay `2lh`
-       **đã bị gỡ hẳn** ở lượt “tên không xuống hàng”. */
-    font-size: 17px;
+       **đã bị gỡ hẳn** ở lượt “tên không xuống hàng”.
+       🔤 Lượt “Aa — tự chọn cỡ chữ” (MỚI NHẤT): `17px` cố định → **`var(--fs-tb-row)`** ⇒ ô TÊN
+       chạy theo mức người dùng chọn (16/17/18px) **và** không lệch với 5 ô kia (`--fs-row` cũng
+       trỏ vào cùng token). ⭐ **KHÔNG cần chặn trần ở 320px** — đã đo lại cả 3 mức ở đúng khổ
+       này: **vuốt ngang = 0** và ô mã/tiền **không ô nào bị cắt** ở cả 16/17/18px (hàng cao
+       67,57 / 70,69 / 76,70px). Con số “16px là sát trần” trong các chú thích cũ là của **bố cục
+       trước** (hàng 2 dòng, cột còn phụ thuộc tên) — đừng lấy nó làm lý do để chặn mức Lớn. */
+    font-size: var(--fs-tb-row);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2569,6 +2797,25 @@ body.force-desktop .table-view { display: block; }
        + `min-height: 2lh` + `align-content: safe center` — và `-webkit-box-pack`/`justify-content`
        **KHÔNG** thay được `align-content` (đã đo: lệch 9,61px). */
   }
+
+  /* ── MÀU Ô TÊN + VIÊN DANH SỐ ĂN THEO **THẺ CARD** ───────────────────────────────
+     Yêu cầu người dùng: “cho tên kh màu xanh giống thẻ card, và cho danh số màu giống thẻ card”.
+     ⛔ CHỈ áp cho **bảng 3 hàng trên điện thoại** (`body.force-desktop` + khối `@media` này).
+     Đừng đổi màu ở `.cell-tenkh` nền (dòng ~1547) hay ở `body.light-mode .table-view .cell-tenkh`
+     — cả hai dùng CHUNG với **bảng 14 cột trên máy tính**, đổi ở đó là đổi cả bảng máy tính.
+     Đối chiếu (giá trị lấy từ chính rule của thẻ card):
+       · TÊN KH  dark  **`#60a5fa`** ← `.kh-name`                     (trên dải nền: **5,54:1** ✓)
+                  light **`#1d4ed8`** ← xem cảnh báo dưới
+       · DANH SỐ dark  **`#d1d5db`** trên `rgba(59,130,246,0.14)` ← `body:not(.light-mode) .kh-danhso`
+       · DANH SỐ light **`#1e3a8a`** trên `#e8f1fd`               ← `body.light-mode .kh-danhso`
+     ⚠️ **Vì sao light mode là `#1d4ed8` chứ KHÔNG phải `#2563eb` của thẻ:** trong bảng ô tên nằm
+     TRÊN DẢI NỀN 14% (nền `228,238,254`), không phải trên nền trắng như trên thẻ ⇒ `#2563eb` ở đó
+     chỉ còn **4,41:1 — dưới AA 4,5:1**; `#1d4ed8` (blue-700) = **5,73:1** ✓. Hai mã này nhìn gần
+     như nhau. Muốn khớp CHÍNH XÁC thì phải hạ dải nền hoặc chấp nhận dưới AA — hỏi trước khi đổi.
+     ⚠️ `!important` ở nhánh light là BẮT BUỘC: rule nền `body.light-mode .table-view .cell-tenkh`
+     đang là `#000000 !important` (phạm vi rộng hơn), thiếu nó là light mode vẫn đen. */
+  body.force-desktop .table-view tbody td.cell-tenkh { color: #60a5fa; }
+  body.light-mode.force-desktop .table-view tbody td.cell-tenkh { color: #1d4ed8 !important; }
 
   /* ── TÊN KH RÚT GỌN: chỉ ở BẢNG 3 HÀNG NÀY ───────────────────────────────────
      Yêu cầu người dùng: “tên kh quá 4 chữ thì rút gọn, ví dụ BAN QUẢN LÝ DỰ ÁN…”
@@ -2616,6 +2863,42 @@ body.force-desktop .table-view { display: block; }
   body.force-desktop .table-view tbody td:nth-child(8),
   body.force-desktop .table-view tbody td:nth-child(7) { min-width: max-content; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════════════
+   🖨️ KIỂU IN — cho nút “In bảng” (`inBang()` → `window.print()`)
+   Yêu cầu người dùng: “Gom các thao tác cấp-bảng (xuất file, in, sao lưu dữ liệu)…”
+     Mục tiêu: tờ in CHỈ CÓ DỮ LIỆU.
+   ⚠️ Phải ẩn cả `#pageActions` (cụm nút) — quên nó là chính nút “In” được in ra giấy, lỗi
+     kinh điển của mọi print-stylesheet.
+   ⚠️ Ép về ĐEN-TRẮNG là CHỦ Ý: ở dark mode nền tối in ra một trang đen (tốn mực, chữ trên giấy
+     mất tương phản). Tuy nhiên **vẫn giữ `.count-info`** (dòng `Tổng HĐ… / Tổng nợ…`) vì đó là
+     thông tin đáng in; chỉ đổi màu nó về đen.
+   ⚠️ In ĐÚNG thứ đang hiển thị (đang ở dạng thẻ thì in thẻ, đang ở dạng bảng thì in bảng) —
+     KHÔNG tự ép sang dạng bảng, vì bấm In khi đang xem dạng nào là ý người dùng là dạng đó.
+   ⚠️ Chỉ in **TRANG ĐANG HIỂN THỊ** (phân trang chạy ở client) — muốn in hết thì xuất Excel
+     (xem mục “CỤM TÁC VỤ CẤP-BẢNG” trong run doc).
+   ⚠️ `break-inside: avoid` để một khách không bị cắt đôi giữa hai trang giấy. */
+@media print {
+  @page { margin: 12mm; }
+  body { background: #ffffff !important; color: #000000 !important; }
+  .header, .toolbar, .page-actions, .page-actions-slot, .page-btns,
+  .th-resizer, .sa { display: none !important; }
+  .main, .table-wrap, .summary-wrap, .card-view, .kh-card {
+    background: #ffffff !important; color: #000000 !important;
+    border-color: #9aa3b0 !important; box-shadow: none !important;
+  }
+  .table-scroll, .table-wrap { overflow: visible !important; }
+  /* Dải nền “tên + tiền” + vạch đánh dấu: in ra là tốn mực mà không thêm dữ liệu nào */
+  tbody tr::after, tbody tr::before { display: none !important; }
+  table, thead, tbody, tbody td, tbody tr { background: #ffffff !important; box-shadow: none !important; }
+  table { width: 100% !important; border-collapse: collapse !important; }
+  thead th { color: #000000 !important; background: #eceff3 !important; border-bottom: 1px solid #000000 !important; }
+  tbody td { border-bottom: 1px solid #b8c0cc !important; }
+  .count-info, .count-info span, .page-info,
+  tbody td, tbody td * , .cell-tenkh, .kh-name, .tien-no, .ma-kh, .badge { color: #000000 !important; }
+  .pagination { background: #ffffff !important; border-top: 1px solid #000000 !important; }
+  tbody tr, .kh-card { break-inside: avoid; page-break-inside: avoid; }
+}
 </style>
 </head>
 <body>
@@ -2630,6 +2913,10 @@ body.force-desktop .table-view { display: block; }
     // lớp `force-desktop` trên <body>; nút `#viewBtn` chỉ đọc lại lớp đó (xem `applyViewBtnState`).
     // Đặt ở đây (chạy trước khi vẽ) nên không bao giờ thấy “thoáng ẩn thẻ rồi mới hiện bảng”.
     if (localStorage.getItem('qlno_view') === 'desktop') document.body.classList.add('force-desktop');
+    // CỠ CHỮ NỘI DUNG đã chọn: ghi `data-fs` NGAY ĐÂY để trang không nháy cỡ khi tải.
+    // Ba khoá hợp lệ phải khớp `FS_LEVELS` trong JS và 2 khối `body[data-fs="…"]` trong CSS.
+    var __fs = localStorage.getItem('qlno_fs');
+    if (__fs === 'nho' || __fs === 'chuan' || __fs === 'to') document.body.setAttribute('data-fs', __fs);
   } catch (e) {}
 })();
 </script>
@@ -2916,9 +3203,23 @@ body.force-desktop .table-view { display: block; }
           <button class="sort-btn" id="sortDanhSo" onclick="sortBy('danh_so')">
             <span class="sort-ico"><svg viewBox="0 0 14 14" width="100%" height="100%" aria-hidden="true"><g stroke="#35a3e0" stroke-width="1.5" stroke-linecap="round"><path d="M5.5 2.6 4.5 11.4M9.5 2.6 8.5 11.4M2.4 5.4h9.2M2.2 8.6h9.2"/></g></svg></span><span class="sort-label">Danh Số</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
           </button>
+          <!-- NÚT CHỌN CỠ CHỮ NỘI DUNG (“Aa”) — anh em của 2 tab sắp xếp, ở cuối hàng.
+               Vì sao ĐẶT Ở ĐÂY (không phải vùng `Tổng`/header/nút Xuất): đo ở 320px cho thấy
+               header đã tràn ~4,6px, hàng lọc và vùng `Tổng` gần như kín (còn 3,9px) ⇒ thêm một
+               nút 38px vào đó là dòng `Tổng nợ: …` phải xuống 2 dòng ngay từ khổ **360px**.
+               Hàng sắp xếp là hàng DUY NHẤT còn chỗ: 2 tab có `flex: 1` + nhãn `ellipsis` nên
+               tự co được; bề rộng cần thật của 2 tab là **118px** ⇒ ở 320px còn vừa (xem run doc).
+               ⛔ KHÔNG cho nút này `flex: 1` — hai tab kia mới là thứ được chia đều chỗ trống.
+               Nhãn của nút nằm ở `data-tip` + `aria-label` (do `applyFontSize()` cập nhật theo
+               mức đang dùng) — cơ chế nhãn nổi dùng chung, nhấn giữ 1,2s là đọc được. -->
           <button class="sort-btn" id="sortTienNo" onclick="sortBy('tien_no')">
-            <span class="sort-ico"><svg viewBox="0 0 14 14" width="100%" height="100%" aria-hidden="true"><g fill="#46b07c"><ellipse cx="7" cy="3.4" rx="4.6" ry="1.8"/><path d="M2.4 5.2c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8v1.6c0 1-2.06 1.8-4.6 1.8S2.4 8.8 2.4 7.8z"/><path d="M2.4 8.4c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8v1.6c0 1-2.06 1.8-4.6 1.8S2.4 11.6 2.4 10.6z"/></g></svg></span><span class="sort-label">Tiền Nợ</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
+            <span class="sort-ico"><svg viewBox="0 0 14 14" width="100%" height="100%" aria-hidden="true"><g fill="#46b07c"><ellipse cx="7" cy="3.4" rx="4.6" ry="1.8"/><path d="M2.4 5.2c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8v1.6c0 1-2.06 1.8-4.6 1.8S2.4 8.8 2.4 7.8z"/><path d="M2.4 8.4c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8v1.6c0 1-2.06 1.8-4.6 1.8S2.4 11.6 2.4 10.6z"/></g></svg></span>            <span class="sort-label">Tiền Nợ</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
           </button>
+          <!-- Nút “Aa” (cỡ chữ) ĐÃ DỜI khỏi hàng sắp xếp ở lượt “dời xuống kế nút dạng bảng”
+               ⇒ nay nằm trong `.count-btns` (xem markup ở khối `Tổng …`).
+               ℹ️ Hàng sắp xếp nay chì còn 2 tab: chúng có `flex: 1` nên **rộng ra** thêm ~42px
+               — không cần sửa CSS nào, và cũng đừng thêm nút nào vào đây nữa (đây là hàng duy
+               nhất còn co được ở panel hẹp). -->
         </div>
       </div>
     </div>
@@ -2976,8 +3277,22 @@ body.force-desktop .table-view { display: block; }
              là nhãn nổi cho MẮT (`initTips()`), `aria-label` là nhãn cho trình đọc màn hình.
              ⛔ `data-tip` nay THAY `title` (xem mục “NHÃN NỔI” trong run doc) — điền CẢ HAI là
              có hai hộp nổi chồng nhau, vì `title` vẫn hiện trên máy tính sau ~1s. -->
-        <button id="exportBtn" class="export-btn" onclick="exportExcel()" data-tip="Xuất file Excel" aria-label="Xuất file Excel"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg></button>
+        <!-- Nút Xuất KHÔNG còn ở đây (từ lượt “gom cụm tác vụ”): nó đã vào cụm
+             `#pageActions` và được JS chuyển xuống **hàng phân trang đang hiển thị**
+             (xem `chuyenCumTacVu`). Ô này nay chỉ còn 2 nút thuộc về *cách xem / cỡ chữ*. -->
         <button id="viewBtn" class="view-btn" onclick="toggleViewMode()" data-tip="Xem dạng máy tính" aria-label="Xem dạng máy tính"><svg class="ic" width="20" height="20" aria-hidden="true"><use href="#i-monitor"/></svg></button>
+        <!-- Nút “Aa” (cỡ chữ) DỜI XUỐNG ĐÂY — yêu cầu “cho nút thay đổi cỡ chữ dời xuống kế nút
+             dạng bảng”. Trước nó nằm cuối hàng sắp xếp. Không sửa gì khác của nút.
+             ℹ️ Ô lưới này RỘNG KHÔNG ĐỔI: trước `[Xuất 38] + 4 + [dạng bảng 35] = 77px`,
+             nay `[dạng bảng 35] + 4 + [Aa 38] = 77px` ⇒ cột chữ `Tổng nợ:` KHÔNG bị ăn bớt.
+             ⚠️ Nút “dạng bảng” bị ẩn từ 640px (`display:none`) nhưng nút “Aa” thì **KHÔNG** —
+             nút này còn chỉnh cỡ bảng 14 cột trên máy tính, đừng ẩn theo `.view-btn`.
+             Chiều cao: `.fs-btn` gốc là `var(--ctl-h)` = 44px (bằng 2 tab ở hàng sắp xếp),
+             ở đây phải hạ về 40px cho bằng nút bên cạnh — xem `.count-btns .fs-btn`. -->
+        <button class="fs-btn" id="fsBtn" type="button" onclick="cycleFontSize()" data-tip="Cỡ chữ: Chuẩn" aria-label="Cỡ chữ: Chuẩn">
+          <span class="fs-btn-aa" aria-hidden="true">Aa</span>
+          <span class="fs-btn-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        </button>
       </div>
     </div>
 
@@ -3045,6 +3360,11 @@ body.force-desktop .table-view { display: block; }
           </table>
         </div>
       </div>
+      <!-- KHE DỰ PHÒNG cho cụm tác vụ: tab “Tổng hợp nợ” (`showTab('summary')`) KHÔNG dựng
+           hàng phân trang nào ⇒ nếu không có khe này thì cụm nút Xuất/In/Sao lưu sẽ nằm trong
+           một hàng phân trang đang `display:none` ⇒ **biến mất** đúng lúc người dùng cần xuất
+           bản tổng hợp. `chuyenCumTacVu()` chuyển cụm vào đây trong trường hợp đó. -->
+      <div class="page-actions-slot" id="slotSummary"></div>
     </div>
 
     <!-- DETAIL VIEW (Sheet 1) -->
@@ -3060,6 +3380,23 @@ body.force-desktop .table-view { display: block; }
       </div>
       <div class="pagination" id="paginationCard">
         <div class="page-info" id="pageInfoCard"></div>
+        <!-- ── CỤM TÁC VỤ CẤP-BẢNG ─────────────────────────────────────────────
+             Yêu cầu người dùng: “Gom các thao tác cấp-bảng (xuất file, in, sao lưu dữ liệu)
+             thành một cụm nút gọn trong hàng phân trang, tự ẩn/hiện theo bề rộng panel”.
+             ⚠️ Đây là chỗ ĐẶT MẶC ĐỊNH trong markup; `chuyenCumTacVu()` sẽ chuyển CẢ CỤM sang
+             hàng phân trang đang hiển thị (4 hàng: Card/Table × view thường / nợ cũ) — hoặc
+             vào khe dự phòng `#slotSummary` khi xem tab “Tổng hợp nợ” (tab đó KHÔNG có phân trang).
+             ⚠️ Phải chuyển CẢ CỤM chứ không từng nút: nếu mỗi nút về một hàng khác nhau thì
+             cụm tan ra và mất luôn bề rộng dành cho cụm (`margin-left: auto` chỉ có nghĩa trên
+             một khối).
+             ⚠️ Nhãn (`<span class="page-act-lb">`) **tự ẩn/hiện theo bề rộng** — xem `.page-act-lb`
+             trong CSS (phone: chỉ icon 34×34; từ 640px: icon + chữ).
+             ⛔ `data-tip` và `aria-label` phải ĐỦ Ở CẢ BA nút — cả ba là icon-only trên điện thoại. -->
+        <div class="page-actions" id="pageActions">
+          <button id="exportBtn" class="page-act" onclick="exportExcel()" data-tip="Xuất file Excel" aria-label="Xuất file Excel"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg><span class="page-act-lb">Xuất file</span></button>
+          <button id="printBtn" class="page-act" onclick="inBang()" data-tip="In bảng" aria-label="In bảng"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M19 8H5c-1.66 0-3 1.34-3 3v4h4v4h12v-4h4v-4c0-1.66-1.34-3-3-3zm-3 9H8v-5h8v5zm3-5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zM17 3H7v4h10V3z"/></svg><span class="page-act-lb">In bảng</span></button>
+          <button id="backupBtn" class="page-act" onclick="saoLuuDuLieu()" data-tip="Sao lưu dữ liệu" aria-label="Sao lưu dữ liệu"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg><span class="page-act-lb">Sao lưu</span></button>
+        </div>
         <div class="page-btns" id="pageBtnsCard"></div>
       </div>
     </div>
@@ -3696,6 +4033,9 @@ function toggleViewMode() {
   const on = document.body.classList.toggle('force-desktop');
   try { localStorage.setItem('qlno_view', on ? 'desktop' : 'card'); } catch (e) {}
   applyViewBtnState();
+  // Cụm tác vụ nằm trong hàng phân trang của **dạng xem** đang bật (thẻ ↔ bảng) ⇒ đổi dạng xem
+  // là đổi hàng phân trang, phải chuyển cụm theo (xem `chuyenCumTacVu`).
+  chuyenCumTacVu();
   // ⚠️ BẮT BUỘC: ô ghi chú trên thẻ được đo bằng `getBoundingClientRect` (xem `fitGhiChuInputs`).
   // Khi thẻ còn `display:none` thì MỌI số đo bằng 0 ⇒ hàm sẽ đặt bừa bề rộng **125px** (cờ mặc
   // định trước khi JS chạy) thay vì bề rộng canh theo viên SĐT (~121px). Nên khi QUAY VỀ dạng thẻ
@@ -3716,6 +4056,40 @@ function applyViewBtnState() {
   btn.setAttribute('aria-label', label);
   btn.setAttribute('aria-pressed', on ? 'true' : 'false');
 }
+
+// ─── CỠ CHỮ NỘI DUNG: 3 MỨC, LƯU Ở localStorage ─────────────────────────────
+// Nguồn cỡ chữ là các token `--fs-card*` / `--fs-tb*` (xem `:root`); ở đây chỉ đặt
+// `data-fs` trên <body> rồi CSS tự lo. Thêm/bớt mức thì sửa ĐÚNG 3 chỗ cho khớp nhau:
+//   1. mảng `FS_LEVELS` (đây),  2. khối `body[data-fs="…"]` trong CSS,
+//   3. câu `if (__fs === …)` trong script khôi phục ngay sau <body> (chống nháy cỡ).
+const FS_LEVELS = [
+  { key: 'nho',   ten: 'Nhỏ' },
+  { key: 'chuan', ten: 'Chuẩn' },
+  { key: 'to',    ten: 'Lớn' }
+];
+function fsIndexOf(key) {
+  const i = FS_LEVELS.findIndex(l => l.key === key);
+  return i < 0 ? 1 : i;                    // mức mặc định = “Chuẩn” (chỉ số 1)
+}
+function applyFontSize() {
+  const lv = FS_LEVELS[fsIndexOf(document.body.getAttribute('data-fs'))];
+  if (document.body.getAttribute('data-fs') !== lv.key) document.body.setAttribute('data-fs', lv.key);
+  const btn = document.getElementById('fsBtn');
+  if (btn) {
+    const nhan = 'Cỡ chữ: ' + lv.ten;
+    // `data-tip` (nhãn nổi) và `aria-label` (trình đọc màn hình) PHẢI đổi cùng nhau,
+    // đúng luật đã ghi ở `applyViewBtnState()`. Điền thêm `title` là có 2 hộp nổi chồng nhau.
+    btn.setAttribute('data-tip', nhan);
+    btn.setAttribute('aria-label', nhan + ' — nhấn để đổi');
+  }
+}
+function cycleFontSize() {
+  const next = FS_LEVELS[(fsIndexOf(document.body.getAttribute('data-fs')) + 1) % FS_LEVELS.length];
+  document.body.setAttribute('data-fs', next.key);
+  try { localStorage.setItem('qlno_fs', next.key); } catch (e) {}
+  applyFontSize();
+}
+applyFontSize();
 
 // ── COMPUTE SUMMARY FROM DETAIL (Sheet 1) ──
 function computeSummaryFromDetail() {
@@ -4494,7 +4868,7 @@ function renderCards(q='') {
       <div class="kh-ghichu-row">
         <svg class="ic" width="14" height="14" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><use href="#i-pencil-bold"/></svg>
         <input type="text" class="kh-ghichu-input" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" oninput="saveGhiChu(this)" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()" onpointerdown="event.stopPropagation()" onpointerup="event.stopPropagation()">
-        ${r.abc ? `<span style="margin-left:8px;display:flex;align-items:center;gap:4px;flex-shrink:0;min-width:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" style="vertical-align:middle"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg><span class="kh-abc" style="font-size:18px">${hi(r.abc,q)}</span></span>` : ''}
+        ${r.abc ? `<span style="margin-left:8px;display:flex;align-items:center;gap:4px;flex-shrink:0;min-width:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" style="vertical-align:middle"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg><span class="kh-abc" style="font-size:var(--fs-card)">${hi(r.abc,q)}</span></span>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -4586,8 +4960,111 @@ function renderPagination() {
     html+=`<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''} title="Trang sau">›</button>`;
     html+=`<button class="page-btn" onclick="goPage(${total})" ${currentPage===total?'disabled':''} title="Trang cuối">»</button>`;
     document.getElementById('pageBtns'+suffix).innerHTML = html;
-    document.getElementById('pagination'+suffix).style.display = filtered.length>0 ? 'flex' : 'none';
+    // ── Cụm tác vụ (Xuất/In/Sao lưu) nằm TRONG hàng phân trang ⇒ hàng này phải hiện cả khi
+    //    lọc ra **0 kết quả**: `exportExcel()` xuất `allData` (KHÔNG phải `filtered`) nên 0 kết
+    //    quả vẫn xuất được, và sao lưu thì luôn dựa trên `localStorage`. Ẩn cả hàng theo
+    //    `filtered` là cụm nút BIẾN MẤT ngay khi tìm không thấy ai — đúng lỗi dễ mắc ở đây.
+    //    Phần “trang” (info + cụm nút số) thì VẪN ẩn khi rỗng ⇒ không thấy cụm nút chết.
+    document.getElementById('pagination'+suffix).style.display = allData.length ? 'flex' : 'none';
+    document.getElementById('pageBtns'+suffix).style.display = filtered.length ? 'flex' : 'none';
   });
+  chuyenCumTacVu();
+}
+
+/* ── CỤM TÁC VỤ CẤP-BẢNG: CHUYỂN SANG HÀNG PHÂN TRANG ĐANG HIỂN THỊ ───────────────────────
+   Yêu cầu người dùng: “Gom các thao tác cấp-bảng (xuất file, in, sao lưu dữ liệu) thành một cụm
+   nút gọn trong hàng phân trang, tự ẩn/hiện theo bề rộng panel”.
+   Có **4** hàng phân trang (`paginationCard` · `paginationTable` · `paginationOld` ·
+   `paginationOldTable`) theo tab × dạng xem, và **chỉ MỘT** hàng hiển thị tại một lúc.
+   Cụm chỉ có MỘT (`id="pageActions"`) ⇒ phải **CHUYỂN CẢ CỤM** sang hàng đang hiển thị.
+   ⛔ Dựng 4 cụm là trùng `id` (JS `getElementById` chỉ thấy cái đầu) nên đừng làm vậy.
+   ⛔ Chuyển **cả cụm**, không chuyển từng nút: `.page-actions { margin-left: auto }` chỉ có
+   nghĩa khi cụm là MỘT phần tử flex; tách ra là mất cả `gap` lẫn vị trí mép phải.
+   ⚠️ “Đang hiển thị” phải xét cả TỔ TIÊN: `offsetParent !== null` làm đúng việc đó (cha bị
+   `display:none` ⇒ `offsetParent` null), còn `getComputedStyle(el).display` thì KHÔNG
+   (nó chỉ thấy chính element, không thấy cha bị ẩn ⇒ chọn sai hàng).
+   ⚠️ Chỉ đụng DOM khi ĐỔI chỗ: hàm được gọi ở MỌI lần render (mỗi lần lọc, mỗi lần gõ
+   phím) nên chuyển vô điều kiện là đụng DOM liên tục.
+   ⚠️ Đặt trong `.pagination` — ⛔ KHÔNG đặt trong `.page-btns`: `renderPagination()` ghi
+   `pageBtns.innerHTML = html` mỗi lần ⇒ cụm nằm trong đó sẽ bị XOÁ ngay lần render sau.
+   ⚠️ Chèn NGAY TRƯỚC `.page-btns` (không `appendChild`) — đây là chốt của bố cục điện thoại:
+   thứ tự `[info] [cụm tác vụ] [cụm số trang]` + `.page-btns { flex: 1 1 100% }` ở khối mobile cho ra
+   **dòng 1 = `1–50 / 1.429` + cụm nút (mép phải)**, **dòng 2 = cụm số trang**.
+   `appendChild` (đặt SAU cụm số) thì ở 375px cụm số đã chiếm hết dòng ⇒ cụm nút rớt xuống
+   **dòng 3 và nằm bên TRÁI** (đã đo ở lượt trước với một nút: hàng phân trang cao **126,2px**).
+   ⚠️ Dự phòng: khi **KHÔNG** hàng phân trang nào hiển thị (tab “Tổng hợp nợ” không có phân
+   trang) thì cụm vào **khe `#slotSummary`** (nằm trong `#summaryView`, luôn nằm trong luồng
+   hiển thị khi tab đó bật). ⛔ Đừng trả về `.count-btns`: ô đó chỉ rộng **~78px** và đã có 2 nút
+   (`#viewBtn` + `#fsBtn`) — nhét 3 nút nữa là bóp cột chữ “Tổng nợ:” xuống 2 dòng ở 360px. */
+function chuyenCumTacVu() {
+  const cum = document.getElementById('pageActions');
+  if (!cum) return;
+  const ung = ['paginationCard', 'paginationTable', 'paginationOld', 'paginationOldTable']
+    .map(id => document.getElementById(id)).filter(Boolean);
+  let dich = ung.find(el => el.offsetParent !== null);
+  if (!dich) dich = document.getElementById('slotSummary');
+  if (!dich || cum.parentElement === dich) return;
+  const soTrang = dich.querySelector('.page-btns');
+  if (soTrang && soTrang.parentElement === dich) dich.insertBefore(cum, soTrang);
+  else dich.appendChild(cum);
+}
+
+/* ── 🖨️ IN BẢNG ─────────────────────────────────────────────────────────────────────
+   Chỉ gọi `window.print()`; TOÀN BỘ việc dọn trang nằm ở khối `@media print` cuối `<style>`
+   (xem mục “🖨️ KIỂU IN”): ẩn header/toolbar/cụm nút, ép màu về đen-trắng.
+   ⚠️ Không tự đổi dạng xem trước khi in: đang ở dạng thẻ thì in thẻ, đang ở dạng bảng thì in bảng.
+   ⚠️ In ra **trang đang hiển thị** (phân trang chạy ở client) — in cả 1.472 hoá đơn thì dùng
+   “Xuất file”. */
+function inBang() {
+  try { window.print(); }
+  catch (e) { alert('Không gọi được hộp thoại in trong môi trường này.'); }
+}
+
+/* ── 💾 SAO LƯU DỮ LIỆU ─────────────────────────────────────────────────────────────
+   Ghi ra **một file .json chứa TOÀN BỘ khoá `qlno_*`** của `localStorage` — đây là “sao lưu
+   toàn trạng thái app”, không chỉ mỗi bảng dữ liệu:
+     `qlno_data_v1` (dữ liệu, có thể là `c:<base64 gzip>` hoặc `j:<json>` — xem `saveData`),
+     `qlno_notes` (ghi chú), `qlno_highlighted` + `qlno_highlighted_purple` (đánh dấu),
+     `qlno_col_widths_v3` (độ rộng cột), `qlno_theme` · `qlno_view` · `qlno_fs` (tuỳ chọn xem).
+   ⛔ **KHÔNG giải mã/dựng lại dữ liệu ở đây** — chép nguyên văn giá trị từng khoá là cách duy
+   nhất đúng với cả hai định dạng nén/không nén; tự `JSON.parse` rồi ghi lại là mất dạng `c:`.
+   ⚠️ Dữ liệu nằm ở **origin** của trang: `127.0.0.1:61034`. Mở app bằng port khác là origin khác
+   ⇒ file sao lưu vẫn giữ được dữ liệu, nhưng muốn khôi phục thì phải mở ĐÚNG origin đó.
+   ⚠️ Chưa có nút KHÔI PHỤC (người dùng mới yêu cầu xuất/in/sao lưu) — file này để dành. */
+function saoLuuDuLieu() {
+  const khoa = {};
+  let soKhoa = 0;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.indexOf('qlno_') === 0) { khoa[k] = localStorage.getItem(k); soKhoa++; }
+    }
+  } catch (e) {}
+  if (!soKhoa) { alert('Chưa có dữ liệu để sao lưu!'); return; }
+  const d = new Date();
+  const hai = (x) => String(x).padStart(2, '0');
+  const tem = `${d.getFullYear()}-${hai(d.getMonth() + 1)}-${hai(d.getDate())}_${hai(d.getHours())}${hai(d.getMinutes())}`;
+  const goi = {
+    ungDung: 'Quản Lý Nợ',
+    phienBan: 1,
+    thoiDiem: d.toISOString(),
+    soKH: new Set(allData.map(r => r.ma_khach_hang || r.ten_khach_hang)).size,
+    soHD: allData.length,
+    khoa: khoa
+  };
+  try {
+    const blob = new Blob([JSON.stringify(goi)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `SaoLuu_QuanLyNo_${tem}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} }, 5000);
+  } catch (e) {
+    alert('Không tạo được file sao lưu: ' + e.message);
+  }
 }
 
 function copyToClip(text, el) {
@@ -5145,14 +5622,19 @@ function modalScrolledToTop() {
 // Vì sao KHÔNG dùng `title`: **`title` không bao giờ hiện trên cảm ứng** ⇒ nút icon-only
 // (Xuất file · Xem dạng máy tính) sẽ vô nghĩa trên điện thoại. Module này phủ 3 đường:
 //   · RÊ CHUỘT (máy tính)        → hiện ở `pointerenter`, ẩn ở `pointerleave`
-//   · NHẤN GIỮ ≥ 450ms (cảm ứng) → hiện khi đang giữ, giữ thêm 1,2s sau khi nhả để kịp đọc
-//   · FOCUS bàn phím             → hiện/ẩn theo `focus`/`blur`
+//   · NHẤN GIỮ ≥ 450ms (cảm ứng) → hiện trong lúc đang giữ
+//   · FOCUS bàn phím             → hiện ở `focus`, ẩn ở `blur`
+// ⏱️ **CẢ BA ĐƯỜNG ĐỀU TỰ ẨN SAU `AUTO` = 1 GIÂY** (yêu cầu “cho chữ này hiển thị 1 giây rồi ẩn”).
+// Đồng hồ `AUTO` đặt trong `show()` nên nó là **nguồn duy nhất quyết định lúc ẩn**:
+// rê chuột mà ĐỨNG YÊN vẫn thấy nhãn biến mất sau 1s — chủ ý, vì hộp nổi che hàng đầu của bảng.
+// Rời chuột/`blur` vẫn ẩn NGAY (không chờ đủ 1s); rê vào lại thì hiện lại từ đầu vì `hideNow()`
+// đã đặt `cur = null` ⇒ `pointerenter` mới tính là “đổi phần tử” và chạy lại từ đầu.
 // ⛔ Nhấn giữ CHỈ để đọc nhãn, KHÔNG kích hoạt nút — xem chỗ chặn `click` bên dưới.
 // Gọi lại được NHIỀU LẦN (cho control sinh động: gắn `data-tip` rồi gọi `initTips()` lần nữa)
 // — nhờ 2 chốt: hộp nổi **tái dùng** nếu đã có, và mỗi element được đánh dấu `tipBound`
 // nên **không bị gắn listener hai lần**.
 function initTips() {
-  const HOLD = 450, KEEP = 1200, GAP = 8, EDGE = 6;
+  const HOLD = 450, AUTO = 1000, GAP = 8, EDGE = 6;   // AUTO = số ms nhãn nổi tự ẩn sau khi hiện
   let tip = document.getElementById('uiTip');
   if (!tip) {
     tip = document.createElement('div');
@@ -5162,7 +5644,9 @@ function initTips() {
     document.body.appendChild(tip);
   }
 
-  let holdTimer = null, keepTimer = null, cur = null, holdEl = null, suppress = null;
+  let holdTimer = null, autoTimer = null, cur = null, suppress = null;
+  // ⛔ ĐÃ XOÁ `keepTimer`/`hideSoon()` (cũ: giữ nhãn 1,2s sau khi NHẢ ngón tay) — nay vô nghĩa:
+  // `AUTO` luôn ngắn hơn và luôn chạy sau `show()` một khoảng cố định, nên nó thắng mọi trường hợp.
 
   function place(el) {
     // ⛔ Canh theo **`documentElement.clientWidth/clientHeight`**, KHÔNG phải `innerWidth/innerHeight`.
@@ -5184,40 +5668,38 @@ function initTips() {
     tip.style.top = top + 'px';
   }
   function show(el) {
-    clearTimeout(holdTimer); clearTimeout(keepTimer);
+    clearTimeout(holdTimer); clearTimeout(autoTimer);
     if (cur !== el) { cur = el; tip.textContent = el.getAttribute('data-tip') || ''; }
     tip.classList.add('show');
     place(el);
+    // ⏱️ TỰ ẨN sau AUTO (1s). `cur = null` trong `hideNow()` là thứ cho phép rê vào LẠI
+    // và hiện lại — nếu chỉ `classList.remove('show')` thì lần rê sau không kích hoạt gì.
+    autoTimer = setTimeout(hideNow, AUTO);
   }
   function hideNow() {
-    clearTimeout(holdTimer); clearTimeout(keepTimer);
-    holdEl = null; cur = null;
+    clearTimeout(holdTimer); clearTimeout(autoTimer);
+    cur = null;
     tip.classList.remove('show');
   }
-  function hideSoon() { clearTimeout(keepTimer); keepTimer = setTimeout(hideNow, KEEP); }
 
   document.querySelectorAll('[data-tip]').forEach(function (el) {
     if (el.dataset.tipBound) return;         // gọi lại `initTips()` ⇒ bỏ qua cái đã gắn
     el.dataset.tipBound = '1';
     el.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') show(el); });
     el.addEventListener('pointerleave', function (e) {
-      if (e.pointerType === 'mouse') hideNow();          // rời chuột ⇒ ẩn ngay
-      else if (holdEl === el) hideSoon();               // ngón tay kéo ra ngoài ⇒ ẩn sau ít giây
+      if (e.pointerType === 'mouse') hideNow();          // rời chuột ⇒ ẩn NGAY, không chờ đủ 1s
+      // (cảm ứng kéo ngón ra ngoài: không làm gì — hộp nổi tự hết hạn theo `AUTO`)
     });
     el.addEventListener('pointerdown', function (e) {
       if (e.pointerType === 'mouse') return;            // chuột đã có đường hover, không tính giờ
-      holdEl = null; suppress = null;
+      suppress = null;
       clearTimeout(holdTimer);
-      holdTimer = setTimeout(function () { holdEl = el; suppress = el; show(el); }, HOLD);
+      holdTimer = setTimeout(function () { suppress = el; show(el); }, HOLD);
     });
-    el.addEventListener('pointerup', function () {
-      clearTimeout(holdTimer);
-      if (holdEl === el) hideSoon();
-    });
-    el.addEventListener('pointercancel', function () {
-      clearTimeout(holdTimer);
-      if (holdEl === el) hideSoon();
-    });
+    // ⛔ `pointerup` KHÔNG được xoá `suppress`: thứ tự trên cảm ứng là `pointerup` → `click`,
+    // nên xoá ở đây là cú nhấn giữ LẠI kích hoạt nút (đúng lỗi mà `suppress` sinh ra để chặn).
+    el.addEventListener('pointerup', function () { clearTimeout(holdTimer); });
+    el.addEventListener('pointercancel', function () { clearTimeout(holdTimer); });
     el.addEventListener('focus', function () { show(el); });   // bàn phím: Tab vào là thấy nhãn
     el.addEventListener('blur', hideNow);
   });
