@@ -476,12 +476,12 @@ body.light-mode tbody tr { border-bottom: 2px solid rgba(0,0,0,0.25); }
    xem cặp rule `.table-view .ma-kh` / `body.light-mode .table-view .ma-kh` ngay dưới
    `.ma-kh` gốc. Dời đi để màu này không phụ thuộc `nth-child(4)` (đổi thứ tự cột là lệch ngay). */
 body.light-mode .table-view td:nth-child(4).cell-addr { color: #475569 !important; }
-/* ⚠️ Ba rule `.cell-dim` này + `.ma-kh` + badge tháng = **một chùm 5 rule** của lượt
-   “light mode đậm hơn”: `#475569 → #334155` (7,48:1 → 11,40:1). Đổi lẻ một rule là đúng ô đó
-   vẫn bạc — xem chú thích đầy đủ ở rule `body.light-mode .table-view .ma-kh`. */
-body.light-mode .table-view td:nth-child(5).cell-dim { color: #334155 !important; }
-body.light-mode .table-view td:nth-child(6).cell-dim { color: #334155 !important; }
-body.light-mode .table-view td:nth-child(10).cell-dim { color: #334155 !important; }
+/* Ba rule `.cell-dim` này + `.ma-kh` + badge tháng = **một chùm 5 rule** cùng đổi màu.
+   Nay `#475569` (lượt “nhạt hơn” đã trả về giá trị cũ) — xem lịch sử đầy đủ ở chú thích
+   `body.light-mode .table-view .ma-kh`. Đổi lẻ một rule là đúng ô đó lệch tông. */
+body.light-mode .table-view td:nth-child(5).cell-dim { color: #475569 !important; }
+body.light-mode .table-view td:nth-child(6).cell-dim { color: #475569 !important; }
+body.light-mode .table-view td:nth-child(10).cell-dim { color: #475569 !important; }
 body.light-mode .table-view tr:hover { background: #e8eefc; }
 body.light-mode .table-view .phone { color: #000000 !important; }
 body.light-mode .table-view .cell-ghi { color: #c2410c !important; }
@@ -1561,17 +1561,18 @@ body.light-mode th:hover .th-resizer::after { background: rgba(15,23,42,0.4); }
    Phạm vi CHỈ trong bảng: ở THẺ, mã KH và danh số vốn đã cùng màu (`#1e3a8a` ở light);
    trong MODAL, mã KH vẫn theo `.i-makh` (`#c8d0dc` / `#475569`) — muốn đổi hai chỗ đó thì hỏi. */
 .table-view .ma-kh { color: var(--text-dim); }
-/* ⚠️ LƯỢT “LIGHT MODE ĐẬM HƠN” (2026-09-25): `#475569` → **`#334155`** cho **nhóm chữ XÁM**
-   của bảng (mã KH · mã sổ · tháng nợ). Lý do là ảnh người dùng gửi: trên nền trắng, `#475569`
-   đọc như chữ bị bạc, trong khi ô TÊN đã là `#000000` nên tương phản giữa hai bậc quá xa.
-   `#334155` là bậc đậm hơn RÕ nhưng vẫn **dưới** mức của tên ⇒ thứ bậc vẫn đọc được.
-   Đo: `#475569` trên trắng = **7,48:1** → `#334155` = **11,40:1**.
-   ⛔ Đây là **CHÙM 5 RULE phải đổi CÙNG NHAU** (thiếu một rule là đúng một ô vẫn bạc):
+/* ── NHÓM CHỮ XÁM Ở LIGHT MODE: **`#475569`** (đã trả về giá trị này ở lượt “nhạt hơn”)
+   Lịch sử 2 lượt, đọc kỹ trước khi đổi tiếp:
+     · lượt “light mode đậm hơn”: `#475569 → #334155`
+     · lượt “cho mã kh, tháng, mã sổ màu nhạt hơn” (MỚI NHẤT): `#334155 → #475569` — **đảo lại đúng giá trị cũ**,
+       theo yêu cầu người dùng sau khi xem ảnh (chữ xám đậm quá, át cả ô TÊN).
+   Đo trên nền trắng: `#334155` = **11,40:1** · `#475569` = **7,48:1** (vẫn trên AA 4,5:1 rất xa).
+   ⛔ Đây là **CHÙM 5 RULE phải đổi CÙNG NHAU** (thiếu một rule là đúng một ô vẫn lệch tông):
        1. `.ma-kh` (rule này)          · 2–4. `td:nth-child(5/6/10).cell-dim` (mã sổ · danh số · mã kh)
        · 5. `td:nth-child(7) .badge` (tháng nợ, trong khối mobile).
-   ⛔ KHÔNG đổi màu SỐ TIỀN (`#dc2626`): nó đã đạt AA (4,83:1) và là màu ngữ nghĩa, đậm thêm
-   là việc khác người dùng chưa yêu cầu. */
-body.light-mode .table-view .ma-kh { color: #334155; }
+   ⛔ KHÔNG đổi màu SỐ TIỀN (`#dc2626`): đã đạt AA (4,83:1) và là màu ngữ nghĩa.
+   ℹ️ Muốn nhạt HƠN `#475569` nữa thì bậc kế tiếp là `#64748b` (slate-500, **4,76:1** — vẫn AA nhưng sát ngưỡng). */
+body.light-mode .table-view .ma-kh { color: #475569; }
 /* ⚠️ `.ma-kh` là rule theo **ELEMENT** (0,1,0) nên nó **THẮNG KẾ THỪA** font-size 19px của
    `.info-value`: trong bảng modal, mã KH **chỉ** đúng cỡ nhờ rule `.i-makh .ma-kh` ở dưới
    (0,2,0). Sai/thiếu lớp `i-makh` là mã KH lặng lẽ về **15px** trong khi mọi hàng khác vẫn
@@ -2507,9 +2508,9 @@ body.force-desktop .table-view { display: block; }
     font-weight: 400;
     letter-spacing: normal;
   }
-  /* Tháng nợ ở light mode: `#475569 → #334155` (lượt “light mode đậm hơn”) — rule thứ 5
-     trong chùm 5 rule, xem chú thích ở `body.light-mode .table-view .ma-kh`. */
-  body.light-mode.force-desktop .table-view tbody td:nth-child(7) .badge { color: #334155 !important; }
+  /* Tháng nợ ở light mode: nay `#475569` (lượt “nhạt hơn” trả về giá trị cũ) — rule thứ 5
+     trong chùm 5 rule, xem lịch sử ở `body.light-mode .table-view .ma-kh`. */
+  body.light-mode.force-desktop .table-view tbody td:nth-child(7) .badge { color: #475569 !important; }
   body.force-desktop .table-view tbody td:nth-child(6) {
     background: rgba(59,130,246,0.15);
     color: var(--accent-glow) !important;
