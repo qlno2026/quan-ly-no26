@@ -2233,6 +2233,36 @@ body.force-desktop .table-view { display: block; }
         thẻ card) nên chỉ làm khi có yêu cầu riêng. */
     padding: 0 2px 0 6px;
   }
+  /* ── SỌC XEN KẺ “ZEBRA” ──────────────────────────────────────────────────────────
+     Yêu cầu người dùng: “có nên cho màu nền xen kẻ từng ô cho dễ nhìn không”.
+     Bảng **3 hàng/KH** không còn cho mắt bám theo dòng như bảng 1 hàng, nên sọc xen kẻ là
+     cách rẻ nhất để mắt không lạc hàng khi đã đi xa mép trái.
+
+     ⚠️ Chọn SỌC PHA XANH ACCENT (không dùng xám trung tính) vì lý do ĐO ĐƯỢC — đo ở
+     light mode trên chữ TIỀN `#dc2626` (16px, ngưỡng AA 4,5:1):
+         xám `rgba(15,23,42,…)`  : 3% → 4,55 · **4% → 4,46 (ĐÃ dưới AA)**
+         xanh `rgba(59,130,246,…)`: **5% → 4,56** · 6% → ~4,5
+     ⇒ sọc xanh vừa ĐẬM thấy rõ hơn vừa giữ được AA (xám hạ độ tương phản nhanh hơn).
+     Đo toàn bộ màu chữ trên sọc light 5%: tiền `4,56` ✓ · mã sổ/tháng `7,16` ✓ ·
+     mã kh `8,24` ✓ · tên `19,85` ✓; ở dark 7%: tiền `5,77` ✓ · tên `15,96` ✓.
+     ⛔ **MỨC ĐANG DÙNG: dark `0.07` · light `0.05` = TRẦN của light.** Lên `0.06` là chữ
+     tiền tụt còn `4,28` (dưới AA).Ở dark còn dư nhiều (10% mới còn 5,55) nhưng 7% đã đủ
+     để xen kẻ thấy rõ mà không biến hàng thành “khối xanh”.
+     ⛔ `:not(:hover):not(:active)` là BẮT BUỘC, không phải viết cho gọn: selector này có
+     **độ cụ thể CAO HƠN** `tbody tr:hover` và `tbody tr:active` ⇒ thiếu một trong hai là
+     **hover/lúc nhấn giữ chỉ còn ăn ở hàng LẺ**, hàng chẵn đứng im — lỗi rất dễ bị đoán
+     nhầm thành “hover hỏng ngẫu nhiên”.
+     ⛔ `:not(.highlighted):not(.highlighted-purple)`: hàng ĐƯỢC ĐÁNH DẤU phải giữ nền
+     cam/tím của nó — sọc đè lên là mất dấu (và đè cả `box-shadow` vạch mép trái).
+     ℹ️ Chỉ áp cho **bảng 3 hàng trên điện thoại** (khối `@media` này + `force-desktop`).
+     Bảng máy tính (≥640px) giữ nguyên — bố cục 14 cột đã ổn định, sọc xen kẻ ở đó là
+     thay đổi riêng, chỉ làm khi có yêu cầu. */
+  body.force-desktop .table-view tbody tr:nth-child(even):not(.highlighted):not(.highlighted-purple):not(:hover):not(:active) {
+    background: rgba(59, 130, 246, 0.07);
+  }
+  body.light-mode.force-desktop .table-view tbody tr:nth-child(even):not(.highlighted):not(.highlighted-purple):not(:hover):not(:active) {
+    background: rgba(59, 130, 246, 0.05);
+  }
   body.force-desktop .table-view tbody td { display: none; padding: 0; border-bottom: none; }
   /* ── VẠCH ĐÁNH DẤU (nhấn giữ 1,2 giây) Ở DẠNG 2 DÒNG ─────────────────────────────
      Rule nền đặt vạch lên `td:first-child` — mà ở dạng này `td:first-child` là cột **STT**
