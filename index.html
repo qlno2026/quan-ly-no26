@@ -1545,6 +1545,9 @@ body.light-mode .table-view .ma-kh { color: #475569; }
 .cell-dim { color: var(--text-dim); font-size: 15px; font-weight: 400; white-space: nowrap; }
 .cell-addr { font-size: 15px; color: var(--text-dim); font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cell-tenkh { font-size: 15px; color: var(--text); font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* TÊN KH RÚT GỌN: `.ten-ngan` **tắt mặc định** (⇒ bảng máy tính hiện tên ĐẦY ĐỦ như cũ), chỉ bật
+   trong khối `@media (max-width: 639.98px)` của bảng 3 hàng — xem `tenKHNgan()` trong JS. */
+.cell-tenkh .ten-ngan { display: none; }
 .cell-ghi { font-size: 15px; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fb923c; }
 .cell-abc { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #94a3b8; font-weight: 400; }
 body.light-mode .cell-abc { color: #475569; }
@@ -2112,13 +2115,63 @@ body.force-desktop .table-view { display: block; }
 
        ⚠️ Bản 4 cột (cho tên & mã kh trải 2 ô) ĐÃ THỬ VÀ BỊ LOẠI: các cột `auto` lấy hết
        chỗ, cột `1fr` còn **47px** ⇒ danh số bị cắt. */
-    grid-template-columns: 1fr auto auto auto;
-    /* Dòng 1: TÊN KH (trải cột 1–2) · **danh số** · TIỀN NỢ  ← danh số nằm SÁT tiền nợ
-       Dòng 2: mã sổ · mã kh · tháng nợ (tháng trải cột 3–4 cho thẳng mép phải) */
+    /* ── LƯỢT “3 HÀNG” (MỚI NHẤT) ───────────────────────────────────────────────
+       Yêu cầu người dùng: “cho thành 3 hàng, hàng trên tên kh, tiền nợ, hàng 2 mã kh,
+       tháng nợ, hàng 3 là danh số, mã sổ”.
+       ⇒ Đổi **4 cột × 2 hàng** thành **2 cột × 3 hàng**:
+         · cột 1 TRÁI = tên · mã kh · danh số
+         · cột 2 PHẢI = tiền nợ · tháng nợ · mã sổ  (căn phải ⇒ **ba thứ đó thẳng một mép phải**)
+       🎯 **Điều đáng nói nhất — bề rộng cần GIẢM RẤT MẠNH:** mỗi hàng chỉ còn **2 ô** thay vì
+       4 ô cộng lại ⇒ nhu cầu ngang từ ~**305px** (ở 12,59px) xuống còn ~**163px ở 14px**.
+       Đó là lý do **áp lực bề rộng biến mất** và phải xem lại `--fs-row` (mục cỡ chữ ngay dưới).
+       ⚠️ Cột 2 là **`auto`** (không phải `1fr`): cột phải lấy sàn theo nội dung lớn nhất của nó
+       (tiền nợ / mã sổ) và **không giãn ra** — nhờ đó ba mục cột phải (tiền nợ · tháng nợ ·
+       mã sổ) **luôn thẳng một mép với nhau** (đo: `tien.r === sogcs.r` ở mọi hàng).
+
+       ── LƯỢT “CỘT TIỀN NỢ THẲNG CỘT” (MỚI NHẤT) ──────────────────────────────────
+       Yêu cầu người dùng: “canh chỉnh cho đều lại”.
+       Vấn đề của lượt trước: cột 1 co theo nội dung ⇒ **mép trái ô tiền nợ nhảy theo độ dài
+       tên**: đo ở 375px = **143,9 → 223,9px** (nhảy **80px**, 47 giá trị khác nhau) và
+       **mép phải cũng nhảy** ⇒ nhìn như lỗi, không ra cột.
+       Cách sửa: **cố định cả hai cột** (số đo bên dưới), không để cột nào ăn theo nội dung.
+
+       ⚠️ `justify-content: start` là **BẮT BUỘC**, đừng gỡ: mặc định (`normal` = `stretch`)
+       sẽ **giãn track `auto` của cột 2** ra hết chỗ thừa ⇒ tiền nợ **quay lại mép phải**.
+
+       ⚠️ Vì sao cột 1 là `minmax(0, …)` mà không phải `min-content`/`max-content` ở vị trí
+       MIN: `min-content` của ô tên (`white-space: nowrap`) = **cả câu** ⇒ cột 1 phình
+       **402,86px** và không co được (đã đo). `minmax(0, …)` thì co được ⇒ **không bao giờ
+       sinh thanh cuộn ngang**, kể cả ở 320px.
+
+       ⚠️ Vì sao cột 1 có **HAI số** `max(12em, 58%)`:
+         · `12em` (= **192px** ở 16px) = bề rộng của **tên RỘNG NHẤT** sau khi rút gọn (đo:
+           cột 1 cần tối đa **191,38px** trước lượt này) ⇒ **12em giữ nguyên 0 tên bị cắt**
+           ở 375px trở lên, và là **bề rộng nhỏ nhất** đạt được điều đó (khe tên→tiền vì thế
+           cũng nhỏ nhất có thể khi vẫn thẳng cột).
+         · `58%` chỉ **có tác dụng từ khung ~331px trở lên**; nó để cột tiền nợ **đi theo bề
+           rộng khung** thay vì bỏ lại một khoảng trống lớn bên phải ở máy rộng hơn.
+       ⛔ Đừng hạ `12em`: hạ là **tên bắt đầu bị cắt `…` ngay ở 375px** (hiện 0 tên).
+
+       ⚠️ Vì sao cột 2 là `minmax(6em, max-content)` chứ không `max-content` trần:
+       `6em` (= **96px** ở 16px) ≥ bề rộng tiền nợ lớn nhất (đo **94,47px**) ⇒ **mép PHẢI của
+       tiền nợ giống hệt nhau ở mọi hàng** (đo: `306,9px`, chỉ **1 giá trị** ở cả 50 hàng —
+       trước lượt này là 37 giá trị). Vẫn để `max-content` làm trần để nếu có số tiền dài hơn
+       (13 chữ số) thì cột tự nở chứ **không bị cắt**.
+
+       ⚠️ **Phải kiểm lại sau khi đổi:** `max(tiền.r) ≤ chiều rộng khung − lề` ở **320px** —
+       đây là chỗ duy nhất có thể phát sinh vuốt ngang. */
+    grid-template-columns: minmax(0, max(12em, 58%)) minmax(6em, max-content);
+    justify-content: start;
     grid-template-areas:
-      "ten    ten    danhso tien"
-      "sogcs  makh   thang  thang";
-    column-gap: 6px;
+      "ten     tien"
+      "makh    thang"
+      "danhso  sogcs";
+    /* ── LƯỢT “GỌN + HẾT VUỐT NGANG” (mới nhất): `6px → 4px` ─────────────────────
+       Khe cột là một phần của "chrome" ngang: `chrome = 2 × lề hàng + 3 × khe cột`.
+       Chrome cũ **34px** (2×8 + 3×6) quá dày ⇒ cùng lúc không thể vừa đủ chỗ vừa giữ cỡ chữ.
+       Chrome mới **24px** (2×6 + 3×4) mở ra **10px** ⇒ đủ để hết vuốt ngang ở 320–430px.
+       ⛔ Đừng hạ khe xuống dưới `4px`: MÃ SỔ và MÃ KH là hai mã khác nhau, dính sát là đọc sai. */
+    column-gap: 4px;
     row-gap: 2px;
     align-items: center;
     /* ── KHE GIỮA CÁC HÀNG: **0px** — MỨC TỐI THIỂU, chỉ còn ĐƯỜNG KẺ NGĂN ───────
@@ -2139,10 +2192,12 @@ body.force-desktop .table-view { display: block; }
        ⚠️ Hệ quả cần biết: chữ hàng trên và hàng dưới chỉ cách đường kẻ **0,72px** mỗi bên;
        ở cỡ chữ lớn (`--fs-row` 16px) hàng vẫn cao **59,65px** nên không chồng chữ — đã A/B
        chiều cao hàng trước/sau khi nhấn giữ đánh dấu: **không đổi 0px**.
-       ⛔ **Lề NGANG 8px GIỮ NGUYÊN** — không phải vì thẩm mỹ: vạch đánh dấu `::before` rộng 3px
-       đặt ở `left: 0` nằm TRONG lề này; hạ lề ngang xuống là vạch dính sát mép chữ.
+       ⚠️ **Lề NGANG `8px → 6px`** (lượt “gọn + hết vuốt ngang”): vạch đánh dấu `::before` rộng
+       **3px** ở `left: 0` nằm TRONG lề này ⇒ **sàn thật là `3px`**, hạ xuống dưới 3px là vạch
+       đè lên chữ. Chọn **6px** = vạch 3px + **3px khe thở** giữa vạch và chữ.
+       ⛔ **ĐỪNG hạ lề ngang xuống dưới `3px`** khi vạch đánh dấu còn tồn tại.
        ⚠️ Hàng vẫn cao **đều nhau** (mọi hàng cùng đệm) — yêu cầu “nhịp bảng đều” không bị phá. */
-    padding: 0 8px;
+    padding: 0 6px;
   }
   body.force-desktop .table-view tbody td { display: none; padding: 0; border-bottom: none; }
   /* ── VẠCH ĐÁNH DẤU (nhấn giữ 1,2 giây) Ở DẠNG 2 DÒNG ─────────────────────────────
@@ -2164,13 +2219,17 @@ body.force-desktop .table-view { display: block; }
   /* ⚠️ SỐ `nth-child` ở đây theo THỨ TỰ CỘT **MẶC ĐỊNH** (xem khối “BỀ RỘNG CỘT BẢNG”) —
      đây là mối nối DUY NHẤT còn lại giữa thứ tự cột và bảng 2 dòng, nên khi đổi thứ tự cột
      thì phải sửa 6 dòng dưới (tên 3 · danh số 6 · tiền 8 · mã kh 2 · mã sổ 5 · tháng 7).
-     Căn lề đi theo CỘT, không theo nội dung: cột 1 trái (tên · mã kh) · cột 2 giữa
-     (danh số · mã sổ) · cột 3 phải (tiền · tháng) ⇒ đổi nội dung mà không phải sửa căn lề. */
+     ── LƯỢT “3 HÀNG” (mới nhất): căn lề nay đi theo **CỘT**, mỗi cột chỉ còn MỘT kiểu căn:
+       · cột 1 (TRÁI) = tên · mã kh · danh số → `text-align: left`
+       · cột 2 (PHẢI) = tiền nợ · tháng nợ · mã sổ → `text-align: right`
+     ⚠️ **MÃ SỔ đổi từ `left` → `right`** ở lượt này (nó chuyển sang cột phải) — đó là thay đổi
+     căn lề DUY NHẤT trong 6 dòng dưới. Danh số vẫn `left` + `justify-self: start` (viên xanh co
+     đúng nội dung, không giãn hết cột). */
   body.force-desktop .table-view tbody td:nth-child(3) { display: block; grid-area: ten; }
   body.force-desktop .table-view tbody td:nth-child(6) { display: block; grid-area: danhso; text-align: left; }
   body.force-desktop .table-view tbody td:nth-child(8) { display: block; grid-area: tien;  text-align: right; }
   body.force-desktop .table-view tbody td:nth-child(2) { display: block; grid-area: makh;   text-align: left; }
-  body.force-desktop .table-view tbody td:nth-child(5) { display: block; grid-area: sogcs;  text-align: left; }
+  body.force-desktop .table-view tbody td:nth-child(5) { display: block; grid-area: sogcs;  text-align: right; }
   body.force-desktop .table-view tbody td:nth-child(7) { display: block; grid-area: thang; text-align: right; }
 
   /* ── CỠ CHỮ BẢNG 2 DÒNG: **TỰ CO THEO BỀ RỘNG KHUNG** ────────────────────────
@@ -2184,10 +2243,11 @@ body.force-desktop .table-view { display: block; }
      chỉ đổi cỡ ô là **mã KH và số tiền đứng nguyên** ⇒ hàng **lệch hai cỡ chữ**. Viên `.badge`
      thì đã `font-size: inherit` nhưng vẫn khai tường minh cho chắc.
 
-     🎯 **Vị sao `:not(.cell-tenkh)`:** ô TÊN **giữ nguyên 16px** — đúng phạm vi yêu cầu (“hàng
-     mã”), và tên là thứ cần đọc nhất; thu nhỏ tên ở máy hẹp là đi ngược các lượt trước.
+     🎯 **Vị sao `:not(.cell-tenkh)`:** ô TÊN có cỡ chữ **khai riêng** ở rule `.cell-tenkh`
+     (nay **14px**, từng là 16px) — nó KHÔNG ăn theo `--fs-row`, nên muốn “tất cả 14px” thì
+     phải sửa **2 chỗ**, không phải 1.
      ⛔ Nếu bỏ `:not(…)` thì tên rơi về rule `.cell-tenkh { font-size: 14px }` của khối mobile
-     ở trên ⇒ **tên tự dưng nhỏ đi** mà không ai gọi ý.
+     ở trên ⇒ hôm nay **trùng kết quả**, nhưng vẫn giữ `:not(…)` để hai đường độc lập nhau.
 
      🎯 **Công thức:** ở 16px, bề rộng tối thiểu của hàng là **387,76px** nội dung
      (mã sổ 85,50 + mã kh 121,49 + max(danh số 95,18 · tháng 60,83) + tiền nợ 85,59)
@@ -2197,15 +2257,78 @@ body.force-desktop .table-view { display: block; }
      `100vw` ở webview này ĐO ĐƯỢC = `innerWidth` (gồm cả thanh cuộn 22px) nên `vw` mới đúng
      hệ quy chiếu của `@media`; dùng `clientWidth` ở đây là sai 22px.
 
+     ── LƯỢT “3 HÀNG” (MỚI NHẤT) — **CƠ CHẾ TỰ CO ĐÃ BỊ GỠ** ─────────────────────
+     Đổi sang lưới **2 cột × 3 hàng** làm nhu cầu bề rộng sụp từ ~**305px** xuống ~**167px**
+     (ở 14px): mỗi hàng chỉ còn 2 ô — cột 1 ← mã kh (mã rộng nhất), cột 2 ← max(tiền nợ · mã sổ).
+     ⇒ Hết áp lực bề rộng ⇒ **không cần tự co nữa**, và tự co lúc này chỉ làm chữ **nhỏ đi vô cớ**
+     (ở 375px nó cho 12,59px trong khi có thừa chỗ cho 14px). Nay biến `--fs-row` **cố định 14px**
+     — và **vuốt ngang vẫn = 0** ở 320/360/375/430px (đã đo; ở 320px còn thừa ~**70px**).
+     ── LƯỢT “CỠ 15px” (MỚI NHẤT): `14px → 15px` cho **cả 6 ô** (biến này + rule `.cell-tenkh`).
+     Đo lại: ở 15px nhu cầu bề rộng một hàng ≈ **198px** + chrome 24 ⇒ **222px** ≤ khung 280px ở
+     320px ⇒ vẫn **thừa ~58px**, nên vẫn KHÔNG cần `clamp`.
+     ⚠️ **LUẬT:** công thức tự co cũ (`clamp(10.5px, calc((100vw − 64px) × 0.0405), 14px)`) **chỉ cần
+     dựng lại nếu số ô trên một hàng tăng** (thêm trường mới) hoặc có khách mà mã dài bất thường.
+     Cách dựng lại: `F = clamp(sàn, calc((100vw − 40 − chrome) × 0.0405), 14px)` với
+     `chrome = 2 × lề hàng + (số_cột − 1) × khe_cột`.
+
+     ── LƯỢT “SIẾT GỌN + HẾT VUỐT NGANG” ────────────────────────────────────
+     Yêu cầu người dùng: “canh cho gọn lại và không vuốt ngang”.
+     ⇒ **Bỏ `+1px`** khỏi công thức và **hạ sàn `12px → 10.5px`**; đồng thời hạ **chrome
+     `34px → 24px`** (lề hàng `8 → 6`, khe cột `6 → 4` — sửa ở hai rule khác trong khối này).
+     ⛔ **`+1px` CHÍNH LÀ THỦ PHẠM CỦA VUỐT NGANG:** điều kiện không vuốt là `24,235 × F ≤ khung`,
+     mà công thức tuyến tính thuần (không `+1px`) tự thoả điều đó ở MỌI bề rộng; chỉ cần cộng
+     thêm `1px` là thế cân bằng" vỡ ở mọi màn < **1384px** ⇒ tràn ≈ 24,235px. Đo lại
+     (50 hàng thật): **375px mã `12,59` · 360px `12,00` · 320px `10,50` (sàn) · 430px `14,00`
+     (trần)** ⇒ **vuốt ngang = 0 ở CẢ 320/360/375/430**. Vì sao đổi `74px` thành `64px` trong
+     `calc()`: số trừ = **số trừ của khung (40)** + **chrome**; chrome cũ 34 ⇒ 74, chrome mới 24 ⇒ **64**.
+     ⚠️ Vì vậy **hễ đổi lề hàng hoặc khe cột thì số trừ trong `calc()` phải đổi theo**, nếu không
+     công thức sẽ lệch đúng bằng phần vừa siết (và lệch theo hướng gây tràn).
+
+     ── LƯỢT “TẤT CẢ 14px” ───────────────────────────────────────────────────
+     Yêu cầu người dùng: “cho tất cả cỡ chữ 14px” (chỉ BẢNG 2 DÒNG trên điện thoại,
+     và “14px là trần, hẹp hơn thì tự co” — người dùng đã chọn trong bảng hỏi).
+     ⇒ **1 chỗ sửa cho cả hàng mã:** trần `17px → 14px` (sàn `12px` và hệ số `0.0405 + 1px`
+     GIỮ NGUYÊN ⇒ dưới `100vw = 395px` vẫn tự co như cũ, từ `395px` trở lên **đúng 14px**).
+     ⇒ **1 chỗ sửa cho ô TÊN:** `font-size: 16px → 14px` trong rule `.cell-tenkh`.
+     Hệ quả phải đo lại: `min-height: 2lh` tự thành **33,6px** (nhỏ hơn 38,44px) ⇒ **hàng THẤP ĐI**.
+
+     ── LƯỢT “MÃ LỚN THÊM 1px” ────────────────────────────────────────────────
+     Yêu cầu người dùng: “mã sổ, danh số, tiền nợ, mã kh, tháng nợ cho kích cỡ lớn thêm”
+     (trước đó: “cho chữ lớn thêm 1px”) ⇒ nâng **ĐỀU +1px** cho cả 5 trường mã, KHÔNG đụng ô TÊN.
+     Ba con số phải cùng đổi mới đúng: **sàn `11px → 12px`**, **`+1px` vào công thức**, **trần
+     `16px → 17px`**. Chỉ đổi trần thì trên máy điện thoại **không thấy gì** (375px ⇒ công thức
+     cho 12,18px, còn xa trần 16px) — đó là bẫy dễ mắc nhất ở đây.
+     ⚠️ Trần `17px` đó **đã bị hạ về 14px** ở lượt “TẤT CẢ 14px” ngay trên.
+
+     ⚠️ **CÁI GIÁ ĐO ĐƯỢC — đọc trước khi sửa tiếp:** thêm `+1px` phá luôn thế cân bằng cũ.
+     Điều kiện không vuốt ngang là `100vw − 74 ≥ 24,235 × F`; mà `1 ÷ 0,0405 = 24,69` ⇒ công
+     thức mới chỉ cân bằng ở `100vw ≈ 1384px`, dưới mốc đó **luôn tràn** ⇒ vuốt ngang
+     **≈ 18px ở 375px** (nhiều hơn ở máy hẹp hơn: 320px ⇒ ≈ 45px).
+     Đây là hệ quả CỐ HỮU của yêu cầu, **không phải lỗi CSS**: 5 trường mã ở cỡ lớn hơn thì bề
+     rộng tối thiểu tăng ~6,9%, mà khổ 375px chỉ có 335px khung.
+     Muốn bớt vuốt mà GIỮ cỡ chữ mới thì chỉ còn hạ phần “chrome”: lề hàng `8px → 6px` và khe
+     `6px → 4px` (34px → 24px) ⇒ vuốt còn ≈ 8px; hoặc trừ hao `0.0405 → 0.0413` (hết ~6px nữa).
+
      ⛔ Chỉ DẠNG 2 DÒNG: bảng ở màn hình rộng vẫn **14px** theo rule “Desktop: data 14px”
      trong `@media (min-width: …)` — biến chỉ khai trong khối này nên không rò ra ngoài.
      6 ô đang ẩn ở dạng này (STT · SĐT · Số TBi · Ghi Chú · ABC · Nhóm · Nợ cũ · Địa chỉ)
      **không** nằm trong yêu cầu “bảng này” và cũng không hiện ra, nên giữ nguyên. */
-  body.force-desktop .table-view { --fs-row: clamp(11px, calc((100vw - 74px) * 0.0405), 16px); }
+  /* ── LƯỢT “CỠ 16px” (MỚI NHẤT) ────────────────────────────────────────────────
+     Yêu cầu người dùng: “Đo xem bảng 3 hàng có vừa cỡ chữ 16px ở khổ 320px không,
+     nếu vừa thì nâng cả 6 ô lên 16px và báo số đo.”
+     ⇒ ĐÃ ĐO TRƯỚC KHI SỬA (tiêm style tạm) rồi mới ghi vào file:
+        · 320px: vuốt ngang **0** · hàng đều **67,57px** · 5 ô mã/tiền **không ô nào cắt**
+          · **7 tên bị cắt `…` thêm ~16–17px** (≈ 1 ký tự; tên đầy đủ vẫn ở `title` + modal)
+        · 375px và 430px: vuốt **0** · hàng đều **67,57px** · **0 ô bị cắt**
+     ⇒ “Vừa” theo đúng nghĩa **không sinh thanh cuộn ngang** ở mọi khổ ≥ 320px.
+     ⚠️ Sàn an toàn còn lại ở 320px: hàng cần `max(mã kh 126 + khe 4 + cột phải 94) ≈ 224px`
+        trong khi khung có **268px** nên còn dư ~44px — nhưng **tên** mới là thứ bị siết trước.
+     ⚠️ Nếu sau này thêm ô/chữ vào hàng: 16px là mức **sát trần** ở 320px, hãy đo lại. */
+  body.force-desktop .table-view { --fs-row: 16px; }
   body.force-desktop .table-view tbody td:not(.cell-tenkh),
   body.force-desktop .table-view tbody td:not(.cell-tenkh) .ma-kh,
   body.force-desktop .table-view tbody td:not(.cell-tenkh) .tien-no,
-  body.force-desktop .table-view tbody td:not(.cell-tenkh) .badge { font-size: var(--fs-row, 16px); }
+  body.force-desktop .table-view tbody td:not(.cell-tenkh) .badge { font-size: var(--fs-row, 14px); }
 
   /* ── ĐỔI CHỖ NỀN XANH: **tháng nợ → danh số** ────────────────────────────────
      Yêu cầu người dùng: “tháng nợ bỏ nền màu xanh, còn danh số thì cho thêm nền xanh như
@@ -2255,57 +2378,55 @@ body.force-desktop .table-view { display: block; }
     color: #1e40af !important;
   }
 
-  /* ── TÊN DÀI XUỐNG **2 DÒNG** (thay cho cắt bằng `…`) ──────────────────────────
-     Yêu cầu người dùng: “Cho ô tên khách hàng trong bảng 2 dòng xuống 2 dòng khi tên dài thay
-     vì cắt bằng dấu …”. Trước đây cố ý CẮT 1 dòng để giữ nhịp bảng đều — nay đổi theo yêu cầu,
-     đánh đổi là **hàng có tên dài cao hơn hàng thường** (đo được, xem run doc).
+  /* ── TÊN DÀI: **1 DÒNG + dấu `…`** (KHÔNG xuống hàng) ─────────────────────────
+     Yêu cầu người dùng (mới nhất): “tôi muốn tên dài thì không cần phải xuống hàng nữa”
+     ⇒ GỠ cơ chế 2 dòng của lượt “TÊN DÀI XUỐNG 2 DÒNG” và trả về **1 dòng cắt bằng `…`**.
+     Đồng thời gỡ luôn `min-height: 2lh` + `align-content` — chúng chỉ tồn tại để **dự trữ
+     dòng 2** cho nhịp bảng đều. Tên luôn 1 dòng ⇒ **nhịp đều là tự nhiên**, không cần dự trữ.
+     Tên đầy đủ vẫn đọc được trong **modal** khi bấm vào hàng.
 
-     ⚠️ **Bốn khai báo này PHẢI đi cùng nhau**, thiếu một cái là hỏng theo kiểu khác nhau:
-       1. `white-space: normal` — phá `nowrap` mà bảng thật đặt cho `td:not(.cell-ghi)`
-          (dòng ~1499) và `.cell-tenkh` (dòng ~1547). Không có nó thì chữ vẫn 1 dòng.
-       2. `overflow: hidden` **GIỮ NGUYÊN** — không phải để cắt chữ mà vì đây là thứ khiến
-          **sàn tự động của grid item = 0** ⇒ cột 1 (`1fr`) mới lấy sàn từ **mã sổ** ở dòng 2
-          chứ không phải từ câu tên dài. ⛔ Bỏ `overflow` là cột 1 phình ra **cả câu tên**.
-       3. `min-width: 0` — cùng lý do trên (bản cũ đã cần, nay vẫn cần).
-       4. `display: -webkit-box` + `-webkit-box-orient: vertical` + `-webkit-line-clamp: 2` —
-          mới CẮT ĐƯỢC ở dòng 2. Không có `line-clamp` thì tên 3–4 dòng sẽ bị cắt **ngang giữa
-          chữ** ở dòng 2 (không có `…`) — đúng loại lỗi tệ nhất, phải có `…` báo rằng còn nữa.
-     ⛔ **ĐỪNG bỏ tiền tố `-webkit-`**: `line-clamp` không tiền tố là thuộc tính **thử nghiệm**,
-     webview này chỉ hiểu bản có tiền tố. Khai cả hai cũng vô hại.
-     ⚠️ `text-overflow: clip` (không phải `ellipsis`): dấu `…` ở dòng 2 do **`line-clamp` tự vẽ**;
-     để `ellipsis` nữa là có nguy cơ bị hai dấu.
-     ⚠️ `overflow-wrap: break-word` để một tên không có dấu cách (mã/viết liền) cũng không tràn ngang. */
+     ⚠️ **HAI KHAI BÁO KHÔNG ĐƯỢC GỠ** (đây là thứ giữ cho cột tên không phình ra):
+       · `overflow: hidden` — khiến **sàn tự động của grid item = 0** ⇒ cột 1 (`1fr`) mới lấy sàn
+         từ **mã sổ** ở dòng 2 chứ không phải từ câu tên dài. ⛔ Bỏ `overflow` là cột 1 phình ra
+         **cả câu tên** (đã đo ở lượt trước: cột 1 nhảy lên **402,86px**, cột 3 bóp còn **0**).
+       · `min-width: 0` — cùng lý do trên.
+     ⚠️ `text-overflow: ellipsis` **PHẢI đi cùng** `white-space: nowrap`: thiếu `nowrap` thì không
+     có dòng nào để cắt, thiếu `ellipsis` thì chữ bị cắt **ngang giữa** mà không có dấu báo.
+     Đây là cặp đi đôi, đừng gỡ lẻ một cái. */
   body.force-desktop .table-view tbody td.cell-tenkh {
     min-width: 0;
     /* ⚠️ Khai tường minh: rule cỡ chữ ở trên đã loại ô này bằng `:not(.cell-tenkh)`,
-       nếu không khai thì tên rơi về `.cell-tenkh { font-size: 14px }` của khối mobile. */
+       nếu không khai thì tên rơi về `.cell-tenkh { font-size: 14px }` của khối mobile.
+       Lượt “TẤT CẢ 14px” (mới nhất): `16px → 14px` — nay TRÙNG giá trị với khối mobile,
+       nhưng vẫn giữ khai tường minh để hai đường không phụ thuộc nhau.
+       Lượt “cỡ 15px”: `14px → 15px` — cùng lượt với `--fs-row: 15px` ⇒ **cả 6 ô = 15px**.
+       Lượt “cỡ 16px” (MỚI NHẤT): `15px → 16px` — cùng lượt với `--fs-row: 16px` ⇒ **cả 6 ô = 16px**
+       (đã đo ở 320/375/430px: vuốt ngang **0**, hàng đều **67,57px**).
+       ⚠️ Hạ cỡ ở đây từng làm `min-height: 2lh` nhỏ đi theo (`38,44 → 34,59px`); nay `2lh`
+       **đã bị gỡ hẳn** ở lượt “tên không xuống hàng”. */
     font-size: 16px;
-    white-space: normal;
+    white-space: nowrap;
     overflow: hidden;
-    text-overflow: clip;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    overflow-wrap: break-word;
-    /* ── NHỊP BẢNG ĐỀU: DỰ TRỮ SẴN 2 DÒNG cho ô tên ─────────────────────────────
-       Yêu cầu người dùng: “Cho mọi hàng trong bảng 2 dòng cao bằng nhau trở lại (đệm khoảng
-       trống cho hàng có tên ngắn) để nhịp bảng đều”.
-       `2lh` = đúng **2 lần `line-height` đang dùng** (19,2px ⇒ **38,44px**) nên **tự đúng theo
-       cỡ chữ**, không hard-code px. Dòng `2.4em` là bản dự phòng cho engine chưa biết đơn vị
-       `lh` (đo: `2.4em` ⇒ hàng 75,53px vs `2lh` ⇒ 75,57px — lệch 0,04px, không thấy được).
-       ⚠️ **CHỈ `min-height` là KHÔNG đủ:** tên 1 dòng sẽ nằm ở ĐỈNH ô dự trữ ⇒ lệch **9,61px**
-       LÊN TRÊN so với viên danh số và số tiền (đã đo). Phải thêm `align-content: center` để
-       căn giữa **CHỮ** trong ô dự trữ (đo lại: lệch **0** · tâm chữ = tâm viên = tâm tiền).
-       ⛔ `-webkit-box-pack: center` / `justify-content: center` **KHÔNG** làm được việc đó
-       (đã đo: vẫn lệch 9,61px) — đừng thay bằng chúng.
-       `safe` để không bao giờ đẩy chữ ra ngoài ô khi tên bị kẹp ở 2 dòng; khai `center` trước
-       làm bản dự phòng nếu `safe` không được hiểu. */
-    min-height: 2.4em;
-    min-height: 2lh;
-    align-content: center;
-    align-content: safe center;
+    text-overflow: ellipsis;
+    /* ⛔ **ĐÃ GỠ `min-height: 2lh` + `align-content`** ở lượt “tên không xuống hàng”: chúng chỉ
+       tồn tại để **dự trữ dòng 2** và căn giữa chữ trong ô dự trữ. Tên nay luôn 1 dòng nên
+       không cần — và **hàng THẤP ĐI** (số đo: xem mục “TÊN 1 DÒNG” trong run doc).
+       ⚠️ Nếu sau này muốn xuống hàng lại thì phải thêm lại **cả cụm**: `white-space: normal`
+       + `display: -webkit-box` + `-webkit-box-orient: vertical` + `-webkit-line-clamp: 2`
+       + `min-height: 2lh` + `align-content: safe center` — và `-webkit-box-pack`/`justify-content`
+       **KHÔNG** thay được `align-content` (đã đo: lệch 9,61px). */
   }
+
+  /* ── TÊN KH RÚT GỌN: chỉ ở BẢNG 3 HÀNG NÀY ───────────────────────────────────
+     Yêu cầu người dùng: “tên kh quá 4 chữ thì rút gọn, ví dụ BAN QUẢN LÝ DỰ ÁN…”
+     Ô tên có **hai nhánh** (xem `renderTable()`): `.ten-full` = tên gốc · `.ten-ngan` = bản rút
+     gọn. `.ten-ngan` **tắt mặc định** ở rule `.cell-tenkh` nền (dòng ~1547) ⇒ **bảng máy tính
+     luôn hiện tên ĐẦY ĐỦ**; ở đây bật ngược lại, tắt `.ten-full`.
+     ⛔ Đây là cách DUY NHẤT để rút gọn mà không đụng bảng máy tính: **hai bảng dùng CHUNG một DOM**
+     (chỉ khác nhau ở CSS), nên nếu viết tắt thẳng vào `textContent` của ô thì bảng rộng đổi theo.
+     ⚠️ Đổi thứ tự hai dòng dưới là bảng máy tính bị rút gọn tên — đừng đổi. */
+  body.force-desktop .table-view tbody td.cell-tenkh .ten-full { display: none; }
+  body.force-desktop .table-view tbody td.cell-tenkh .ten-ngan { display: inline; }
 
   /* ── KHÔNG BAO GIỜ CẮT MÃ (＝ sàn theo NỘI DUNG cho cả 4 cột) ───────────────────
      `min-width: max-content` đặt lên **5 ô mã/tiền** của lưới 2 dòng (ô TÊN thì ngược lại, phải
@@ -3625,6 +3746,21 @@ function abbrevName(full) {
   const initials = parts.slice(0, -1).map(w => w.charAt(0).toUpperCase()).join('');
   return initials + ' ' + parts[parts.length - 1];
 }
+/* ── TÊN KH RÚT GỌN CHO BẢNG 3 HÀNG ──────────────────────────────────────────
+   Yêu cầu người dùng: “tôi muốn tên kh quá 4 chữ thì rút gọn, ví dụ BAN QUẢN LÝ DỰ ÁN…”
+   ⇒ **quá 4 chữ thì giữ 4 CHỮ ĐẦU rồi thêm `…`**, từ 4 chữ trở xuống giữ nguyên.
+   `BAN QUẢN LÝ DỰ ÁN ĐẦU TƯ XÂY DỰNG PHƯỜNG PHÚ MỸ` → `BAN QUẢN LÝ DỰ ÁN…`
+   ⛔ **KHÁC `abbrevName()`** (hàm đó lấy CHỮ ĐẦU của các từ + từ cuối, dùng cho ô lọc nhóm).
+     Hai hàm để riêng vì hai chỗ, hai kiểu — đừng gộp lại thành một.
+   ⚠️ Tên ĐẦY ĐỦ **không mất**: nó nằm ở `title` của ô, ở **modal chi tiết**, và ở **bảng máy tính**
+     (markup tách 2 nhánh `.ten-full` / `.ten-ngan` — xem khối CSS “TÊN KH RÚT GỌN”).
+   ⚠️ Đếm từ bằng `split(/\s+/)` trên tên đã `trim()`; tên rỗng trả về `''` để chỗ gọi tự dùng `—`. */
+function tenKHNgan(name) {
+  const s = String(name == null ? '' : name).trim();
+  if (!s) return '';
+  const parts = s.split(/\s+/).filter(Boolean);
+  return parts.length > 4 ? parts.slice(0, 4).join(' ') + '…' : s;
+}
 /* Icon + hàm ghép nhãn DÙNG CHUNG cho 2 ô lọc "DS nhóm" và "Chi tiết nợ" — đúng
    một khuôn duy nhất cho cả hai.
 
@@ -4217,7 +4353,13 @@ function renderTable(q='') {
     return `<tr data-ma="${esc(maKH)}" class="${isMarked ? 'highlighted' : (isPurple ? 'highlighted-purple' : '')}">
       <td style="color:var(--text-dim);font-size:12px;white-space:nowrap">${r.stt ? hi(r.stt,q) : (start+i+1)}</td>
       <td><span class="ma-kh">${hi(r.ma_khach_hang,q)}</span></td>
-      <td class="cell-tenkh" onclick="showDetail(${start+i})" style="cursor:pointer">${hi(r.ten_khach_hang,q)||'—'}</td>
+      <!-- HAI nhánh tên trong CÙNG một ô: span.ten-full cho BẢNG MÁY TÍNH (≥640px), span.ten-ngan
+           cho bảng 3 hàng trên điện thoại. Bảng máy tính dùng CHUNG DOM với bảng 3 hàng nên nếu
+           viết tắt thẳng vào ô thì bảng máy tính cũng đổi theo — tách nhánh là cách duy nhất giữ
+           được “bảng máy tính không đổi”. Thuộc tính title giữ tên GỐC cho cả hai.
+           ⛔ KHÔNG dùng dấu backtick trong chú thích NÀY: nó nằm TRONG một template literal của
+           JS, backtick sẽ đóng chuỗi sớm và làm cả script không parse được (đã từng xảy ra). -->
+      <td class="cell-tenkh" onclick="showDetail(${start+i})" style="cursor:pointer" title="${esc(r.ten_khach_hang||'')}"><span class="ten-full">${hi(r.ten_khach_hang,q)||'—'}</span><span class="ten-ngan">${hi(tenKHNgan(r.ten_khach_hang),q)||'—'}</span></td>
       <td class="cell-addr">${hi(r.dia_chi,q)||'—'}</td>
       <td class="cell-dim">${hi(r.ma_sogcs,q)||'—'}</td>
       <td class="cell-dim">${hi(r.danh_so,q)||'—'}</td>
