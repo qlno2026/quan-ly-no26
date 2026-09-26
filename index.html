@@ -50,21 +50,26 @@
        · sáng `#000000` trên `#f1f5f9` = **19,17:1** ✓ · phụ đề `#475569` = **6,92:1** ✓
      ⟳ Ở chế độ SÁNG `--hdr-text` nay là `#000000` (yêu cầu “cho chữ Quản Lý Nợ màu đậm hơn”) —
      bản đầu `#111827` (17,9:1 đo trên nền TRẮNG, khi header sáng còn `#ffffff`). */
-  /* ⟳ **NỀN HEADER = ĐÚNG NỀN CỦA CÁC CONTROL** (yêu cầu người dùng: “cho màu nền bảng header
-     giống màu nền các tab bên dưới ở cả light mode và dark mode”, kèm ảnh header). Không nhập
-     lại giá trị: dùng **ĐÚNG khai báo của `.sort-btn` / `.filter-select` / `.search-box input`**
-     (`rgba(71,85,105,0.35)` ghép trên nền trang `rgb(17,19,24)` ra `rgb(36,42,52)`) ⇒ hai bề mặt
-     KHÔNG THỂ lệch nhau về sau, vì chỉ có MỘT chỗ khai màu. Trước lượt này là `#1a1d24` (đúng
-     `--navy-mid` của tấm Cài đặt — lý do cũ “không thêm tông xám thứ hai” nay nhường cho yêu cầu
-     đồng bộ với control).
-     ĐO LIVE trên nền mới: chữ `#e2e8f0` **13,68 → 11,69:1** ✓ · phụ đề `#94a3b8` **6,58 → 5,62:1** ✓
-     · header vs toolbar **1,10 → 1,29:1** (tách rõ hơn) · logo sao trắng vs nền header **16,86 → 14,41** ✓
-     · nền header ghép ra `rgb(36,42,52)` **TRÙNG ĐÚNG** nền control ghép ra (đã đo cả hai bằng
-     cùng một phép ghép alpha ⇒ `sameAsControl = true`).
-     ⚠️ `--hdr-bg` là màu CÓ ALPHA nên header phải nằm TRỰC TIẾP trên nền trang (đúng thực tế: cha
-     của `.header` là `<body>`) — nếu sau này bọc header trong một lớp khác có nền riêng thì màu
-     ghép sẽ khác đi và phải đo lại. */
-  --hdr-bg: rgba(71,85,105,0.35);
+  /* **NỀN HEADER = NỀN CỦA CÁC CONTROL, NHƯNG Ở DẠNG ĐỤC** (yêu cầu người dùng: “cho màu nền
+     bảng header giống màu nền các tab bên dưới”, rồi “dark mode bảng header bị trong suốt”).
+     `#242a34` CHÍNH LÀ kết quả ghép của khai báo control `.sort-btn` / `.filter-select` /
+     `.search-box input` — `rgba(71,85,105,0.35)` — trên nền trang `--navy` `#111318`:
+         0,35×71 + 0,65×17 = 35,9 → 36 = 0x24
+         0,35×85 + 0,65×19 = 42,1 → 42 = 0x2A
+         0,35×105 + 0,65×24 = 52,4 → 52 = 0x34
+     ⇒ header và control **vẽ ra ĐÚNG cùng một màu** `rgb(36,42,52)`, nên mọi số tương phản đã đo
+     cho control vẫn dùng nguyên được. Chỉ khác: header **không có alpha**.
+     ⛔ **ĐỪNG trả lại `rgba(71,85,105,0.35)` cho `--hdr-bg`.** Header là `position: sticky` +
+     `z-index: 200` (xem rule `.header`), nên các `.kh-card` **CUỘN QUA DƯỚI nó**; alpha 35% để
+     chữ trong thẻ lộ xuyên qua thành một vệt lem ngay trên dòng “Quản Lý Nợ” (đúng lỗi người dùng
+     báo, có ảnh). Control dùng alpha được vì chúng nằm trên `.toolbar` ĐỤC; header thì không.
+     ⚠️ Hệ quả: đây là màu ĐÃ GHÉP SẴN nên nếu đổi `--navy` hoặc đổi độ đậm bề mặt control thì phải
+     tính lại `#242a34` theo công thức trên. Ở chế độ SÁNG không có vấn đề này — bên dưới header lấy
+     `--ctl-light-bg` `#eff1f5` vốn đã ĐỤC sẵn.
+     ĐO LIVE: chữ `#e2e8f0` **11,69:1** ✓ · phụ đề `#94a3b8` **5,62:1** ✓ · header vs toolbar
+     **1,29:1** · logo sao trắng vs nền header **14,41:1** ✓ (mọi số y như bản `rgba`, vì màu vẽ ra
+     không đổi) · `getComputedStyle(.header).backgroundColor` alpha = **1**. */
+  --hdr-bg: #242a34;
   --hdr-text: #e2e8f0;
   --hdr-sub: #94a3b8;
   --hdr-line: var(--border);
