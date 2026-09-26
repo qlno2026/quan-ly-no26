@@ -256,7 +256,7 @@ body {
 /* Đổi theme: chỉ animate các mảng MÀU ĐẶC. Animate shorthand `background` sẽ bắt
    trình duyệt vẽ lại gradient + ảnh data-URI mỗi frame, và cửa sổ 0.4s repaint toàn
    trang là nguyên nhân chính làm nút sáng/tối bị giật trên điện thoại. */
-.header, .toolbar, .kh-card, .modal, .modal-header, .stat-card, .summary-wrap, .table-wrap, .sort-btn, .filter-select, .page-btn, .search-box input, .theme-toggle {
+.header, .toolbar, .kh-card, .modal, .modal-header, .stat-card, .summary-wrap, .table-wrap, .sort-btn, .filter-select, .page-btn, .search-box input, .cfg {
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -315,7 +315,15 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue); }
 .header-title { font-size: 18px; font-weight: 400; letter-spacing: 0.3px; color: #ffffff; }
 .header-sub { font-size: 13px; color: #f8fafc; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; font-weight: 400; }
 
-.upload-btn-header {
+/* ⏰ ĐỒNG HỒ Ở HEADER — nay là KHỐI HIỂN THỊ, KHÔNG còn là nút.
+   Lý do: yêu cầu “cho thêm 1 nút cài đặt và bỏ tất cả các nút vào đó” (người dùng chốt
+   “Mọi nút trên màn hình”). Nút này trước là nút CHỌN TỆP (`onclick` mở `#fileInput`) —
+   việc chọn tệp nay nằm ở hàng “Dữ liệu” trong `#cfg`.
+   ⛔ ĐỔI TÊN `.upload-btn-header` → `.clock-box`: giữ tên cũ là để lại một cái tên nói dối
+   (`cursor: pointer`, `:active`) cho một khối không bấm được. Chỉ đổi TÊN + bỏ
+   `cursor`/`:active`; mọi số đo (padding, min-width, font-size) giữ NGUYÊN để header không
+   xê dịch một px nào. */
+.clock-box {
   background: transparent;
   color: #ffffff;
   border: none;
@@ -323,7 +331,6 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue); }
   border-radius: 8px;
   font-size: 22px;
   font-weight: 600;
-  cursor: pointer;
   display: flex; align-items: center; gap: 4px;
   white-space: nowrap;
   font-family: 'Inter', sans-serif;
@@ -333,38 +340,32 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue); }
   justify-content: center;
 }
 
-.upload-btn-header:active { background: rgba(203,213,225,0.4); }
-
 .header-right { display: flex; align-items: center; gap: 8px; margin-left: -8px; }
 
-.theme-toggle {
+/* 🍊 CẦU CAM Ở HEADER — nay là LOGO TĨNH, KHÔNG còn là nút đổi giao diện.
+   Lý do y như `.clock-box`: mọi nút đã vào `#cfg`; đổi sáng/tối nay ở hàng “Giao diện”.
+   ⛔ ĐỔI TÊN `.theme-toggle` → `.theme-logo` (tên cũ nói dối: đây không còn là toggle), và
+   bỏ hết `cursor: pointer` / `:hover` / `:active` — logo không được phản hồi như nút.
+   ⚠️ Số đo (56×56, padding 6px) GIỮ NGUYÊN: header đang khít, đổi là `header-right` xê dịch.
+   ⚠️ Icon bên trong cũng đổi tên `.theme-toggle-icon` → `.theme-logo-ico` (cùng lý do). */
+.theme-logo {
   width: 56px; height: 56px;
   border-radius: 50%;
   border: none;
-  cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: transform 0.15s ease;
   position: relative;
   padding: 6px;
   background: transparent;
   box-shadow: none;
   overflow: hidden;
+  pointer-events: none;   /* logo không ăn cú chạm (trên iOS vẫn bắt được `click` vào div) */
 }
-.theme-toggle .theme-toggle-icon {
+.theme-logo .theme-logo-ico {
   width: 100%;
   height: 100%;
   display: block;
-  transition: filter 0.15s ease;
-}
-/* Nâng nhẹ + quầng sáng khi rê chuột — chỉ trên thiết bị có hover thật
-   (transform không đổi bố cục nên không gây reflow, và không lệch giữa 2 theme) */
-@media (hover: hover) {
-  .theme-toggle:hover { transform: translateY(-1px); }
-  .theme-toggle:hover .theme-toggle-icon { filter: drop-shadow(0 0 5px rgba(255,170,80,0.55)); }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.theme-toggle:active { transform: scale(0.9); }
-.theme-toggle:active .theme-toggle-icon { filter: brightness(0.94); }
 
 /* ── LIGHT MODE ───────────────────────── */
 /* HỢP ĐỒNG: chế độ sáng CHỈ được đổi MÀU (color/background/border-color/
@@ -411,7 +412,7 @@ body.light-mode .header {
 }
 body.light-mode .header-title { color: #ffffff; }
 body.light-mode .header-sub { color: #f8fafc; }
-body.light-mode .upload-btn-header { background: transparent; color: #ffffff; border: none; }
+body.light-mode .clock-box { background: transparent; color: #ffffff; border: none; }
 /* (đã bỏ rule box-shadow:none ở đây: cả 2 theme đều không dùng box-shadow cho nút này) */
 body.light-mode .toolbar-top .search-box { margin-top: 0; }
 /* 1px cho bằng viền của 2 ô lọc và nút xuất file (trước là 1.5px → ô tìm kiếm dày hơn) */
@@ -473,7 +474,8 @@ body.light-mode .sort-btn:not(.active) .sort-arrow { color: #4b5563; }
    `rgba(15,23,42,0.6)` — cố ý: màu track khác nhau theo theme là chuyện bình thường, chỉ
    **metric** (padding/kích thước) mới phải giống nhau. */
 /* Track sắp xếp ĐÃ BỎ ở cả 2 theme (xem chú thích `.sort-row`) — rule này giữ lại chỉ để ghi
-   dấu chủ ý, đừng trả `background` về `#dfe7f0`. */
+   dấu chủ ý, đừng trả `background` về `#dfe7f0`. ⟳ Nó từng bị XOÁ 1 lượt khi 2 tab sắp xếp
+   nằm trong tấm `#cfg`, nay dựng lại cùng lúc 2 tab trở về hàng sắp xếp. */
 body.light-mode .sort-row { background: transparent; border-radius: 0; }
 /* (đã XOÁ 2 rule `body.light-mode #sortDanhSo` / `#sortTienNo` đặt nền xám `rgba(148,163,184,0.15)`
    + viền `#cbd5e1` — nay cả 2 theme lấy bề mặt chung từ `body.light-mode .sort-btn` /
@@ -736,16 +738,39 @@ body.light-mode .count-tien.mid { color: #92400e; }   /* 4.81:1 trên nền tran
    `margin-bottom: 4px` giữ nguyên tác dụng cũ: neo ĐÁY nút ngang ĐÁY dòng chữ tiền.
    Lưới cao ~50px (dòng 1 ~21 + dòng 2 29) > nút 40px ⇒ nút **không còn tràn lên** dòng 1.
    ⚠️ ĐỪNG đưa nút về trong `.count-line2` — đó chính là lỗi vừa sửa.
-   ⚠️ Các nút nằm trong CÙNG ô này (`.count-btns` là flex, `gap` riêng 4px) chứ **không** mở
-   cột thứ 3: `column-gap` của lưới là 10px, nếu tách thành 2 cột thì mất thêm 10px vào khe
-   ⇒ **chữ tiền chui xuống dưới nút**. Giữ 1 ô + gap 4px là rộng nhất có thể.
-   ⟳ Từ lượt “cho nút chỉnh độ sáng dời xuống kế nút chỉnh cỡ chữ”, ô này có **3 NÚT**:
-   `[dạng bảng] + 4 + [Aa 38] + 4 + [Nền 38]` = **119,4px** ở panel ≤359,98px (nút “dạng bảng”
-   35,43px) và **121,9px** từ 360px trở lên (nút đó 37,9px) — trước khi dời CHỈ là 79,9px.
-   ⇒ Ở panel **HẸP** (≤399.98px) 3 nút KHÔNG còn đủ chỗ nằm cạnh chữ:
-   có nhánh `@media` riêng cho chúng **XUỐNG HÀNG DƯỚI** — xem chú thích ở khối
-   `@media (max-width: 399.98px)` gần `.count-info`. */
+   ⚠️ Nút nằm trong ô này (`.count-btns` là flex) chứ **không** mở cột thứ 3: `column-gap`
+   của lưới là 10px, nếu tách thành 2 cột thì mất thêm 10px vào khe ⇒ **chữ tiền chui xuống
+   dưới nút**. Giữ 1 ô là rộng nhất có thể.
+   ⟳ Từ lượt “cho thêm 1 nút cài đặt…” (người dùng chốt **“Mọi nút trên màn hình”**), ô này
+   chỉ còn **MỘT NÚT ⚙** (`#cfgBtn`, 38×40px) — cả 3 nút cũ (`#viewBtn` · `#fsBtn` · `#sfBtn`)
+   đã vào tấm `#cfg`. Số đo cột chữ ở 320px: `281,6 − 4 (đệm) − 10 (khe) − 38 (nút)` =
+   **229,6px** ≥ 188,93px (cặp “Tổng nợ:” + số) ⇒ **thừa 40,67px**, nên nhánh
+   `@media (max-width: 399.98px)` (đẩy 3 nút xuống hàng dưới) đã **XOÁ** — nó chỉ tồn tại
+   vì bản 3 nút (119,4px) bóp cột chữ còn 148,22px. ⛔ Đừng thêm lại nút thứ hai vào ô này
+   mà không đo lại ở 320px. */
 .count-btns { grid-column: 2; grid-row: 1 / span 2; align-self: end; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+/* Nút ⚙ MỞ CÀI ĐẶT (`openCfg()`) — icon-only, cùng hệ hình với `.fs-btn` (nền/viền của
+   control, bán kính 8px) và CÙNG chiều cao 40px với mọi control trong tấm cài đặt, để hàng
+   “Tổng …” không nhích. Bề rộng **38px** = icon 20px + `padding: 0 8px` + 2 viền 1px — đúng
+   công thức của `.view-btn`/`.export-btn` (cùng họ hình với nút “dạng bảng” cũ).
+   ⚠️ Nhãn của nút là `data-tip` + `aria-label` (icon-only) — ĐỪNG bỏ: mất cả hai là nút ⚙
+   vô nghĩa với trình đọc màn hình, và trên cảm ứng thì không có `title` nào cứu được. */
+.cfg-btn {
+  flex: 0 0 auto;
+  width: 38px; height: 40px;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0;
+  background: rgba(71,85,105,0.35);
+  border: 1px solid rgba(148,163,184,0.6);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+}
+.cfg-btn:active { background: rgba(59,130,246,0.22); }
+body.light-mode .cfg-btn { background: var(--ctl-light-bg); border-color: #7a80f0; color: #4b5563; }
 /* Nút “xem dạng máy tính” — icon-only (không nhãn) để không ăn thêm bề rộng của dòng `Tổng`/`Tiền`.
    Cùng hệ hình với `.export-btn` (cao 40, bán kính 10, cùng nền/viền) nhưng hẹp hơn: 17 + 8×2 + 2 viền ≈ 35px.
    Mặc định `display: none` — JS bật thành `inline-flex` khi đã có dữ liệu (giống `#exportBtn`).
@@ -791,6 +816,104 @@ body.light-mode.force-desktop .view-btn { background: #bfdbfe; border-color: #25
 @media (min-width: 640px) { .view-btn { display: none !important; } }
 /* desktop media query moved to later in file */
 
+/* ── ⚙️ TẤM CÀI ĐẶT (`#cfg`) — MỘT CHỖ CHỨA MỌI NÚT ĐIỀU KHIỂN ───────────────
+   Yêu cầu người dùng: “cho thêm 1 nút cài đặt và bỏ tất cả các nút vào đó” (chốt lại:
+   **mọi nút trên màn hình**). Nút mở là `#cfgBtn` ở hàng “Tổng …”.
+   Ba quyết định kỹ thuật, mỗi cái để chặn một lỗi đã biết:
+   1. Ẩn/hiện bằng CLASS `.on`, ⛔ KHÔNG dùng thuộc tính `hidden`: tấm có khai `display:` ở
+      đây nên `[hidden]` (chỉ là `display: none` của UA — độ ưu tiên thấp nhất) sẽ **bị đè**
+      ⇒ tấm không bao giờ ẩn được. Class là nguồn duy nhất.
+   2. `position: fixed` + nằm trực tiếp trong <body> (y như nhãn nổi): đặt trong
+      `.toolbar`/`.count-btns` thì `overflow` + ngữ cảnh xếp lớp của tổ tiên cắt cụt tấm.
+   3. `z-index: 259 / 260` — lấy theo bộ số ĐÃ CÓ trong file: **TRÊN** `.toolbar` (150) và
+      header (200); **DƯỚI** `.modal-overlay` (300) để không bao giờ đè modal chi tiết khách
+      hàng. Nhãn nổi (`.ui-tip`) đã được nâng lên **261** cùng lượt này (xem chú thích
+      `.ui-tip`) nên control trong tấm vẫn đọc được nhãn nổi, mà modal vẫn ở trên cùng.
+   Bố cục: tấm trượt từ ĐÁY (mobile-first), rộng ≤ 460px, cao ≤ 72vh — cố ý chừa 28vh phía
+   trên để khi đổi cỡ chữ / mức nền còn NHÌN THẤY bảng ngay phía sau mà so sánh.
+   ⚠️ Hai kiểu hàng: `.cfg-row` (nhãn trái + control phải) và `.cfg-row-col` (nhãn trên,
+   control dưới — dùng cho 2 tab sắp xếp, cụm Xuất/In/Sao lưu và nút chọn tệp vì chúng cần
+   cả bề rộng). ⛔ Đừng gộp hai kiểu làm một: 2 tab sắp xếp cần ≥118px, nhét vào cột phải
+   là nhãn “Sắp xếp” bị bóp. */
+.cfg-back { position: fixed; inset: 0; z-index: 259; display: none; background: rgba(0,0,0,0.55); }
+.cfg-back.on { display: block; }
+.cfg {
+  position: fixed; z-index: 260;
+  left: 50%; bottom: 0; transform: translateX(-50%);
+  width: min(460px, 100%);
+  max-height: 72vh; overflow-y: auto;
+  display: none;
+  background: var(--navy-mid);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -8px 28px rgba(0,0,0,0.55);
+  padding: 0 0 8px;
+}
+.cfg.on { display: block; }
+body.light-mode .cfg { background: #ffffff; border-color: var(--light-edge); box-shadow: 0 -8px 28px rgba(15,23,42,0.22); }
+.cfg-hd { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; background: var(--navy-mid); border-bottom: 1px solid var(--border); }
+body.light-mode .cfg-hd { background: #ffffff; }
+.cfg-title { font-size: 16px; font-weight: 600; color: var(--text); }
+.cfg-x { width: 34px; height: 34px; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--text-dim); font-size: 15px; line-height: 1; cursor: pointer; }
+body.light-mode .cfg-x { border-color: var(--light-edge); color: #475569; }
+.cfg-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+.cfg-row:last-child { border-bottom: none; }
+.cfg-lb { flex: 1 1 auto; min-width: 0; font-size: 15px; font-weight: 500; color: var(--text); }
+/* Giá trị ĐANG dùng in ngay sau nhãn (“Cỡ chữ · Chuẩn”). Đây là thứ trả lời câu hỏi “đang ở
+   mức nào” mà KHÔNG cần bấm — bản cũ chỉ có 3 chấm 3px dưới nút, phải bấm mới biết mức nào. */
+.cfg-val { font-weight: 500; color: var(--text-dim); font-size: 14px; }
+.cfg-val::before { content: '·'; margin: 0 6px; }
+.cfg-row-col { flex-direction: column; align-items: stretch; gap: 8px; }
+.cfg-row-col .cfg-lb { flex: 0 0 auto; }
+/* Nút đổi giao diện (`#themeToggle`): 2 icon mặt trời/mặt trăng **chồng lên nhau**
+   (`position: absolute`) ⇒ chúng không bao giờ đẩy nhau và nút luôn canh giữa.
+   Đổi icon theo theme bằng `visibility` — ⛔ KHÔNG `display`: hợp đồng “chế độ sáng CHỈ được
+   đổi MÀU, không đổi metric” ở đầu file cấm `display`, còn `visibility` không tham gia
+   layout ⇒ 0 reflow, và `position: absolute` khiến ngay cả lúc cả hai cùng hiện cũng không
+   đổi hộp nút. */
+.cfg-theme-btn { position: relative; }
+.cfg-theme-btn svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.cfg-ico-moon { visibility: hidden; }
+body:not(.light-mode) .cfg-ico-moon { visibility: visible; }
+body:not(.light-mode) .cfg-ico-sun { visibility: hidden; }
+/* ⚠️ CHẾ ĐỘ SÁNG: `--text` và `--border` KHÔNG được đổi trong `body.light-mode` (khối token
+   chỉ đổi `--text-dim` + vài token bề mặt — xem dòng `--text-dim: #5b6777`), nên mọi chữ
+   khai `color: var(--text)` sẽ ra **xám SÁNG `#e2e8f0` trên nền TRẮNG** (đo được: gần như vô
+   hình) và mọi đường kẻ `var(--border)` ra **trắng trên trắng**. Vì vậy tấm cài đặt phải khai
+   tay đúng như các khối `body.light-mode` khác của app. `#cbd5e1` cho đường kẻ là màu ĐÃ CÓ
+   trong palette sáng (dùng ở viền `.sort-btn`/`#sortDanhSo.active`), `#111827` cho nhãn.
+   ℹ️ `.cfg-val` KHÔNG cần override: nó dùng `--text-dim` — token DUY NHẤT được đổi theo theme
+   (sáng `#5b6777` = **5,25:1** trên trắng ✓). */
+body.light-mode .cfg-title, body.light-mode .cfg-lb { color: #111827; }
+body.light-mode .cfg-row, body.light-mode .cfg-hd { border-bottom-color: #cbd5e1; }
+/* Cụm tác vụ (`#pageActions`) trong tấm: BẬT nhãn chữ ở MỌI bề rộng (ngoài tấm, nhãn chỉ hiện
+   từ 640px — luật “tự ẩn/hiện theo bề rộng” của hàng phân trang, xem `.page-act-lb`), chia
+   đều các nút và cao 40px cho bằng mọi control khác trong tấm. */
+/* ⛔ `.page-actions` gốc có `margin-left: auto` (để nó dạt phải trong HÀNG PHÂN TRANG). Trong
+   tấm, thẻ đó là flex item của `.cfg-row-col` (flex CỘT) và auto-margin ở trục ngang làm
+   `align-self: stretch` bị đổi thành `flex-start` ⇒ cụm co về **fit-content** và 3 nút tụt
+   xuống còn **61px** (đo được). Nên phải gỡ auto-margin + ép `width: 100%`.
+   ⚠️ Đo lại sau khi sửa: mỗi nút **89px** ở viewport 303px — đủ cho chữ 54px ⇒ 1 dòng. */
+.cfg .page-actions { margin-left: 0; width: 100%; }
+.cfg .page-act { flex: 1 1 0; height: 40px; padding: 0 6px; gap: 4px; }
+.cfg .page-act-lb { display: inline; white-space: nowrap; }
+/* Ba nút của hàng “Tác vụ bảng” (`.cfg > #pageActions`): xếp **ICON TRÊN – CHỮ DƯỚI**.
+   LÝ DO là số đo, không phải thẩm mỹ: ở viewport 303px (panel Freebuff) tấm rộng 303,
+   trừ đệm 14×2 của hàng và 2 khe 4px ⇒ mỗi nút chỉ còn **89px**; mà “Xuất file” ở 13px cần
+   **54px chữ + 4 khe + 18 icon + 12 đệm = 88px** ⇒ sát ngưỡng tới mức đã thấy nó **XUỐNG 2 DÒNG**
+   (nút cao lên, mép dưới lệch hai nút kia). Ở 320px thì còn chật hơn nữa.
+   Xếp dọc thì bề rộng cần = `max(icon 18, chữ 54)` = **54px** ⇒ thừa 35px, hết chuyện xuống dòng.
+   ⚠️ Chỉ áp cho cụm `#pageActions` (3 nút chia đều): nút “Chọn tệp Excel khác” nằm MỘT MÌNH
+   trong hàng `Dữ liệu` nên giữ hàng ngang (nhãn 126px thừa chỗ, dọc sẽ xấu). */
+.cfg #pageActions .page-act { flex-direction: column; gap: 1px; }
+/* Hàng “Dạng xem” chỉ có nghĩa ở bố cục ĐIỆN THOẠI: từ 640px trở lên `.view-btn` bị ẩn
+   (`display: none !important`) và desktop vốn đã là bảng 14 cột ⇒ để nguyên là một hàng TRỐNG
+   (có nhãn, không có control). Ẩn CẢ HÀNG theo cùng ngưỡng 640px với `.view-btn`.
+   ⚠️ Ngưỡng này phải khớp `@media (min-width: 640px) { .view-btn { display: none !important } }`
+   — lệch nhau là có hàng trống xuất hiện. */
+@media (min-width: 640px) { .cfg-row-view { display: none; } }
+
 /* ── NHÃN NỔI (TOOLTIP) cho control ICON-ONLY ──────────────────────────────
    Hộp nổi do JS tạo và gắn vào <body> (xem `initTips()` ở cuối file) — **KHÔNG có trong
    markup**. `position: fixed` + nằm ở <body> là chủ ý: đặt nó trong `.toolbar`/`.count-btns`
@@ -798,9 +921,12 @@ body.light-mode.force-desktop .view-btn { background: #bfdbfe; border-color: #25
    ⚠️ Bề rộng/canh lề do JS quyết (nó ghi `max-width` + `left/top` mỗi lần hiện, theo
    `clientWidth` — KHÔNG theo `innerWidth`, vì thanh cuộn dọc làm lệch 22px). `max-width`
    ở đây chỉ là giá trị khởi tạo.
-   `z-index: 250` — **chọn theo số đo đã có trong file**, không phải số tuỳ ý: phải TRÊN
-   `.toolbar` (150) và header (200), và **DƯỚI `.modal-overlay` (300)** để không bao giờ
-   vẽ đè modal. Đổi 1 trong 3 số đó thì phải xem lại số này.
+   `z-index: 261` — **chọn theo bộ số đã có trong file**, không phải số tuỳ ý: phải TRÊN
+   `.toolbar` (150), header (200) và **tấm cài đặt** (`#cfg` = 260 / lớp mờ 259), và
+   **DƯỚI `.modal-overlay` (300)** để không bao giờ vẽ đè modal chi tiết khách hàng.
+   ⟳ Nâng `250 → 261` ở lượt “mọi nút vào Cài đặt”: các control trong tấm đều có `data-tip`,
+   để nguyên 250 là nhãn nổi bị **lớp mờ (259) và tấm (260) chôn mất** — nhìn như “nhãn nổi
+   hỏng”. 261 vẫn dưới modal nên không mở lại lỗi cũ.
    `pointer-events: none` — hộp nổi **không được ăn cú chạm** của nút nằm dưới.
    Nền là màu ĐẶC (đen 96%) nên hộp nổi **không phụ thuộc theme** ⇒ không cần rule
    `body.light-mode` riêng và tương phản chữ (`#f1f5f9` trên `rgba(17,24,39,0.96)`) giống
@@ -813,7 +939,7 @@ body.light-mode.force-desktop .view-btn { background: #bfdbfe; border-color: #25
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 250;
+  z-index: 261;
   max-width: calc(100vw - 12px);
   padding: 5px 9px;
   border-radius: 7px;
@@ -1159,7 +1285,12 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
    phần nền lộ ra phía trên **chính là** `padding-top` của track).
    ⚠️ `body.light-mode .sort-row` cũng phải sửa theo (chỉ đổi `background`/`border-radius`,
    KHÔNG khai lại `padding`) — cả 2 theme đều phải trong suốt, nếu không riêng light mode vẫn
-   còn dải xám. */
+   còn dải xám.
+   ⟳ **VÒNG ĐỜI (đọc để khỏi dựng lại lần 3):** 2 tab sắp xếp bị đưa vào tấm `#cfg` ở lượt
+   “mọi nút vào Cài đặt” rồi **TRẢ VỀ ĐÂY** ở lượt “đưa nút danh số và tiền nợ về chỗ cũ”.
+   Rule dưới đây vì thế được DỰNG LẠI NGUYÊN VẸN (cả bản nền này và bản `@media (min-width: 640px)`
+   ở dưới), và hàng “Sắp xếp” trong tấm đã XOÁ — **không có bản thứ hai** của 2 nút này ở đâu cả.
+   Bề mặt/kích thước 2 tab (`flex: 1`, cao `var(--ctl-h)`, viền alpha 0.6) không đổi ở cả 2 lượt. */
 .sort-row { display: flex; gap: 2px 4px; margin-top: 0; background: transparent; border-radius: 0; padding: 0; }
 .sort-btn {
   flex: 1;
@@ -1253,13 +1384,23 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
    trên `#e3e9f0` — đo lại khi định hạ nền thêm.
    ⚠️ Chế độ TỐI đi NGƯỢC chiều: nền SÁNG lên là tương phản chữ TỤT. Chữ mờ nhất nằm TRỰC
    TIẾP trên nền thẻ là `--text-dim` `#94a3b8` (**5,79:1** ở mức Chuẩn) ⇒ trần độ chói của
-   nền thẻ là L≈0,041; mức “Sáng” `#2a3444` đặt ở **4,89:1** (còn dư 0,39 so với ngưỡng 4,5).
+   nền thẻ là L≈0,041.
+   ⟳ Mức “Sáng” ở chế độ TỐI đã HẠ MỘT NẤC (yêu cầu “chỉnh lại sáng ở dark mode cho tối
+   xuống” — người dùng chọn “hạ 1 nấc, vẫn phân biệt 3 mức”):
+     · `--dk-card`  `#2a3444` → **`#232c3a`** (chữ mờ nhất 4,90:1 → **5,49:1**)
+     · `--dk-table` alpha **0,09 → 0,06** (ghép lên nền trang ra `rgb(31,33,38)`, 5,73 → 6,28:1)
+     · `--dk-sum`   `#1c212b` → **`#181c25`**
+   Mức “Chuẩn” (`#1f2836` / 4% / `#141720`) và “Dịu” (`#1b232f` / 2% / `#111420`) GIỮ NGUYÊN,
+   nên 3 mức vẫn phân biệt được: thẻ `#232c3a` > `#1f2836` > `#1b232f` (thứ tự không đổi).
    ⛔ Đừng sáng thêm mà không đo lại `--text-dim` trên `.kh-card` — đây là chỗ rớt AA ĐẦU TIÊN;
-   mức “Dịu” làm nền tối đi nên mọi chữ chỉ được lợi. */
+   mức “Dịu” làm nền tối đi nên mọi chữ chỉ được lợi.
+   ℹ️ Chênh lệch nền thẻ ↔ nền trang ở mức “Sáng” co từ **1,48:1** xuống ~**1,35:1** — vẫn
+   trên mức “Chuẩn” (1,25:1) nên viền `rgba(255,255,255,0.34)` + bóng đổ vẫn là thứ tách thẻ,
+   đừng gỡ. */
 body.light-mode[data-surface="sang"] { --light-surface: #ffffff; }
 body.light-mode[data-surface="diu"]  { --light-surface: #e3e9f0; --multi-hd: #059669; }
 body.light-mode[data-surface="diu"] .kh-name { color: #1d4ed8; }
-body:not(.light-mode)[data-surface-dark="sang"] { --dk-card: #2a3444; --dk-table: rgba(255,255,255,0.09); --dk-sum: #1c212b; }
+body:not(.light-mode)[data-surface-dark="sang"] { --dk-card: #232c3a; --dk-table: rgba(255,255,255,0.06); --dk-sum: #181c25; }
 body:not(.light-mode)[data-surface-dark="diu"]  { --dk-card: #1b232f; --dk-table: rgba(255,255,255,0.02); --dk-sum: #111420; }
 /* Chấm chỉ mức đang dùng (1 = Sáng · 2 = Chuẩn · 3 = Dịu) — cùng cơ chế với nút “Aa”:
    KHÔNG vẽ chấm bằng JS, để F5 xong vẫn đúng ngay cả trước khi script chính chạy.
@@ -1278,16 +1419,15 @@ body:not(.light-mode)[data-surface-dark="sang"] .sf-btn-dots i:nth-child(1),
 body:not(.light-mode)[data-surface-dark="chuan"] .sf-btn-dots i:nth-child(2),
 body:not(.light-mode)[data-surface-dark="diu"] .sf-btn-dots i:nth-child(3) { opacity: 1; }
 
-/* ── NÚT CHỌN CỠ CHỮ NỘI DUNG (“Aa”) ─────────────────────────────────────────
-   ⟳ Từ lượt “cho nút chỉnh độ sáng dời xuống kế nút chỉnh cỡ chữ”, **KHÔNG còn `.fs-btn` nào
-   ở hàng sắp xếp**: cả “Aa” lẫn “Nền” đều nằm trong `.count-btns` (xem markup ở khối `Tổng …`).
-   `flex: 0 0 auto` vẫn là điều kiện sống còn — trong `.count-btns` (flex) nó giữ đúng **38px**
-   ở mọi khổ; chiều cao THẬT là 40px (rule `.count-btns .fs-btn` bên dưới), còn base
-   `var(--ctl-h)` = 44px nay chỉ còn là giá trị DỰ PHÒNG.
+/* ── ⚙️ NÚT CHỌN CỠ CHỮ NỘI DUNG (“Aa”) ─────────────────────────────────────────
+   ⟳ Từ lượt “cho thêm 1 nút cài đặt và bỏ tất cả các nút vào đó”, **KHÔNG còn `.fs-btn` nào
+   ngoài tấm cài đặt**: “Aa” và “Nền” đều là hàng trong `#cfg` (xem markup khối `#cfg`).
+   `flex: 0 0 auto` vẫn giữ đúng **38px** ở mọi khổ (tấm cài đặt cũng là flex).
    Bề mặt/viền COPY của `.sort-btn` (cùng họ control với ô lọc) — không tự nghĩ bộ màu mới.
    Ba chấm dưới “Aa” là chỉ mức ĐANG dùng (1=Nhỏ · 2=Chuẩn · 3=Lớn), do 3 rule
    `body[data-fs="…"]` bên dưới bật sáng — KHÔNG vẽ chấm bằng JS, để F5 xong vẫn đúng ngay
-   cả trước khi script chính chạy.
+   cả trước khi script chính chạy. Chấm KHÔNG thay cho nhãn chữ: hàng trong tấm còn có
+   `<i class="cfg-val" id="cfgFsVal">` in thẳng “Nhỏ/Chuẩn/Lớn” ngay sau nhãn.
    ⚠️ Cỡ chữ “Aa” (`15px`) CỐ ĐỊNH — nó là nhãn của control, không phải nội dung, nên KHÔNG
    ăn theo `--fs-card`/`--fs-tb`; nếu cho nó co giãn thì bấm tới mức “Lớn” nút sẽ tự to ra. */
 .fs-btn {
@@ -1313,11 +1453,10 @@ body:not(.light-mode)[data-surface-dark="diu"] .sf-btn-dots i:nth-child(3) { opa
 }
 .fs-btn:active { background: rgba(59,130,246,0.22); }
 body.light-mode .fs-btn { background: var(--ctl-light-bg); border-color: #7a80f0; color: #4b5563; }
-/* Nút “Aa” khi đứng cạnh nút “dạng bảng” trong `.count-btns` (sau yêu cầu “dời xuống kế nút
-   dạng bảng”): hạ chiều cao **44 → 40px** cho BẰNG nút bên cạnh. Base `.fs-btn` khai
-   `height: var(--ctl-h)` (44px) vì ở hàng sắp xếp nó phải cao bằng 2 tab — đừng sửa base,
-   hai nơi dùng hai chiều cao khác nhau là đúng. */
-.count-btns .fs-btn { height: 40px; }
+/* Nút “Aa” trong TẤM CÀI ĐẶT: hạ chiều cao **44 → 40px** cho BẰNG nút ⚙ và mọi control khác
+   trong tấm. Base `.fs-btn` khai `height: var(--ctl-h)` (44px) vì nó vốn là cỡ của HÀNG SẮP
+   XẾP (nơi 2 tab cao 44px) — đừng sửa base, chỉ đè trong tấm. */
+.cfg .fs-btn { height: 40px; }
 .fs-btn-aa { font-size: 15px; font-weight: 600; line-height: 1; letter-spacing: 0.2px; }
 .fs-btn-dots { display: flex; gap: 2px; }
 .fs-btn-dots i { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: 0.35; }
@@ -1440,29 +1579,15 @@ body.light-mode .nhom-sel-name {
   .count-info { font-size: 17px; }
 }
 
-/* Panel HẸP (≤ 399.98px): 3 nút KHÔNG còn đủ chỗ nằm cạnh 2 dòng chữ (nút “Nền” đã dời xuống
-   `Tổng …` — xem chú thích ở `.count-btns`) ⇒ lưới về **1 CỘT**, 3 nút xuống HÀNG DƯỚI, canh phải.
-   LÝ DO là số đo ở 320px, không phải cảm tính:
-     · cột chữ = `281,6 (bề rộng `.count-info` ở khổ 320px) − 4 (đệm 2px×2) − 10 (khe lưới)
-       − 119,4 (3 nút)` = **148,22px**
-     · cặp `Tổng nợ:` + số cần **188,93px** ở 17px (199,85px nếu 18px) ⇒ **THIẾU 40,7px**
-       (đã đo hai chiều: TẮT nhánh ⇒ `col1 = 148,22` vs `needL2 = 188,93` ⇒ **overBy +40,71** ✗;
-       BẬT nhánh ⇒ `col1 = 277,64` ⇒ **overBy −88,71** ✓)
-     · ngưỡng vừa chỗ để giữ 3 nút cạnh chữ là **≥ ~375px** (`199,85 + 4 + 10 + 121,9 + 38,4` bề
-       rộng ngoài) — chọn **399.98** để còn dư ~25px, vì bề rộng chữ còn TĂNG theo SỐ LIỆU
-       (tổng 12 chữ số…).
-   ⇒ Đổi lại: ở nhánh này hàng `Tổng …` CAO THÊM **~22px** (đo: `78,73px → 100,72px`) — ít hơn
-   con số “40px nút” vì khi còn 2 cột thì 2 dòng chữ + 3 nút vốn đã cao hơn 2 dòng chữ một mình.
-   KHÔNG thu nhỏ nút
-   và KHÔNG ẩn nút nào — cả 3 đều cần (dạng xem · cỡ chữ · mức nền), thu nhỏ nữa là phá vùng chạm.
-   ⛔ Đừng gỡ nhánh này mà không đo lại ở 320px.
-   ℹ️ Nhánh `font-size: 17px` ở trên VẪN GIỮ — từ nay nó không còn là điều kiện sống còn (chữ đã
-   có cả hàng cho riêng nó), nhưng nó là lựa chọn có sẵn cho panel rất hẹp; muốn 18px ở đây thì
-   gỡ khối đó (đo: 199,85px vẫn ≤ ~268px cột chữ khi 3 nút đã xuống hàng). */
-@media (max-width: 399.98px) {
-  .count-info { grid-template-columns: minmax(0, 1fr); }
-  .count-btns { grid-column: 1; grid-row: 3; align-self: auto; justify-content: flex-end; margin-top: 4px; margin-bottom: 0; }
-}
+/* ⛔ ĐÃ XOÁ khối `@media (max-width: 399.98px)` của lượt trước (đẩy 3 nút điều khiển xuống
+   hàng dưới ở panel hẹp). Nó chỉ tồn tại vì `.count-btns` có **3 nút** = 119,4px và bóp cột
+   chữ còn 148,22px < 188,93px cần cho cặp “Tổng nợ:” + số.
+   Nay `.count-btns` chỉ có **1 nút ⚙ 38px** ⇒ cột chữ ở 320px = 229,6px ⇒ **thừa 40,67px**,
+   lưới 2 cột chạy được ở MỌI khổ ⇒ nhánh đó thành vô nghĩa (giữ lại chỉ tổ làm hàng `Tổng …`
+   cao thêm ~22px vô ích).
+   ⛔ Cần dựng lại nhánh này chỉ khi ô đó có ≥2 nút — và phải ĐO LẠI ở 320px trước.
+   ℹ️ Nhánh `font-size: 17px` (≤ 359.98px) ở TRÊN vẫn giữ: nay nó càng không còn là điều kiện
+   sống còn, nhưng nó vẫn là mức chữ hợp lý cho panel rất hẹp. */
 
 /* ── CARD LIST (mobile view) ─────────────── */
 .card-list { display: flex; flex-direction: column; gap: 6px; }
@@ -2375,6 +2500,11 @@ body.force-desktop .table-view { display: block; }
      (đã dính đúng bẫy này ở lần sửa đầu: đo lại vẫn ra 69px + nhãn cắt như cũ). */
   .toolbar-top .filter-row { flex: 1 1 0; min-width: max-content; gap: 4px; }
   .filter-select { flex: 1; min-width: 0; font-size: var(--ctl-fs); }
+  /* Hàng sắp xếp trải hết bề rộng `.toolbar-top` (không chia hàng với ô lọc) — `flex: 1` ở
+     ĐÂY là flex trong container flex-wrap của `.toolbar-top` nên nó nhảy xuống hàng riêng.
+     ⚠️ Rule này chỉ đúng khi `.sort-row` là con của một flex container theo TRỤC NGANG
+     (`.toolbar-top`); nếu ai đó chuyển nó thành con của `.toolbar` (flex CỘT) thì `flex: 1`
+     sẽ kéo GIÃN CHIỀU CAO thay vì bề rộng. */
   .sort-row { flex: 1; gap: 2px 4px; width: 100%; }
   /* padding dọc 10px → 6px cho khớp `height: 36px` (trước đây hàng cao 42px nên 10px
      không sao; nay content box chỉ còn 36 − 20 − 2 = 14px < dòng chữ 21px). */
@@ -3076,7 +3206,7 @@ body.force-desktop .table-view { display: block; }
   @page { margin: 12mm; }
   body { background: #ffffff !important; color: #000000 !important; }
   .header, .toolbar, .page-actions, .page-actions-slot, .page-btns,
-  .th-resizer, .sa { display: none !important; }
+  .th-resizer, .sa, .cfg, .cfg-back { display: none !important; }
   .main, .table-wrap, .summary-wrap, .card-view, .kh-card {
     background: #ffffff !important; color: #000000 !important;
     border-color: #9aa3b0 !important; box-shadow: none !important;
@@ -3219,9 +3349,12 @@ body.force-desktop .table-view { display: block; }
 
 <!-- HEADER -->
 <div class="header">
-  <div class="header-left">     <button class="theme-toggle" type="button" onclick="toggleTheme()" id="themeToggle" title="Chuyển sang chế độ tối" aria-label="Chuyển sang chế độ tối">
+  <div class="header-left">     <!-- 🍊 LOGO CẦU CAM — nay là ảnh TRANG TRÍ, không còn là nút đổi giao diện: từ lượt
+           “mọi nút vào Cài đặt”, nút đổi sáng/tối nằm ở hàng “Giao diện” trong `#cfg`.
+           ⛔ Đừng gắn `onclick` trở lại đây; `.theme-logo` còn có `pointer-events: none`. -->
+    <div class="theme-logo" aria-hidden="true">
       <!-- Icon SVG: cầu cam gradient + nét viền sáng + bóng đổ + tia sét nổi khối (thay cho ảnh PNG base64 ~94KB cũ) -->
-      <svg class="theme-toggle-icon" viewBox="0 0 44 44" aria-hidden="true" focusable="false">
+      <svg class="theme-logo-ico" viewBox="0 0 44 44" aria-hidden="true" focusable="false">
         <defs>
           <radialGradient id="ttBall" cx="33%" cy="24%" r="82%">
             <stop offset="0%" stop-color="#ffe0b0"/>
@@ -3272,7 +3405,7 @@ body.force-desktop .table-view { display: block; }
         </g>
         <path filter="url(#ttLift)" fill="url(#ttBolt)" stroke="#fffdf4" stroke-opacity="0.28" stroke-width="0.35" d="M25.6 5.2 L12.9 23.6 H20.1 L18.4 38.8 L31.1 20.4 H24 Z"/>
       </svg>
-    </button>
+    </div>
     <div class="title-wrap">
 
       <div class="header-title">Quản Lý Nợ</div>
@@ -3280,10 +3413,14 @@ body.force-desktop .table-view { display: block; }
     </div>
   </div>
   <div class="header-right">
-    <button class="upload-btn-header" id="clockBtn" onclick="document.getElementById('fileInput').click()" style="display:flex;flex-direction:column;align-items:center;line-height:1.1;padding:6px 10px;gap:0;cursor:pointer">
+    <!-- ⏰ ĐỒNG HỒ SỐNG — nay là khối HIỂN THỊ, không còn là nút chọn tệp (việc chọn tệp
+         nằm ở hàng “Dữ liệu” trong `#cfg`). Đổi từ <button> sang <div> nên KHÔNG còn
+         `onclick`/`cursor:pointer`; id `clockBtn` + 2 span id giữ nguyên (JS `updateLiveClock`
+         vẫn ghi vào `clockLive`/`clockDateLive` mỗi giây). -->
+    <div class="clock-box" id="clockBtn" style="display:flex;flex-direction:column;align-items:center;line-height:1.1;padding:6px 10px;gap:0">
       <span id="clockLive" style="color:#ffffff;font-size:20px;font-weight:700;font-family:Inter,sans-serif"></span>
       <span id="clockDateLive" style="color:rgba(255,255,255,0.95);font-size:12px;font-weight:500;font-family:Inter,sans-serif;margin-top:2px"></span>
-    </button>
+    </div>
 
   </div>
   <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" onchange="handleFileUpload(this)">
@@ -3403,27 +3540,22 @@ body.force-desktop .table-view { display: block; }
           <input type="hidden" id="filterLoai" value="">
         </div>
       </div>
+        <!-- 📑 HÀNG SẮP XẾP — 2 tab “Danh Số” / “Tiền Nợ”.
+             ⟳ **ĐÃ TRẢ VỀ CHỖ CŨ** theo yêu cầu “đưa nút danh số và tiền nợ về chỗ cũ”: lượt
+             trước chúng bị đưa vào tấm `#cfg` cùng các nút điều khiển khác; nay trở lại đây và
+             hàng “Sắp xếp” trong tấm đã XOÁ.
+             ⛔ **Chỉ được có MỘT bản** của 2 nút này: hai bản cùng id là `updateSortButtons()`
+             chỉ cập nhật cái ĐẦU TIÊN, bản còn lại đứng im với mũi tên/`.active` cũ.
+             ⚠️ 2 tab dùng `flex: 1` để chia đều bề rộng hàng (xem `.sort-row` trong CSS) — nút
+             điều khiển KHÔNG được đặt vào hàng này nữa (không còn chỗ: hàng này có lúc chỉ
+             còn ~303px, mỗi tab đã ~119px ở khổ hẹp). -->
         <div class="sort-row">
           <button class="sort-btn" id="sortDanhSo" onclick="sortBy('danh_so')">
             <span class="sort-ico"><svg viewBox="0 0 14 14" width="100%" height="100%" aria-hidden="true"><g stroke="#35a3e0" stroke-width="1.5" stroke-linecap="round"><path d="M5.5 2.6 4.5 11.4M9.5 2.6 8.5 11.4M2.4 5.4h9.2M2.2 8.6h9.2"/></g></svg></span><span class="sort-label">Danh Số</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
           </button>
-          <!-- NÚT CHỌN CỠ CHỮ NỘI DUNG (“Aa”) — anh em của 2 tab sắp xếp, ở cuối hàng.
-               Vì sao ĐẶT Ở ĐÂY (không phải vùng `Tổng`/header/nút Xuất): đo ở 320px cho thấy
-               header đã tràn ~4,6px, hàng lọc và vùng `Tổng` gần như kín (còn 3,9px) ⇒ thêm một
-               nút 38px vào đó là dòng `Tổng nợ: …` phải xuống 2 dòng ngay từ khổ **360px**.
-               Hàng sắp xếp là hàng DUY NHẤT còn chỗ: 2 tab có `flex: 1` + nhãn `ellipsis` nên
-               tự co được; bề rộng cần thật của 2 tab là **118px** ⇒ ở 320px còn vừa (xem run doc).
-               ⛔ KHÔNG cho nút này `flex: 1` — hai tab kia mới là thứ được chia đều chỗ trống.
-               Nhãn của nút nằm ở `data-tip` + `aria-label` (do `applyFontSize()` cập nhật theo
-               mức đang dùng) — cơ chế nhãn nổi dùng chung, nhấn giữ 1,2s là đọc được. -->
           <button class="sort-btn" id="sortTienNo" onclick="sortBy('tien_no')">
-            <span class="sort-ico"><svg viewBox="0 0 14 14" width="100%" height="100%" aria-hidden="true"><g fill="#46b07c"><ellipse cx="7" cy="3.4" rx="4.6" ry="1.8"/><path d="M2.4 5.2c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8v1.6c0 1-2.06 1.8-4.6 1.8S2.4 8.8 2.4 7.8z"/><path d="M2.4 8.4c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8v1.6c0 1-2.06 1.8-4.6 1.8S2.4 11.6 2.4 10.6z"/></g></svg></span>            <span class="sort-label">Tiền Nợ</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
+            <span class="sort-ico"><svg viewBox="0 0 14 14" width="100%" height="100%" aria-hidden="true"><g fill="#46b07c"><ellipse cx="7" cy="3.4" rx="4.6" ry="1.8"/><path d="M2.4 5.2c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8v1.6c0 1-2.06 1.8-4.6 1.8S2.4 8.8 2.4 7.8z"/><path d="M2.4 8.4c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8v1.6c0 1-2.06 1.8-4.6 1.8S2.4 11.6 2.4 10.6z"/></g></svg></span><span class="sort-label">Tiền Nợ</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
           </button>
-          <!-- ℹ️ Hàng sắp xếp nay **CHỈ CÒN 2 TAB**. Cả hai nút điều chỉnh hiển thị đã dời xuống
-               chung ô `.count-btns`: “Aa” (cỡ chữ) ở lượt “dời xuống kế nút dạng bảng”, và
-               “Nền” (mức nền) ở lượt “cho nút chỉnh độ sáng dời xuống kế nút chỉnh cỡ chữ”.
-               2 tab vẫn `flex: 1` nên tự chia hết chỗ trống ⇒ nhãn RỘNG HƠN trước (trước phải
-               chia chỗ cho nút “Nền”). Xem số đo ở mục “🌙/🎚️” trong run doc. -->
         </div>
       </div>
     </div>
@@ -3469,52 +3601,18 @@ body.force-desktop .table-view { display: block; }
            và **che đuôi dòng "Tổng: … KH - … HĐ"** khi panel hẹp (xem run doc).
            ⚠️ Đổi vị trí trong DOM KHÔNG ảnh hưởng JS: mọi chỗ đều gọi `getElementById`,
            và `.export-btn` vẫn được bật/tắt bằng `display: flex/none`. -->
-      <!-- Hai nút nằm CHUNG một ô lưới (`grid-column: 2` của `.count-info`) — xem `.count-btns`.
-           Nút “dạng máy tính” chỉ hiện ở bố cục điện thoại (ẩn từ 640px trở lên) và chỉ hiện khi
-           đã có dữ liệu, y như nút Xuất file. Hai nút nay cùng bề rộng (38px; 36px ở panel
-           ≤359.98px) vì đều là icon-only 20px với `padding: 0 8px` — xem `.export-btn`. -->
+      <!-- ⚙️ NÚT CÀI ĐẶT — NÚT DUY NHẤT của ô lưới này (`grid-column: 2` của `.count-info`;
+           số đo + lịch sử ở chú thích `.count-btns`). Mọi nút điều khiển khác — giao diện
+           sáng/tối · cỡ chữ · mức nền · dạng xem · 2 tab sắp xếp · Xuất/In/Sao lưu · chọn tệp
+           Excel — nay nằm trong tấm `#cfg` do nút này mở (`openCfg()`), theo yêu cầu “cho thêm
+           1 nút cài đặt và bỏ tất cả các nút vào đó” (người dùng chốt: mọi nút trên màn hình).
+           Icon-only ⇒ BẮT BUỘC có `data-tip` (nhãn nổi cho MẮT, `initTips()`) và `aria-label`
+           (nhãn cho trình đọc màn hình). ⛔ Đừng điền thêm `title`: sẽ có 2 hộp nổi chồng nhau.
+           ⚠️ Bề rộng 38px × cao 40px khai ở `.cfg-btn` — đổi là hàng “Tổng …” nhích và cột
+           chữ “Tổng nợ:” hụt theo. -->
       <div class="count-btns">
-        <!-- Nút Xuất nay **ICON-ONLY** (yêu cầu “bỏ chữ xuất file”) và có **cùng kích thước với
-             nút “về dạng thẻ”** (`#viewBtn`) — hai nút cùng hệ hình do dùng chung công thức bề
-             rộng `.view-btn`, xem chú thích ở `.export-btn`. Nghĩa của nút nằm ở `data-tip` +
-             `aria-label` (giữ nguyên “Xuất file Excel”) — ĐỪNG bỏ 2 thuộc tính này: `data-tip`
-             là nhãn nổi cho MẮT (`initTips()`), `aria-label` là nhãn cho trình đọc màn hình.
-             ⛔ `data-tip` nay THAY `title` (xem mục “NHÃN NỔI” trong run doc) — điền CẢ HAI là
-             có hai hộp nổi chồng nhau, vì `title` vẫn hiện trên máy tính sau ~1s. -->
-        <!-- Nút Xuất KHÔNG còn ở đây (từ lượt “gom cụm tác vụ”): nó đã vào cụm
-             `#pageActions` và được JS chuyển xuống **hàng phân trang đang hiển thị**
-             (xem `chuyenCumTacVu`). Ô này nay chỉ còn 2 nút thuộc về *cách xem / cỡ chữ*. -->
-        <button id="viewBtn" class="view-btn" onclick="toggleViewMode()" data-tip="Xem dạng máy tính" aria-label="Xem dạng máy tính"><svg class="ic" width="20" height="20" aria-hidden="true"><use href="#i-monitor"/></svg></button>
-        <!-- Nút “Aa” (cỡ chữ) DỜI XUỐNG ĐÂY — yêu cầu “cho nút thay đổi cỡ chữ dời xuống kế nút
-             dạng bảng”. Trước nó nằm cuối hàng sắp xếp. Không sửa gì khác của nút.
-             ℹ️ Ô lưới này RỘNG KHÔNG ĐỔI: trước `[Xuất 38] + 4 + [dạng bảng 35] = 77px`,
-             nay `[dạng bảng 35] + 4 + [Aa 38] = 77px` ⇒ cột chữ `Tổng nợ:` KHÔNG bị ăn bớt.
-             ⚠️ Nút “dạng bảng” bị ẩn từ 640px (`display:none`) nhưng nút “Aa” thì **KHÔNG** —
-             nút này còn chỉnh cỡ bảng 14 cột trên máy tính, đừng ẩn theo `.view-btn`.
-             Chiều cao: `.fs-btn` gốc là `var(--ctl-h)` = 44px (bằng 2 tab ở hàng sắp xếp),
-             ở đây phải hạ về 40px cho bằng nút bên cạnh — xem `.count-btns .fs-btn`. -->
-        <button class="fs-btn" id="fsBtn" type="button" onclick="cycleFontSize()" data-tip="Cỡ chữ: Chuẩn" aria-label="Cỡ chữ: Chuẩn">
-          <span class="fs-btn-aa" aria-hidden="true">Aa</span>
-          <span class="fs-btn-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-        </button>
-        <!-- Nút “Nền” (mức nền sáng/tối) DỜI XUỐNG ĐÂY — yêu cầu “cho nút chỉnh độ sáng dời
-             xuống kế nút chỉnh cỡ chữ”. Trước nó ở cuối HÀNG SẮP XẾP.
-             Cơ chế giữ nguyên: chế độ sáng đổi `data-surface` (token `--light-surface`), chế độ
-             tối đổi `data-surface-dark` (`--dk-card`/`--dk-table`/`--dk-sum`); hai bộ mức lưu
-             RIÊNG ở localStorage nên quay lại theme cũ vẫn đúng mức cũ.
-             ⚠️ Nút HIỆN ở cả 2 theme (không ẩn theo theme) — hợp đồng “theme chỉ đổi MÀU, không
-             đổi metric”: ẩn nút là hàng nút này đổi bề rộng, kéo theo cột chữ `Tổng nợ:` nhảy.
-             Nhãn ở `data-tip` + `aria-label`, do `applySurface()` cập nhật theo THEME đang xem.
-             ⚠️ Nhãn tĩnh dưới đây phải để dạng TRUNG TÍNH (“Nền: …”) — nhãn riêng theme chỉ có
-             sau khi script chính chạy, và “Nền sáng: …” sẽ SAI khi trang vừa mở ở chế độ tối.
-             ⚠️ Chiều cao phải là 40px cho bằng 2 nút bên cạnh — xem `.count-btns .fs-btn`
-             (base `.fs-btn` là `var(--ctl-h)` = 44px, cỡ của hàng sắp xếp cũ).
-             ⚠️ Ô này chỉ rộng ~119–122px khi có đủ 3 nút ⇒ ở panel hẹp (≤399.98px) 3 nút XUỐNG
-             HÀNG RIÊNG trong `.count-info` (hàng `Tổng …` cao thêm ~22px) — xem chú thích ở
-             khối `@media (max-width: 399.98px)`. -->
-        <button class="fs-btn" id="sfBtn" type="button" onclick="cycleSurface()" data-tip="Nền: Chuẩn" aria-label="Nền: Chuẩn — nhấn để đổi">
-          <svg class="sf-btn-ico" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>
-          <span class="sf-btn-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <button class="cfg-btn" id="cfgBtn" type="button" onclick="openCfg()" data-tip="Cài đặt" aria-label="Cài đặt">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.04.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
         </button>
       </div>
     </div>
@@ -3603,23 +3701,14 @@ body.force-desktop .table-view { display: block; }
       </div>
       <div class="pagination" id="paginationCard">
         <div class="page-info" id="pageInfoCard"></div>
-        <!-- ── CỤM TÁC VỤ CẤP-BẢNG ─────────────────────────────────────────────
-             Yêu cầu người dùng: “Gom các thao tác cấp-bảng (xuất file, in, sao lưu dữ liệu)
-             thành một cụm nút gọn trong hàng phân trang, tự ẩn/hiện theo bề rộng panel”.
-             ⚠️ Đây là chỗ ĐẶT MẶC ĐỊNH trong markup; `chuyenCumTacVu()` sẽ chuyển CẢ CỤM sang
-             hàng phân trang đang hiển thị (4 hàng: Card/Table × view thường / nợ cũ) — hoặc
-             vào khe dự phòng `#slotSummary` khi xem tab “Tổng hợp nợ” (tab đó KHÔNG có phân trang).
-             ⚠️ Phải chuyển CẢ CỤM chứ không từng nút: nếu mỗi nút về một hàng khác nhau thì
-             cụm tan ra và mất luôn bề rộng dành cho cụm (`margin-left: auto` chỉ có nghĩa trên
-             một khối).
-             ⚠️ Nhãn (`<span class="page-act-lb">`) **tự ẩn/hiện theo bề rộng** — xem `.page-act-lb`
-             trong CSS (phone: chỉ icon 34×34; từ 640px: icon + chữ).
-             ⛔ `data-tip` và `aria-label` phải ĐỦ Ở CẢ BA nút — cả ba là icon-only trên điện thoại. -->
-        <div class="page-actions" id="pageActions">
-          <button id="exportBtn" class="page-act" onclick="exportExcel()" data-tip="Xuất file Excel" aria-label="Xuất file Excel"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg><span class="page-act-lb">Xuất file</span></button>
-          <button id="printBtn" class="page-act" onclick="inBang()" data-tip="In bảng" aria-label="In bảng"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M19 8H5c-1.66 0-3 1.34-3 3v4h4v4h12v-4h4v-4c0-1.66-1.34-3-3-3zm-3 9H8v-5h8v5zm3-5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zM17 3H7v4h10V3z"/></svg><span class="page-act-lb">In bảng</span></button>
-          <button id="backupBtn" class="page-act" onclick="saoLuuDuLieu()" data-tip="Sao lưu dữ liệu" aria-label="Sao lưu dữ liệu"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg><span class="page-act-lb">Sao lưu</span></button>
-        </div>
+        <!-- ⚙️ CỤM TÁC VỤ CẤP-BẢNG (`#pageActions`) ĐÃ CHUYỂN VÀO TẤM CÀI ĐẶT (`#cfg` →
+             hàng “Tác vụ bảng”), theo lượt “mọi nút vào Cài đặt”.
+             Vì sao `chuyenCumTacVu()` nay là hàm RỖNG: nó sinh ra để chuyển cụm sang HÀNG PHÂN
+             TRANG đang hiển thị; cụm nay không còn nằm trong hàng phân trang nữa, nên giữ
+             nguyên logic cũ thì **mỗi lần render lại rút cụm khỏi tấm cài đặt** ⇒ tấm mất 3 nút.
+             ⛔ Đừng dựng lại cụm ở đây: 2 `#pageActions` là 2 nút trùng id (JS chỉ thấy cái đầu).
+             ℹ️ Khe dự phòng `#slotSummary` ở `#summaryView` cũng thành vô dụng — giữ lại chỉ để
+             không phải sửa `@media print` và CSS; đừng dùng cho việc gì mới. -->
         <div class="page-btns" id="pageBtnsCard"></div>
       </div>
     </div>
@@ -3756,6 +3845,111 @@ body.force-desktop .table-view { display: block; }
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════════════════════════════════════════════════
+     ⚙️ TẤM CÀI ĐẶT (`#cfg`) — MỘT CHỖ CHỨA MỌI NÚT ĐIỀU KHIỂN
+     Yêu cầu người dùng: “cho thêm 1 nút cài đặt và bỏ tất cả các nút vào đó” (chốt lại:
+     **mọi nút trên màn hình**). Nút mở là `#cfgBtn` ở hàng “Tổng …” (`openCfg()`).
+     Cách hiển thị + `z-index` + vì sao dùng class `.on` chứ KHÔNG dùng `[hidden]`: xem chú
+     thích khối CSS `.cfg`.
+     ⚠️ Ngoài tấm chỉ còn những thứ KHÔNG phải nút điều khiển — cố ý giữ lại:
+       · ô nhập liệu (tìm kiếm) + 2 ô lọc + nút ✕ xoá nhanh của ô tìm kiếm (gắn liền ô nhập);
+       · nút phân trang (JS dựng lại mỗi lần render — xem `renderPagination`);
+       · nút ✕ đóng banner “phạm vi nhân viên” và ✕ của modal chi tiết (đóng ngữ cảnh);
+       · logo cầu cam + đồng hồ ở header (nay là ảnh/khối hiển thị, không bấm được);
+       · nút “Chọn file” ở MÀN HÌNH CHÀO — màn đó không có hàng “Tổng …” nên không mở được
+         cài đặt; bỏ nút đó là app không còn cách nào nạp file.
+     ⚠️ Nhãn giá trị (`<i class="cfg-val">`) do JS ghi lại: `syncThemeToggle` · `applyFontSize`
+     · `applySurface` · `applyViewBtnState`. Thêm/bớt một hàng thì phải sửa hàm tương ứng,
+     nếu không hàng đó sẽ in MÃI giá trị tĩnh trong markup. -->
+<div class="cfg-back" id="cfgBack" onclick="closeCfg()"></div>
+<div class="cfg" id="cfg" role="dialog" aria-modal="true" aria-labelledby="cfgTitle">
+  <div class="cfg-hd">
+    <span class="cfg-title" id="cfgTitle">Cài đặt</span>
+    <button class="cfg-x" type="button" onclick="closeCfg()" aria-label="Đóng cài đặt">✕</button>
+  </div>
+
+  <!-- 1. GIAO DIỆN SÁNG/TỐI — nút cầu cam cũ ở header (header nay chỉ còn logo TĨNH).
+       Hai icon mặt trời/mặt trăng chồng nhau, đổi bằng `visibility` theo theme (xem
+       `.cfg-theme-btn`) ⇒ không đổi metric giữa 2 theme, đúng hợp đồng ở đầu file.
+       ⛔ KHÔNG thêm `data-tip` cho nút này: `syncThemeToggle()` đã đặt `title`, thêm nữa là
+       có HAI hộp nổi chồng nhau. Nhãn của hàng nằm ở chữ “Giao diện · Sáng/Tối”. -->
+  <div class="cfg-row">
+    <span class="cfg-lb">Giao diện<i class="cfg-val" id="cfgThemeVal">Tối</i></span>
+    <button class="cfg-btn cfg-theme-btn" type="button" id="themeToggle" onclick="toggleTheme()" title="Chuyển sang chế độ sáng" aria-label="Chuyển sang chế độ sáng">
+      <svg class="cfg-ico-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.4" fill="currentColor" stroke="none"/><path d="M12 2.4v2.2M12 19.4v2.2M2.4 12h2.2M19.4 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+      <svg class="cfg-ico-moon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M20.6 14.6A8.7 8.7 0 0 1 9.4 3.4a8.7 8.7 0 1 0 11.2 11.2z"/></svg>
+    </button>
+  </div>
+
+  <!-- 2. CỠ CHỮ NỘI DUNG (nút “Aa” cũ). Lịch sử: cuối hàng sắp xếp → `.count-btns` (lượt
+       “dời xuống kế nút dạng bảng”) → nay hàng trong tấm. `data-tip`/`aria-label` do
+       `applyFontSize()` cập nhật theo mức đang dùng; nhãn chữ `#cfgFsVal` in mức ra màn hình
+       (chấm 3px nay chỉ là phụ), xem chú thích `.cfg-val`. -->
+  <div class="cfg-row">
+    <span class="cfg-lb">Cỡ chữ<i class="cfg-val" id="cfgFsVal">Chuẩn</i></span>
+    <button class="fs-btn" id="fsBtn" type="button" onclick="cycleFontSize()" data-tip="Cỡ chữ: Chuẩn" aria-label="Cỡ chữ: Chuẩn">
+      <span class="fs-btn-aa" aria-hidden="true">Aa</span>
+      <span class="fs-btn-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+  </div>
+
+  <!-- 3. MỨC NỀN (nút “Nền” cũ) — ĐỔI THEO THEME ĐANG XEM: chế độ sáng ghi `data-surface`
+       (token `--light-surface`), chế độ tối ghi `data-surface-dark` (`--dk-card` ·
+       `--dk-table` · `--dk-sum`); hai bộ mức lưu RIÊNG ở localStorage (`qlno_surface` /
+       `qlno_surface_dark`) nên quay lại theme cũ vẫn đúng mức cũ.
+       ⚠️ Nhãn TĨNH dưới đây để dạng TRUNG TÍNH (“Nền: …”) — nhãn riêng theme chỉ có sau khi
+       script chính chạy, và “Nền sáng: …” sẽ SAI khi trang vừa mở ở chế độ tối (xem
+       `applySurface`). -->
+  <div class="cfg-row">
+    <span class="cfg-lb">Mức nền<i class="cfg-val" id="cfgSfVal">Chuẩn</i></span>
+    <button class="fs-btn" id="sfBtn" type="button" onclick="cycleSurface()" data-tip="Nền: Chuẩn" aria-label="Nền: Chuẩn — nhấn để đổi">
+      <svg class="sf-btn-ico" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>
+      <span class="sf-btn-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+  </div>
+
+  <!-- 4. DẠNG XEM (thẻ ↔ bảng 14 cột) — nút cũ ở hàng “Tổng …”. Vẫn `display: none` từ 640px
+       (`@media (min-width: 640px) { .view-btn { display: none !important } }`): desktop vốn
+       đã là bảng nên hàng này tự biến mất ở đó. Bấm là ĐÓNG TẤM (`closeCfg()`): đổi dạng xem
+       là đổi cả trang, để tấm che thì không thấy kết quả. -->
+  <div class="cfg-row cfg-row-view">
+    <span class="cfg-lb">Dạng xem<i class="cfg-val" id="cfgViewVal">Dạng thẻ</i></span>
+    <button id="viewBtn" class="view-btn" onclick="toggleViewMode(); closeCfg()" data-tip="Xem dạng máy tính" aria-label="Xem dạng máy tính"><svg class="ic" width="20" height="20" aria-hidden="true"><use href="#i-monitor"/></svg></button>
+  </div>
+
+  <!-- ⟳ HÀNG “SẮP XẾP” ĐÃ XOÁ KHỎI TẤM theo yêu cầu “đưa nút danh số và tiền nợ về chỗ cũ”:
+       2 tab `#sortDanhSo` / `#sortTienNo` nay nằm lại ở HÀNG SẮP XẾP trong `.toolbar` — đúng
+       chỗ cũ của chúng. ⛔ Đừng dựng lại hàng này ở đây: 2 nút trùng id thì
+       `updateSortButtons()` chỉ cập nhật bản ĐẦU TIÊN, bản trong tấm đứng im với mũi tên cũ. -->
+
+  <!-- 5. TÁC VỤ BẢNG — cụm `#pageActions` cũ (Xuất file · In bảng · Sao lưu). Vẫn đúng 3 id
+       cũ nên `exportExcel()` / `inBang()` / `saoLuuDuLieu()` và chỗ bật/tắt `#exportBtn`
+       KHÔNG phải sửa. ⚠️ Mỗi nút gọi `closeCfg()` TRƯỚC hành động của nó: hộp thoại in không
+       được mở khi tấm còn che trang, và với Xuất/Sao lưu thì đóng tấm cũng là dấu hiệu đã bấm.
+       ℹ️ Nhãn chữ (`<span class="page-act-lb">`) ở đây LUÔN hiện (xem `.cfg .page-act-lb`) —
+       ngoài tấm nó chỉ hiện từ 640px. -->
+  <div class="cfg-row cfg-row-col">
+    <span class="cfg-lb">Tác vụ bảng</span>
+    <div class="page-actions" id="pageActions">
+      <button id="exportBtn" class="page-act" onclick="closeCfg(); exportExcel()" data-tip="Xuất file Excel" aria-label="Xuất file Excel"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg><span class="page-act-lb">Xuất file</span></button>
+      <button id="printBtn" class="page-act" onclick="closeCfg(); inBang()" data-tip="In bảng" aria-label="In bảng"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M19 8H5c-1.66 0-3 1.34-3 3v4h4v4h12v-4h4v-4c0-1.66-1.34-3-3-3zm-3 9H8v-5h8v5zm3-5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zM17 3H7v4h10V3z"/></svg><span class="page-act-lb">In bảng</span></button>
+      <button id="backupBtn" class="page-act" onclick="closeCfg(); saoLuuDuLieu()" data-tip="Sao lưu dữ liệu" aria-label="Sao lưu dữ liệu"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg><span class="page-act-lb">Sao lưu</span></button>
+    </div>
+  </div>
+
+  <!-- 6. DỮ LIỆU — thay nút đồng hồ ở header (trước là nút mở hộp chọn tệp). Icon dùng
+       `#i-file-up` của sprite; `#fileInput` (input ẩn) vẫn nằm ở header — không đổi. -->
+  <div class="cfg-row cfg-row-col">
+    <span class="cfg-lb">Dữ liệu</span>
+    <div class="page-actions">
+      <button class="page-act" type="button" onclick="closeCfg(); document.getElementById('fileInput').click()" data-tip="Chọn tệp Excel khác" aria-label="Chọn tệp Excel khác">
+        <svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-file-up"/></svg>
+        <span class="page-act-lb">Chọn tệp Excel khác</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 let allData = [], filtered = [], summaryData = [], oldSummaryData = [];
@@ -3883,11 +4077,44 @@ setInterval(updateLiveClock, 1000);
    vì lấy alt của ảnh), và icon SVG đổi nhẹ theo theme (tia sét sáng hơn ở nền tối) */
 function syncThemeToggle(isLight) {
   const btn = document.getElementById('themeToggle');
-  if (!btn) return;
-  const label = isLight ? 'Chuyển sang chế độ tối' : 'Chuyển sang chế độ sáng';
-  btn.setAttribute('aria-label', label);
-  btn.title = label;
+  // ⚠️ Chỗ cập nhật NHÃN CHỮ cho hàng “Giao diện” của tấm cài đặt nằm DƯỚI `if (!btn) return;`
+  // — hai thứ đi cùng một nguồn (`isLight`) nên không có chuyện lệch. Nếu sau này bỏ hẳn
+  // `#themeToggle` thì phải kéo dòng đó RA NGOÀI khối này, đừng để nó chết theo nút.
+  if (btn) {
+    const label = isLight ? 'Chuyển sang chế độ tối' : 'Chuyển sang chế độ sáng';
+    btn.setAttribute('aria-label', label);
+    btn.title = label;
+  }
+  // Giá trị ĐANG dùng (không phải hành động) cho hàng “Giao diện”: đọc là biết đang ở chế độ
+  // nào, không phải bấm thử. Đây là lý do hàng này có cả nhãn chữ lẫn nút icon.
+  const val = document.getElementById('cfgThemeVal');
+  if (val) val.textContent = isLight ? 'Sáng' : 'Tối';
 }
+
+/* ── ⚙️ MỞ/ĐÓNG TẤM CÀI ĐẶT (`#cfg`) ───────────────────────────────────────
+   Ba đường đóng, phủ hết thói quen người dùng: nút ✕ · bấm lớp mờ phía sau (`#cfgBack`) ·
+   phím Escape (chỉ có tác dụng trên máy tính — điện thoại không có bàn phím).
+   ⚠️ Tạm khoá cuộn nền (`body.style.overflow`) khi tấm mở: nếu không, người dùng kéo trên
+   lớp mờ là trang bên dưới chạy theo và tấm “trượt” khỏi ngữ cảnh họ đang so sánh.
+   ⚠️ Chỉ đụng `body.style.overflow` — cùng cách modal đang dùng (xem `openModal`). Hai thứ
+   này không bao giờ mở cùng lúc vì lớp mờ đã chặn mọi cú chạm xuống bảng.
+   ⚠️ Đổi màu/độ sáng xong KHÔNG tự đóng tấm (cố ý): cần nhìn thấy ngay hiệu quả. Nhưng ĐỔI
+   DẠNG XEM thì đóng (`onclick="toggleViewMode(); closeCfg()"` — xem markup hàng “Dạng xem”). */
+function openCfg() {
+  const p = document.getElementById('cfg'), b = document.getElementById('cfgBack');
+  if (!p) return;
+  p.classList.add('on');
+  if (b) b.classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+function closeCfg() {
+  const p = document.getElementById('cfg'), b = document.getElementById('cfgBack');
+  if (!p || !p.classList.contains('on')) return;   // gọi lúc đang đóng ⇒ không đụng gì
+  p.classList.remove('on');
+  if (b) b.classList.remove('on');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeCfg(); });
 function toggleTheme() {
   document.body.classList.toggle('light-mode');
   const isLight = document.body.classList.contains('light-mode');
@@ -4279,6 +4506,11 @@ function applyViewBtnState() {
   // ĐỔI CÙNG NHAU. `data-tip` nay THAY `title`: điền cả hai là có HAI hộp nổi chồng nhau
   // trên máy tính (`title` hiện chậm ~1s) — xem `initTips()`.
   btn.setAttribute('data-tip', label);
+  // Nhãn CHỮ của hàng “Dạng xem” trong tấm cài đặt — gọi tên DẠNG ĐANG XEM (“Dạng thẻ” /
+  // “Dạng máy tính”), không phải hành động như `label` ở trên. Hai chuỗi khác nhau là CÓ Ý:
+  // hàng trong tấm trả lời “đang ở dạng nào”, hộp nổi trả lời “bấm thì thành gì”.
+  const val = document.getElementById('cfgViewVal');
+  if (val) val.textContent = on ? 'Dạng máy tính' : 'Dạng thẻ';
   btn.setAttribute('aria-label', label);
   btn.setAttribute('aria-pressed', on ? 'true' : 'false');
 }
@@ -4308,6 +4540,10 @@ function applyFontSize() {
     btn.setAttribute('data-tip', nhan);
     btn.setAttribute('aria-label', nhan + ' — nhấn để đổi');
   }
+  // Nhãn CHỮ của hàng “Cỡ chữ” trong tấm cài đặt (cùng nguồn `lv.ten` với `data-tip`).
+  // ⚠️ Đặt NGOÀI `if (btn)` — nhãn chữ phải đúng kể cả khi nút icon vắng mặt.
+  const val = document.getElementById('cfgFsVal');
+  if (val) val.textContent = lv.ten;
 }
 function cycleFontSize() {
   const next = FS_LEVELS[(fsIndexOf(document.body.getAttribute('data-fs')) + 1) % FS_LEVELS.length];
@@ -4351,6 +4587,10 @@ function applySurface() {
     btn.setAttribute('data-tip', nhan);
     btn.setAttribute('aria-label', nhan + ' — nhấn để đổi');
   }
+  // Nhãn CHỮ của hàng “Mức nền” (cùng nguồn `lv.ten`, và cũng là mức của THEME ĐANG XEM ⇒
+  // `toggleTheme()` phải gọi lại hàm này, xem chú thích ở đó).
+  const val = document.getElementById('cfgSfVal');
+  if (val) val.textContent = lv.ten;
 }
 function cycleSurface() {
   const attr = sfAttr();
@@ -5241,7 +5481,12 @@ function renderPagination() {
   chuyenCumTacVu();
 }
 
-/* ── CỤM TÁC VỤ CẤP-BẢNG: CHUYỂN SANG HÀNG PHÂN TRANG ĐANG HIỂN THỊ ───────────────────────
+/* ── CỤM TÁC VỤ CẤP-BẢNG: TỪ NAY LÀ HÀM RỖNG (cụm đã vào TẤM CÀI ĐẶT) ────────────────────
+   ⟳ Từ lượt “mọi nút vào Cài đặt”, `#pageActions` nằm TRONG tấm `#cfg` (hàng “Tác vụ bảng”) ⇒
+   logic chuyển-cụm ở dưới đã XOÁ TRẮNG. Đoạn chú thích giữ lại là LỊCH SỬ của hàng phân trang,
+   đừng đọc nó như mô tả trạng thái hiện tại: nếu dựng lại logic đó thì MỖI LẦN RENDER sẽ rút
+   3 nút ra khỏi tấm cài đặt.
+   ── (lịch sử) CỤM TÁC VỤ CẤP-BẢNG: CHUYỂN SANG HÀNG PHÂN TRANG ĐANG HIỂN THỊ ──
    Yêu cầu người dùng: “Gom các thao tác cấp-bảng (xuất file, in, sao lưu dữ liệu) thành một cụm
    nút gọn trong hàng phân trang, tự ẩn/hiện theo bề rộng panel”.
    Có **4** hàng phân trang (`paginationCard` · `paginationTable` · `paginationOld` ·
@@ -5267,16 +5512,12 @@ function renderPagination() {
    hiển thị khi tab đó bật). ⛔ Đừng trả về `.count-btns`: ô đó chỉ rộng **~78px** và đã có 2 nút
    (`#viewBtn` + `#fsBtn`) — nhét 3 nút nữa là bóp cột chữ “Tổng nợ:” xuống 2 dòng ở 360px. */
 function chuyenCumTacVu() {
-  const cum = document.getElementById('pageActions');
-  if (!cum) return;
-  const ung = ['paginationCard', 'paginationTable', 'paginationOld', 'paginationOldTable']
-    .map(id => document.getElementById(id)).filter(Boolean);
-  let dich = ung.find(el => el.offsetParent !== null);
-  if (!dich) dich = document.getElementById('slotSummary');
-  if (!dich || cum.parentElement === dich) return;
-  const soTrang = dich.querySelector('.page-btns');
-  if (soTrang && soTrang.parentElement === dich) dich.insertBefore(cum, soTrang);
-  else dich.appendChild(cum);
+  // ⛔ HÀM RỖNG CÓ CHỦ Ý — ĐỪNG “SỬA LẠI CHO ĐÚNG”: cụm `#pageActions` nay nằm trong tấm
+  // `#cfg`, không còn trong hàng phân trang. Nếu dựng lại logic chuyển-cụm thì mỗi lần render
+  // 3 nút Xuất/In/Sao lưu lại bị rút khỏi tấm cài đặt.
+  // Giữ hàm (rỗng) thay vì xoá: 2 chỗ gọi cũ không phải sửa, và người đọc sau thấy ngay dấu
+  // vết của quyết định — xoá đi là lần sau có người tưởng thiếu rồi viết lại.
+  // (Chỗ gọi: `toggleViewMode()` và cuối `renderPagination()`.)
 }
 
 /* ── 🖨️ IN BẢNG ─────────────────────────────────────────────────────────────────────
