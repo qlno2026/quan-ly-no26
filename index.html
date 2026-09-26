@@ -7,6 +7,23 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<!-- ⭐ FAVICON — NGÔI SAO 4 CÁNH, TỰ ĐỔI MÀU THEO CHẾ ĐỘ SÁNG/TỐI (2026-09-26)
+     Yêu cầu người dùng: “tạo favicon cho app từ chính ngôi sao 4 cánh này (hiện tab trình duyệt chưa
+     có icon), tự đảo màu theo chế độ sáng/tối”.
+     · Đúng path ngôi sao của logo header (`M22 2 … 42 22 … 22 42 … 2 22 … Z`), ở cỡ LỚN NHẤT của
+       `viewBox 0 0 44 44` — tab chỉ vẽ 16px nên bản 2 tầng (vòng + lõi) sẽ thành một đống nhão:
+       favicon dùng **1 khối ĐẶC** (chính là dạng “sao lớn” bản trước khi thêm vòng).
+     · ⚠️ ĐỔI MÀU THEO `prefers-color-scheme` (ý muốn của hệ điều hành/trình duyệt), KHÔNG theo
+       `body.light-mode`: FAVICON KHÔNG PHẢI DOM — trình duyệt vẽ nó bằng một tài liệu riêng, nên
+       CSS của trang (và cả nút “Giao diện”) KHÔNG chạm tới được. Quan trọng hơn: **màu nền của
+       thanh tab do TRÌNH DUYỆT/HĐH quyết định**, không do app ⇒ bám theo HĐH là cách duy nhất
+       bảo đảm ngôi sao luôn nhìn thấy. (Muốn bám theo theme của app thì phải thay `href` bằng JS
+       — sẽ ghi vào run doc như một lựa chọn thay thế.)
+     · Màu đúng bằng hai giá trị đang dùng ở logo: sáng `#111827` · tối `#ffffff`.
+     · ⚠️ Data-URI: `#` BẮT BUỘC viết `%23`, và `{`/`}` an toàn hơn khi viết `%7B`/`%7D`.
+     ⛔ Đừng gộp favicon với `.theme-logo`: sửa logo trong trang KHÔNG làm favicon đổi theo,
+     phải sửa cả chuỗi SVG ở đây. -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cstyle%3Epath%7Bfill:%23111827%7D@media (prefers-color-scheme:dark)%7Bpath%7Bfill:%23ffffff%7D%7D%3C/style%3E%3Cpath d='M22 2 C24 14 30 20 42 22 C30 24 24 30 22 42 C20 30 14 24 2 22 C14 20 20 14 22 2 Z'/%3E%3C/svg%3E">
 <title>Quản Lý Nợ</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap');
@@ -15,6 +32,52 @@
   --navy: #111318;
   --navy-mid: #1a1d24;
   --navy-light: #121212;
+  /* ── HEADER (dải trên cùng): nền TRUNG TÍNH + ĐỔI THEO CHẾ ĐỘ ─────────────
+     Yêu cầu người dùng: “tôi muốn nền bảng này bỏ màu xanh và đổi màu theo chế độ sáng tối”
+     (kèm ảnh header). Trước lượt này CẢ HAI theme dùng chung MỘT gradient XANH
+     (`linear-gradient(135deg, #1d4ed8, #1e3a8a)` + lớp sheen trắng) và chữ luôn trắng
+     ⇒ header là khối xanh duy nhất của app và sáng/tối không khác gì nhau.
+     Nay: nền ĐẶC, trung tính — tối `#1a1d24` (đúng `--navy-mid` đang dùng cho tấm Cài đặt
+     ⇒ không phát sinh thêm một tông xám thứ hai), sáng `#f1f5f9` (⟳ bản đầu `#ffffff`, hạ ở lượt
+     “cho nền trắng đừng sáng quá”). Chữ đi theo cặp token
+     riêng nên **tối = chữ sáng trên nền tối, sáng = chữ đậm trên nền sáng**.
+     ⚠️ Vẫn **CHỈ đổi MÀU**: `height`/`padding` và `border-bottom` vẫn `1px` — bỏ hắn viền là
+     hộp nội dung cao thêm 1px và mọi thứ bên dưới (toolbar sticky, `.main`) dịch theo.
+     ⚠️ Chữ ở đây KHÔNG được dùng `--text`/`--text-dim` trực tiếp: 2 token đó **không đổi theo
+     theme** (xem ghi chú ở `body.light-mode .cfg-*`) ⇒ mở chế độ sáng là chữ sáng trên nền trắng.
+     ĐO LẠI khi đổi màu (ĐO LIVE, không phải số của bản header trắng đầu tiên):
+       · tối  `#e2e8f0` trên `#1a1d24` = **13,68:1** ✓ · phụ đề `#94a3b8` = **6,58:1** ✓
+       · sáng `#000000` trên `#f1f5f9` = **19,17:1** ✓ · phụ đề `#475569` = **6,92:1** ✓
+     ⟳ Ở chế độ SÁNG `--hdr-text` nay là `#000000` (yêu cầu “cho chữ Quản Lý Nợ màu đậm hơn”) —
+     bản đầu `#111827` (17,9:1 đo trên nền TRẮNG, khi header sáng còn `#ffffff`). */
+  /* ⟳ **NỀN HEADER = ĐÚNG NỀN CỦA CÁC CONTROL** (yêu cầu người dùng: “cho màu nền bảng header
+     giống màu nền các tab bên dưới ở cả light mode và dark mode”, kèm ảnh header). Không nhập
+     lại giá trị: dùng **ĐÚNG khai báo của `.sort-btn` / `.filter-select` / `.search-box input`**
+     (`rgba(71,85,105,0.35)` ghép trên nền trang `rgb(17,19,24)` ra `rgb(36,42,52)`) ⇒ hai bề mặt
+     KHÔNG THỂ lệch nhau về sau, vì chỉ có MỘT chỗ khai màu. Trước lượt này là `#1a1d24` (đúng
+     `--navy-mid` của tấm Cài đặt — lý do cũ “không thêm tông xám thứ hai” nay nhường cho yêu cầu
+     đồng bộ với control).
+     ĐO LIVE trên nền mới: chữ `#e2e8f0` **13,68 → 11,69:1** ✓ · phụ đề `#94a3b8` **6,58 → 5,62:1** ✓
+     · header vs toolbar **1,10 → 1,29:1** (tách rõ hơn) · logo sao trắng vs nền header **16,86 → 14,41** ✓
+     · nền header ghép ra `rgb(36,42,52)` **TRÙNG ĐÚNG** nền control ghép ra (đã đo cả hai bằng
+     cùng một phép ghép alpha ⇒ `sameAsControl = true`).
+     ⚠️ `--hdr-bg` là màu CÓ ALPHA nên header phải nằm TRỰC TIẾP trên nền trang (đúng thực tế: cha
+     của `.header` là `<body>`) — nếu sau này bọc header trong một lớp khác có nền riêng thì màu
+     ghép sẽ khác đi và phải đo lại. */
+  --hdr-bg: rgba(71,85,105,0.35);
+  --hdr-text: #e2e8f0;
+  --hdr-sub: #94a3b8;
+  --hdr-line: var(--border);
+  --hdr-shadow: 0 3px 10px rgba(0,0,0,0.35);
+  /* ── LOGO NGÔI SAO 4 CÁNH — 2 MÀU TRẮNG/ĐEN, ĐẢO CỰC THEO THEME.
+     `--logo-outer` = ngôi sao LỚN (nền) · `--logo-inner` = ngôi sao NHỎ (lõi) lồng bên trong.
+     🔁 Ở chế độ TỐI (khối này): sao TRẮNG + lõi ĐEN. Ở chế độ SÁNG: đảo lại (xem `body.light-mode`).
+     ⚠️ Đảo cực KHÔNG phải để cho đẹp: header đổi nền theo theme, nên giữ nguyên một cực là có
+     theme ăn mất ngôi sao LỚN (đen trên `rgb(26,29,36)`) ⇒ logo teo còn lõi, đổi theme là logo
+     nhảy kích thước — đúng thứ hợp đồng “chỉ đổi MÀU” cấm.
+     ⛔ Đừng đưa `--logo-*` vào `.kh-card`/control: đây là token RIÊNG của logo header. */
+  --logo-outer: #ffffff;
+  --logo-inner: #111827;
   --accent: #3b82f6;
   --accent-glow: #60a5fa;
   --gold: #f59e0b;
@@ -41,9 +104,90 @@
   --dk-card: #1f2836;
   --dk-table: rgba(255,255,255,0.04);
   --dk-sum: #141720;
-  /* Viền control của thanh công cụ (ô tìm kiếm, 2 ô lọc, nút xuất file).
-     --border (8% trắng) gần như vô hình trên nền toolbar nên control bị "phẳng". */
+  /* ── ĐƯỜNG KẺ TRONG BẢNG (`--tb-line`) — MỘT TOKEN cho cả 2 theme ──────────────────
+     Yêu cầu người dùng: “tôi muốn đường kẻ viền đậm hơn để dễ nhìn” (kèm ảnh bảng ở chế độ
+     tối). Trước lượt này đường kẻ bị khai Ở HAI NƠI với hai màu khác nhau và đều RẤT mờ:
+       · hàng (dark)  `rgba(255,255,255,0.15)` ⇒ **1,56:1** trên nền hàng
+       · hàng (light) `rgba(0,0,0,0.25)`      ⇒ **1,83:1**
+       · dưới header (light) `border-color: #d1d5db` = **ĐÚNG MÀU NỀN HEADER** ⇒ **vô hình**
+     ⇒ gom về MỘT token ngay đây (giá trị dark) + override trong `body.light-mode`, và chỉnh
+     lại đúng 4 chỗ dùng nó (`thead th`, `tbody tr`, `tbody tr:last-child`, và
+     `body.light-mode .table-view th`).
+     ⟳ **LƯỢT NGAY SAU (26/9) — “cho đường kẻ ngang nét mỏng hơn nhưng sang hơn cho dễ nhìn cả
+     2 chế độ”: NÉT `2px → 1px` + ĐẬM LÊN.** Nét mỏng + màu đậm cho ra đường HAIRLINE sắc, thay
+     vì một vệt 2px dày mà vẫn mờ. **SỐ ĐO LIVE SAU KHI SỬA (nét 1px, cả 2 theme, cả dải nền
+     xanh “tên + tiền”):**
+       · dark  `rgba(148,163,184,0.8)` ⇒ trên nền bảng **4,73:1** · trên dải nền xanh **4,09:1**
+         · dưới header **4,36:1** (bản 2px cùng token 0,6: 3,31 / 3,03 / 3,17)
+       · light `rgba(0,0,0,0.6)` ⇒ trên nền bảng **5,59:1** · trên dải nền xanh **5,36:1**
+         · dưới header **5,06:1** (bản 2px cùng token 0,5: 3,91 / 3,80 / 3,65)
+     ⚠️ **NÉT 1px LÀ CỐ Ý — đừng “trả lại” 2px vì thẩm mỹ:** người dùng đã yêu cầu nét mỏng hơn.
+     ⚠️ **HỆ QUẢ BẮT BUỘC BIẾT:** khe giữa hai khách = ĐÚNG bề dày kẻ này (đệm dọc đã về 0) ⇒
+     nét mỏng đi **1px** thì mỗi hàng THẤP ĐI 1px (đo trên trang: 66 → **65px**). Đổi bề dày lần
+     nữa là phải đo lại chiều cao hàng + cập nhật mục “📉 KHE GIỮA CÁC HÀNG” trong run doc.
+     ⚠️ `tbody tr` và `tbody tr:last-child` PHẢI cùng bề dày — lệch nhau là hàng CUỐI dày hơn 1px.
+     ⚠️ Kẻ dưới header (`thead th`) vẫn `1px` như trước, lượt này chỉ đổi MÀU của nó.
+     ⚠️ Ở bố cục 4-cột (bố cục trong ảnh người dùng gửi) đường kẻ duy nhất của bảng là `tbody tr`
+     này — quét cả 20 hàng đầu: không có ô/div nào khác có viền ⇒ sửa token là sửa ĐÚNG chỗ
+     đang thấy. (Bố cục 14 cột ở màn rộng mới có thêm kẻ 1px của từng ô, xem chú thích ở
+     `body.light-mode .table-view td`.)
+     ⇒ **MỌI chỗ ≥ 4:1** (thấp nhất **4,09** ở dark trên dải nền xanh) trên ngưỡng 3:1 của
+     biên thành phần giao diện (WCAG 1.4.11) — đường kẻ hàng là thứ DUY NHẤT tách hai khách
+     liền kề — và hai theme có **cùng độ mạnh biên** (thấp nhất 4,09 dark / 5,06 light).
+     💡 CÙNG TÔNG MÀU và ⟳ nay **CÙNG ALPHA (0,8)** với viền control nhóm đậm của chế độ tối
+     (`--ctl-line` — lượt “nâng viền control” đã đưa nó từ 0,6 lên 0,8), nhưng vẫn là **HAI
+     TOKEN RIÊNG**: nền của chúng khác nhau nên cùng alpha ⇒ tương phản khác nhau (kẻ hàng
+     trên nền bảng **4,73** · viền control trên nền control **4,16**), và phải giữ khả năng
+     chỉnh lệch (kẻ hàng tách hai KHÁCH, viền control chỉ ôm một control).
+     ⚠️ ĐỔI Ở ĐÂY LÀ ĐỔI CẢ 2 THEME (nếu chỉ muốn nền tối thì sửa `body.light-mode` bên dưới). */
+  --tb-line: rgba(148,163,184,0.8);   /* ⟳ 0,6 → 0,8 cùng lượt với `2px → 1px` — xem khối chú thích ngay trên */
+  /* ── VIỀN XUNG QUANH BẢNG (`--tb-edge`) — CHỈ dùng cho khung `.table-wrap`, chỉ ĐỔI
+     Ở CHẾ ĐỘ TỐI (chế độ sáng đã có viền thật `--light-edge` `#374151` = 9,85:1).
+     Yêu cầu người dùng: “cho viền xung quanh bảng sáng hơn dark mode” (kèm ảnh bảng tối).
+     Trước lượt này khung ăn chung `--border` = `rgba(255,255,255,0.08)` ⇒ vẽ ra
+     `rgb(36,38,42)` trên nền trang `rgb(17,19,24)` = **1,23:1** — coi như VÔ HÌNH, mà nền bảng
+     chế độ tối chỉ khác nền trang **1,05:1** (mức “Dịu”) nên khung là thứ DUY NHẤT nói “bảng
+     bắt đầu từ đây”.
+     ⚠️ Nay khung **CÙNG màu và CÙNG nét (1px)** với kẻ hàng (`--tb-line` = `rgba(148,163,184,0.8)`)
+     — cố ý, để cả bảng đọc ra như MỘT lưới 1px đều nhau, sau khi lượt “nét mỏng hơn nhưng sang
+     hơn” đưa kẻ hàng từ `2px/0,6` về `1px/0,8`:
+       · khung **5,04:1** trên nền trang `rgb(17,19,24)`
+       · kẻ hàng **4,73:1** trên nền bảng (mức “Chuẩn”) · **4,09:1** trên dải nền xanh
+       · viền control NHÓM ĐẬM (`--ctl-line`) 4,16:1 (⟳ 3,36 ở alpha 0,6) · nhóm mảnh
+         `--ctl-vien` 1,66:1 · chữ mờ nhất 5,79–6,17:1
+     ⚠️ Vẫn giữ 2 TOKEN RIÊNG dù hiện cùng giá trị: nền của hai thứ khác nhau (khung nằm trên
+     nền TRANG, kẻ hàng nằm trên nền BẢNG) nên muốn lệch nhau phải sửa được riêng.
+     ⛔ ĐỪNG dùng token này cho `.kh-card`/toolbar/ô nhập (chúng có token riêng) — đổi ở đây là
+     đổi CẢ khung bảng, đó là ý định; nhưng đừng gán nó vào chỗ khác để rồi không tài nào
+     giảm riêng chỗ đó được.
+     ⛔ Chỉ đổi MÀU: bề dày vẫn `1px` — tăng lên `2px` là cộng thêm vào chiều cao `.table-wrap`
+     và làm lệch mọi số đo chiều cao bảng trong run doc. */
+  --tb-edge: rgba(148,163,184,0.8);
+  /* Viền control NHÓM MẢNH của thanh công cụ (ô tìm kiếm, nút xuất file, nút dạng xem).
+     --border (8% trắng) gần như vô hình trên nền toolbar nên control bị "phẳng".
+     ⚠️ 2 ô lọc / 2 tab sắp xếp / nút “Aa” / nút “⚙” KHÔNG dùng token này — xem `--ctl-line`. */
   --ctl-vien: rgba(148,163,184,0.28);
+  /* ── VIỀN CONTROL NHÓM ĐẬM (2 ô lọc, 2 tab sắp xếp, nút “Aa”, nút “⚙”) — CHỈ dùng cho
+     chế độ TỐI (chế độ sáng đã có `--ctl-light-line` `#64748b`).
+     Yêu cầu người dùng: “Nâng viền control ở dark mode cho hai theme cùng độ mạnh biên”.
+     Trước lượt này viền nhóm này viết thẳng alpha **0,6** ⇒ vẽ ra `rgb(103,115,131)` =
+     **2,98:1** trên nền control `rgb(36,42,52)` và **3,36:1** trên toolbar `rgb(17,19,24)`,
+     còn light mode dùng `--ctl-light-line` = **4,21 / 4,76** ⇒ dark YẾU HƠN ở CẢ HAI chiều.
+     Con số 0,8 là có quét: alpha 0,60→1,00, bước 0,05 (ghép lên nền thật, xem bảng dưới)
+       0,60 → 2,98 / 3,36      0,75 → 3,84 / 4,58      0,90 → 4,85 / 6,08
+       0,65 → 3,25 / 3,74      0,80 → **4,16 / 5,04**  0,95 → 5,23 / 6,64
+       0,70 → 3,54 / 4,14      0,85 → 4,50 / 5,54      1,00 → 5,63 / 7,25
+     ⇒ **0,80** là mức gần light nhất (4,16 vs 4,21 — lệch **0,05**); 0,75 vẫn dưới light,
+     0,85 thì vượt lên. Mọi mức ≥ 0,75 đã qua ngưỡng 3:1 của WCAG 1.4.11 (biên component).
+     ⛔ ĐỪNG gộp token này với `--ctl-vien` (0,28): đó là NHÓM MẢNH (ô tìm kiếm / nút xuất
+     file / nút dạng xem) — ở light mode nhóm đó dùng `#c7d2fe` (1,32:1) chứ không phải
+     `--ctl-light-line`, nên hai nhóm CỐ Ý có độ mạnh khác nhau ở CẢ HAI theme. Kéo
+     `--ctl-vien` lên 0,8 là đổi luôn 3 control người dùng không yêu cầu.
+     ⚠️ Cùng giá trị alpha với `--tb-line`/`--tb-edge` (0,8) nhưng VẪN LÀ TOKEN RIÊNG: nền
+     của chúng khác nhau nên cùng alpha cho tương phản khác nhau, và phải giữ khả năng lệch.
+     ⛔ Chỉ đổi MÀU: `border-width` vẫn **1px** — đổi nét là đổi kích thước control ⇒ lệch mọi
+     số đo bề rộng/chiều cao trong run doc. */
+  --ctl-line: rgba(148,163,184,0.8);
   /* Chiều cao DÙNG CHUNG của mọi control thanh công cụ: ô tìm kiếm, 3 ô lọc, 2 nút
      sắp xếp. Trước đây 36px bị hard-code ở 3 rule nên muốn đổi là phải sửa 3 nơi và rất
      dễ sót → lệch tầng. NAY đổi ở MỘT chỗ. Lịch sử: 38px → 42px → 36px → 40px → **44px**
@@ -62,6 +206,22 @@
      `.sort-btn`, `.nhom-option`) + 7 rule trong 2 khối @media (≤639.98px: 3 · ≥640px: 4). */
   --ctl-fs: 19px;
   --ctl-fw: 500;
+  /* Cỡ chữ TRONG TẤM CÀI ĐẶT (`#cfg`) — cùng NHÓM với `--ctl-fs` (chữ của CONTROL), **KHÔNG**
+     phải cỡ chữ NỘI DUNG ⇒ ⛔ TUYỆT ĐỐI không khai trong 3 khối `body[data-fs="…"]` (xem
+     ghi chú ở khối “CỠ CHỮ NỘI DUNG”): nút “Aa” chỉ điều khiển chữ DỮ LIỆU (thẻ/bảng), còn
+     chữ control ở lại cố định — trộn vào là bấm “Lớn” thì mọi nút trong tấm cũng phình ra.
+     ⟳ TĂNG 1 NẤC ở lượt “cho các chữ này to hơn” (người dùng gửi ảnh tấm Cài đặt):
+       tiêu đề `16 → 18px` · nhãn hàng `15 → 18px` · giá trị đang dùng `14 → 16px`
+       · chữ trong nút `13 → 14px`.
+     ⚠️ TRẦN đã đo (⛔ đừng vượt mà không đo lại): ở bố cục hẹp nhất (clientWidth 303) hộp
+     nhãn còn **227px**, mà nhãn dài nhất “Dạng xem · Dạng máy tính” ở 18/16px đã **213px**
+     ⇒ nhãn **19px là 225px**, chỉ còn 2px dự. Vì vậy nhãn chốt ở 18px (kém `--ctl-fs` đúng 1px
+     là do hàng này chật nhất, không phải do lệch quy ước). Hàng này có `min-width: 0` nên nếu
+     vượt thì nó XUỐNG DÒNG chứ không bị cắt — nhưng tấm cao thêm. */
+  --fs-cfg-title: 18px;
+  --fs-cfg-lb: 18px;
+  --fs-cfg-val: 16px;
+  --fs-cfg-btn: 14px;
 
   /* ── BẢNG MÀU ICON (nguồn DUY NHẤT) ───────────────────────────────────────
      Icon trong sprite `#__icon-sprite` chỉ tham chiếu các biến này, KHÔNG viết mã màu
@@ -157,10 +317,24 @@ body.light-mode {
      lại 1 tí" ⇒ `#eff1f5`, blue 255 → 245, đọc ra XÁM hơi lạnh thay vì tím nhạt, và hợp
      với nền trang gần trắng `#f8fafc` vừa đổi. Mọi rule của light mode dùng chung biến này —
      đổi ở MỘT chỗ (đừng hard-code lại 4 nơi như trước).
-     ⚠️ `#eef0f4` (tối hơn 1 nấc) làm **viền ô lọc `#7a80f0` tụt xuống 2.98:1** khi đo
-     với nền ô — dưới ngưỡng 3:1 cho biên component (WCAG 1.4.11). `#eff1f5` giữ được
-     **3.01:1**; đừng hạ nền thêm nữa mà không đo lại. */
+     ⚠️ `#eef0f4` (tối hơn 1 nấc) làm **viền control tụt xuống ~2,6:1** khi đo với nền ô —
+     dưới ngưỡng 3:1 cho biên component (WCAG 1.4.11). `#eff1f5` giữ được **4,21:1** với
+     viền trung tính `--ctl-light-line`; đừng hạ nền thêm nữa mà không đo lại. */
   --ctl-light-bg: #eff1f5;
+  /* VIỀN CONTROL Ở LIGHT MODE — MỘT token cho cả nhóm (2 ô lọc · 2 nút sắp xếp · 2 nút
+     điều khiển trong tấm Cài đặt — `#fsBtn`, `#cfgBtn`).
+     ⟳ Trước là `#7a80f0` = **TÍM XANH**; yêu cầu “đổi tông xanh/tím của 2 nút sắp xếp và
+     các ô lọc sang tông trung tính cho đồng bộ với header mới” (header nay trung tính —
+     xem mục “🧱 HEADER TRUNG TÍNH THEO CHẾ ĐỘ” ở cuối run doc).
+     `#64748b` = xám slate TRUNG TÍNH. ĐO LẠI: **4,21:1** trên nền ô `#eff1f5` ·
+     **4,76:1** trên toolbar trắng — MẠNH hơn bản cũ (3,01 / 3,40) nên chắc chắn vượt
+     ngưỡng **3:1** của WCAG 1.4.11 (biên component).
+     ⚠️ Viền trạng thái “đang lọc” (`#475569`, 5,12:1 trên nền ô đang lọc) vẫn ĐẬM HƠN viền
+     này ⇒ hai trạng thái vẫn phân biệt được, đúng lý do `[data-active="1"]` phải đổi CẢ nền.
+     ⛔ Đừng trả về màu xanh/tím (`#7a80f0` / `#c7d2fe` cho nhóm này): đó chính là thứ lượt
+     này bỏ đi. Nhóm `#c7d2fe` còn lại (ô tìm kiếm, nút Xuất file, nút Dạng xem) CHƯA đụng
+     tới — muốn hết hẳn thì phải xử lý riêng và ĐO LẠI (xem run doc). */
+  --ctl-light-line: #64748b;
 
   /* Dải nền hàng “tên + tiền” ở light mode.
      Lịch sử: **5%** (nhạt quá — yêu cầu người dùng) → **14%** → ⟳ **12%** ở lượt “cân lại
@@ -288,11 +462,12 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue); }
 
 /* ── HEADER ─────────────────────────────── */
 .header {
-  background:
-    linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0) 40%),
-    linear-gradient(135deg, #1d4ed8, #1e3a8a);
-  border-bottom: 1px solid var(--border);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.35);
+  /* ⟳ NỀN TRUNG TÍNH (bỏ dải xanh) + ăn theo theme — token `--hdr-*`, xem khối chú thích ở
+     `:root`. Đây là nền ĐẶC, KHÔNG còn gradient: gradient không composite được nên mỗi frame
+     phải raster lại cả dải header (lý do `transition` bên dưới chỉ cho shadow/border). */
+  background: var(--hdr-bg);
+  border-bottom: 1px solid var(--hdr-line);
+  box-shadow: var(--hdr-shadow);
   height: calc(var(--header-h) + env(safe-area-inset-top, 0px));
   padding: env(safe-area-inset-top, 0px) 0 0 8px;
   display: flex;
@@ -302,18 +477,35 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue); }
   position: sticky;
   top: 0;
   z-index: 200;
-  /* Gradient nền KHÔNG nên transition: gradient không composite được nên mỗi frame
-     phải raster lại toàn bộ dải header, kéo theo lớp backdrop-filter của toolbar
-     phải composite lại. Nền đổi ngay, chỉ shadow/border mượt. */
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  /* ℹ️ Vì sao trước đây KHÔNG transition nền: nền cũ là GRADIENT — gradient không composite
+     được nên mỗi frame phải raster lại cả dải header, kéo theo lớp `backdrop-filter` của
+     toolbar phải composite lại. ⟳ Nền nay là MỘT MÀU ĐẶC nên đã bật transition cho
+     `background-color` + `color`: đổi sáng/tối thì header chuyển mượt như mọi bề mặt khác
+     (0,2s — khớp luật `transition` chung ở khối “BỘ ICON…” phía trên), hết cảnh header nhảy
+     màu tức thì trong khi phần còn lại của app đang mờ dần. */
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .header-left { display: flex; align-items: center; gap: 4px; }
 
 .title-wrap { display: flex; flex-direction: column; align-items: flex-start; }
 
-.header-title { font-size: 18px; font-weight: 400; letter-spacing: 0.3px; color: #ffffff; }
-.header-sub { font-size: 13px; color: #f8fafc; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; font-weight: 400; }
+/* ⭐ TIÊU ĐỀ “Quản Lý Nợ” — ĐẬM HƠN (yêu cầu người dùng: “cho chữ quản lý nơ màu đậm hơn”,
+   kèm ảnh header chế độ sáng). Đổi HAI thứ cùng lúc vì chỉ đổi một thứ thì mắt gần như không thấy:
+     · MÀU: `--hdr-text` ở chế độ sáng `#111827` → **`#000000`** (khai ở `body.light-mode`;
+       đo `16,19 → **19,17:1**` trên nền header `#f1f5f9`).
+     · ĐỘ DÀY NÉT: `font-weight` **400 → 600**. Đây mới là thứ tạo cảm giác “đậm” — ở 18px,
+       Inter weight 400 cho nét RẤT mảnh nên chữ trông nhạt dù màu đã đạt 16,19:1.
+   ⚠️ `font-weight` LÀ METRIC (bề rộng chữ đổi theo): ĐO LIVE `101,65px → 102,49px` (**+0,84px**) và
+   KHÔNG gây xê dịch: `.title-wrap` nằm trong `.header-left` (flex, không khai bề rộng), còn
+   `.header-right` được đẩy sang phải bằng `margin-left: auto` nên không phụ thuộc bề rộng tiêu đề
+   (đo lại: `.clock-box` vẫn ở `x = 318,35` · header vẫn cao **55,99px** · tiêu đề vẫn `y = 7,78`).
+   ⚠️ Đổi `font-weight` KHÔNG theo theme ⇒ chế độ tối cũng đậm hơn (màu tối `#e2e8f0` **13,68:1**
+   KHÔNG đổi) — đúng ý đồ: nhãn tiêu đề phải trông như nhau ở cả hai chế độ.
+   ⛔ Đừng nâng lên 700: đồng hồ (số liệu, 20px) đang 700 và là chữ đậm nhất header — 600 là nấc
+   vừa đủ để “đậm hơn” mà không tranh chấp thứ bậc. */
+.header-title { font-size: 18px; font-weight: 600; letter-spacing: 0.3px; color: var(--hdr-text); }
+.header-sub { font-size: 13px; color: var(--hdr-sub); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; font-weight: 400; }
 
 /* ⏰ ĐỒNG HỒ Ở HEADER — nay là KHỐI HIỂN THỊ, KHÔNG còn là nút.
    Lý do: yêu cầu “cho thêm 1 nút cài đặt và bỏ tất cả các nút vào đó” (người dùng chốt
@@ -325,7 +517,7 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue); }
    xê dịch một px nào. */
 .clock-box {
   background: transparent;
-  color: #ffffff;
+  color: var(--hdr-text);   /* theo theme — trước là `#ffffff` cố định */
   border: none;
   padding: 6px 10px;
   border-radius: 8px;
@@ -342,8 +534,14 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue); }
 
 .header-right { display: flex; align-items: center; gap: 8px; margin-left: -8px; }
 
-/* 🍊 CẦU CAM Ở HEADER — nay là LOGO TĨNH, KHÔNG còn là nút đổi giao diện.
+/* ✨ LOGO NGÔI SAO Ở HEADER — nay là LOGO TĨNH, KHÔNG còn là nút đổi giao diện.
+   ⟳ (tên cũ: “CẦU CAM Ở HEADER” — hình cầu cam đã bị thay bằng NGÔI SAO 4 CÁNH 2 MÀU)
    Lý do y như `.clock-box`: mọi nút đã vào `#cfg`; đổi sáng/tối nay ở hàng “Giao diện”.
+   ⟳ Nay là **NGÔI SAO 4 CÁNH, 2 MÀU TRẮNG/ĐEN, ĐẢO CỰC THEO THEME** (yêu cầu “đổi icon tia sét
+   qua hình ngôi sao này và chỉnh cho ngôi sao phong cách tối giản 2 màu trắng đen”): 2 path
+   phẳng (`logo-star-out` = sao lớn, `logo-star-in` = sao nhỏ lồng trong, tỉ lệ 0,52), KHÔNG
+   gradient/filter/bóng. Hai `fill` nằm ở HAI RULE CSS ngay dưới khối này và lấy từ token
+   `--logo-outer`/`--logo-inner` — đổi màu logo là sửa token, không sửa markup.
    ⛔ ĐỔI TÊN `.theme-toggle` → `.theme-logo` (tên cũ nói dối: đây không còn là toggle), và
    bỏ hết `cursor: pointer` / `:hover` / `:active` — logo không được phản hồi như nút.
    ⚠️ Số đo (56×56, padding 6px) GIỮ NGUYÊN: header đang khít, đổi là `header-right` xê dịch.
@@ -365,6 +563,15 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue); }
   height: 100%;
   display: block;
 }
+/* Hai màu của logo lấy TỪ TOKEN, KHÔNG viết thẳng trong markup: đổi màu logo ở MỘT chỗ
+   (`--logo-outer`/`--logo-inner`) và đổi được riêng cho từng theme. Xem khối chú thích `:root`. */
+.theme-logo-ico .logo-star-out { fill: var(--logo-outer); }
+.theme-logo-ico .logo-star-in  { fill: var(--logo-inner); }
+/* VÒNG TRÒN NGOÀI (yêu cầu “thêm vòng tròn phía ngoài”): CHỈ VIỀN, KHÔNG NỀN. `stroke-width: 2`
+   với `r: 19` cho mép ngoài đúng **r = 20** — bằng mép ngoài đường tròn cam cũ ⇒ logo vẫn chiếm
+   đúng 40×40 trong hộp 44×44, header không xê dịch. ⛔ `fill: none` là BẮT BUỘC: đổ nền là tầng
+   ngoài của ngôi sao (cùng màu với vòng) chìm vào vòng, logo chỉ còn lộ sao nhỏ. */
+.theme-logo-ico .logo-ring { fill: none; stroke: var(--logo-outer); stroke-width: 2; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── LIGHT MODE ───────────────────────── */
@@ -401,19 +608,62 @@ body.light-mode {
   background: #f8fafc;
   color: #000000;
 }
-body.light-mode .header {
-  background:
-    linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0) 42%),
-    linear-gradient(135deg, #1d4ed8, #1e3a8a);
-  /* KHÔNG dùng border-bottom: none — bỏ 1px viền làm hộp nội dung cao thêm 1px và
-     các con (align-items: center) dịch đi 0.36px so với dark. Chỉ đổi màu viền. */
-  border-bottom-color: transparent;
-  box-shadow: 0 3px 10px rgba(30,64,175,0.35);
+/* ── HEADER · CHẾ ĐỘ SÁNG: nền XÁM RẤT NHẠT (không dùng trắng), chữ ĐẬM ────────────
+   ⟳ Hai rule cũ (`body.light-mode .header` lặp LẠI đúng dải xanh của dark, và 3 dòng đổi chữ
+   về `#ffffff`) đã bị thay bằng bộ token `--hdr-*`: trước đây header sáng/tối GIỐNG HỆT nhau
+   nên “đổi màu theo chế độ” là bất khả thi.
+   ⟳ **NỀN `#ffffff` → `#f1f5f9`** (yêu cầu người dùng: “cho nền trắng đừng sáng quá”, kèm ảnh
+   chụp ĐÚNG dải header). `#f1f5f9` là slate-100 — **đúng giá trị `--light-surface` ở mức “Chuẩn”**
+   nên KHÔNG sinh thêm một tông xám mới trong app; trắng tuyệt đối chỉ còn ở `.toolbar`.
+   ĐO LẠI trên nền mới: chữ tiêu đề `#111827` **17,74 → 15,85 ✓** · phụ đề `#475569`
+   **7,58 → 6,92 ✓** (cả hai vẫn xa ngưỡng 4,5) · đồng hồ dùng đúng 2 token đó nên theo luôn.
+   ⚠️ Header (`#f1f5f9`) nay TỐI HƠN `.toolbar` (`#ffffff`) ngay dưới nó — chênh **1,09:1**,
+   cộng viền dưới `#cbd5e1` (1,36:1 so với header) và bóng đổ nên ranh giới vẫn rõ. Ở chế độ tối
+   chiều đảo ngược (header `#1a1d24` SÁNG HƠN toolbar `rgb(17,19,24)`) — hai theme không cần
+   trùng chiều, mỗi bên chọn nấc cho dễ đọc.
+     nền `#f1f5f9` · chữ `#111827` · phụ đề `#475569` · viền dưới `#cbd5e1` · bóng đổ trung tính
+     `rgba(15,23,42,0.12)` (trước là bóng XANH `rgba(30,64,175,0.35)`).
+   ⚠️ `border-bottom` vẫn 1px, chỉ đổi MÀU: bỏ hẳn viền là hộp nội dung cao thêm 1px và các
+   con (`align-items: center`) dịch đi ~0,36px so với chế độ tối. */
+body.light-mode {
+  /* ⟳ **NỀN HEADER = ĐÚNG NỀN CONTROL** (cùng yêu cầu như chế độ tối): ở đây lấy **THẲNG token**
+     `--ctl-light-bg` (`#eff1f5`) — chính là nền của `body.light-mode .sort-btn` / `.filter-select`
+     / `.search-box input`. Bản trước là `#f1f5f9` (hạ ở lượt “nền trắng đừng sáng quá”); đổi sang
+     token control là để header và các tab dưới **không thể lệch màu**.
+     ĐO LIVE: chữ `#000000` **19,17 → 18,57:1** ✓ · phụ đề `#475569` **6,92 → 6,70:1** ✓ ·
+     header vs toolbar trắng **1,13:1** · logo sao đen vs nền header **16,19 → 15,69** ✓ ·
+     nền header và nền control đều ra `rgb(239,241,245)` (đo bằng cùng phép ghép ⇒ `sameAsControl`). */
+  --hdr-bg: var(--ctl-light-bg);
+  /* ⟳ `#111827` → **`#000000`** (yêu cầu “cho chữ Quản Lý Nợ màu đậm hơn”). Dùng CHUNG cho tiêu
+     đề + đồng hồ (cả hai đọc `var(--hdr-text)`) — cố ý, để hai dòng chữ “chính” của header
+     không lệch tông nhau. Đo: `#000000` trên `#f1f5f9` = **19,17:1** ✓ (bản cũ 16,19). */
+  --hdr-text: #000000;
+  --hdr-sub: #475569;
+  --hdr-line: #cbd5e1;
+  --hdr-shadow: 0 3px 10px rgba(15,23,42,0.12);
+  /* Logo header: ĐẢO CỰC so với chế độ tối — sao ĐEN + lõi TRẮNG (xem khối chú thích ở `:root`).
+     Kết quả: vẫn đúng 2 màu trắng/đen, và ngôi sao LỚN luôn tương phản với nền header đang vẽ.
+     Đo: sao đen `#111827` trên header `#f1f5f9` **16,19:1** · lõi trắng ↔ sao đen **17,74:1**
+     (ngưỡng 3:1) · lõi trắng chỉ **1,10:1** với nền header — cố ý, lõi đọc như “lỗ khoét”. */
+  --logo-outer: #111827;
+  --logo-inner: #ffffff;
 }
-body.light-mode .header-title { color: #ffffff; }
-body.light-mode .header-sub { color: #f8fafc; }
-body.light-mode .clock-box { background: transparent; color: #ffffff; border: none; }
-/* (đã bỏ rule box-shadow:none ở đây: cả 2 theme đều không dùng box-shadow cho nút này) */
+body.light-mode .header {
+  background: var(--hdr-bg);
+  border-bottom-color: var(--hdr-line);
+  box-shadow: var(--hdr-shadow);
+}
+/* ⛔ ĐỪNG thêm lại `body.light-mode .header-title/.header-sub/.clock-box { color:#ffffff }`:
+   cả 3 đã dùng `--hdr-text`/`--hdr-sub` (và `.clock-box` không cần override nền/border vì
+   rule nền của nó vốn đã `background: transparent; border: none`).
+   ⟳ **BÀI HỌC QUAN TRỌNG — “ĐÃ DÙNG TOKEN” Ở KHỐI CHA KHÔNG ĐỦ:** riêng ĐỒNG HỒ, hai dòng
+   chữ là `<span>` do JS ghi thẳng nội dung và **tô màu bằng INLINE** (`#ffffff` +
+   `rgba(255,255,255,0.95)`) ⇒ trên header TRẮNG của chế độ sáng nó là **trắng trên trắng,
+   VÔ HÌNH** (đúng như người dùng báo: “đổi màu chữ đồng hồ light mode”). Đã sửa 2 span sang
+   `var(--hdr-text)` / `var(--hdr-sub)` (xem markup `#clockLive` / `#clockDateLive`).
+   ⚠️ Đây là **cùng một cái bẫy** với viền ô lọc tô bằng JS (`btn.style.borderColor`):
+   **inline style thắng mọi rule CSS**, kể cả rule có token. Khi một khối đã “theo theme” mà
+   con của nó vẫn sai màu ⇒ luôn kiểm tra INLINE STYLE của con trước khi sửa CSS. */
 body.light-mode .toolbar-top .search-box { margin-top: 0; }
 /* 1px cho bằng viền của 2 ô lọc và nút xuất file (trước là 1.5px → ô tìm kiếm dày hơn) */
 body.light-mode .search-box { background: var(--ctl-light-bg); border: none; border-radius: 10px; box-shadow: inset 0 0 0 1px #c7d2fe; }
@@ -428,13 +678,10 @@ body.light-mode .filter-row { background: transparent; }
    trông như đang được chọn trong khi ô "DS nhóm" thì không. Viền xanh giờ chỉ hiện khi
    bộ lọc thực sự có giá trị, do selectLoai()/selectNhom() đặt.) */
 body.light-mode .export-btn { background: var(--ctl-light-bg); border-color: #c7d2fe; color: #475569; }
-/* Cùng một bề mặt cho mọi control: nền xanh nhạt + viền tím nhạt, khớp với ô tìm kiếm
-   (trước đây ô lọc là xám #e2e8f0 còn ô tìm kiếm là #eef2ff — hai hệ màu khác nhau). */
-/* Viền ô lọc (light) đậm hơn bản cũ `#c7d2fe` (1.49:1) — xem chú thích ở rule nền
-   `.filter-select`. `#7a80f0` = **3.40:1** trên nền trắng, cố ý chọn để khớp độ mạnh với
-   dark (3.36:1) vì hai theme phải trông cùng "độ đậm" biên. Vẫn nhạt hơn hẳn viền trạng
-   thái "đang lọc" `#2563eb` (5.17:1) nên không lẫn với trạng thái đó. */
-body.light-mode .filter-row select, body.light-mode .filter-select { color: #000000; background: var(--ctl-light-bg); border: 1px solid #7a80f0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='%235b6777'%3E%3Cpath d='M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+/* Bề mặt control ở light: nền xám nhạt `--ctl-light-bg` + viền TRUNG TÍNH `--ctl-light-line`.
+   ⟳ Bản cũ ghi “nền xanh nhạt + viền tím nhạt, khớp với ô tìm kiếm” — lượt “trung tính hoá
+   thanh công cụ” đã BỎ tông xanh/tím ở nhóm ô lọc + 2 nút sắp xếp. */
+body.light-mode .filter-row select, body.light-mode .filter-select { color: #000000; background: var(--ctl-light-bg); border: 1px solid var(--ctl-light-line); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='%235b6777'%3E%3Cpath d='M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
 body.light-mode .nhom-dropdown { background: #ffffff !important; border-color: #cbd5e1 !important; }
 /* font-size ở đây có !important nên ĐÈ mọi inline font-size của các .nhom-option
    (markup + chuỗi innerHTML trong JS). Đổi cỡ chữ dropdown phải sửa CẢ 2 nơi:
@@ -456,15 +703,16 @@ body.light-mode .nhom-dropdown { background: #ffffff !important; border-color: #
    đây cho cả hai — chỉ đổi HÀNH VI, không đổi metric. */
 .nhom-option { font-weight: var(--ctl-fw) !important; font-size: var(--ctl-fs) !important; user-select: none; -webkit-user-select: none; }
 body.light-mode .nhom-option { color: #000000 !important; border-bottom: 1px solid #94a3b8 !important; background: #ffffff !important; }
-body.light-mode .nhom-option:hover { background: rgba(59,130,246,0.1) !important; }
+body.light-mode .nhom-option:hover { background: rgba(100,116,139,0.12) !important; }   /* ⟳ xám trung tính */
 body.light-mode .toolbar { background: #ffffff; border-bottom-color: #e2e8f0; }
 body.light-mode .toolbar.stuck { box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
-/* Bề mặt nút sắp xếp = ĐÚNG bề mặt 2 ô lọc ở light mode (`#eef2ff` + viền `#7a80f0`) —
-   cùng cặp màu với `body.light-mode .filter-select`. Viền `#7a80f0` = **3.40:1** trên nền
-   toolbar trắng, vượt ngưỡng 3:1 (viền cũ `#cbd5e1` chỉ **1.48:1**).
+/* Bề mặt nút sắp xếp = ĐÚNG bề mặt 2 ô lọc ở light mode (`--ctl-light-bg` +
+   `--ctl-light-line`) — cùng cặp TOKEN với `body.light-mode .filter-select`.
+   ⟳ Viền nay là xám trung tính `#64748b` = **4,76:1** trên toolbar trắng (bản cũ
+   `#7a80f0` = 3,40 — đủ ngưỡng nhưng mang tông xanh tím, đã bỏ theo yêu cầu).
    ⚠️ `color` giữ `#4b5563` (KHÔNG lấy `#000000` của ô lọc): chữ của nút sắp xếp vẫn phải mờ
    hơn chữ trên nút ĐANG sắp xếp (trắng trên nền đậm) để còn phân biệt được trạng thái. */
-body.light-mode .sort-btn { background: var(--ctl-light-bg); color: #4b5563; border-color: #7a80f0; }
+body.light-mode .sort-btn { background: var(--ctl-light-bg); color: #4b5563; border-color: var(--ctl-light-line); }
 body.light-mode .sort-btn:not(.active) .sort-arrow { color: #4b5563; }
 /* ⚠️ Nền track ở light mode trước là `#f3f4f6` — trên toolbar TRẮNG `#ffffff` nó chỉ chênh
    **1.10:1** nên **gần như không thấy** (người dùng phản hồi đúng: nền không "to ra" được vì
@@ -480,14 +728,19 @@ body.light-mode .sort-row { background: transparent; border-radius: 0; }
 /* (đã XOÁ 2 rule `body.light-mode #sortDanhSo` / `#sortTienNo` đặt nền xám `rgba(148,163,184,0.15)`
    + viền `#cbd5e1` — nay cả 2 theme lấy bề mặt chung từ `body.light-mode .sort-btn` /
    `.sort-btn`. Đừng dựng lại rule theo id: nó thắng cả rule bề mặt vì specificity id.) */
-/* ⚠️ 2 rule dưới đây khai `border-color: #cbd5e1` là **CỐ Ý**, đừng "dọn dẹp":
-   `body.light-mode .sort-btn` nay đặt viền = `#7a80f0` (bề mặt ô lọc) cho nút CHƯA chọn, và
-   rule active này không khai viền nên nút ĐANG sắp xếp sẽ **hưởng luôn viền tím của ô lọc**
-   — một quầng tím quanh nút xanh lá / tím đậm, lệch hẳn tone với nền đặc của chính nó.
-   Khai lại `#cbd5e1` để giữ đúng giao diện light mode đã chốt từ trước (dark mode vẫn dùng
-   viền màu 500 như cũ — hai theme khác nhau ở chỗ này là **đã có từ trước**, không phải mới). */
-body.light-mode #sortDanhSo.active { background: #166534; border-color: #cbd5e1; color: #ffffff; box-shadow: 0 0 4px rgba(34,197,94,0.35), 0 0 8px rgba(34,197,94,0.15); }
-body.light-mode #sortTienNo.active { background: #5b21b6; border-color: #cbd5e1; color: #ffffff; box-shadow: 0 0 4px rgba(139,92,246,0.35), 0 0 8px rgba(139,92,246,0.15); }
+/* ⟳ 2 rule dưới đây nay dùng CÙNG cặp màu với dark mode (`#475569` + viền `#cbd5e1`) và bỏ
+   QUẦNG SÁNG màu (`box-shadow: none`, khớp dark) — trước là xanh lá `#166534` + quầng
+   `rgba(34,197,94,…)` và tím `#5b21b6` + quầng `rgba(139,92,246,…)`.
+   ⚠️ Vẫn phải khai `border-color: #cbd5e1` là **CỐ Ý**, đừng "dọn dẹp": `body.light-mode
+   .sort-btn` đặt viền = `--ctl-light-line` (`#64748b`) cho nút CHƯA chọn, nếu rule active
+   không khai viền thì nút ĐANG sắp xếp hưởng luôn viền xám đó — trên nền đặc `#475569`
+   viền `#64748b` chỉ còn ~**1,24:1**, gần như mất viền. */
+/* ⟳ Chế độ sáng đi CÙNG cặp màu với chế độ tối (`#536274` + viền `#e2e8f0`) — quy ước “theme chỉ
+   đổi MÀU, không đổi tông quan hệ”: 2 tab đang chọn phải trông như cùng một vật liệu ở cả 2 chế độ.
+   Bóng đổi sang tông trung tính của chế độ sáng (`rgba(15,23,42,0.22)`, đúng họ bóng đang dùng cho
+   thẻ/tấm) và vệt sáng trên cùng nhỉnh hơn (0,22) vì nền sáng làm vệt 0,18 gần như tan. */
+body.light-mode #sortDanhSo.active { background: #536274; border-color: #e2e8f0; color: #ffffff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 2px 8px rgba(15,23,42,0.22); }
+body.light-mode #sortTienNo.active { background: #536274; border-color: #e2e8f0; color: #ffffff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 2px 8px rgba(15,23,42,0.22); }
 /* Thẻ: nền trắng trên nền trang xám xanh, viền đủ đậm để phân định (3.1:1).
    border-width vẫn 1px như dark — chỉ đổi màu, không đổi metric. */
 /* Viền thẻ ở light mode: LỊCH SỬ đậm dần theo yêu cầu người dùng —
@@ -570,7 +823,10 @@ body.light-mode .i-tbi .info-value { color: #334155 !important; }
 body.light-mode .modal-header h2 { color: #000000 !important; }
 body:not(.light-mode) .modal-header h2 { font-weight: 300 !important; }
 body.light-mode .call-link { background: rgba(16,185,129,0.15); color: #166534; }
-body.light-mode .table-view th { background: #d1d5db; color: #000000; border-color: #d1d5db; }
+/* ⚠️ `border-color` ở đây TỪNG là `#d1d5db` = **đúng màu nền header** ⇒ đường kẻ dưới header ở
+   chế độ SÁNG vô hình từ trước tới nay (không ai thấy nó để mà báo). Nay dùng token `--tb-line`
+   (`body.light-mode` khai `rgba(0,0,0,0.6)` ⇒ **5,06:1** trên nền header sáng). */
+body.light-mode .table-view th { background: #d1d5db; color: #000000; border-color: var(--tb-line); }
 /* `position`/`top`/`z-index` của th KHÔNG còn khai ở đây — đã chuyển sang rule chung
    `.table-view thead th` (không theo theme) ngay cạnh `table thead th`. */
 
@@ -591,7 +847,17 @@ body.light-mode .table-view th { background: #d1d5db; color: #000000; border-col
    (đổi được thì phải đo lại). Trạng thái “đang sắp xếp” còn được báo bằng CHỮ 5,92 ✓ + chiều mũi tên. */
 body.light-mode .table-view th.sorted { color: #1e40af !important; border-bottom: 2px solid #2563eb !important; }
 body.light-mode .table-view td { border-color: #94a3b8; color: #334155; border-bottom: 1px solid #94a3b8; }
-body.light-mode tbody tr { border-bottom: 2px solid rgba(0,0,0,0.25); }
+/* ⏫ Đường kẻ 1px của TỪNG Ô (chỉ có ở chế độ SÁNG, chỉ thấy ở bố cục 3 hàng) = `#94a3b8`
+   **2,44:1** — CỐ Ý nhạt hơn đường kẻ giữa hai KHÁCH (`--tb-line` = **5,59:1** ở light) để hàng đọc ra
+   đúng tầng bậc: kẻ mờ = trong cùng một khách, kẻ đậm = sang khách khác.
+   ⟳ Rule `body.light-mode tbody tr { border-bottom: 2px solid rgba(0,0,0,0.25) }` đã **XOÁ**: nó
+   chỉ ghi lại đúng một phần của `--tb-line`, và trước lượt này nó còn NGƯỢC TẦNG BẬC (kẻ giữa
+   hai khách 1,83:1 còn MỜ HƠN kẻ trong cùng khách 2,44:1). Nay `tbody tr` lấy token, tự đúng
+   cho cả 2 theme.
+   ⚠️ Nhưng ở bố cục 4-cột (điện thoại / ô hẹp) thì kẻ 1px của ô bị luật ở CUỐI `<style>` ghi
+   đè về 0 (`border-bottom: none` + `body.force-desktop ... border-bottom: none`) ⇒ bố cục đó
+   CHỈ có kẻ giữa hai khách. Đo lại 26/9: đúng 1 nguồn kẻ duy nhất là `tbody tr`. */
+body.light-mode { --tb-line: rgba(0,0,0,0.6); }   /* ⟳ 0,5 → 0,6 cùng lượt với `2px → 1px` */
 /* ⚠️ Màu theo VỊ TRÍ cột — theo thứ tự **MẶC ĐỊNH**: Địa chỉ = 4 · Danh Số = 6 ·
    Mã Số GCS = 5 · Số TBi = 10 (cột ẩn). “Mã KH” KHÔNG còn ở đây: màu của nó nay khai theo
    LỚP (`.table-view .ma-kh`) nên không phụ thuộc vị trí cột nữa. */
@@ -761,7 +1027,7 @@ body.light-mode .count-tien.mid { color: #92400e; }   /* 4.81:1 trên nền tran
   display: inline-flex; align-items: center; justify-content: center;
   padding: 0;
   background: rgba(71,85,105,0.35);
-  border: 1px solid rgba(148,163,184,0.6);
+  border: 1px solid var(--ctl-line);
   border-radius: 8px;
   color: rgba(255,255,255,0.75);
   cursor: pointer;
@@ -770,7 +1036,7 @@ body.light-mode .count-tien.mid { color: #92400e; }   /* 4.81:1 trên nền tran
   transition: border-color 0.2s, background-color 0.2s, color 0.2s;
 }
 .cfg-btn:active { background: rgba(59,130,246,0.22); }
-body.light-mode .cfg-btn { background: var(--ctl-light-bg); border-color: #7a80f0; color: #4b5563; }
+body.light-mode .cfg-btn { background: var(--ctl-light-bg); border-color: var(--ctl-light-line); color: #4b5563; }
 /* Nút “xem dạng máy tính” — icon-only (không nhãn) để không ăn thêm bề rộng của dòng `Tổng`/`Tiền`.
    Cùng hệ hình với `.export-btn` (cao 40, bán kính 10, cùng nền/viền) nhưng hẹp hơn: 17 + 8×2 + 2 viền ≈ 35px.
    Mặc định `display: none` — JS bật thành `inline-flex` khi đã có dữ liệu (giống `#exportBtn`).
@@ -854,15 +1120,15 @@ body.light-mode.force-desktop .view-btn { background: #bfdbfe; border-color: #25
 body.light-mode .cfg { background: #ffffff; border-color: var(--light-edge); box-shadow: 0 -8px 28px rgba(15,23,42,0.22); }
 .cfg-hd { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; background: var(--navy-mid); border-bottom: 1px solid var(--border); }
 body.light-mode .cfg-hd { background: #ffffff; }
-.cfg-title { font-size: 16px; font-weight: 600; color: var(--text); }
+.cfg-title { font-size: var(--fs-cfg-title); font-weight: 600; color: var(--text); }
 .cfg-x { width: 34px; height: 34px; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--text-dim); font-size: 15px; line-height: 1; cursor: pointer; }
 body.light-mode .cfg-x { border-color: var(--light-edge); color: #475569; }
 .cfg-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
 .cfg-row:last-child { border-bottom: none; }
-.cfg-lb { flex: 1 1 auto; min-width: 0; font-size: 15px; font-weight: 500; color: var(--text); }
+.cfg-lb { flex: 1 1 auto; min-width: 0; font-size: var(--fs-cfg-lb); font-weight: 500; color: var(--text); }
 /* Giá trị ĐANG dùng in ngay sau nhãn (“Cỡ chữ · Chuẩn”). Đây là thứ trả lời câu hỏi “đang ở
    mức nào” mà KHÔNG cần bấm — bản cũ chỉ có 3 chấm 3px dưới nút, phải bấm mới biết mức nào. */
-.cfg-val { font-weight: 500; color: var(--text-dim); font-size: 14px; }
+.cfg-val { font-weight: 500; color: var(--text-dim); font-size: var(--fs-cfg-val); }
 .cfg-val::before { content: '·'; margin: 0 6px; }
 .cfg-row-col { flex-direction: column; align-items: stretch; gap: 8px; }
 .cfg-row-col .cfg-lb { flex: 0 0 auto; }
@@ -896,12 +1162,14 @@ body.light-mode .cfg-row, body.light-mode .cfg-hd { border-bottom-color: #cbd5e1
    xuống còn **61px** (đo được). Nên phải gỡ auto-margin + ép `width: 100%`.
    ⚠️ Đo lại sau khi sửa: mỗi nút **89px** ở viewport 303px — đủ cho chữ 54px ⇒ 1 dòng. */
 .cfg .page-actions { margin-left: 0; width: 100%; }
-.cfg .page-act { flex: 1 1 0; height: 40px; padding: 0 6px; gap: 4px; }
+.cfg .page-act { flex: 1 1 0; height: 40px; padding: 0 6px; gap: 4px; font-size: var(--fs-cfg-btn); }
 .cfg .page-act-lb { display: inline; white-space: nowrap; }
 /* Ba nút của hàng “Tác vụ bảng” (`.cfg > #pageActions`): xếp **ICON TRÊN – CHỮ DƯỚI**.
    LÝ DO là số đo, không phải thẩm mỹ: ở viewport 303px (panel Freebuff) tấm rộng 303,
    trừ đệm 14×2 của hàng và 2 khe 4px ⇒ mỗi nút chỉ còn **89px**; mà “Xuất file” ở 13px cần
    **54px chữ + 4 khe + 18 icon + 12 đệm = 88px** ⇒ sát ngưỡng tới mức đã thấy nó **XUỐNG 2 DÒNG**
+   ⟳ Sau lượt “cho các chữ này to hơn” chữ trong nút là **14px** ⇒ “Xuất file” cần **58px**,
+   tổng **92px > 89px** — tức bản nằm NGANG nay CHẮC CHẮN xuống 2 dòng, càng củng cố lý do xếp dọc.
    (nút cao lên, mép dưới lệch hai nút kia). Ở 320px thì còn chật hơn nữa.
    Xếp dọc thì bề rộng cần = `max(icon 18, chữ 54)` = **54px** ⇒ thừa 35px, hết chuyện xuống dòng.
    ⚠️ Chỉ áp cho cụm `#pageActions` (3 nút chia đều): nút “Chọn tệp Excel khác” nằm MỘT MÌNH
@@ -1210,25 +1478,33 @@ body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
 /* Ô lọc đang thực sự có giá trị: nền đậm hơn + viền accent. Dùng data-active thay vì
    chỉ đổi viền, vì viền mặc định đã là màu accent nhạt — đổi mỗi viền thì không
    phân biệt được với trạng thái chưa lọc. */
-.filter-select[data-active="1"] { border-color: #3b82f6; background-color: rgba(59,130,246,0.20); }
-body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; border-color: #2563eb; }
+/* ⟳ Trạng thái “ô lọc ĐANG có hiệu lực” nay TRUNG TÍNH (trước: viền `#3b82f6` + nền xanh
+   `rgba(59,130,246,0.20)`). Vẫn đổi CẢ NỀN chứ không chỉ viền — lý do cũ vẫn đúng: viền
+   thường cũng là màu accent nên đổi mỗi viền là không phân biệt được đã lọc hay chưa.
+   Đo (dark): nền đang lọc `rgba(148,163,184,0.22)` ghép lên bề mặt ô → so với ô CHƯA lọc
+   **1,58:1** (bản xanh cũ ~1,6:1 ⇒ ngang nhau), chữ `--text` trên nền đó **~7,2 ✓**,
+   viền `#cbd5e1` **~6,0 ✓** trên nền đang lọc. */
+.filter-select[data-active="1"] { border-color: #cbd5e1; background-color: rgba(148,163,184,0.22); }
+/* Đo (light): nền đang lọc `#cfd6e0` vs ô chưa lọc `#eff1f5` = **1,29:1** (bản xanh cũ
+   `#bfdbfe` = 1,25 ⇒ ngang nhau) · chữ `#000` trên nền đang lọc **14,2 ✓** ·
+   viền `#475569` **5,12 ✓** · viền chưa lọc `#64748b` **4,21 ✓** — hai trạng thái vẫn tách. */
+body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; border-color: #475569; }
 .filter-select {
   flex: 1;
   /* `background` ở đây chứa mũi tên SVG data-URI: chỉ animate background-color
      để tránh raster lại ảnh mỗi frame khi đổi theme. */
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   background: rgba(71,85,105,0.35);
-  /* Viền ĐẬM HƠN `--ctl-vien` (0.28) — theo yêu cầu người dùng ("màu viền các dropdown
-     đậm hơn") vì viền cũ gần như không thấy cạnh.
-     Con số 0.6 không phải chọn cảm tính: ghép alpha lên nền toolbar (đo được `#111318`)
-     thì 0.28 → `#363b45` = **1.66:1** (dưới ngưỡng), 0.6 → `#606978` = **3.36:1** ✓ vượt
-     ngưỡng **3:1** của WCAG 1.4.11 (biên của component). 0.5 chỉ được 2.71 → chưa đạt.
-     Light mode đổi tương ứng trong `body.light-mode .filter-select` (`#7a80f0` = 3.40:1)
-     để hai theme có biên **cùng độ mạnh**.
-     ⚠️ Đây là viền **riêng của 3 ô lọc**; ô tìm kiếm / nút xuất file / nút sắp xếp vẫn
-     dùng `--ctl-vien` (đã có tiền lệ: `body.light-mode .sort-btn` cũng dùng token riêng
-     `#cbd5e1`). Muốn cả thanh công cụ đậm lên thì hạ `--ctl-vien` là đủ. */
-  border: 1px solid rgba(148,163,184,0.6);
+  /* Viền của NHÓM ĐẬM — ⟳ nay là token **`--ctl-line`** (alpha **0,8**), không còn viết thẳng 0,6.
+     Lịch sử alpha: 0,28 (`--ctl-vien`, gần như không thấy cạnh) → 0,6 ("màu viền các dropdown
+     đậm hơn" ⇒ 3,36:1) → **0,8** ("nâng viền control ở dark mode cho hai theme cùng độ mạnh
+     biên" ⇒ **4,16:1**). Xem khối chú thích của `--ctl-line` trong `:root` để có bảng quét alpha.
+     Light mode đổi tương ứng trong `body.light-mode .filter-select` = `--ctl-light-line`
+     `#64748b` = **4,21:1** trên nền ô (bản đầu `#7a80f0` = 3,40) ⇒ hai theme nay lệch **0,05**
+     (trước lượt này lệch 4,21 − 2,98 = 1,23), và không còn tông xanh/tím.
+     ⚠️ Đây là viền của **2 ô lọc + 2 tab sắp xếp + nút “Aa” + nút “⚙”** (CÙNG token);
+     ô tìm kiếm / nút xuất file / nút dạng xem dùng `--ctl-vien` (0,28) — nhóm mảnh, CỐ Ý. */
+  border: 1px solid var(--ctl-line);
   border-radius: 10px;
   /* padding dọc giữ 6px: với `height: 36px` content box = 36 − 12 − 2 = 22px ≥ dòng
      chữ 21.6px ✓ (nếu nâng lại padding dọc lên 10px như bản 42px thì content box chỉ
@@ -1290,7 +1566,7 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
    “mọi nút vào Cài đặt” rồi **TRẢ VỀ ĐÂY** ở lượt “đưa nút danh số và tiền nợ về chỗ cũ”.
    Rule dưới đây vì thế được DỰNG LẠI NGUYÊN VẸN (cả bản nền này và bản `@media (min-width: 640px)`
    ở dưới), và hàng “Sắp xếp” trong tấm đã XOÁ — **không có bản thứ hai** của 2 nút này ở đâu cả.
-   Bề mặt/kích thước 2 tab (`flex: 1`, cao `var(--ctl-h)`, viền alpha 0.6) không đổi ở cả 2 lượt. */
+   Bề mặt/kích thước 2 tab (`flex: 1`, cao `var(--ctl-h)`, viền `--ctl-line`) không đổi ở cả 2 lượt. */
 .sort-row { display: flex; gap: 2px 4px; margin-top: 0; background: transparent; border-radius: 0; padding: 0; }
 .sort-btn {
   flex: 1;
@@ -1304,10 +1580,14 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
      ⚠️ Vì sao phải đổi chứ không giữ `var(--ctl-vien)`: sau khi **bỏ dải nền track**, viền cũ
      (alpha 0.28) chỉ đạt **1.66:1** trên nền `.toolbar` `#111318` — dưới ngưỡng **3:1** của
      WCAG 1.4.11; viền của ô lọc (alpha 0.6) đạt **3.36:1**. Light mode tương ứng ở
-     `body.light-mode .sort-btn` (`#7a80f0` = **3.40:1**).
+     `body.light-mode .sort-btn` = `--ctl-light-line` `#64748b` = **4,76:1** trên toolbar trắng
+     (bản đầu `#7a80f0` = 3,40).
+     ⟳ Nay viền là token **`--ctl-line`** (alpha **0,8** ⇒ **5,04:1** trên toolbar tối) sau lượt
+     "nâng viền control ở dark mode cho hai theme cùng độ mạnh biên" — 0,6 cũ chỉ 3,36:1, tức
+     dark yếu hơn light (4,76) đúng ở nhóm control này.
      Metric KHÔNG đổi: `border-width` vẫn **1px** như ô lọc nên kích cỡ/thân nút y nguyên. */
   background: rgba(71,85,105,0.35);
-  border: 1px solid rgba(148,163,184,0.6);
+  border: 1px solid var(--ctl-line);
   border-radius: 8px;
   padding: 6px 4px;
   white-space: nowrap;
@@ -1340,17 +1620,49 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
 .sort-btn.active .sort-arrow { color: #ffffff; }
 /* Bỏ quầng sáng 2 lớp của nút đang sắp xếp: nền đặc + viền cùng màu đã đủ nổi,
    quầng neon làm hàng nút trông nặng nề. */
-/* "Danh Số" dùng **XANH LÁ ĐẬM** theo yêu cầu người dùng (trước là `#1e40af` = blue-800 /
+/* ⟳ **ĐOẠN DƯỚI LÀ LỊCH SỬ — CẶP XANH LÁ ĐÃ BỊ THAY ở lượt “trung tính hoá thanh công cụ”
+   (26/9).** Rule ĐANG dùng nay là `#sortDanhSo.active { border-color:#cbd5e1; background:#475569; }`.
+   Giữ đoạn này vì nó giải thích TẠI SAO nút từng khác màu, và là bằng chứng các số cũ đã đo.
+   "Danh Số" dùng XANH LÁ ĐẬM theo yêu cầu người dùng (trước là `#1e40af` = blue-800 /
    viền `#3b82f6` = blue-500). Lấy đúng thang của bộ màu Tailwind để giữ nguyên "tầng" với
    nút anh em `#sortTienNo` (nền `#5b21b6` = violet-800, viền `#8b5cf6` = violet-500):
      nền  `#166534` (green-800, cùng độ đậm với blue-800)
      viền `#22c55e` (green-500, cùng độ sáng với blue-500)
    Đo lại: chữ trắng trên `#166534` = **7.13:1**; viền `#22c55e` trên nền `.toolbar`
    (`#111318`) = **8.16:1** — đều vượt ngưỡng (4.5 và 3:1 của WCAG 1.4.11).
-   Sang light mode dùng ĐÚNG cặp màu này (chỉ đổi quầng sáng) để 2 theme cùng độ đậm. */
+   Sang light mode dùng ĐÚNG cặp màu này (chỉ đổi quầng sáng) để 2 theme cùng độ đậm.
+   ⟳ **LƯỢT “TRUNG TÍNH HOÁ THANH CÔNG CỤ” (26/9) ĐÃ THAY CẶP XANH LÁ NÀY** bằng `#475569`
+   + viền `#cbd5e1` (xem chú thích ngay trên rule `.active`). Đoạn trên giữ làm LỊCH SỬ:
+   xanh lá là màu đã chốt ở lượt “2 nút sắp xếp khác màu nhau”, không phải số sai — chỉ là
+   nay cả thanh công cụ được yêu cầu TRUNG TÍNH cho hợp header mới. */
 /* (đã XOÁ `#sortDanhSo { background: rgba(22,101,52,0.10) }` — nút CHƯA chọn nay lấy bề mặt
    xám của ô lọc từ `.sort-btn`; rule theo id sẽ đè mất bề mặt đó vì specificity id.) */
-#sortDanhSo.active { border-color: #22c55e; background: #166534; box-shadow: none; }
+/* ⟳ Cả 2 nút ĐANG sắp xếp nay dùng CÙNG một nền TRUNG TÍNH `#475569` (slate-600) + viền
+   `#cbd5e1` — trước là xanh lá `#166534`/`#22c55e` và tím `#5b21b6`/`#8b5cf6`.
+   Hai màu đó chỉ để trang trí (2 nút LOẠI TRỪ NHAU — chỉ một nút active tại một thời điểm)
+   nên trung tính hoá không mất thông tin: trạng thái vẫn đọc được bằng NỀN ĐẶC + chữ trắng
+   + mũi tên. Đo (dark): nền `#475569` so với nút chưa chọn `rgba(71,85,105,0.35)`
+   (ghép ra `rgb(36,42,52)`) = **1,90:1** (bản tím cũ 1,60 ⇒ tốt hơn) · chữ trắng trên
+   `#475569` **7,58 ✓** · so với nền toolbar `rgb(17,19,24)` **10,35 ✓**. */
+/* ⟳ **MỚI NHẤT — NÚT ĐANG SẮP XẾP “SANG HƠN” (yêu cầu người dùng: “cho màu khi chọn 2 tab này
+   sang hơn để dễ nhìn”, kèm ảnh 2 tab ở chế độ tối).** Ba thay đổi, cố ý là BA LỚP khác nhau chứ
+   không phải đổi màu suông:
+     · NỀN `#475569` → **`#536274`** (slate sáng hơn, ngả lạnh): nút tách khỏi nút CHƯA chọn rõ hơn —
+       **1,90 → 2,31:1** (so với nút chưa chọn ghép ra `rgb(36,42,52)`) và **2,22 → 2,98:1** (so với
+       nền toolbar `rgb(17,19,24)`). Cả hai số ĐO LIVE, không suy từ bản cũ.
+     · VIỀN `#cbd5e1` → **`#e2e8f0`**: biên sáng hơn — tương phản với NỀN TOOLBAR **11,36 → 13,68:1**
+       (đây là cái mắt thấy: viền nằm giữa nút và toolbar). Còn VIỀN so với CHÍNH NỀN NÚT thì
+       **5,06** (bản cũ 5,10 — ngang nhau, vì nền cũng sáng lên theo; đừng trích 5,06 là “tăng”).
+     · BÓNG: `none` → **`inset 0 1px 0 rgba(255,255,255,0.18)`** (một vệt sáng mảnh ngay dưới cạnh
+       trên = cảm giác khối nổi/kiểu kính) + **`0 2px 8px rgba(0,0,0,0.45)`** (bóng đổ nhấc nút khỏi
+       thanh công cụ). Đây là phần “sang”: bóng + vệt sáng là thứ tạo chiều sâu, không phải màu.
+       ⛔ KHÔNG dùng gradient cho nền: `background-image` không chuyển động mượt khi đổi theme (chỉ
+       `background-color`/`box-shadow` mới animate) — app đã bỏ gradient ở header vì lý do này.
+       ⛔ `box-shadow` KHÔNG đổi metric: 2 tab vẫn cao `var(--ctl-h)`, hàng sắp xếp không nhích.
+   Đo lại (live): chữ trắng trên `#536274` **7,58 → 6,24:1** ✓ (vẫn xa ngưỡng 4,5 của chữ thường) ·
+   chữ trắng trên nền TOOLBAR `rgb(17,19,24)` **16,86** · nút vẫn cao **43,99px** (bóng đổ KHÔNG
+   thuộc layout nên hàng sắp xếp không nhích). Xem mục **“💠 NÚT ĐANG SẮP XẾP SANG HƠN”** cuối file. */
+#sortDanhSo.active { border-color: #e2e8f0; background: #536274; box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 8px rgba(0,0,0,0.45); }
 /* "Tiền Nợ" dùng **TÍM ĐẬM** theo yêu cầu người dùng (trước là cam `#b45009` / viền
    `#f97316`). Chọn đúng thang "đậm" của nút anh em `#sortDanhSo` (nền `#166534` = green-800,
    viền `#22c55e` = green-500) nên lấy cặp tương ứng của tím:
@@ -1358,10 +1670,17 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
      viền `#8b5cf6` (violet-500, cùng độ sáng với green-500)
    Đo lại: chữ trắng trên `#5b21b6` = **8.97:1**; viền `#8b5cf6` trên nền `.toolbar`
    (`#111318`) = **4.43:1** — đều vượt ngưỡng (4.5 và 3:1 của WCAG 1.4.11).
-   Sang light mode dùng ĐÚNG cặp màu này (chỉ đổi quầng sáng) để 2 theme cùng độ đậm. */
+   Sang light mode dùng ĐÚNG cặp màu này (chỉ đổi quầng sáng) để 2 theme cùng độ đậm.
+   ⟳ **LƯỢT “TRUNG TÍNH HOÁ THANH CÔNG CỤ” (26/9) ĐÃ THAY CẶP TÍM NÀY** bằng `#475569`
+   (trung tính, cùng màu với nút Danh Số khi active). ⚠️ Đây từng là yêu cầu “TÍM ĐẬM” của
+   người dùng — lượt mới nhất đảo lại có chủ ý; ⛔ đừng khôi phục tím mà không hỏi, vì hai
+   nút LOẠI TRỪ NHAU (chỉ một nút active tại một thời điểm) nên màu khác nhau không mang
+   thêm thông tin gì. */
 /* (đã XOÁ `#sortTienNo { background: rgba(91,33,182,0.10) }` — cùng lý do như `#sortDanhSo`.) */
-#sortTienNo.active { border-color: #8b5cf6; background: #5b21b6; box-shadow: none; }
-.sort-btn:active { background: rgba(59,130,246,0.22); }
+/* ⟳ Cùng bộ màu/bóng với `#sortDanhSo.active` (2 nút LOẠI TRỪ NHAU nên phải y hệt nhau) —
+   xem khối chú thích đầy đủ + bảng đo ở rule `#sortDanhSo.active`. ⛔ Đừng để 2 nút lệch nhau. */
+#sortTienNo.active { border-color: #e2e8f0; background: #536274; box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 8px rgba(0,0,0,0.45); }
+.sort-btn:active { background: rgba(148,163,184,0.22); }   /* ⟳ nhấn giữ: xám trung tính (trước là xanh `rgba(59,130,246,0.22)`) */
 
 /* ── NÚT “Nền”: BA MỨC — MỖI THEME MỘT BỘ RIÊNG ───────────────────────────────
    Bấm nút là xoay vòng 3 mức của ĐÚNG theme đang xem, và mỗi theme NHỚ RIÊNG mức của nó
@@ -1441,7 +1760,7 @@ body:not(.light-mode)[data-surface-dark="diu"] .sf-btn-dots i:nth-child(3) { opa
   gap: 1px;
   padding: 0;
   background: rgba(71,85,105,0.35);
-  border: 1px solid rgba(148,163,184,0.6);
+  border: 1px solid var(--ctl-line);
   border-radius: 8px;
   color: rgba(255,255,255,0.75);
   font-family: 'Inter', sans-serif;
@@ -1452,7 +1771,7 @@ body:not(.light-mode)[data-surface-dark="diu"] .sf-btn-dots i:nth-child(3) { opa
   transition: border-color 0.2s, background-color 0.2s, color 0.2s;
 }
 .fs-btn:active { background: rgba(59,130,246,0.22); }
-body.light-mode .fs-btn { background: var(--ctl-light-bg); border-color: #7a80f0; color: #4b5563; }
+body.light-mode .fs-btn { background: var(--ctl-light-bg); border-color: var(--ctl-light-line); color: #4b5563; }
 /* Nút “Aa” trong TẤM CÀI ĐẶT: hạ chiều cao **44 → 40px** cho BẰNG nút ⚙ và mọi control khác
    trong tấm. Base `.fs-btn` khai `height: var(--ctl-h)` (44px) vì nó vốn là cỡ của HÀNG SẮP
    XẾP (nơi 2 tab cao 44px) — đừng sửa base, chỉ đè trong tấm. */
@@ -1789,7 +2108,9 @@ body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
 /* ── TABLE (desktop view) ───────────────── */
 .table-wrap {
   background: var(--dk-table);   /* chế độ tối: đổi theo mức “Nền” (sáng: `body.light-mode .table-wrap`) */
-  border: 1px solid var(--border);
+  /* Khung dùng token RIÊNG `--tb-edge` (sáng bị `body.light-mode .table-wrap` ghi đè về
+     `--light-edge`). ⚠️ Trước đây là `--border` (8% trắng = 1,23:1 — vô hình trong tối). */
+  border: 1px solid var(--tb-edge);
   border-radius: var(--radius);
   overflow: visible;
 }
@@ -1910,7 +2231,7 @@ thead th {
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: #7fa8d0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--tb-line);
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -1918,8 +2239,14 @@ thead th {
   text-overflow: ellipsis;
 }
 thead th:hover { color: #60a5fa; }
-thead th.sorted { color: var(--accent-glow); border-bottom: 2px solid #3b82f6; background: inherit; }tbody tr { border-bottom: 2px solid rgba(255,255,255,0.15); transition: background 0.12s; cursor: pointer; }
-  tbody tr:last-child { border-bottom: 2px solid rgba(255,255,255,0.15); }
+thead th.sorted { color: var(--accent-glow); border-bottom: 2px solid #3b82f6; background: inherit; }/* ⟳ KẺ HÀNG NAY **NÉT MỎNG** (`2px → 1px`), ĐỔI ĐỘ DÀY LÀ CÓ CHỦ Ý — yêu cầu
+   “cho đường kẻ ngang nét mỏng hơn nhưng sang hơn cho dễ nhìn cả 2 chế độ”: nét mỏng + màu đậm
+   cho ra đường HAIRLINE sắc, thay vì một vệt 2px dày mà vẫn mờ. Vì khe giữa hai khách = ĐÚNG bề
+   dày kẻ này (đệm dọc đã về 0), nét mỏng đi **1px** nên mỗi hàng THẤP ĐI 1px — mọi số đo chiều
+   cao hàng trong run doc đã được đo lại ở mục “📏 ĐƯỜNG KẺ GIỮA CÁC HÀNG”.
+   ⚠️ Hai kẻ dưới đây phải cùng bề dày: lệch nhau là hàng cuối cùng của bảng dày hơn 1px. */
+tbody tr { border-bottom: 1px solid var(--tb-line); transition: background 0.12s; cursor: pointer; }
+  tbody tr:last-child { border-bottom: 1px solid var(--tb-line); }
 tbody tr:hover { background: rgba(59,130,246,0.40); }
 tbody tr:active { background: rgba(59,130,246,0.50); }
 
@@ -3349,61 +3676,43 @@ body.force-desktop .table-view { display: block; }
 
 <!-- HEADER -->
 <div class="header">
-  <div class="header-left">     <!-- 🍊 LOGO CẦU CAM — nay là ảnh TRANG TRÍ, không còn là nút đổi giao diện: từ lượt
+  <div class="header-left">     <!-- ✨ LOGO NGÔI SAO — nay là ảnh TRANG TRÍ, không còn là nút đổi giao diện: từ lượt
            “mọi nút vào Cài đặt”, nút đổi sáng/tối nằm ở hàng “Giao diện” trong `#cfg`.
            ⛔ Đừng gắn `onclick` trở lại đây; `.theme-logo` còn có `pointer-events: none`. -->
     <div class="theme-logo" aria-hidden="true">
-      <!-- Icon SVG: cầu cam gradient + nét viền sáng + bóng đổ + tia sét nổi khối (thay cho ảnh PNG base64 ~94KB cũ) -->
+      <!-- LOGO NGÔI SAO 4 CÁNH — TỐI GIẢN, ĐÚNG 2 MÀU TRẮNG/ĐEN (yêu cầu người dùng:
+           “đổi icon tia sét qua hình ngôi sao này và chỉnh cho ngôi sao phong cách tối giản
+           2 màu trắng đen”, kèm ảnh một ngôi sao 4 cánh 3 tầng xanh/đỏ/vàng).
+           Ngôi sao 3 tầng của ảnh ⇒ **2 tầng** (vì chỉ được 2 màu): một sao LỚN + một sao NHỎ
+           lồng bên trong, cùng dạng, tỉ lệ **0,52** (tâm hai sao TRÙNG nhau).
+           Hai màu lấy từ token `--logo-outer` / `--logo-inner` (khai ở `:root` + `body.light-mode`)
+           và 🔁 **ĐẢO CỰC theo chế độ**: tối = sao TRẮNG + lõi ĐEN · sáng = sao ĐEN + lõi TRẮNG.
+           Đảo cực là BẮT BUỘC, không phải trang trí: header tối `rgb(26,29,36)` mà giữ sao đen là
+           phần sao LỚN biến mất, logo teo còn đúng lõi — đổi theme mà logo nhảy kích thước.
+           ⚠️ HÌNH HỌC: vẫn `viewBox 0 0 44 44` và 4 đỉnh sao vẫn ở **2 → 42** (đúng hộp 40×40
+           của đường tròn cũ) ⇒ hộp SVG, `x` của tiêu đề, chiều cao header KHÔNG đổi.
+           💡 Tương phản (ĐO LIVE): hai màu của logo `#ffffff` ↔ `#111827` = **17,74:1** · sao trắng
+           trên header tối `rgb(26,29,36)` = **16,86** · sao đen trên header sáng `#f1f5f9` = **16,19**
+           — đều là “hình ảnh phi văn bản” nên ngưỡng chỉ là 3:1. Lõi sao gần TRÙNG màu nền header
+           (đo: **1,05** ở tối · **1,10** ở sáng) nên ngôi sao LỚN mang hình khối, lõi đọc như một
+           “lỗ khoét” — đúng hai tầng như ảnh mẫu, không phải một khối đặc.
+           ⛔ Hai `fill` KHÔNG viết thẳng trong markup — đổi qua token, đừng hard-code lại. -->
+      <!-- ⟳ CHỐT CỦA LƯỢT “THÊM VÒNG TRÒN PHÍA NGOÀI” — ĐỌC KHỐI NÀY TRƯỚC: các số ở khối chú
+           thích NGAY TRÊN (`4 đỉnh sao ở 2 → 42`, `sao lớn 40,01px`) là của bản **KHÔNG có vòng
+           tròn**; bản đang dùng có **3 phần tử**:
+           · `<circle class="logo-ring" r="19" stroke-width="2">` ⇒ mép NGOÀI đúng **r=20** (2 → 42),
+             ĐÚNG bằng mép ngoài của đường tròn cam cũ ⇒ vẫn **zero layout shift** với cả 2 bản trước;
+           · sao LỚN thu còn **R=13,5** (đỉnh 8,5 → 35,5) để nằm trọn trong lòng vòng (bán kính
+             trong 18 ⇒ dư **4,5**) — vẫn CÙNG MỘT DẠNG, chỉ đổi R (4 cung cubic, điều khiển ở
+             0,10R và 0,40R như bản cũ, nên dáng sao không đổi);
+           · sao NHỎ giữ nguyên tỉ lệ **0,52** với sao lớn ⇒ R=7,02.
+           Vẫn ĐÚNG 2 MÀU: vòng + sao lớn = `--logo-outer` · sao nhỏ = `--logo-inner`.
+           ⛔ Vòng KHÔNG được có `fill` (`fill: none` trong CSS): đổ nền đặc là mất luôn tầng NGOÀI
+           của ngôi sao — nó chìm vào nền vòng và logo chỉ còn thấy sao nhỏ. -->
       <svg class="theme-logo-ico" viewBox="0 0 44 44" aria-hidden="true" focusable="false">
-        <defs>
-          <radialGradient id="ttBall" cx="33%" cy="24%" r="82%">
-            <stop offset="0%" stop-color="#ffe0b0"/>
-            <stop offset="28%" stop-color="#fca63c"/>
-            <stop offset="60%" stop-color="#f97316"/>
-            <stop offset="86%" stop-color="#d4530c"/>
-            <stop offset="100%" stop-color="#a4380a"/>
-          </radialGradient>
-          <radialGradient id="ttShade" cx="50%" cy="42%" r="58%">
-            <stop offset="0%" stop-color="#7c2d12" stop-opacity="0"/>
-            <stop offset="66%" stop-color="#7c2d12" stop-opacity="0.06"/>
-            <stop offset="100%" stop-color="#5a1e05" stop-opacity="0.46"/>
-          </radialGradient>
-          <linearGradient id="ttGloss" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.60"/>
-            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-          </linearGradient>
-          <linearGradient id="ttRim" x1="0" y1="0" x2="0.55" y2="1">
-            <stop offset="0%" stop-color="#fff4dc" stop-opacity="0.92"/>
-            <stop offset="45%" stop-color="#ffffff" stop-opacity="0.10"/>
-            <stop offset="100%" stop-color="#6b2a06" stop-opacity="0.55"/>
-          </linearGradient>
-          <linearGradient id="ttBolt" x1="0.15" y1="0" x2="0.7" y2="1">
-            <stop offset="0%" stop-color="#fffdf0"/>
-            <stop offset="42%" stop-color="#ffe680"/>
-            <stop offset="100%" stop-color="#f6b20a"/>
-          </linearGradient>
-          <filter id="ttOuter" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="2.2" stdDeviation="2" flood-color="#3b1206" flood-opacity="0.55"/>
-          </filter>
-          <filter id="ttLift" x="-45%" y="-45%" width="190%" height="190%">
-            <feDropShadow dx="0.5" dy="1.2" stdDeviation="0.8" flood-color="#7c2d12" flood-opacity="0.60"/>
-          </filter>
-          <!-- Làm mờ vệt sáng để nó tan vào mặt cầu thay vì hiện thành một ô van phẳng -->
-          <filter id="ttSoft" x="-60%" y="-60%" width="220%" height="220%">
-            <feGaussianBlur stdDeviation="2.6"/>
-          </filter>
-          <filter id="ttDot" x="-150%" y="-150%" width="400%" height="400%">
-            <feGaussianBlur stdDeviation="1.5"/>
-          </filter>
-        </defs>
-        <g filter="url(#ttOuter)">
-          <circle cx="22" cy="22" r="20" fill="url(#ttBall)"/>
-          <circle cx="22" cy="22" r="19.3" fill="url(#ttShade)"/>
-          <ellipse filter="url(#ttSoft)" cx="21" cy="13.4" rx="11.4" ry="6.4" fill="url(#ttGloss)"/>
-          <ellipse filter="url(#ttDot)" cx="15.4" cy="11.6" rx="3.1" ry="2.1" fill="#ffffff" fill-opacity="0.55"/>
-          <circle cx="22" cy="22" r="19.3" fill="none" stroke="url(#ttRim)" stroke-width="1.3"/>
-        </g>
-        <path filter="url(#ttLift)" fill="url(#ttBolt)" stroke="#fffdf4" stroke-opacity="0.28" stroke-width="0.35" d="M25.6 5.2 L12.9 23.6 H20.1 L18.4 38.8 L31.1 20.4 H24 Z"/>
+        <circle class="logo-ring" cx="22" cy="22" r="19"/>
+        <path class="logo-star-out" d="M22 8.5 C23.35 16.6 27.4 20.65 35.5 22 C27.4 23.35 23.35 27.4 22 35.5 C20.65 27.4 16.6 23.35 8.5 22 C16.6 20.65 20.65 16.6 22 8.5 Z"/>
+        <path class="logo-star-in" d="M22 14.98 C22.702 19.192 24.808 20.298 29.02 22 C24.808 23.702 22.702 24.808 22 29.02 C21.298 24.808 19.192 23.702 14.98 22 C19.192 20.298 21.298 19.192 22 14.98 Z"/>
       </svg>
     </div>
     <div class="title-wrap">
@@ -3418,8 +3727,16 @@ body.force-desktop .table-view { display: block; }
          `onclick`/`cursor:pointer`; id `clockBtn` + 2 span id giữ nguyên (JS `updateLiveClock`
          vẫn ghi vào `clockLive`/`clockDateLive` mỗi giây). -->
     <div class="clock-box" id="clockBtn" style="display:flex;flex-direction:column;align-items:center;line-height:1.1;padding:6px 10px;gap:0">
-      <span id="clockLive" style="color:#ffffff;font-size:20px;font-weight:700;font-family:Inter,sans-serif"></span>
-      <span id="clockDateLive" style="color:rgba(255,255,255,0.95);font-size:12px;font-weight:500;font-family:Inter,sans-serif;margin-top:2px"></span>
+      <!-- ⚠️ Màu chữ phải lấy TỪ TOKEN `--hdr-*`, KHÔNG được ghi thẳng `#ffffff`:
+           trước đây 2 dòng này tô trắng bằng INLINE STYLE nên trên header TRẮNG của chế độ
+           sáng là **trắng trên trắng — vô hình** (yêu cầu “đổi màu chữ đồng hồ light mode”).
+           ⟳ Giờ: giờ = `--hdr-text` · thứ/ngày = `--hdr-sub` (cùng cặp token với tiêu đề và
+           tên tệp), nên đồng hồ tự đổi theo chế độ: light `#111827`/`#475569` trên trắng
+           (**17,74 ✓** / **7,58 ✓**), dark `#e2e8f0`/`#94a3b8` trên `#1a1d24` (**13,68 ✓** / **6,58 ✓**).
+           ⛔ Inline style THẮNG mọi rule CSS — đừng quay lại ghi mã màu thẳng vào đây (màu
+           trắng đó là tàn dư từ hồi header còn là dải xanh dùng chung cho cả 2 theme). -->
+      <span id="clockLive" style="color:var(--hdr-text);font-size:20px;font-weight:700;font-family:Inter,sans-serif"></span>
+      <span id="clockDateLive" style="color:var(--hdr-sub);font-size:12px;font-weight:500;font-family:Inter,sans-serif;margin-top:2px"></span>
     </div>
 
   </div>
@@ -3500,7 +3817,7 @@ body.force-desktop .table-view { display: block; }
             <span id="filterNhomLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</span>
           </div>
           <div class="nhom-dropdown" id="nhomDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
-            <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</div>
+            <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</div>
           </div>
           <input type="hidden" id="filterNhom" value="">
         </div>
@@ -3528,14 +3845,14 @@ body.force-desktop .table-view { display: block; }
                  đừng gỡ chấm ở 5 hàng phân loại (người dùng đã yêu cầu 2 lần).
                  ⚠️ Markup TĨNH — không có đoạn JS nào dựng lại `#loaiDropdown` (khác
                  `#nhomDropdown` do `initFilters()` dựng lại), nên sửa chấm phải sửa Ở ĐÂY. -->
-            <div class="nhom-option" data-val="" onclick="selectLoai('')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-receipt"/></svg></span> Chi tiết nợ</div>
-            <div class="nhom-option" data-val="old" onclick="selectLoai('old')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#ef4444"></span> Nợ ≥ 3Tr</div>
-            <div class="nhom-option" data-val="1tr" onclick="selectLoai('1tr')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#ea580c"></span> Nợ 1Tr đến 3Tr</div>
-            <div class="nhom-option" data-val="oldky" onclick="selectLoai('oldky')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#8b5cf6"></span> Nợ cũ, nhiều kỳ</div>
-            <div class="nhom-option" data-val="summary" onclick="selectLoai('summary')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#3b82f6"></span> Tổng hợp nợ</div>
-            <div class="nhom-option" data-val="marked" onclick="selectLoai('marked')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#b45309"></span> Chú ý</div>
-            <div class="nhom-option" data-val="called" onclick="selectLoai('called')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:var(--ic-green);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02z"/></svg></span> KH đã gọi</div>
-            <div class="nhom-option" data-val="notcalled" onclick="selectLoai('notcalled')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px" onmouseenter="this.style.background='rgba(59,130,246,0.15)'" onmouseleave="this.style.background=''" ><span style="color:#ef4444;display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M17 1.01 7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg></span> KH chưa gọi</div>
+            <div class="nhom-option" data-val="" onclick="selectLoai('')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-receipt"/></svg></span> Chi tiết nợ</div>
+            <div class="nhom-option" data-val="old" onclick="selectLoai('old')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#ef4444"></span> Nợ ≥ 3Tr</div>
+            <div class="nhom-option" data-val="1tr" onclick="selectLoai('1tr')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#ea580c"></span> Nợ 1Tr đến 3Tr</div>
+            <div class="nhom-option" data-val="oldky" onclick="selectLoai('oldky')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#8b5cf6"></span> Nợ cũ, nhiều kỳ</div>
+            <div class="nhom-option" data-val="summary" onclick="selectLoai('summary')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#3b82f6"></span> Tổng hợp nợ</div>
+            <div class="nhom-option" data-val="marked" onclick="selectLoai('marked')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#b45309"></span> Chú ý</div>
+            <div class="nhom-option" data-val="called" onclick="selectLoai('called')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:var(--ic-green);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02z"/></svg></span> KH đã gọi</div>
+            <div class="nhom-option" data-val="notcalled" onclick="selectLoai('notcalled')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:#ef4444;display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M17 1.01 7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg></span> KH chưa gọi</div>
           </div>
           <input type="hidden" id="filterLoai" value="">
         </div>
@@ -3855,7 +4172,7 @@ body.force-desktop .table-view { display: block; }
        · ô nhập liệu (tìm kiếm) + 2 ô lọc + nút ✕ xoá nhanh của ô tìm kiếm (gắn liền ô nhập);
        · nút phân trang (JS dựng lại mỗi lần render — xem `renderPagination`);
        · nút ✕ đóng banner “phạm vi nhân viên” và ✕ của modal chi tiết (đóng ngữ cảnh);
-       · logo cầu cam + đồng hồ ở header (nay là ảnh/khối hiển thị, không bấm được);
+       · logo NGÔI SAO + đồng hồ ở header (nay là ảnh/khối hiển thị, không bấm được);
        · nút “Chọn file” ở MÀN HÌNH CHÀO — màn đó không có hàng “Tổng …” nên không mở được
          cài đặt; bỏ nút đó là app không còn cách nào nạp file.
      ⚠️ Nhãn giá trị (`<i class="cfg-val">`) do JS ghi lại: `syncThemeToggle` · `applyFontSize`
@@ -3868,7 +4185,7 @@ body.force-desktop .table-view { display: block; }
     <button class="cfg-x" type="button" onclick="closeCfg()" aria-label="Đóng cài đặt">✕</button>
   </div>
 
-  <!-- 1. GIAO DIỆN SÁNG/TỐI — nút cầu cam cũ ở header (header nay chỉ còn logo TĨNH).
+  <!-- 1. GIAO DIỆN SÁNG/TỐI — nút cầu cam cũ ở header (header nay chỉ còn logo NGÔI SAO TĨNH).
        Hai icon mặt trời/mặt trăng chồng nhau, đổi bằng `visibility` theo theme (xem
        `.cfg-theme-btn`) ⇒ không đổi metric giữa 2 theme, đúng hợp đồng ở đầu file.
        ⛔ KHÔNG thêm `data-tip` cho nút này: `syncThemeToggle()` đã đặt `title`, thêm nữa là
@@ -4074,7 +4391,11 @@ setInterval(updateLiveClock, 1000);
 
 // ── THEME TOGGLE ──────────────────────────
 /* Nút đổi theme: nhãn đọc lên là HÀNH ĐỘNG sắp xảy ra (trước đây đọc là "logo"
-   vì lấy alt của ảnh), và icon SVG đổi nhẹ theo theme (tia sét sáng hơn ở nền tối) */
+   vì lấy alt của ảnh), và icon mặt trời/mặt trăng đổi theo theme bằng `visibility`.
+   ⟳ Chú thích cũ ghi "icon SVG đổi nhẹ theo theme (tia sét sáng hơn ở nền tối)" — SAI từ lượt
+   “mọi nút vào Cài đặt”: hình duy nhất của app nằm ở HEADER (`.theme-logo` — ngôi sao 4 cánh,
+   trước đây là tia sét), là ảnh TĨNH,
+   KHÔNG đổi theo theme và KHÔNG thuộc nút này. */
 function syncThemeToggle(isLight) {
   const btn = document.getElementById('themeToggle');
   // ⚠️ Chỗ cập nhật NHÃN CHỮ cho hàng “Giao diện” của tấm cài đặt nằm DƯỚI `if (!btn) return;`
@@ -4748,7 +5069,11 @@ function selectNhom(val) {
     label.innerHTML = '<span class="nhom-dot" style="background:' + c + '"></span> <span class="nhom-sel-name">' + esc(displayVal) + '</span>';
     label.setAttribute('title', fullVal);
     btn.dataset.active = '1';
-    btn.style.borderColor = c;
+    // ⟳ **KHÔNG tô viền theo màu nhóm nữa** (lượt “trung tính hoá thanh công cụ”): viền nay là
+    // token trung tính của theme — xem `.filter-select[data-active="1"]`. Màu nhóm vẫn được
+    // giữ bằng CHẤM màu ở nhãn (`nhom-dot`) — đó mới là chỗ mang thông tin, và chấm nhỏ 9px
+    // không làm thanh công cụ đổi tông. `c` vẫn dùng ở dòng `label.innerHTML` ngay trên.
+    btn.style.borderColor = '';
     btn.style.boxShadow = '';
     btn.style.background = '';
   } else {
@@ -4971,7 +5296,10 @@ function selectLoai(val) {
   const btn = document.getElementById('filterLoaiBtn');
   if (val) {
     btn.dataset.active = '1';
-    btn.style.borderColor = '#3b82f6';
+    // ⟳ Viền xanh `#3b82f6` cố định đã BỎ — trạng thái “đang lọc” nay do `data-active` + CSS
+    // lo (nền đậm hơn + viền `#475569` ở light / `#cbd5e1` ở dark). Tô bằng JS thì lại ghi
+    // đè CSS và mang tông xanh trở lại.
+    btn.style.borderColor = '';
     btn.style.boxShadow = 'none';
     btn.style.background = '';
   } else {
@@ -5043,13 +5371,13 @@ function initFilters() {
   const nhomSet = [...new Set(allData.map(r=>r.ma_nhom).filter(Boolean))].sort();
   const dd = document.getElementById('nhomDropdown');
   // keep the first option (Tất cả)
-  dd.innerHTML = '<div class="nhom-option" data-val="" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none" onmouseenter="this.style.background=\'rgba(59,130,246,0.15)\'" onmouseleave="this.style.background=\'\'" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</div>';
+  dd.innerHTML = '<div class="nhom-option" data-val="" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none" onmouseenter="this.style.background=\'rgba(100,116,139,0.16)\'" onmouseleave="this.style.background=\'\'" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</div>';
   nhomSet.forEach(v => {
     const d = document.createElement('div');
     d.className = 'nhom-option';
     d.setAttribute('data-val', v);
     d.style.cssText = 'padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none';
-    d.onmouseenter = function(){ this.style.background='rgba(59,130,246,0.15)'; };
+    d.onmouseenter = function(){ this.style.background='rgba(100,116,139,0.16)'; };
     d.onmouseleave = function(){ this.style.background=''; };
     const nc = getNhomColor(v);
     // TÊN VIẾT TẮT trong danh sách (yêu cầu người dùng) — tên đầy đủ nằm ở `title`.
