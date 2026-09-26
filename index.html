@@ -69,9 +69,39 @@
      ĐO LIVE: chữ `#e2e8f0` **11,69:1** ✓ · phụ đề `#94a3b8` **5,62:1** ✓ · header vs toolbar
      **1,29:1** · logo sao trắng vs nền header **14,41:1** ✓ (mọi số y như bản `rgba`, vì màu vẽ ra
      không đổi) · `getComputedStyle(.header).backgroundColor` alpha = **1**. */
-  --hdr-bg: #242a34;
+  /* ── BỀ MẶT CONTROL Ở DẠNG ĐỤC (`--ctl-solid`) — MỘT TOKEN CHO HEADER + THẺ CARD ──────
+     Giá trị `#242a34` chính là **kết quả GHÉP** của khai báo control (công thức ngay trên):
+     `rgba(71,85,105,0.35)` trên nền trang `--navy` `#111318`. Vì đây là màu ĐÃ GHÉP SẴN
+     (không alpha) nên nó VẼ RA y hệt control, ở mọi nền phía sau — không phụ thuộc lớp cha.
+     Dùng cho HAI bề mặt:
+       · `--hdr-bg`  = nền HEADER            (yêu cầu “cho màu nền bảng header giống màu nền
+                                              các tab bên dưới”)
+       · `--dk-card` = nền THẺ khách hàng, mức “Chuẩn” (yêu cầu “màu nền thẻ card dark mode
+                                              đồng bộ màu nền với các tab”)
+     Một token ⇒ header, các tab và (mức “Chuẩn” của) thẻ **KHÔNG THỂ lệch nhau** dù sau này
+     ai sửa ở đâu — trước lượt này `--dk-card` là một giá trị riêng `#1f2836` ngả XANH hơn
+     control một chút, nên mắt vẫn đọc ra “thẻ khác màu với tab”.
+     ⚠️ Đây là màu TÍNH SẴN: đổi `--navy` hoặc đổi độ đậm bề mặt control thì PHẢI tính lại
+     `--ctl-solid` theo công thức trên (không có cách nào để CSS tự ghép hộ). */
+  --ctl-solid: #242a34;
+  --hdr-bg: var(--ctl-solid);
   --hdr-text: #e2e8f0;
   --hdr-sub: #94a3b8;
+  /* ➕ CỠ CHỮ HAI DÒNG ĐỒNG HỒ Ở HEADER — token, KHÔNG nằm trong markup.
+     ⟳ Yêu cầu người dùng: “tôi muốn chữ ở ngày tháng to hơn” ⇒ dòng ngày **12px → 14px**.
+     ⚠️ Trước lượt này hai cỡ chữ này là **INLINE STYLE trong markup**
+     (`<span id="clockDateLive" style="…font-size:12px…">`) — cùng loại bẫy đã gây lỗi một lần
+     (màu chữ đồng hồ tô trắng bằng inline ⇒ trắng trên trắng ở chế độ sáng). Nay cỡ chữ khai ở
+     **MỘT chỗ** (`#clockLive` / `#clockDateLive` trong CSS), markup chỉ còn GIữ MÀU theo token.
+     ⚠️ **ĐÂY LÀ METRIC — ĐỔI LÀ PHẢI ĐO LẠI HEADER.** Trần an toàn: khối đồng hồ = `padding 6+6`
+     + `margin-top 2px` + 22px (giờ, 20px × line-height 1,1) + cỡ ngày × 1,1 ⇒ **cỡ ngày ≤ ~16px**
+     là còn nằm trong header cao 56px; vượt nữa là khối tràn ra ngoài khung (header có `height`
+     CỐ ĐỊNH nên nó không cao lên theo, chỉ bị tràn).
+     ⚠️ Dòng ngày RỘNG RA theo cỡ chữ ⇒ cỡ lớn làm viên đồng hồ (đang `85,26px`) nới ra và đẩy
+     `x` của nó sang trái; header còn dư chỗ nên không đụng tiêu đề, nhưng phải đo lại
+     `x` của khối đồng hồ + bề rộng `.header-sub` (tên tệp, có `ellipsis`). */
+  --hdr-time-fs: 20px;
+  --hdr-date-fs: 14px;   /* ⟳ 12px trước lượt “cho chữ ngày tháng to hơn” */
   --hdr-line: var(--border);
   --hdr-shadow: 0 3px 10px rgba(0,0,0,0.35);
   /* ── LOGO NGÔI SAO 4 CÁNH — 2 MÀU TRẮNG/ĐEN, ĐẢO CỰC THEO THEME.
@@ -83,6 +113,37 @@
      ⛔ Đừng đưa `--logo-*` vào `.kh-card`/control: đây là token RIÊNG của logo header. */
   --logo-outer: #ffffff;
   --logo-inner: #111827;
+  /* ➕ NHỊP CHUNG KHI ĐỔI THEME — **MỘT** thời lượng + **MỘT** đường cong cho MỌI thứ đổi màu.
+     ⟳ TÊN CŨ là `--logo-anim-*`: lượt “cả ba phản hồi khi đổi theme dùng chung một nhịp” gom ba
+     thứ của RIÊNG LOGO vào đây; lượt sau — *“cho nền trang và các bề mặt khác cũng chuyển màu dần
+     cùng nhịp với ngôi sao thay vì 0,2s như hiện tại”* — mở rộng cho **nền trang + mọi bề mặt**
+     ⇒ đổi tên thành `--theme-anim-*` cho đúng việc nó làm: **cả cử chỉ đổi theme đi qua đây**.
+     Ai đọc hai token này:
+       · `logoThemeSpin`  — sao xoay 90° (chạy khi HĐH CHO PHÉP chuyển động)
+       · `logoThemeFlash` — nhấp sáng nền nút (chạy khi HĐH TẮT chuyển động)
+       · `transition: fill/stroke` trên sao + vòng — màu trắng ⇄ đen (chạy trong CẢ HAI trường hợp)
+       · `body` (+ `color` của nó) · `.header` · `.toolbar` · `.modal(-header)` · `.stat-card` ·
+         `.summary-wrap` · `.table-wrap` · `.cfg` — những bề mặt CHỈ đổi màu vì theme
+       · lớp gạt `body.theme-anim` — mọi CONTROL có phản hồi bấm (xem khối chú thích ngay dưới rule
+         nhóm `.modal, .stat-card, …` ở khu vực `body`)
+     ⛔ **VÌ SAO KHÔNG CÓ OVERSHOOT — đừng “cho nảy” lại:** đường cong có `y > 1` (nảy quá đích) CHỈ
+     đọc ra được với CHUYỂN ĐỘNG. Với **MÀU**, giá trị nội suy vượt khoảng là bị CẮT (clamp) ⇒ màu
+     tới đích SỚM và đứng yên, còn cú xoay vẫn nảy ⇒ đọc ra HAI cử chỉ khác nhịp.
+     `cubic-bezier(0.4, 0, 0.2, 1)` là đường cong duy nhất đọc GIỐNG NHAU cho cả xoay lẫn màu.
+     ⚠️ **VÌ SAO ĐÚNG 0,45s:** lấy con số cũ của cú xoay (không kéo dài thêm cho “sang”), và hạ lớp
+     nhấp sáng `0,5s → 0,45s` cho khớp.
+     ⚠️ **ĐÂY LÀ CỬA SỔ REPAINT TOÀN TRANG, dài hơn 0,2s cũ 2,25 lần:** `background-color` /
+     `color` / `border-color` / `box-shadow` KHÔNG composite được như `transform`/`opacity` ⇒ mỗi
+     frame của 0,45s là một lần vẽ lại **trên MAIN THREAD**. Lịch sử dự án: chính cửa sổ 0,4s trước
+     đây từng bị rút xuống 0,2s vì *“làm nút sáng/tối giật trên điện thoại”* — nay người dùng muốn
+     nối lại nhịp dài cho ĐỒNG BỘ, có đo lại frame (xem `🎛 NHỊP CHUNG` trong `.freebuff/run.md`).
+     ⛔ Trước khi nâng con số này, **đọc mục đo đó**: số frame phải vẽ lại tăng theo bậc hai của
+     thời lượng (thời lượng × 60fps), còn diện tích vẽ thì KHÔNG đổi.
+     ℹ️ KHÔNG áp cho phản hồi bấm/hover: bấm mà đợi 0,45s là cảm giác “lag” ⇒ nhóm control đó giữ
+     nhịp nhanh làm MẶC ĐỊNH, chỉ nhận nhịp chung trong cửa sổ đổi theme qua class `theme-anim`
+     trên `<body>` (`startThemeAnim()` trong JS). */
+  --theme-anim-dur: 0.45s;
+  --theme-anim-ease: cubic-bezier(0.4, 0, 0.2, 1);
   --accent: #3b82f6;
   --accent-glow: #60a5fa;
   --gold: #f59e0b;
@@ -106,7 +167,7 @@
      nên phải 3 token; mỗi mức dịch cả ba cùng một hướng. Giá trị ở đây = mức “Chuẩn”
      ⇒ mặc định KHÔNG đổi gì so với trước. Ở chế độ SÁNG ba bề mặt dùng CHUNG `--light-surface`
      (khai trong `body.light-mode`) vì đã được đồng bộ về một nền ở các lượt trước. */
-  --dk-card: #1f2836;
+  --dk-card: var(--ctl-solid);   /* mức “Chuẩn” = ĐÚNG màu control/tab — xem mục “NỀN THẺ = NỀN TAB” */
   --dk-table: rgba(255,255,255,0.04);
   --dk-sum: #141720;
   /* ── ĐƯỜNG KẺ TRONG BẢNG (`--tb-line`) — MỘT TOKEN cho cả 2 theme ──────────────────
@@ -259,6 +320,24 @@
   --vien-vien: rgba(191,219,254,0.35);
   --vien-sdt-bg: #0f2438;
   --vien-sdt-vien: rgba(191,219,254,0.35);
+  /* ➕ NỀN VIÊN “DANH SỐ” — TOKEN RIÊNG, ĐI THEO TỪNG MỨC NỀN SÁNG/TỐI.
+     Yêu cầu người dùng: “khi ở chế độ dịu màu nền danh số đậm hơn cho dễ nhìn”.
+     ⚠️ Viên danh số là viên DUY NHẤT **KHÔNG có viền** (`border: none` ở rule `.kh-danhso`)
+     ⇒ nó chỉ có MỘT cách để đọc ra là “viên”: **chênh nền với thẻ**. Mà nền thẻ đổi theo nút
+     “Nền” trong khi nền viên là hằng số ⇒ ở hai mức tối hơn của chế độ sáng nó gần như dính
+     vào thẻ (đo được **1,04** ở “Chuẩn” và **1,07** ở “Dịu” — viên biến mất).
+     ⇒ Tách thành token riêng và chọn giá trị cho MỖI mức sao cho ĐỘ CHÊNH gần như CỐ ĐỊNH
+     (~1,14–1,15) ở cả ba mức, thay vì một hằng số đúng cho mức này và sai cho mức kia.
+     ⚠️ Giá trị Ở ĐÂY = chế độ TỐI (giữ nguyên bản cũ `rgba(59,130,246,0.14)` — đã đo là tốt ở
+     cả 3 mức tối vì nó là ALPHA nên tự ghép lên nền thẻ); chế độ SÁNG override trong
+     `body.light-mode` (mức “Chuẩn”) + 2 rule `[data-surface=…]` ở khối “NÚT “Nền””.
+     ⛔ Đừng dùng một MÀU ĐẶC duy nhất cho cả ba mức sáng: đo rồi — `#dbeafe` (blue-100, đang
+     có trong palette) chỉ **1,01** ở mức “Dịu” vì thẻ ở mức đó (`#e3e9f0`) còn TỐI HƠN cả nó.
+     ⛔ Đừng đặt token này chỉ trong `body.light-mode`: chế độ TỐI cũng dùng nó (2 rule
+     `… .kh-danhso` ở dưới đã thay mã màu cứng bằng `var(--danhso-bg)`).
+     ⛔ Đổi `--danhso-bg` thì PHẢI đo lại MŨI TÊN trong viên (rule `body.light-mode .kh-danhso .ic`)
+     — viên đậm lên là mũi tên tụt tương phản, đã có lần tụt dưới cả 3:1. */
+  --danhso-bg: rgba(59,130,246,0.14);
   --vien-pad-x: 6px;
   --vien-radius: 5px;
   --vien-weight: 400;
@@ -377,6 +456,25 @@ body.light-mode {
      ⛔ Đừng hạ nền thêm nữa mà không đo lại hai chỗ đó; đừng gỡ viền `--light-edge` + bóng
      đổ của thẻ (chúng mới là thứ tách thẻ khỏi nền trang, vì chênh nền chỉ còn 1,05:1). */
   --light-surface: #f1f5f9;
+  /* ➕ NỀN THẺ KHÁCH HÀNG Ở CHẾ ĐỘ SÁNG = ĐÚNG NỀN CÁC TAB/CONTROL — yêu cầu người dùng:
+     *“tôi muốn màu nền thẻ card light mode đồng bộ màu với nền các tab”*.
+     Đây là bản ĐỐI XỨNG của `--dk-card: var(--ctl-solid)` (chế độ tối — xem mục “🧩 NỀN THẺ =
+     NỀN TAB” trong `.freebuff/run.md`): **thẻ KHÔNG nhập lại màu, nó DÙNG CHÍNH token của
+     control** ⇒ sau này ai đổi `--ctl-light-bg` thì nền thẻ đi theo, không thể lệch.
+     ⛔ **VÌ SAO KHÔNG SỬA THẲNG `--light-surface`:** token đó đang được **BA** bề mặt dùng chung
+     (`.kh-card` + `.table-wrap` + `.summary-wrap`). Chỉ THẺ được yêu cầu đổi; bảng chính và bảng
+     Tổng hợp phải giữ nền riêng — đó chính là PHÂN TẦNG mà chế độ tối cố ý giữ (`--dk-card`
+     không kéo `--dk-table`/`--dk-sum` theo). Sửa `--light-surface` là kéo cả hai bảng theo thẻ.
+     ⚠️ Mức “Sáng”/“Dịu” vẫn là hai ĐỘ LỆCH khỏi màu control (xem 2 rule theo mức ở dưới), đúng
+     cùng nguyên tắc với chế độ tối: mức “Chuẩn” mới là “đúng màu tab”.
+     ⚠️ Đã ĐO LẠI sau khi đổi (nền thẻ tối hơn `#f1f5f9` một chút ⇒ tương phản chữ tụt nhẹ, đo THẬT
+     chứ không suy từ chênh màu — lần đầu tôi đoán sai cả hai số):
+       · `.kh-name` `#2563eb`: **4,72 → 4,57** ✓ (ngưỡng 4,5 — biên còn **0,07**) ⇒ ⛔ đừng hạ nền
+         thẻ nữa; muốn rộng biên thì đổi `.kh-name` sang `#1d4ed8` (tông đang dùng ở mức “Dịu”).
+       · vạch “≥2 HĐ”: **3,20 → 3,10** ⇒ đã bù bằng `--multi-hd: #0e9352` = **3,49** (xem chú thích
+         của token đó — đây là lý do token đó vừa đổi, không phải tự dưng đổi màu xanh).
+       · mức “Sáng”/“Dịu” KHÔNG bị ảnh hưởng (nền thẻ của chúng không đổi). */
+  --light-card: var(--ctl-light-bg);
 
    /* Vạch "KH có ≥ 2 hoá đơn" trên thẻ: nền thẻ light NAY LÀ `#f1f5f9` (token
       `--light-surface`) — KHÔNG còn trắng — nên phải dùng tông ĐẬM hơn bản dark
@@ -392,7 +490,12 @@ body.light-mode {
         `#00a651` 3.19 ✓ (tươi nhất trong nhóm đạt, nhưng dư ngưỡng mỏng — dễ dưới 3:1
                          ở mép vạch do khử răng cưa)     `#10b981` 2.54 ✗   `#12b76a` 2.62 ✗
       ⚠️ phải đo trên nền **thẻ trắng**, KHÔNG đo trên nền trang `#f8fafc` (lệch số). */
-   --multi-hd: #0f9d58;
+   /* ⟳ `#0f9d58` → **`#0e9352`** (lượt “nền thẻ = nền tab light mode”): nền thẻ mức “Chuẩn”
+      tối đi (`#f1f5f9` → `#eff1f5`) ⇒ `#0f9d58` rớt **3,20 → 3,10** — đúng cái biên mà khối chú
+      thích ngay trên cấm để hẹp lại. `#0e9352` = **3,49** trên nền mới ⇒ biên còn RỘNG HƠN cả bản cũ.
+      ⚠️ Vẫn là họ vàng-lục (lam 82) — KHÔNG phải `#059669` (lam 105, ngả teal/xỉn) mà chú thích
+      trên đã loại. Số cũ `3,51` trong bảng trên là đo trên nền thẻ TRẮNG, đừng đối chiếu trực tiếp. */
+   --multi-hd: #0e9352;
 
   /* ── BẢNG MÀU ICON TINH CHỈNH RIÊNG CHO LIGHT MODE ────────────────────────
      Bảng `--ic-*` gốc ở `:root` vốn được chọn cho NỀN TỐI. Trên bề mặt control sáng
@@ -414,6 +517,15 @@ body.light-mode {
   --vien-vien: #93b8e8;
   --vien-sdt-bg: #f0f6ff;
   --vien-sdt-vien: #93b8e8;
+  /* Mức “Chuẩn” của nền viên “danh số” ở chế độ sáng (khối chú thích đầy đủ ở `:root`).
+     ⚠️ Bản cũ `#e8f1fd` chỉ chênh nền thẻ **1,04** ⇒ viên gần như dính vào thẻ.
+     ⟳ `#d7e7fa` → **`#d1e2f8`** (lượt “nền thẻ = nền tab light mode”): nền thẻ mức “Chuẩn” tối đi
+     (`#f1f5f9` → `#eff1f5`) ⇒ viên tụt **1,15 → 1,11**, tức là đi NGƯỢC lại đúng yêu cầu “nền danh
+     số đậm hơn cho dễ nhìn” của lượt trước. `#d1e2f8` = **1,16** trên nền mới, khớp hai mức kia
+     (1,14 · 1,15) ⇒ ba mức vẫn đọc GIỐNG NHAU.
+     ⚠️ Đã đo lại MŨI TÊN theo đúng lời nhắc ở `:root`: `--ic-blue-dark` `#2563eb` trên `#d1e2f8` =
+     **3,92 ✓** (ngưỡng 3:1) — tụt nhẹ so với 4,11 trên `#d7e7fa` nhưng vẫn dư ngưỡng. */
+  --danhso-bg: #d1e2f8;
   /* Chữ phụ trên nền sáng: #94a3b8 quá nhạt (~2.4:1) -> dùng xám đậm hơn (~5.4:1) */
   --text-dim: #5b6777;
 }
@@ -430,13 +542,60 @@ body {
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
-  transition: background-color 0.2s ease;
+  /* ➕ NHỊP ĐỔI THEME = nhịp của ngôi sao (`--theme-anim-*`), không còn 0,2s riêng:
+     nền trang nay chuyển màu dần CÙNG LÚC và CÙNG NHỊP với ngôi sao logo. */
+  transition: background-color var(--theme-anim-dur) var(--theme-anim-ease);
 }
-/* Đổi theme: chỉ animate các mảng MÀU ĐẶC. Animate shorthand `background` sẽ bắt
-   trình duyệt vẽ lại gradient + ảnh data-URI mỗi frame, và cửa sổ 0.4s repaint toàn
-   trang là nguyên nhân chính làm nút sáng/tối bị giật trên điện thoại. */
-.header, .toolbar, .kh-card, .modal, .modal-header, .stat-card, .summary-wrap, .table-wrap, .sort-btn, .filter-select, .page-btn, .search-box input, .cfg {
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+/* Đổi theme: chỉ animate các mảng **MÀU ĐẶC**. Animate shorthand `background` sẽ bắt
+   trình duyệt vẽ lại gradient + ảnh data-URI mỗi frame — đó là lý do MỌI rule ở đây
+   đều liệt kê `background-color`, KHÔNG dùng `background`.
+   ⟳ NHỊP: `0,2s ease` → `--theme-anim-dur` / `--theme-anim-ease` (0,45s +
+   `cubic-bezier(0.4, 0, 0.2, 1)`) theo yêu cầu “cho nền trang và các bề mặt khác cũng chuyển
+   màu dần cùng nhịp với ngôi sao thay vì 0,2s như hiện tại”.
+   ⟳ DANH SÁCH ĐÃ ĐƯỢC RÚT GỌN: trước đây nhóm này liệt kê 13 selector, nhưng 7 trong số đó
+   (`.header`, `.toolbar`, `.kh-card`, `.sort-btn`, `.filter-select`, `.page-btn`,
+   `.search-box input`) có rule `transition` RIÊNG ở phía dưới ⇒ khai báo ở đây vốn đã bị ghi đè,
+   tức là **code chết** (`.toolbar` còn mất luôn `background-color` vì rule riêng của nó chỉ khai
+   `border-color` + `box-shadow`). Nay nhóm chỉ giữ những bề mặt **KHÔNG** có rule riêng và
+   **KHÔNG** có phản hồi bấm ⇒ mỗi bề mặt chỉ có MỘT nơi khai nhịp. */
+.modal, .modal-header, .stat-card, .summary-wrap, .table-wrap, .cfg {
+  transition: background-color var(--theme-anim-dur) var(--theme-anim-ease), color var(--theme-anim-dur) var(--theme-anim-ease), border-color var(--theme-anim-dur) var(--theme-anim-ease), box-shadow var(--theme-anim-dur) var(--theme-anim-ease);
+}
+/* ➕ LỚP GẠT `body.theme-anim` — “cùng nhịp khi đổi theme, NHANH khi người dùng bấm”.
+   **Vấn đề:** những control dưới đây đổi màu vì **HAI lý do khác nhau** — (a) đổi theme, (b) người
+   dùng bấm/hover. CSS **không phân biệt được** hai lý do đó: nó chỉ thấy “background-color vừa đổi”.
+   Nếu đặt thẳng `0,45s` vào rule của chúng thì **mọi cú bấm cũng chậm 0,45s** (cảm giác “lag” rõ
+   rệt — phản hồi chạm nên ≤ 0,15s). Nếu giữ 0,12–0,2s thì lúc đổi theme chúng lại đổi màu **lệch**
+   với bề mặt bao quanh.
+   **Cách giải:** để nhịp NHANH làm mặc định (giữ nguyên trong file), và chỉ trong **cửa sổ đổi
+   theme** mới gạt chúng sang nhịp chung bằng class `theme-anim` trên `<body>` (`startThemeAnim()`).
+   Layer `body.theme-anim …` (độ đặc hiệu 0,2,1 trở lên) **thắng** rule gốc của mọi control ở trên
+   nên không phụ thuộc thứ tự khai báo.
+   ⚠️ **KHÔNG set cả `transition-property` ở đây**, chỉ set `duration` + `timing-function`: như vậy
+   danh sách thuộc tính riêng của từng control (ví dụ `.page-act` có `transform`) vẫn nguyên vẹn,
+   chỉ đổi NHỊP. Set `transition-property` ở đây là làm mất animation của những thuộc tính khác.
+   ⚠️ Ai vào danh sách này phải hội đủ **hai** điều: đổi màu theo theme **VÀ** có phản hồi bấm/hover
+   (`:hover`/`:active`/`:focus`/trạng thái chọn). Bề mặt chỉ đổi vì theme thì gán token trực tiếp,
+   **không** cần gạt (gạt thừa = thêm một chỗ phải bảo trì).
+   ⛔ Nếu bạn thêm một control mới đổi màu theo theme và có phản hồi bấm mà **quên** đưa vào đây thì
+   nó sẽ đổi màu nhanh hơn phần còn lại khi đổi theme — đúng lỗi lượt này đang sửa, nên hãy soi lại
+   danh sách này mỗi khi thêm control.
+   ⚠️ Lớp gạt này mở ở **HAI** chỗ, không chỉ đổi theme: `toggleTheme()` và `cycleSurface()` (nút
+   “Nền”) — vì đổi mức nền cũng là đổi diện mạo toàn cục. Cả hai đi qua **CÙNG** `startThemeAnim()`
+   nên không thể lệch thời lượng. */
+body.theme-anim .kh-card,
+body.theme-anim .sort-btn,
+body.theme-anim .page-btn,
+body.theme-anim .page-act,
+body.theme-anim .filter-select,
+body.theme-anim .search-box input,
+body.theme-anim .search-clear,
+body.theme-anim .cfg-btn,
+body.theme-anim .fs-btn,
+body.theme-anim .export-btn,
+body.theme-anim .view-btn {
+  transition-duration: var(--theme-anim-dur);
+  transition-timing-function: var(--theme-anim-ease);
 }
 
 /* ── BỘ ICON DÙNG CHUNG (xem sprite `#__icon-sprite` ngay đầu <body>) ────────
@@ -456,7 +615,12 @@ body {
    **2.54:1** ⇒ dưới ngưỡng 3:1 của WCAG 1.4.11 (đồ hoạ). Đổi sang `--ic-blue` (#3b82f6) =
    **3.68:1** ✓. Nền tối giữ nguyên `--ic-blue-soft` (**5.84:1** ✓) — đó cũng là tông mà bảng
    `--ic-*` đã ghi chú sẵn là “mũi tên danh số”. */
-body.light-mode .kh-danhso .ic { color: var(--ic-blue); }
+/* ➕ MŨI TÊN trong viên danh số: `--ic-blue` `#3b82f6` — trên viên nền sáng, nó chỉ đạt **3,23:1**
+   (sát ngưỡng 3:1 của đồ hoạ), và khi viên ĐẬM LÊN theo yêu cầu “nền danh số đậm hơn” thì nó
+   TỤT XUỐNG DƯỚI ngưỡng (đo trên `#c7dbf5`: **2,61 ✗**; trên `#d7e7fa`: **2,92 ✗**).
+   ⇒ Dùng `--ic-blue-dark` `#2563eb` (token đang có sẵn, không sinh tông mới): đạt **3,66–4,11 ✓**
+   trên cả hai viên mới, và **4,54 ✓** trên viên cũ ở mức “Sáng” (tốt hơn bản `--ic-blue` 3,23). */
+body.light-mode .kh-danhso .ic { color: var(--ic-blue-dark); }
 .welcome-state .big-icon .ic { display: block; margin: 0 auto; color: var(--text-dim); }
 .upload-zone-mobile p .ic { color: var(--text-dim); }
 .big-upload-btn .ic { color: #ffffff; }
@@ -474,7 +638,18 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue); }
   border-bottom: 1px solid var(--hdr-line);
   box-shadow: var(--hdr-shadow);
   height: calc(var(--header-h) + env(safe-area-inset-top, 0px));
-  padding: env(safe-area-inset-top, 0px) 0 0 8px;
+  /* ⟳ LỀ PHẢI `0 → 8px` (yêu cầu “tôi muốn đồng hồ và ngày tháng xích vô 1 tí”).
+     Trước đây khối đồng hồ kết thúc ở `x = 403,6` — NGOÀI đường thẳng hàng của cả app:
+     ô tìm kiếm, 2 ô lọc, 2 tab sắp xếp, hàng phân trang và **thẻ card** đều kết thúc ở
+     **`x = 395,6`** (vì `.main`/`.toolbar` có lề 8px hai bên). Lề trái header là 8px mà lề
+     phải là 0 ⇒ dòng “T7, 26/9/26” chỉ còn cách mép màn hình **10px** và **thẳng ra ngoài
+     cột** 8px. Nay 8px hai bên ⇒ đồng hồ/ngày **thẳng hàng với cột bên dưới**
+     (`.clock-box` 403,6 → **395,6** · chữ ngày 393,6 → **385,6**).
+     ⛔ KHÔNG đổi lề TRÊN/DƯỚI (`env(safe-area-inset-top)` + `0`): đó là thứ giữ header cao
+     **56px**; đổi là toolbar sticky và `.main` phía dưới dịch theo. ⛔ Cũng đừng nương lề
+     này để “căn” đồng hồ vào giữa header — `.header-right` được đẩy sang phải bằng
+     `justify-content: space-between`, không phải bằng số đo của khối đồng hồ. */
+  padding: env(safe-area-inset-top, 0px) 8px 0 8px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -485,10 +660,10 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue); }
   /* ℹ️ Vì sao trước đây KHÔNG transition nền: nền cũ là GRADIENT — gradient không composite
      được nên mỗi frame phải raster lại cả dải header, kéo theo lớp `backdrop-filter` của
      toolbar phải composite lại. ⟳ Nền nay là MỘT MÀU ĐẶC nên đã bật transition cho
-     `background-color` + `color`: đổi sáng/tối thì header chuyển mượt như mọi bề mặt khác
-     (0,2s — khớp luật `transition` chung ở khối “BỘ ICON…” phía trên), hết cảnh header nhảy
-     màu tức thì trong khi phần còn lại của app đang mờ dần. */
-  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+     `background-color` + `color`: đổi sáng/tối thì header chuyển mượt như mọi bề mặt khác,
+     hết cảnh header nhảy màu tức thì trong khi phần còn lại của app đang mờ dần.
+     ⟳ Nhịp nay là `--theme-anim-*` (**0,45s** + đường cong chung với ngôi sao), không còn 0,2s. */
+  transition: background-color var(--theme-anim-dur) var(--theme-anim-ease), color var(--theme-anim-dur) var(--theme-anim-ease), box-shadow var(--theme-anim-dur) var(--theme-anim-ease), border-color var(--theme-anim-dur) var(--theme-anim-ease);
 }
 
 .header-left { display: flex; align-items: center; gap: 4px; }
@@ -537,20 +712,43 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue); }
   justify-content: center;
 }
 
+/* CỠ CHỮ + CÂN NẶNG của hai dòng đồng hồ — MỘT chỗ khai cho cả hai theme (cỡ chữ KHÔNG theo
+   theme, đúng hợp đồng “theme chỉ đổi MÀU”). Hai token ở `:root`, xem chú thích ở đó.
+   ⚠️ `margin-top: 2px` của dòng ngày cũng được kéo từ markup vào đây — nó là METRIC nên phải
+   nằm cạnh cỡ chữ để lần sau đổi cỡ là thấy ngay thứ đi kèm.
+   ⛔ Đừng gộp hai dòng này vào `.clock-box`: khối đồng hồ còn được `.header-right` dùng chung
+   cho các phần tử khác, và cỡ 22px của `.clock-box` là cỡ DỰ PHÒNG (không span nào dùng). */
+#clockLive {
+  font-size: var(--hdr-time-fs);   /* 20px */
+  font-weight: 700;                /* số liệu là thứ đậm nhất header */
+  font-family: 'Inter', sans-serif;
+}
+#clockDateLive {
+  font-size: var(--hdr-date-fs);   /* ⟳ 12px → 14px theo yêu cầu “chữ ngày tháng to hơn” */
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  margin-top: 2px;
+}
+
 .header-right { display: flex; align-items: center; gap: 8px; margin-left: -8px; }
 
-/* ✨ LOGO NGÔI SAO Ở HEADER — nay là LOGO TĨNH, KHÔNG còn là nút đổi giao diện.
-   ⟳ (tên cũ: “CẦU CAM Ở HEADER” — hình cầu cam đã bị thay bằng NGÔI SAO 4 CÁNH 2 MÀU)
-   Lý do y như `.clock-box`: mọi nút đã vào `#cfg`; đổi sáng/tối nay ở hàng “Giao diện”.
+/* ✨ LOGO NGÔI SAO Ở HEADER — NAY LÀ **NÚT ĐỔI SÁNG/TỐI** (yêu cầu “tôi muốn logo ngôi sao là
+   nút chuyển chế độ sáng tối”). ⟳ Bản trước là LOGO TĨNH, và trước nữa là nút (tên cũ
+   “CẦU CAM Ở HEADER” — hình cầu cam đã thay bằng NGÔI SAO 4 CÁNH 2 MÀU).
+   Hàng “Giao diện” trong `#cfg` **vẫn còn** ⇒ HAI đường vào cùng một việc, cả hai đều gọi
+   `toggleTheme()` — không có đường nào tự đổi theme ngoài hàm đó.
    ⟳ Nay là **NGÔI SAO 4 CÁNH, 2 MÀU TRẮNG/ĐEN, ĐẢO CỰC THEO THEME** (yêu cầu “đổi icon tia sét
    qua hình ngôi sao này và chỉnh cho ngôi sao phong cách tối giản 2 màu trắng đen”): 2 path
    phẳng (`logo-star-out` = sao lớn, `logo-star-in` = sao nhỏ lồng trong, tỉ lệ 0,52), KHÔNG
    gradient/filter/bóng. Hai `fill` nằm ở HAI RULE CSS ngay dưới khối này và lấy từ token
    `--logo-outer`/`--logo-inner` — đổi màu logo là sửa token, không sửa markup.
-   ⛔ ĐỔI TÊN `.theme-toggle` → `.theme-logo` (tên cũ nói dối: đây không còn là toggle), và
-   bỏ hết `cursor: pointer` / `:hover` / `:active` — logo không được phản hồi như nút.
-   ⚠️ Số đo (56×56, padding 6px) GIỮ NGUYÊN: header đang khít, đổi là `header-right` xê dịch.
-   ⚠️ Icon bên trong cũng đổi tên `.theme-toggle-icon` → `.theme-logo-ico` (cùng lý do). */
+    ℹ️ Tên lớp `.theme-logo` GIỮ NGUYÊN dù lượt này nó thành NÚT trở lại: đổi tên lần nữa là
+   phải sửa cả CSS lẫn markup mà không đổi được gì; cái tên không còn “nói dối” vì logo **đúng
+   là** thứ người dùng bấm để đổi giao diện (nút thật là `#themeLogoBtn`).
+   ⚠️ Số đo (56×56, padding 6px) GIỮ NGUYÊN: header đang khít, đổi là `header-left` xê dịch.
+   ⚠️ Icon bên trong giữ tên `.theme-logo-ico` (cùng lý do).
+   ➕ **MỘT LƯỢT SAU: LOGO TRỞ LẠI LÀ NÚT** (yêu cầu “tôi muốn logo ngôi sao là nút chuyển chế
+   độ sáng tối”) — xem khối chú thích ngay trên rule `.theme-logo` (phần `appearance`/`:hover`). */
 .theme-logo {
   width: 56px; height: 56px;
   border-radius: 50%;
@@ -561,7 +759,90 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue); }
   background: transparent;
   box-shadow: none;
   overflow: hidden;
-  pointer-events: none;   /* logo không ăn cú chạm (trên iOS vẫn bắt được `click` vào div) */
+  /* ➕ LOGO NAY LÀ **NÚT** ĐỔI SÁNG/TỐI (yêu cầu “tôi muốn logo ngôi sao là nút chuyển chế độ
+     sáng tối”). Đây là <button> THẬT trong markup ⇒ phải reset dáng mặc định của trình duyệt
+     để nó VẼ RA ĐÚNG hình cũ (56×56, padding 6px, KHÔNG viền, KHÔNG nền):
+       `appearance: none` (nếu không, Safari/iOS vẽ thêm bo/đổ bóng của nút hệ thống)
+       `font: inherit` + `color: inherit` để nút không tự lấy font/color của hệ thống.
+     ⛔ **KHÔNG phản hồi bằng HÌNH HỌC** (`transform: scale`, đổi `width`/`padding`): header đang
+     khít — logo nhảy là `title-wrap` đẩy theo, và đây là bề mặt nằm cạnh **đồng hồ đang chạy
+     mỗi giây**. Chỉ đổi MÀU NỀN (bên dưới).
+     ⛔ `pointer-events: none` cũ đã GỠ — giữ nó thì cú chạm/chuột không bao giờ tới nút.
+     ⚠️ Nếu sau này muốn logo “không bấm được” thì phải đổi `disabled` + style riêng, đừng quay
+     lại `pointer-events` (nút trông vẫn như nút mà bấm không ăn là lỗi khó hiểu nhất). */
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  font: inherit;
+  color: inherit;
+  transition: background-color 0.15s ease;
+}
+/* Phản hồi khi bấm/rê — CHỈ đổi nền, không đổi hình học (xem cảnh báo ngay trên).
+   Màu xám trung tính `rgba(148,163,184,…)` (slate-400) chọn vì nó là tông đã dùng khắp app cho
+   trạng thái “đang lọc/bấm giữ”, và đĩa nền là **56×56** nên bao quanh vòng tròn logo 6px ở mọi phía.
+   `@media (hover: hover)` để máy cảm ứng không “dính” trạng thái hover sau cú chạm. */
+@media (hover: hover) {
+  .theme-logo:hover { background: rgba(148,163,184,0.18); }
+}
+.theme-logo:active { background: rgba(148,163,184,0.30); }
+/* Vòng focus CHỈ hiện khi điều hướng bằng bàn phím (`:focus-visible`) — dùng `--accent` như mọi
+   chỗ focus khác của app. ⚠️ `outline-offset` giữ dương để vòng không bị `overflow: hidden`
+   của chính nút cắt mất (nút có `overflow: hidden` để bo tròn vệt/nền bên trong). */
+.theme-logo:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* ➕ PHẢN HỒI THỊ GIÁC KHI ĐỔI THEME (yêu cầu “logo xoay nhẹ … giữ nguyên mọi số đo bố cục”).
+   Xoay ĐÚNG **90°** — không phải con số tuỳ tiện: ngôi sao có **đối xứng bậc 4** (4 đỉnh ở
+   N/E/S/W), nên 90° là góc **NHỎ NHẤT** mà hình kết thúc TRÙNG KHÍT hình ban đầu ⇒ hết
+   animation **không bị “giật” về góc cũ**. (Xoay 45° thì khi animation dừng, hình sẽ nhảy ngược
+   lại một góc rất rõ — đúng loại lỗi khó chịu mà animation một lần hay mắc.)
+   💡 Vòng `logo-ring` là hình TRÒN cùng tâm nên xoay nó KHÔNG đổi gì ⇒ mắt đọc ra là
+   “**ngôi sao tự xoay bên trong chiếc vòng đứng yên**”, đúng ý “xoay nhẹ”.
+   ⚠️ `transform` là thuộc tính **VẼ**, KHÔNG vào layout ⇒ `offsetWidth/offsetHeight`, `x` của
+   `title-wrap`, chiều cao header **KHÔNG đổi** (đã đo, xem run.md).
+   ⛔ **ĐỪNG “xoay” bằng `width`/`margin`/`top`/`left`** — đó là metric, header sẽ nhảy.
+   ⛔ **ĐỪNG thêm `will-change: transform`**: nó giữ một layer composite sống mãi trong header
+   `sticky` chỉ để dùng cho một animation 0,45s — cùng lý do dự án đã bỏ `backdrop-filter`.
+   ℹ️ Vì hình chỉ chiếm bán kính **20** trong hộp SVG **44** (vòng ngoài `r=19 + stroke 1`), xoay
+   không làm gì chạm mép ⇒ **không cần nới `overflow: hidden`** của nút.
+   ℹ️ `getBoundingClientRect()` của SVG **sẽ TO RA** trong lúc xoay (hộp bao của hình đang xoay)
+   — đó là hệ quả của `transform`, KHÔNG phải bố cục đổi. Muốn kiểm bố cục thì đọc
+   `offsetWidth`/`offsetHeight`, đừng đọc `getBoundingClientRect()`. */
+@keyframes logoThemeSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(90deg); }
+}
+.theme-logo.spin .theme-logo-ico {
+  transform-origin: 50% 50%;   /* tâm hộp SVG = tâm ngôi sao (22;22 trong viewBox 44×44) */
+  /* Nhịp lấy từ TOKEN dùng chung với hai phản hồi kia (`--theme-anim-*`, tên cũ `--logo-anim-*`)
+     — xem khối chú thích ở
+     `:root`. ⛔ Đừng ghi số trực tiếp ở đây nữa: đó chính là cách ba phản hồi lệch nhịp trước đây. */
+  animation: logoThemeSpin var(--theme-anim-dur) var(--theme-anim-ease);
+}
+/* ➕ PHẢN HỒI THAY THẾ KHI HỆ ĐIỀU HÀNH BẬT “GIẢM CHUYỂN ĐỘNG” (`prefers-reduced-motion: reduce`).
+   ⚠️ **ĐÂY KHÔNG PHẢI CHI TIẾT CHO ĐẸP — ĐÃ ĐO ĐƯỢC THỰC TẾ:** chính môi trường xem trước này
+   báo `matchMedia('(prefers-reduced-motion: reduce)').matches === true`, nên bản chỉ-xoay **tắt
+   ngay tại chỗ** và người dùng không thấy phản hồi nào (đo: `animationName = none`).
+   ⇒ Người đã tắt hiệu ứng chuyển động vẫn PHẢI có phản hồi, nhưng bằng **MÀU** (nhấp sáng nền
+   nút), không bằng **chuyển động** — đúng tinh thần của thiết lập đó: tránh *dịch chuyển*, không
+   phải tránh mọi dấu hiệu.
+   ⚠️ Rule nhấp sáng nằm **BÊN TRONG** media query nên hai hiệu ứng **loại trừ nhau**: bình thường
+   chỉ xoay, còn chế độ giảm chuyển động chỉ nhấp sáng — không bao giờ chồng.
+   ⚠️ Animation đổi `background-color` KHÔNG đụng bố cục (không phải metric) — cùng lý do với
+   `transform` ở trên. Đỉnh 0,34 gần bằng `:active` 0,30 nên hai trạng thái đọc ra cùng một họ.
+   ⛔ Đây là rule `prefers-reduced-motion` DUY NHẤT của app — cố ý khoanh HẸP vào hiệu ứng vừa
+   thêm. Đặt thành luật chung cho `*` là tắt luôn mọi transition màu của cả app, việc người dùng
+   không yêu cầu. */
+@keyframes logoThemeFlash {
+  0%   { background-color: rgba(148,163,184,0); }
+  35%  { background-color: rgba(148,163,184,0.34); }
+  100% { background-color: rgba(148,163,184,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-logo.spin .theme-logo-ico { animation: none; }
+  /* Cùng nhịp với cú xoay và với chuyển màu (`--theme-anim-*`), chỉ đổi CÁCH phản hồi (màu thay vì
+     xoay) — nhờ vậy “một cử chỉ” giữ nguyên dù hệ điều hành có tắt chuyển động hay không. */
+  .theme-logo.spin { animation: logoThemeFlash var(--theme-anim-dur) var(--theme-anim-ease); }
 }
 .theme-logo .theme-logo-ico {
   width: 100%;
@@ -572,6 +853,32 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue); }
    (`--logo-outer`/`--logo-inner`) và đổi được riêng cho từng theme. Xem khối chú thích `:root`. */
 .theme-logo-ico .logo-star-out { fill: var(--logo-outer); }
 .theme-logo-ico .logo-star-in  { fill: var(--logo-inner); }
+/* ➕ SAO ĐỔI MÀU **DẦN** TRONG LÚC CHUYỂN THEME (yêu cầu “đổi màu sao logo thành dạng đang
+   chuyển tiếp trong lúc đổi theme — ví dụ sao chuyển dần từ trắng sang đen — để phản hồi đọc
+   được cả khi hệ điều hành tắt chuyển động”).
+   💡 **VÌ SAO ĐÂY LÀ PHẢN HỒI ĐÚNG CHO NGƯỜI TẮT CHUYỂN ĐỘNG:** `prefers-reduced-motion` nói về
+   *dịch chuyển*, KHÔNG cấm *đổi màu*. Cú xoay (`logoThemeSpin`) bị media query tắt, nhưng
+   chuyển màu nằm NGOÀI media query nên **vẫn chạy** ⇒ đổi sáng/tối luôn có một phản hồi đọc được.
+   💡 **THỜI LƯỢNG VÀ ĐƯỜNG CONG LẤY TỪ TOKEN DÙNG CHUNG** (`--theme-anim-dur` /
+   `--theme-anim-ease` ở `:root` — tên cũ `--logo-anim-*`) với cú xoay, lớp nhấp sáng **và cả nền
+   trang + mọi bề mặt** — không còn số viết thẳng ở đây. Tất cả chạy **0,45s** và **cùng một đường
+   cong**, bắt đầu và kết thúc cùng lúc ⇒ đọc ra MỘT cử chỉ.
+   (Trước lượt này ba chỗ là ba giá trị khác nhau: xoay 0,45s + overshoot · nhấp sáng 0,5s + `ease`
+   · chuyển màu 0,45s + `ease`.)
+   💡 Chuyển màu **tự nhiên đọc ra “đang chuyển”**: trắng → đen là cặp đổi gắt, nếu đổi tức thì mắt
+   chỉ thấy “nháy”; trượt 0,45s thì mắt thấy **quá trình** đang chuyển.
+   ⚠️ Hiệu lực là do **`fill`/`stroke` ĐỔI GIÁ TRỊ COMPUTED** (chúng lấy từ token `--logo-outer` /
+   `--logo-inner`, đổi theo theme) ⇒ transition trên `fill` ẩn giữa hai màu. Đây KHÔNG phải
+   “animate custom property” (custom property không nội suy được nếu không có `@property`) — đừng
+   đổi sang cách đó.
+   ⚠️ Chỉ đổi MÀU: `fill`/`stroke` không vào layout ⇒ mọi số đo header giữ nguyên.
+   ⛔ Đừng gỡ transition này để “cho nhanh”: nó là phản hồi DUY NHẤT khi hệ điều hành tắt chuyển
+   động (khi đó cú xoay bị tắt, chỉ còn nó và lớp nhấp sáng nền nút).
+   ⛔ Đừng đổi `0.45s ease` trực tiếp ở hai rule dưới: dùng chung token với cú xoay, ghi số riêng
+   là tái lập đúng lỗi “ba phản hồi ba nhịp” mà lượt này vừa dẹp. */
+.theme-logo-ico .logo-star-out,
+.theme-logo-ico .logo-star-in { transition: fill var(--theme-anim-dur) var(--theme-anim-ease); }
+.theme-logo-ico .logo-ring    { transition: stroke var(--theme-anim-dur) var(--theme-anim-ease); }
 /* VÒNG TRÒN NGOÀI (yêu cầu “thêm vòng tròn phía ngoài”): CHỈ VIỀN, KHÔNG NỀN. `stroke-width: 2`
    với `r: 19` cho mép ngoài đúng **r = 20** — bằng mép ngoài đường tròn cam cũ ⇒ logo vẫn chiếm
    đúng 40×40 trong hộp 44×44, header không xê dịch. ⛔ `fill: none` là BẮT BUỘC: đổ nền là tầng
@@ -773,16 +1080,20 @@ body.light-mode #sortTienNo.active { background: #536274; border-color: #e2e8f0;
    ⛔ Không đụng `.page-btn` (nằm trên nền TRANG, không phải trên thẻ) và ⛔ không đụng "vùng
    Tổng" (`.count-info`) — riêng `.summary-wrap` (bảng Tổng hợp) nay CŨNG dùng chung token
    này, xem rule `body.light-mode .summary-wrap`. */
-body.light-mode .kh-card { background: var(--light-surface); border: 1px solid var(--light-edge); box-shadow: 0 1px 3px rgba(15,23,42,0.12), 0 4px 12px rgba(15,23,42,0.08); }
+/* ⟳ NỀN THẺ = NỀN TAB (yêu cầu “màu nền thẻ card light mode đồng bộ màu với nền các tab”):
+   `--light-surface` → **`--light-card`** (= `var(--ctl-light-bg)` = `#eff1f5`, đúng nền
+   `.sort-btn` / `.filter-select` / ô tìm kiếm). Bảng chính + bảng Tổng hợp VẪN dùng
+   `--light-surface` ⇒ giữ nguyên phân tầng. Xem khối chú thích của `--light-card` trong `:root`. */
+body.light-mode .kh-card { background: var(--light-card); border: 1px solid var(--light-edge); box-shadow: 0 1px 3px rgba(15,23,42,0.12), 0 4px 12px rgba(15,23,42,0.08); }
 body.light-mode .kh-name { color: #2563eb; }
 /* viên Mã KH / Danh Số / SĐT: chỉ đổi màu — cỡ chữ, padding, border-width,
    border-radius lấy nguyên từ rule nền (dòng bên dưới, dành cho dark mode) */
 body.light-mode .kh-ma { color: var(--vien-fg) !important; background: var(--vien-bg); }
-body.light-mode .kh-danhso { color: var(--vien-fg) !important; background: #e8f1fd; }
+body.light-mode .kh-danhso { color: var(--vien-fg) !important; background: var(--danhso-bg); }
 body.light-mode .kh-sogcs { color: #334155; }
 body.light-mode .kh-phone { color: var(--vien-fg) !important; background: var(--vien-sdt-bg); }
 body:not(.light-mode) .kh-ma { color: var(--vien-fg) !important; background: var(--vien-bg); }
-body:not(.light-mode) .kh-danhso { color: #d1d5db !important; background: rgba(59,130,246,0.14); }
+body:not(.light-mode) .kh-danhso { color: #d1d5db !important; background: var(--danhso-bg); }
 body:not(.light-mode) .kh-phone { color: var(--vien-fg) !important; background: var(--vien-sdt-bg); }
 body.light-mode .kh-thang { color: #334155; }
 body.light-mode .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #3b82f6; text-underline-offset: 3px; text-decoration-thickness: 2px; }
@@ -1374,7 +1685,13 @@ body.light-mode .cfg-row, body.light-mode .cfg-hd { border-bottom-color: #cbd5e1
      repaint — bỏ đi cho mượt trên mobile. */
   background: rgba(17,19,24,0.98);
   border-bottom: 1px solid var(--border);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  /* ➕ Nhịp đổi theme = nhịp của ngôi sao (`--theme-anim-*`), và **THÊM `background-color`**
+     (0,2s → 0,45s): trước đây rule này chỉ khai `border-color` + `box-shadow` ⇒ nền toolbar
+     (dải `rgba(17,19,24,0.98)` ở dark ⇄ `#ffffff` ở light) **NHẢY TỨC THÌ** giữa header và các
+     thẻ vốn đang mờ dần — nhìn như một vết cắt ngang màn hình. Nay nó cũng chuyển dần cùng nhịp.
+     ℹ️ Toolbar không có phản hồi bấm nào nên gán token TRỰC TIẾP, không cần lớp gạt
+     `body.theme-anim`. */
+  transition: background-color var(--theme-anim-dur) var(--theme-anim-ease), border-color var(--theme-anim-dur) var(--theme-anim-ease), box-shadow var(--theme-anim-dur) var(--theme-anim-ease);
 }
 .toolbar.stuck { border-bottom-color: var(--border); box-shadow: 0 8px 16px rgba(0,0,0,0.3); }
 
@@ -1720,12 +2037,36 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
    mức “Dịu” làm nền tối đi nên mọi chữ chỉ được lợi.
    ℹ️ Chênh lệch nền thẻ ↔ nền trang ở mức “Sáng” co từ **1,48:1** xuống ~**1,35:1** — vẫn
    trên mức “Chuẩn” (1,25:1) nên viền `rgba(255,255,255,0.34)` + bóng đổ vẫn là thứ tách thẻ,
-   đừng gỡ. */
-body.light-mode[data-surface="sang"] { --light-surface: #ffffff; }
-body.light-mode[data-surface="diu"]  { --light-surface: #e3e9f0; --multi-hd: #059669; }
+   đừng gỡ.
+   ⟳ **LƯỢT 26/9 (yêu cầu “màu nền thẻ card dark mode đồng bộ màu nền với các tab”): MỨC
+   “CHUẨN” NAY LẤY ĐÚNG MÀU CONTROL — VÀ VÌ THẾ CẢ BA MỨC PHẢI DỊCH LÊN.**
+     · mức “Chuẩn” `--dk-card` `#1f2836` → **`var(--ctl-solid)` = `#242a34`** (đúng màu tab)
+     · mức “Sáng”  `--dk-card` `#232c3a` → **`#282e38`**
+     · mức “Dịu”   `--dk-card` `#1b232f` → **`#1f252f`**
+   ⚠️ **VÌ SAO PHẢI DỊCH CẢ “SÁNG”/“DỊU” CHỨ KHÔNG CHỈ ĐỔI “CHUẨN”:** mức “Chuẩn” nhạt lên
+   ⇒ nó chỉ còn cách mức “Sáng” đúng **1,03:1** — mắt KHÔNG phân biệt được, nút “Nền” bấm vào
+   như không có gì đổi (2 trong 3 mức trùng nhau). Nên tôi giữ **nguyên khoảng cách giữa ba
+   mức** (Sáng/Chuẩn 1,056 · Dịu/Chuẩn 1,065 — gần đúng tỉ lệ cũ 1,056 / 1,066) và dịch cả
+   ba lên, chứ không hạ “Sáng” xuống dưới “Chuẩn” (sai thứ tự).
+   ℹ️ Hệ quả: mức “Sáng” nhạt hơn bản cũ một chút ⇒ chữ mờ nhất (`--text-dim`) trên thẻ
+   **5,49 → 5,32:1** (vẫn xa ngưỡng 4,5). Nền thẻ ↔ nền trang ở “Sáng” cũng giãn lại
+   (1,35 → **1,36**), ở “Chuẩn” **1,25 → 1,29**. */
+/* ➕ `--danhso-bg` đi kèm đúng mức nền: chọn sao cho viên danh số chênh nền thẻ **~1,14–1,15**
+   ở CẢ BA mức (đo live, xem run.md). Mức “Sáng” giữ nguyên giá trị cũ `#e8f1fd` (đã đạt 1,14).
+   ⚠️ Mức “Dịu” thẻ tối nhất (`#e3e9f0`) nên viên phải ĐẬM HƠN THẺ mới đọc ra — đó chính là
+   yêu cầu “màu nền danh số đậm hơn cho dễ nhìn”; trước lượt này viên ở mức “Dịu” còn SÁNG HƠN
+   thẻ nên nó đọc như một vết sáng, không như một cái viên. */
+/* ⚠️ Hai rule theo mức nền nay phải khai **CẢ HAI** token: `--light-surface` (bảng chính + bảng
+   Tổng hợp) và `--light-card` (thẻ KH). Chỉ khai một cái là có mức “Sáng”/“Dịu” mà thẻ đứng im
+   hoặc bảng đứng im — nút “Nền” bấm vào như không có gì đổi ở một trong hai nhóm bề mặt. */
+body.light-mode[data-surface="sang"] { --light-surface: #ffffff; --light-card: #ffffff; --danhso-bg: #e8f1fd; }
+body.light-mode[data-surface="diu"]  { --light-surface: #e3e9f0; --light-card: #e3e9f0; --multi-hd: #059669; --danhso-bg: #c7dbf5; }
 body.light-mode[data-surface="diu"] .kh-name { color: #1d4ed8; }
-body:not(.light-mode)[data-surface-dark="sang"] { --dk-card: #232c3a; --dk-table: rgba(255,255,255,0.06); --dk-sum: #181c25; }
-body:not(.light-mode)[data-surface-dark="diu"]  { --dk-card: #1b232f; --dk-table: rgba(255,255,255,0.02); --dk-sum: #111420; }
+/* ⚠️ Hai mức dưới đây cũng bị lượt “nền thẻ = nền tab” DỊCH LÊN (xem ⟳ ngay trên): mức “Chuẩn”
+   lấy đúng màu control `--ctl-solid` nên hai mức này phải đi theo, nếu không “Sáng” chỉ còn
+   cách “Chuẩn” **1,03:1** — mắt không thấy khác, nút “Nền” thành vô nghĩa. */
+body:not(.light-mode)[data-surface-dark="sang"] { --dk-card: #282e38; --dk-table: rgba(255,255,255,0.06); --dk-sum: #181c25; }
+body:not(.light-mode)[data-surface-dark="diu"]  { --dk-card: #1f252f; --dk-table: rgba(255,255,255,0.02); --dk-sum: #111420; }
 /* Chấm chỉ mức đang dùng (1 = Sáng · 2 = Chuẩn · 3 = Dịu) — cùng cơ chế với nút “Aa”:
    KHÔNG vẽ chấm bằng JS, để F5 xong vẫn đúng ngay cả trước khi script chính chạy.
    ⚠️ Lớp riêng `.sf-btn-dots` (KHÔNG dùng lại `.fs-btn-dots`): dùng chung là 2 bộ rule
@@ -1918,11 +2259,13 @@ body.light-mode .nhom-sel-name {
 
 .kh-card {
   background: var(--dk-card);   /* chế độ tối: đổi theo mức “Nền” — xem mục “NÚT “Nền”” */
-  /* Viền dùng màu riêng của thẻ, KHÔNG dùng --border (8% trắng): nền thẻ #1f2836
-     chỉ cách nền trang #111318 1.3:1 nên viền phải gánh việc phân định thẻ
-     (yêu cầu 3:1 cho biên của control — WCAG 1.4.11).
-     ⚠️ Nền thẻ nay ĐỔI theo mức “Nền” ở chế độ tối ⇒ chênh nền thẻ với nền trang co lại còn
-     **1,18:1** ở mức “Dịu” (mức “Chuẩn” 1,25:1 · mức “Sáng” 1,48:1 — số ĐO THẬT trên trang).
+  /* Viền dùng màu riêng của thẻ, KHÔNG dùng --border (8% trắng): nền thẻ chỉ cách nền trang
+     #111318 **~1,2–1,4:1** nên viền phải gánh việc phân định thẻ (yêu cầu 3:1 cho biên của
+     control — WCAG 1.4.11).
+     ⟳ Nền thẻ nay là màu CONTROL (`--ctl-solid`, xem mục “NỀN THẺ = NỀN TAB” ở run.md — và
+     vì thế nó nhạt hơn bản `#1f2836` cũ). Số ĐO LẠI 26/9: chênh nền thẻ ↔ nền trang
+     **1,29:1** ở mức “Chuẩn” · **1,36:1** ở mức “Sáng” · **1,21:1** ở mức “Dịu”.
+     ⟳ Số cũ (Chuẩn 1,25 · Sáng 1,35–1,48 · Dịu 1,18) chỉ còn để đối chiếu.
      Viền + bóng đổ là thứ tách thẻ khỏi nền trang ⇒ ⛔ đừng gỡ chúng, và đừng hạ “Dịu” nữa. */
   border: 1px solid rgba(255,255,255,0.34);
   box-shadow: 0 1px 3px rgba(0,0,0,0.45);
@@ -2422,7 +2765,13 @@ body.light-mode .welcome-state p { color: #414b59; }
   font-size: 14px;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: all 0.12s;
+  /* ⟳ `all 0.12s` → liệt kê ĐÚNG ba thuộc tính MÀU (0,12s giữ nguyên).
+     `all` nghĩa là **mọi** thuộc tính đổi được cũng animate, kể cả thuộc tính BỐ CỤC — với một
+     control có `:active`/`.active` đổi nền thì nó chạy đúng, nhưng nó khiến lớp gạt
+     `body.theme-anim` (chỉ đổi `duration`) trở thành “0,45s cho MỌI thuộc tính” trong cửa sổ đổi
+     theme: lúc đó chỉ cần một thuộc tính bố cục đổi là có một animation bố cục 0,45s.
+     Ba thuộc tính dưới đây phủ đủ `.page-btn:active` (nền) và `.page-btn.active` (nền + viền + chữ). */
+  transition: background-color 0.12s, border-color 0.12s, color 0.12s;
   font-family: 'Inter', sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
@@ -3681,10 +4030,20 @@ body.force-desktop .table-view { display: block; }
 
 <!-- HEADER -->
 <div class="header">
-  <div class="header-left">     <!-- ✨ LOGO NGÔI SAO — nay là ảnh TRANG TRÍ, không còn là nút đổi giao diện: từ lượt
-           “mọi nút vào Cài đặt”, nút đổi sáng/tối nằm ở hàng “Giao diện” trong `#cfg`.
-           ⛔ Đừng gắn `onclick` trở lại đây; `.theme-logo` còn có `pointer-events: none`. -->
-    <div class="theme-logo" aria-hidden="true">
+  <div class="header-left">     <!-- ✨ LOGO NGÔI SAO — NAY LÀ **NÚT ĐỔI SÁNG/TỐI** (yêu cầu người dùng: “tôi muốn logo
+           ngôi sao là nút chuyển chế độ sáng tối”).
+           ⟳ LỊCH SỬ (đọc để không “sửa ngược”): ban đầu đây LÀ nút đổi giao diện (`.theme-toggle`)
+           → lượt “cho thêm 1 nút cài đặt và bỏ tất cả các nút vào đó” đổi thành ảnh TRANG TRÍ
+           (`.theme-logo` + `pointer-events: none`) → NAY trở lại thành NÚT.
+           ⚠️ Hàng “Giao diện” trong tấm `#cfg` **VẪN CÒN** (người dùng không yêu cầu bỏ) ⇒ có HAI
+           đường vào cùng một việc; cả hai đều gọi `toggleTheme()`, không đường nào tự đổi theme.
+           ⛔ Dùng <button> THẬT, không phải `div` + `onclick`: được Enter/Space MIỄN PHÍ (điện thoại
+           thì không cần, nhưng máy tính thì có) và trình đọc màn hình đọc đúng — `div` + `onclick`
+           không nhận được bàn phím nếu không tự viết `tabindex` + `keydown`.
+           ⛔ ĐỪNG đặt `aria-hidden="true"` nữa: nút mà ẩn với trình đọc màn hình là nút chết.
+           Nhãn `aria-label`/`title` do `syncThemeToggle()` cập nhật theo theme — đừng ghi cứng. -->
+    <button class="theme-logo" type="button" id="themeLogoBtn" onclick="toggleTheme()"
+            aria-label="Chuyển sang chế độ sáng" title="Chuyển sang chế độ sáng">
       <!-- LOGO NGÔI SAO 4 CÁNH — TỐI GIẢN, ĐÚNG 2 MÀU TRẮNG/ĐEN (yêu cầu người dùng:
            “đổi icon tia sét qua hình ngôi sao này và chỉnh cho ngôi sao phong cách tối giản
            2 màu trắng đen”, kèm ảnh một ngôi sao 4 cánh 3 tầng xanh/đỏ/vàng).
@@ -3719,7 +4078,7 @@ body.force-desktop .table-view { display: block; }
         <path class="logo-star-out" d="M22 8.5 C23.35 16.6 27.4 20.65 35.5 22 C27.4 23.35 23.35 27.4 22 35.5 C20.65 27.4 16.6 23.35 8.5 22 C16.6 20.65 20.65 16.6 22 8.5 Z"/>
         <path class="logo-star-in" d="M22 14.98 C22.702 19.192 24.808 20.298 29.02 22 C24.808 23.702 22.702 24.808 22 29.02 C21.298 24.808 19.192 23.702 14.98 22 C19.192 20.298 21.298 19.192 22 14.98 Z"/>
       </svg>
-    </div>
+    </button>
     <div class="title-wrap">
 
       <div class="header-title">Quản Lý Nợ</div>
@@ -3740,8 +4099,13 @@ body.force-desktop .table-view { display: block; }
            (**17,74 ✓** / **7,58 ✓**), dark `#e2e8f0`/`#94a3b8` trên `#1a1d24` (**13,68 ✓** / **6,58 ✓**).
            ⛔ Inline style THẮNG mọi rule CSS — đừng quay lại ghi mã màu thẳng vào đây (màu
            trắng đó là tàn dư từ hồi header còn là dải xanh dùng chung cho cả 2 theme). -->
-      <span id="clockLive" style="color:var(--hdr-text);font-size:20px;font-weight:700;font-family:Inter,sans-serif"></span>
-      <span id="clockDateLive" style="color:var(--hdr-sub);font-size:12px;font-weight:500;font-family:Inter,sans-serif;margin-top:2px"></span>
+      <!-- ⚠️ CO và CÂN NẶNG của hai span nay nằm ở CSS (`#clockLive` / `#clockDateLive`), KHÔNG
+           viết thẳng ở đây nữa — xem khối chú thích `--hdr-time-fs`/`--hdr-date-fs` trong
+           `:root`. Markup CHỈ giữ MÀU (theo token `--hdr-*`) vì đó là thứ phải theo theme.
+           ⛔ Đừng viết lại `font-size`/`font-weight`/`font-family` vào `style=` — inline THẮNG CSS
+           nên lần sau sửa cỡ chữ trong CSS sẽ “không ăn”, đúng loại lỗi đã xảy ra với màu đồng hồ. -->
+      <span id="clockLive" style="color:var(--hdr-text)"></span>
+      <span id="clockDateLive" style="color:var(--hdr-sub)"></span>
     </div>
 
   </div>
@@ -4190,7 +4554,11 @@ body.force-desktop .table-view { display: block; }
     <button class="cfg-x" type="button" onclick="closeCfg()" aria-label="Đóng cài đặt">✕</button>
   </div>
 
-  <!-- 1. GIAO DIỆN SÁNG/TỐI — nút cầu cam cũ ở header (header nay chỉ còn logo NGÔI SAO TĨNH).
+  <!-- 1. GIAO DIỆN SÁNG/TỐI — nay có HAI đường vào cùng một việc: hàng này VÀ **nút logo ngôi sao
+       ở header** (`#themeLogoBtn`, yêu cầu “logo ngôi sao là nút chuyển chế độ sáng tối”). Cả hai
+       gọi chung `toggleTheme()`, và `syncThemeToggle()` đặt nhãn cho cả hai bằng CÙNG một chuỗi.
+       ⛔ Đừng xoá hàng này vì “đã có logo bấm được”: nút ở header là icon KHÔNG chữ, người dùng
+       mới không thể đoán ra nó làm gì — đây mới là chỗ nói rõ đang ở chế độ nào.
        Hai icon mặt trời/mặt trăng chồng nhau, đổi bằng `visibility` theo theme (xem
        `.cfg-theme-btn`) ⇒ không đổi metric giữa 2 theme, đúng hợp đồng ở đầu file.
        ⛔ KHÔNG thêm `data-tip` cho nút này: `syncThemeToggle()` đã đặt `title`, thêm nữa là
@@ -4395,22 +4763,23 @@ setInterval(updateLiveClock, 1000);
 
 
 // ── THEME TOGGLE ──────────────────────────
-/* Nút đổi theme: nhãn đọc lên là HÀNH ĐỘNG sắp xảy ra (trước đây đọc là "logo"
-   vì lấy alt của ảnh), và icon mặt trời/mặt trăng đổi theo theme bằng `visibility`.
-   ⟳ Chú thích cũ ghi "icon SVG đổi nhẹ theo theme (tia sét sáng hơn ở nền tối)" — SAI từ lượt
-   “mọi nút vào Cài đặt”: hình duy nhất của app nằm ở HEADER (`.theme-logo` — ngôi sao 4 cánh,
-   trước đây là tia sét), là ảnh TĨNH,
-   KHÔNG đổi theo theme và KHÔNG thuộc nút này. */
+/* Nhãn của nút đổi theme đọc lên là HÀNH ĐỘNG sắp xảy ra ("Chuyển sang…"), KHÔNG phải trạng thái
+   đang dùng — trạng thái nằm ở hàng “Giao diện” (`#cfgThemeVal`).
+   ➕ CÓ **HAI** NÚT cùng hành động kể từ lượt “logo ngôi sao là nút chuyển chế độ sáng tối”:
+     · `#themeToggle` — hàng “Giao diện” trong tấm cài đặt (icon mặt trời/mặt trăng)
+     · `#themeLogoBtn` — NÚT LOGO NGÔI SAO ở header (yêu cầu người dùng)
+   Hai nhãn PHẢI đọc y như nhau ⇒ dùng CHUNG một chuỗi và lặp qua danh sách id, thay vì chép
+   hai lần (chép hai lần thì sớm muộn cũng lệch câu chữ).
+   ⚠️ Vòng lặp tự bỏ qua id không tồn tại ⇒ bỏ hẳn một trong hai nút KHÔNG làm hàm này chết,
+   và dòng cập nhật `#cfgThemeVal` bên dưới vẫn chạy (đừng dời nó vào trong vòng lặp). */
 function syncThemeToggle(isLight) {
-  const btn = document.getElementById('themeToggle');
-  // ⚠️ Chỗ cập nhật NHÃN CHỮ cho hàng “Giao diện” của tấm cài đặt nằm DƯỚI `if (!btn) return;`
-  // — hai thứ đi cùng một nguồn (`isLight`) nên không có chuyện lệch. Nếu sau này bỏ hẳn
-  // `#themeToggle` thì phải kéo dòng đó RA NGOÀI khối này, đừng để nó chết theo nút.
-  if (btn) {
-    const label = isLight ? 'Chuyển sang chế độ tối' : 'Chuyển sang chế độ sáng';
-    btn.setAttribute('aria-label', label);
-    btn.title = label;
-  }
+  const label = isLight ? 'Chuyển sang chế độ tối' : 'Chuyển sang chế độ sáng';
+  ['themeToggle', 'themeLogoBtn'].forEach(function (id) {
+    const b = document.getElementById(id);
+    if (!b) return;
+    b.setAttribute('aria-label', label);
+    b.title = label;
+  });
   // Giá trị ĐANG dùng (không phải hành động) cho hàng “Giao diện”: đọc là biết đang ở chế độ
   // nào, không phải bấm thử. Đây là lý do hàng này có cả nhãn chữ lẫn nút icon.
   const val = document.getElementById('cfgThemeVal');
@@ -4441,7 +4810,110 @@ function closeCfg() {
   document.body.style.overflow = '';
 }
 document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeCfg(); });
+/* ➕ PHẢN HỒI THỊ GIÁC: logo xoay một góc mỗi lần theme đổi (yêu cầu “logo xoay nhẹ … giữ
+   nguyên mọi số đo bố cục”). Xem `@keyframes logoThemeSpin` để biết vì sao đúng 90° và vì sao
+   nó KHÔNG đụng tới bố cục.
+   ⚠️ Gọi Ở **ĐÂY** (trong `toggleTheme()`), KHÔNG gọi ở `onclick` của nút: theme còn đổi được từ
+   hàng “Giao diện” trong tấm Cài đặt ⇒ phản hồi phải GIỐNG NHAU ở cả hai đường, và chỉ có một
+   chỗ duy nhất phát hiện được “theme vừa đổi”.
+   ⚠️ Phải **GỠ class rồi ÉP trình duyệt tính lại style** trước khi thêm lại: bấm liên tiếp hai
+   lần mà chỉ `add` lại thì trình duyệt coi như class không đổi và **animation KHÔNG chạy lại**
+   (bấm lần hai sẽ im ru). Đọc `offsetWidth` là cách ép tính lại — đây là phép ĐỌC, mỗi cú bấm
+   một lần nên không thành “layout thrash”.
+   ⛔ Đừng thay `animationend` bằng `setTimeout`: `animationend` bám đúng thời lượng khai trong
+   CSS ⇒ sau này đổi `0.45s` thành `0.6s` không phải đi sửa số trong JS.
+   ⚠️ Lọc theo `animationName`: còn animation nào khác trên nút/con của nút thì `animationend`
+   của nó cũng nổi bọt tới đây và sẽ gỡ class SỚM (hiện chưa có, nhưng lọc cho chắc). */
+function spinThemeLogo() {
+  const btn = document.getElementById('themeLogoBtn');
+  if (!btn) return;
+  btn.classList.remove('spin');
+  void btn.offsetWidth;            // ép trình duyệt “quên” trạng thái cũ ⇒ animation chạy lại
+  btn.classList.add('spin');
+  // ⚠️ HAI tên animation đều phải chấp nhận: `logoThemeSpin` (bình thường, chạy trên SVG con) và
+  // `logoThemeFlash` (khi hệ điều hành bật “giảm chuyển động”, chạy trên CHÍNH nút — xem media
+  // query `prefers-reduced-motion`). Lọc thiếu một tên là có trường hợp class `spin` nằm lại vĩnh
+  // viễn và lần bấm sau **không còn animation** (vì `remove`+`add` không tạo lại hiệu ứng đã bị
+  // “kẹt” nhưng vẫn đang ở trạng thái cuối).
+  btn.addEventListener('animationend', function (e) {
+    if (e.animationName !== 'logoThemeSpin' && e.animationName !== 'logoThemeFlash') return;
+    btn.classList.remove('spin');
+  }, { once: true });
+}
+/* ➕ XOAY LOGO **MỘT LẦN** KHI MỞ APP (yêu cầu “cho hiệu ứng xoay logo cũng chạy khi trang vừa tải
+   xong và khôi phục theme, nhưng chỉ một lần duy nhất để không gây nhiễu mỗi lần mở app”).
+   ⚠️ **“MỘT LẦN” ĐƯỢC LƯU LẠI** ở `localStorage['qlno_logo_spin_once']` — nếu không lưu thì mỗi
+   lần mở app là một lần xoay, và người mở app vài chục lần/ngày sẽ thấy đúng cái “nhiễu” mà yêu
+   cầu nêu ra.
+   ⛔ **KHOÁ RIÊNG, KHÔNG dùng chung với `qlno_theme`** (hay bất kỳ khoá nào khác): đổi theme,
+   xoá dữ liệu hay xoá mức “Nền” KHÔNG được làm hiệu ứng quay lại; ngược lại, cờ này cũng không
+   được ảnh hưởng tới theme. Muốn chạy lại thì xoá đúng một khoá này.
+   ⚠️ Ghi cờ TRƯỚC KHI hẹn chạy: nếu có lỗi gì ở bước sau thì cũng **không** lặp lại ở lần mở kế.
+   ⛔ Đọc/ghi `localStorage` PHẢI bọc `try/catch`: ở chế độ ẩn danh chặt, truy cập có thể ném lỗi
+   và làm chết cả khối script này (mọi thứ phía dưới sẽ không chạy).
+   ⚠️ Thời điểm: `load` + **2 `requestAnimationFrame`** = SAU khi trình duyệt đã vẽ khung đầu tiên.
+   Không dùng `setTimeout` với số ms tuỳ ý: logo nằm ở markup TĨNH nên nó có mặt ngay từ khung vẽ
+   đầu; chờ đúng “đã vẽ xong” là đủ, không cần đoán số mili-giây theo tốc độ máy.
+   💡 Vẫn dùng CHÍNH `spinThemeLogo()` ⇒ tự thừa hưởng quy tắc trợ năng: máy bật “giảm chuyển
+   động” thì ở lần mở đầu đó nó hiện lớp **nhấp sáng nền nút** (`logoThemeFlash`) thay vì xoay. */
+const LOGO_SPIN_ONCE_KEY = 'qlno_logo_spin_once';
+function spinLogoOnFirstOpen() {
+  let seen = null;
+  try { seen = localStorage.getItem(LOGO_SPIN_ONCE_KEY); } catch (e) { return; }
+  if (seen) return;
+  // ⚠️ Ghi cờ hỏng (chế độ riêng tư chặt, quota đầy…) thì **KHÔNG chạy hiệu ứng** và thoát luôn:
+  // không nhớ được “đã chạy rồi” là mỗi lần mở app sẽ xoay một lần — đúng cái “nhiễu” cần tránh.
+  // (Ưu tiên giao kèo “một lần” hơn là được thấy hiệu ứng.)
+  try { localStorage.setItem(LOGO_SPIN_ONCE_KEY, '1'); } catch (e) { return; }
+  // ⚠️ `{ once: true }`: trình duyệt chỉ phát `load` MỘT lần, nhưng listener không tự gỡ thì vẫn
+  // nằm đó vĩnh viễn — ai đó `dispatchEvent(new Event('load'))` (thư viện, iframe, mã kiểm thử)
+  // là hiệu ứng xoay chạy lại, phá đúng giao kèo “một lần duy nhất”.
+  window.addEventListener('load', function () {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { spinThemeLogo(); });
+    });
+  }, { once: true });
+}
+spinLogoOnFirstOpen();
+/* ➕ CỬA SỔ ĐỔI THEME — lớp gạt `theme-anim` trên `<body>`.
+   **Vì sao cần:** các control (thẻ, tab sắp xếp, nút phân trang, ô lọc, ô tìm kiếm, nút cài đặt/…)
+   đổi màu vì **HAI lý do**: (a) đổi theme, (b) người dùng bấm/hover. CSS không phân biệt được hai
+   lý do ⇒ nếu đặt thẳng nhịp chung `0,45s` vào rule của chúng thì **mọi cú bấm cũng chậm 0,45s**
+   (phản hồi chạm nên ≤ 0,15s), còn nếu để nhanh thì lúc đổi theme chúng **lệch nhịp** với bề mặt
+   bao quanh. Cách giải: giữ nhịp NHANH làm mặc định, và chỉ trong cửa sổ đổi theme mới gạt chúng
+   sang nhịp chung bằng lớp này (chọn trong CSS, xem khối `body.theme-anim …`).
+   ⛔ **Thứ tự BẮT BUỘC:** gọi hàm này TRƯỚC khi đổi `light-mode`. Trình duyệt chọn transition theo
+   **style SAU khi đổi**, nên hai việc trong cùng một khung vẫn đúng — nhưng đứng trước là điều
+   kiện để không phụ thuộc vào thứ tự tính lại style giữa hai lần đổi.
+   ⛔ **ĐỌC THỜI LƯỢNG TỪ TOKEN, KHÔNG CHÉP SỐ:** ghi cứng `450` ở đây là có hai nguồn (CSS + JS) và
+   lần sau ai đó sửa `--theme-anim-dur` thì thời gian gỡ lớp sẽ lệch ⇒ gỡ QUÁ SỚM là các control
+   đổi màu nhanh trở lại giữa chừng (nhìn rất rõ).
+   ⚠️ `delay` cộng thêm: token không tính độ trễ khởi động của transition, cộng một khoảng an toàn để
+   lớp không bị gỡ đúng lúc frame cuối còn đang vẽ.
+   ⚠️ `clearTimeout` cho MỌI lần gọi: bấm liên tiếp (bấm nhanh hai lần) mà không xoá timer cũ thì timer
+   của lượt đầu sẽ gỡ lớp giữa lượt thứ hai. */
+const THEME_ANIM_CLASS = 'theme-anim';
+let themeAnimTimer = 0;
+function startThemeAnim() {
+  const body = document.body;
+  if (!body) return;
+  body.classList.add(THEME_ANIM_CLASS);
+  clearTimeout(themeAnimTimer);
+  const DEFAULT_MS = 450;   // chỉ dùng khi KHÔNG đọc được token (đọc lỗi = vẫn phải dọn lớp)
+  let ms = DEFAULT_MS;
+  try {
+    const raw = getComputedStyle(document.documentElement)
+      .getPropertyValue('--theme-anim-dur').trim();
+    const n = parseFloat(raw);
+    if (isFinite(n) && n > 0) ms = /ms$/.test(raw) ? n : n * 1000;
+  } catch (e) { /* giữ DEFAULT_MS */ }
+  themeAnimTimer = setTimeout(function () {
+    body.classList.remove(THEME_ANIM_CLASS);
+  }, ms + 60);
+}
+
 function toggleTheme() {
+  startThemeAnim();                 // ⚠️ TRƯỚC khi đổi class theme — xem chú thích ở hàm
   document.body.classList.toggle('light-mode');
   const isLight = document.body.classList.contains('light-mode');
   syncThemeToggle(isLight);
@@ -4449,6 +4921,7 @@ function toggleTheme() {
   // Nút “Nền” phải đọc lại mức của THEME VỪA CHUYỂN: mỗi theme một bộ mức riêng, và nhãn nút
   // (data-tip/aria-label) là thứ duy nhất nói cho người dùng biết đang ở mức nào.
   applySurface();
+  spinThemeLogo();
 }
 /* Nhãn đúng ngay từ lần vẽ đầu tiên */
 syncThemeToggle(document.body.classList.contains('light-mode'));
@@ -4919,6 +5392,12 @@ function applySurface() {
   if (val) val.textContent = lv.ten;
 }
 function cycleSurface() {
+  // ➕ MỨC “NỀN” CŨNG LÀ ĐỔI DIỆN MẠO TOÀN CỤC — phải mở CÙNG cửa sổ gạt như đổi theme.
+  // ⚠️ Nếu không: nền trang + các bề mặt chạy theo token `--theme-anim-dur` (**0,45s**) còn thẻ card
+  // và các control chỉ nhận nhịp chung KHI CÓ lớp gạt ⇒ chúng sẽ đổi màu ở 0,15s giữa một khung
+  // hình đang mờ dần 0,45s — đúng kiểu “lệch nhịp” mà lượt này đang dẹp, chỉ khác là do bấm nút Nền.
+  // ⛔ Gọi TRƯỚC khi ghi attribute (trình duyệt chọn transition theo style SAU khi đổi).
+  startThemeAnim();
   const attr = sfAttr();
   const next = SURFACE_LEVELS[(sfIndexOf(document.body.getAttribute(attr)) + 1) % SURFACE_LEVELS.length];
   document.body.setAttribute(attr, next.key);          // chỉ ghi attribute của theme đang xem
