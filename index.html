@@ -31,6 +31,16 @@
   --text-dim: #94a3b8;
   --border: rgba(255,255,255,0.08);
   --card: rgba(255,255,255,0.04);
+  /* BỀ MẶT CHẾ ĐỘ TỐI — ba bề mặt này đi chung nút “Nền” (3 mức, xem mục “NÚT Nền” ở dưới):
+       · `--dk-card`  = nền THẺ khách hàng (`.kh-card`)      · `--dk-table` = nền BẢNG chính (`.table-wrap`)
+       · `--dk-sum`   = nền bảng TỔNG HỢP (`.summary-wrap`)
+     Ba màu này KHÁC nhau từ trước (thẻ đục, bảng 4% trắng trên nền trang, Tổng hợp `#141720`)
+     nên phải 3 token; mỗi mức dịch cả ba cùng một hướng. Giá trị ở đây = mức “Chuẩn”
+     ⇒ mặc định KHÔNG đổi gì so với trước. Ở chế độ SÁNG ba bề mặt dùng CHUNG `--light-surface`
+     (khai trong `body.light-mode`) vì đã được đồng bộ về một nền ở các lượt trước. */
+  --dk-card: #1f2836;
+  --dk-table: rgba(255,255,255,0.04);
+  --dk-sum: #141720;
   /* Viền control của thanh công cụ (ô tìm kiếm, 2 ô lọc, nút xuất file).
      --border (8% trắng) gần như vô hình trên nền toolbar nên control bị "phẳng". */
   --ctl-vien: rgba(148,163,184,0.28);
@@ -152,11 +162,17 @@ body.light-mode {
      **3.01:1**; đừng hạ nền thêm nữa mà không đo lại. */
   --ctl-light-bg: #eff1f5;
 
-  /* Dải nền hàng “tên + tiền” ở light mode — TRẦN CŨ **5%** đã bị vượt ở lượt
-     “màu nền ở tên kh và số tiền còn nhạt quá” (yêu cầu người dùng) ⇒ nay **14%**.
-     ⚠️ Điều kiện đi kèm KHÔNG được tháo: chữ TIỀN light mode phải là `#b91c1c` (5,51:1 trên
-     dải). Trả nó về `#dc2626` là dải 14% kéo chữ tiền xuống **4,11:1 — dưới AA 4,5:1**. */
-  --row1-bg: rgba(59,130,246,0.14);
+  /* Dải nền hàng “tên + tiền” ở light mode.
+     Lịch sử: **5%** (nhạt quá — yêu cầu người dùng) → **14%** → ⟳ **12%** ở lượt “cân lại
+     cho hài hòa”: nền BẢNG vừa hạ `#ffffff → #f1f5f9`, mà blend alpha ra tông ĐẬM theo nền
+     ⇒ giữ 14% thì dải tự nhiên nổi hơn trước (blend 228,238,254 → 216,229,249). Hạ 2 điểm
+     đưa “độ nổi” về đúng mức cũ: dải/nền **1,16 → 1,13:1** (vẫn thấy rõ dải, không mất sọc).
+     ⚠️ Đo lại trên dải 12% (blend = `rgb(221,232,249)`): tiền `#b91c1c` **5,23:1** ✓ · tên
+     `#1d4ed8` 5,42 ✓ · mã sổ `#475569` 6,13 ✓ · danh số `#1e3a8a` 8,38 ✓ — TẤT CẢ trên AA;
+     hạ alpha làm nền dải SÁNG hơn nên chữ đậm nằm trên nó chỉ được lợi, không có rủi ro AA.
+     ⚠️ Điều kiện đi kèm KHÔNG được tháo: chữ TIỀN light mode phải là `#b91c1c`; trả về
+     `#dc2626` là chỉ còn **~3,9:1 trên dải 12% — dưới AA** (trên trắng thì 4,83:1). */
+  --row1-bg: rgba(59,130,246,0.12);
 
   /* MỘT token cho MỌI đường bao ở light mode (thẻ khách hàng, bảng chi tiết, Sheet 2,
      nút phân trang). Trước đây thẻ dùng `#4b5563` còn panel dùng `#6b7280` → hai tầng viền
@@ -167,11 +183,31 @@ body.light-mode {
      bật/tắt sáng-tối). Nấc tiếp theo nếu vẫn chưa đủ: `#1f2937` (gray-800 — bắt đầu gắt
      ở nét 1px). Đổi ở ĐÂY là đổi cả 4 chỗ dùng chung. */   --light-edge: #374151;
 
-   /* Vạch "KH có ≥ 2 hoá đơn" trên thẻ: nền thẻ light là TRẮNG nên phải dùng tông ĐẬM hơn
-      bản dark (`#34d399` — trên trắng chỉ **1.98:1**, coi như vô hình).
-      Tông đang dùng `#0f9d58` = **3.51:1** trên thẻ trắng (ngưỡng 3:1 của WCAG 1.4.11) —
-      chọn vì người dùng muốn "màu nổi hơn": nó **sáng và bão hoà hơn** `#059669` cũ (3.77:1)
-      mà vẫn còn dư ngưỡng. Đo các tông đã cân nhắc (trên nền thẻ TRẮNG):
+  /* BỀ MẶT SÁNG ở light mode — dùng CHUNG cho **BẢNG chính** (`.table-wrap`), **THẺ KH**
+     (`.kh-card`) và **BẢNG Tổng hợp** (`.summary-wrap`) để ba chỗ không lệch tông về sau.
+     Lịch sử: cả ba từng là TRẮNG `#ffffff`; bảng hạ trước ở lượt “nền trắng ở dạng bảng đừng
+     sáng quá” → `#f1f5f9`; lượt sau “thẻ card cũng hạ nền giống bảng” → thẻ vào chung;
+     lượt cuối “bảng Tổng hợp nợ cũng hạ nền cho đồng bộ” → Tổng hợp vào chung nốt.
+     ⚠️ Bảng Tổng hợp chỉ dùng token cho vùng BAO QUANH bảng — thân ô của nó có nền RIÊNG
+     đặc (`#e2e8f0`/`#c8cdd4`/`#cbd5e1`) nên KHÔNG đổi theo mức nền (xem rule
+     `body.light-mode .summary-wrap`).
+     ⚠️ Nền mới TỐI HƠN trắng ⇒ tương phản chữ trên bề mặt này tụt nhẹ (~5%): đã đo lại từng
+     màu (run.md, mục “🩶 NỀN SÁNG LIGHT MODE”) — đều còn trên AA, NHƯNG hai chỗ sát ngưỡng:
+       · `.kh-name` `#2563eb` = **4,72:1** (ngưỡng 4,5)   · vạch “≥2 HĐ” `#0f9d58` = **3,20:1**
+         (ngưỡng 3:1 của WCAG 1.4.11)
+     ⛔ Đừng hạ nền thêm nữa mà không đo lại hai chỗ đó; đừng gỡ viền `--light-edge` + bóng
+     đổ của thẻ (chúng mới là thứ tách thẻ khỏi nền trang, vì chênh nền chỉ còn 1,05:1). */
+  --light-surface: #f1f5f9;
+
+   /* Vạch "KH có ≥ 2 hoá đơn" trên thẻ: nền thẻ light NAY LÀ `#f1f5f9` (token
+      `--light-surface`) — KHÔNG còn trắng — nên phải dùng tông ĐẬM hơn bản dark
+      (`#34d399`: trên bề mặt này chỉ **1,9:1**, coi như vô hình).
+      Tông đang dùng `#0f9d58` = **3,20:1** trên `#f1f5f9` (trên trắng cũ 3,51) — VẪN ĐẠT
+      ngưỡng 3:1 của WCAG 1.4.11 nhưng biên mỏng hơn 0,3 điểm ⇒ ⛔ đừng hạ nền thẻ thêm nữa;
+      và đừng đổi sang `#16a34a` (~3,0) hay `#00a651` (**~2,9 — DƯỚI ngưỡng** trên `#f1f5f9`).
+      Chọn `#0f9d58` vì người dùng muốn "màu nổi hơn": nó **sáng và bão hoà hơn** `#059669`
+      cũ (3.77:1 trên trắng) mà vẫn còn dư ngưỡng.
+      ⚠️ Bảng so sánh bên dưới là số của nền thẻ **TRẮNG CŨ** — đọc kèm cảnh báo trên:
         `#047857` 5.48 ✓ (đậm, kém nổi)     `#059669` 3.77 ✓ (tông cũ, ngả teal/xỉn)
         `#0f9d58` **3.51 ✓ ← đang dùng**     `#16a34a` 3.30 ✓ (ngả vàng)
         `#00a651` 3.19 ✓ (tươi nhất trong nhóm đạt, nhưng dư ngưỡng mỏng — dễ dưới 3:1
@@ -464,7 +500,20 @@ body.light-mode #sortTienNo.active { background: #5b21b6; border-color: #cbd5e1;
    yêu cầu "viền đậm hơn nữa".
    ⚠️ Viền vẫn **1px** ở cả 2 theme (hợp đồng theme: chỉ đổi MÀU, không đổi metric).
    ⚠️ **Đừng gỡ bóng**: nền gần trắng nên bóng 2 lớp là thứ cho thẻ "nổi" khỏi trang. */
-body.light-mode .kh-card { background: #ffffff; border: 1px solid var(--light-edge); box-shadow: 0 1px 3px rgba(15,23,42,0.12), 0 4px 12px rgba(15,23,42,0.08); }
+/* Thẻ khách hàng: nền nay là token `--light-surface` (= `#f1f5f9`, ĐÚNG nền bảng) — yêu cầu
+   “thẻ card ở light mode cũng hạ nền giống bảng cho đồng bộ”. Trước là TRẮNG `#ffffff`.
+   ⚠️ Chênh thẻ/nền trang giờ chỉ **1,05:1** (thẻ TỐI hơn nền `#f8fafc` một chút) ⇒ viền
+   `--light-edge` (9,85:1) + 2 lớp bóng đổ là thứ DUY NHẤT tách thẻ khỏi nền — ⛔ đừng gỡ.
+   ⚠️ Tương phản chữ trên thẻ ĐÃ ĐO LẠI trên nền mới (tất cả trên AA; chi tiết ở run.md):
+     `.kh-name` `#2563eb` 5,17 → **4,72:1** (sát ngưỡng 4,5 — ⛔ đừng hạ nền thêm)
+     `.kh-sogcs` / `.kh-thang` / `.kh-addr-line` / `.kh-tbi` `#334155` → 9,45 ✓
+     `.kh-tien` `#b91c1c` → 5,91 ✓ · `.mil-digit` `#c2410c` → 4,73 ✓ (sát ngưỡng)
+     `.kh-abc` `#475569` → 6,92 ✓ · `.kh-tien.low` `#047857` → 5,01 ✓
+     vạch “≥2 HĐ” `#0f9d58` → 3,20 ✓ (ngưỡng 3:1) · badge nhóm `#1e40af` → 6,51 ✓
+   ⛔ Không đụng `.page-btn` (nằm trên nền TRANG, không phải trên thẻ) và ⛔ không đụng "vùng
+   Tổng" (`.count-info`) — riêng `.summary-wrap` (bảng Tổng hợp) nay CŨNG dùng chung token
+   này, xem rule `body.light-mode .summary-wrap`. */
+body.light-mode .kh-card { background: var(--light-surface); border: 1px solid var(--light-edge); box-shadow: 0 1px 3px rgba(15,23,42,0.12), 0 4px 12px rgba(15,23,42,0.08); }
 body.light-mode .kh-name { color: #2563eb; }
 /* viên Mã KH / Danh Số / SĐT: chỉ đổi màu — cỡ chữ, padding, border-width,
    border-radius lấy nguyên từ rule nền (dòng bên dưới, dành cho dark mode) */
@@ -523,7 +572,22 @@ body.light-mode .table-view th { background: #d1d5db; color: #000000; border-col
 /* `position`/`top`/`z-index` của th KHÔNG còn khai ở đây — đã chuyển sang rule chung
    `.table-view thead th` (không theo theme) ngay cạnh `table thead th`. */
 
-body.light-mode .table-view th.sorted { color: #2563eb !important; border-bottom: 2px solid #2563eb !important; }
+/* ⬇ MŨI TÊN SẮP XẾP `↕` TRONG HEADER BẢNG CHÍNH — phải đạt 4,5:1 ở CẢ HAI theme.
+   `↕` là span `.sa` **KHÔNG có màu riêng** ⇒ nó luôn thừa hưởng màu của `th` ⇒ màu `th`
+   ở mỗi trạng thái CHÍNH LÀ màu mũi tên (đo live, 11px):
+     · th thường: light `#000000` trên `#d1d5db` = **14,25 ✓** · dark ≈ **5,9–6,1 ✓**
+     · ĐANG sắp xếp: ⟳ light `#2563eb` chỉ **3,51 ✗** ⇒ nay **`#1e40af` = 5,91 ✓**
+       (dark đã đạt sẵn: `--accent-glow` `#60a5fa` trên `rgb(27,28,33)` = **6,67 ✓**)
+     · HOVER: ⛔ KHÔNG thêm rule `th:hover` cho light — không cần và sẽ ĐỔI màu hover từ đen
+       sang xanh: rule `body.light-mode .table-view th` có độ cụ thể (0,2,2) > (0,1,2) của
+       `thead th:hover` ⇒ ở light hover KHÔNG đổi màu (vẫn `#000000` = **14,25 ✓**).
+       (dark mới dùng `thead th:hover` → `#60a5fa` = **6,03 ✓**, và khi vừa sắp xếp vừa hover
+       thì `thead th.sorted` đứng sau `:hover` trong file nên thắng ⇒ **6,67 ✓**)
+   ⇒ Mọi trạng thái của `↕` ở CẢ HAI theme đều ≥ 4,5 (thấp nhất **5,22**). ⚠️ Gạch dưới 2px của
+   cột đang sắp xếp VẪN là `#2563eb` = **3,51:1** — nó là **BIÊN** (ngưỡng 3:1 của WCAG 1.4.11,
+   KHÔNG cần 4,5) nhưng biên mỏng: ⛔ đừng hạ nền header thêm, và đừng "dọn" nó về cùng màu chữ
+   (đổi được thì phải đo lại). Trạng thái “đang sắp xếp” còn được báo bằng CHỮ 5,92 ✓ + chiều mũi tên. */
+body.light-mode .table-view th.sorted { color: #1e40af !important; border-bottom: 2px solid #2563eb !important; }
 body.light-mode .table-view td { border-color: #94a3b8; color: #334155; border-bottom: 1px solid #94a3b8; }
 body.light-mode tbody tr { border-bottom: 2px solid rgba(0,0,0,0.25); }
 /* ⚠️ Màu theo VỊ TRÍ cột — theo thứ tự **MẶC ĐỊNH**: Địa chỉ = 4 · Danh Số = 6 ·
@@ -550,9 +614,21 @@ body.light-mode .table-view td.cell-old-ky { color: #c2410c !important; }
 /* Trên nền gần trắng, `#cbd5e1` (1.45:1) gần như không vẽ ra được khung. Nay **mọi đường
    bao của app** (thẻ khách hàng, bảng chi tiết, Sheet 2, nút phân trang) dùng CHUNG token
    `--light-edge` = `#374151`.
-   Nền Sheet 2 đổi `#f8fafc` → `#ffffff` vì nền trang mới **ĐÚNG BẰNG** `#f8fafc` — giữ
-   nguyên là nền panel vô hình, chỉ còn viền. */
-body.light-mode .summary-wrap { background: #ffffff; border-color: var(--light-edge); }
+   Nền Sheet 2 (bảng Tổng hợp): `#f8fafc` → `#ffffff` (nền trang mới **ĐÚNG BẰNG** `#f8fafc` ⇒
+   giữ nguyên là nền panel vô hình, chỉ còn viền) → ⟳ nay **DÙNG CHUNG token
+   `--light-surface`** như bảng chính và thẻ khách hàng (yêu cầu “bảng Tổng hợp nợ cũng hạ
+   nền cho đồng bộ với bảng chính”) ⇒ không còn là bề mặt TRẮNG sót lại, và cũng ăn theo nút
+   “Nền” (Trắng/Chuẩn/Dịu).
+   ⚠️ PHẠM VI: nền này chỉ là vùng **BAO QUANH** bảng — các Ô của bảng có nền RIÊNG và đặc
+   nên **KHÔNG** đổi theo token. ⟳ **Từ lượt “hạ tông cả các ô”, bốn tầng nền ô đã TỐI ĐI một
+   nấc**: `#d2dae6` thân ô · `#b0b9c5` ô đầu + header · `#c2cad5` ô “Nhóm” · `#bcc6d4` tfoot
+   (trước là `#e2e8f0`/`#c8cdd4`/`#dee2e6`/`#cbd5e1`). Chúng vẫn **KHÔNG** ăn theo mức nền
+   — nhưng nay TỐI HƠN MỌI mức của nút “Nền” (mức tối nhất là `#e3e9f0`), nên bảng Tổng hợp
+   không bị “phẳng” ở bất cứ mức nào. ⛔ Nếu sau này thêm mức nền TỐI hơn `#d2dae6` thì phải
+   cho các ô ăn theo token, không thì chúng sẽ sáng hơn cả vùng bao quanh.
+   ⇒ Tương phản chữ TRONG bảng không phụ thuộc mức nền đang chọn; vùng bao quanh chỉ có chữ
+   khi bảng RỖNG (xem mục “🩶 BẢNG TỔNG HỢP NỢ”). */
+body.light-mode .summary-wrap { background: var(--light-surface); border-color: var(--light-edge); }
 /* ⚠️ `.main` KHÔNG được có nền đục ở light mode — nếu có, nó phủ kín vùng nội dung và
    **mọi thay đổi nền trang đều vô hình** (đúng lỗi đã xảy ra: nền trang đã đổi sang xám
    từ mấy lượt trước mà người dùng vẫn hỏi "sao nền sau thẻ còn trắng", vì nền trang thật
@@ -563,31 +639,69 @@ body.light-mode .summary-wrap { background: #ffffff; border-color: var(--light-e
 body.light-mode .main { background: transparent; }
 /* Bảng phải có bề mặt RIÊNG: `--card` / `--border` là `rgba(255,255,255,0.04/0.08)` — trên
    nền sáng chúng cho ra gần như chính nền trang (viền vô hình). Viền dùng `--light-edge` =
-   ĐÚNG token của viền thẻ khách hàng và nút phân trang. */
-body.light-mode .table-wrap { background: #ffffff; border-color: var(--light-edge); }
+   ĐÚNG token của viền thẻ khách hàng và nút phân trang.
+   ⟳ Nền `#ffffff → #f1f5f9` (lượt “nền trắng ở dạng bảng đừng sáng quá”): trắng thuần chói
+   trên màn hình lớn. `#f1f5f9` = slate-100, sáng hơn nền trang `#f8fafc` KHÔNG đáng kể
+   (so với TRẮNG chỉ còn 1.10:1 — nấc `#f4f5f7` cũ của thang nền trang) nhưng hết “sáng lóa”.
+   ⚠️ Đã đo lại tương phản trên nền mới (tệ hơn trắng chỉ ~5%, VẪN TRÊN AA):
+     · td thường `#334155`: 10,35 → 9,45:1 ✓   · tên `#000000`: 21 → 19,2:1 ✓
+     · dải nền nay **12%** (đã cân lại cho hài hòa) blend trên nền mới = `rgb(221,232,249)`:
+       tiền `#b91c1c` **5,23:1** ✓ · mã sổ/tháng `#475569` 6,13 ✓ · tên xanh `#1d4ed8` 5,42 ✓
+   ⟳ Thẻ card (`.kh-card`) nay DÙNG CHUNG token này ⇒ đồng bộ theo bảng (lượt “thẻ card cũng
+   hạ nền giống bảng”); ⟳ bảng **Tổng hợp** (`.summary-wrap`) cũng vào chung token ở lượt
+   “bảng Tổng hợp nợ cũng hạ nền cho đồng bộ” ⇒ ba bề mặt sáng nay đi bằng MỘT token.
+   ⛔ Hover `#e8eefc` vẫn phân biệt được (ngả xanh hơn nền mới) — đừng đổi kèm. */
+body.light-mode .table-wrap { background: var(--light-surface); border-color: var(--light-edge); }
 
-body.light-mode .summary-table th { background: #c8cdd4 !important; color: #475569 !important; }
-body.light-mode .summary-table thead th { background: #c8cdd4 !important; }
-body.light-mode .summary-table thead th:first-child { background: #c8cdd4 !important; }
-body.light-mode .summary-table th:first-child { background: #dee2e6 !important; color: #000000; }
+/* ── BẢNG TỔNG HỢP (light mode): 4 TẦNG NỀN Ô — HẠ TÔNG 1 NẤC (2026-09-26) ─────────────
+   Yêu cầu: “Hạ tông luôn cả các ô của bảng Tổng hợp (thân ô, header, dòng TỔNG) cho tối hơn”.
+   Bốn tầng nền ĐẶC (lý do chúng không đi theo token `--light-surface` như vùng bao quanh —
+   xem chú thích ở `body.light-mode .summary-wrap`). Cả 4 TỐI ĐI một nấc, giữ nguyên thứ tự tầng
+   (thân ô sáng nhất → header tối nhất):
+     thân ô `#e2e8f0` → **`#d2dae6`** · header + cột tên `#c8cdd4` → **`#b0b9c5`**
+     ô “Nhóm” `#dee2e6` → **`#c2cad5`** · dòng TỔNG `#cbd5e1` → **`#bcc6d4`**
+   ⚠️ ĐO ĐƯỢC: ô “Nhóm” **thực tế vẽ bằng `#b0b9c5`** (rule `thead th:first-child` ở dưới có độ cụ thể
+   (0,3,3) > (0,3,2) nên thắng rule `th:first-child`) — `#c2cad5` chỉ là giá trị DỰ PHÒNG nếu sau này
+   gỡ rule `thead`; vẫn đổi cho đồng bộ, đừng tưởng nó đang hiển thị.
+   ⚠️ Nền tối đi thì chữ đậm trên nó TỤT ⇒ 2 màu chữ phải hạ theo (đo live, run.md có bảng đầy đủ):
+     · chữ th `#475569` → **`#334155`** (giữ nguyên thì chỉ còn 3,82 ✗)
+     · “ĐÃ TT” `#065f46` → **`#064e3b`** (giữ nguyên thì 3,88 ✗)
+     · “MỚI” `#7c2d12` **GIỮ NGUYÊN** (4,72 ✓ trên header mới) · “CŨ” `#1e3a8a` giữ (5,22 ✓)
+   ⚠️ Đường kẻ phải hạ theo (không thì mất hút trên nền tối hơn): kẻ dưới header `#b0b5bc` →
+   `#8a93a0` · vách dọc cột tên `#94a3b8` → `#8a93a0`.
+   ⚠️ Mũi tên sắp xếp `.sa-sum` (`--text-dim` `#5b6777`) trên header MỚI chỉ còn **2,90 ✗** (dưới
+   cả ngưỡng 3:1 của biểu tượng) ⇒ `#334155` = **5,22 ✓**; và trạng thái “đang sắp xếp”
+   (`--accent-glow` `#60a5fa`) vốn đã **1,59 ✗** trên header CŨ (lỗi có sẵn) ⇒ nay `#1e3a8a`.
+   ⛔ Hover hàng `#bfdbfe` GIỮ NGUYÊN (vẫn lệch khỏi nền ô mới nên vẫn thấy) · ⛔ dark mode
+   KHÔNG đụng: mọi rule ở khối này đều nằm trong `body.light-mode`. */
+body.light-mode .summary-table th { background: #b0b9c5 !important; color: #334155 !important; }
+body.light-mode .summary-table thead th { background: #b0b9c5 !important; }
+body.light-mode .summary-table thead th:first-child { background: #b0b9c5 !important; }
+body.light-mode .summary-table th:first-child { background: #c2cad5 !important; color: #000000; }
 body.light-mode .summary-table th.sorted:first-child { color: #000000 !important; }
 body.light-mode .summary-table th.sorted:first-child .sa-sum { color: #000000 !important; }
 body:not(.light-mode) .summary-table th.sorted:first-child { color: #ffffff !important; }
 body:not(.light-mode) .summary-table th.sorted:first-child .sa-sum { color: #ffffff !important; }
-body.light-mode .summary-table thead tr:first-child { border-bottom: 1px solid #b0b5bc !important; }
+body.light-mode .summary-table thead tr:first-child { border-bottom: 1px solid #8a93a0 !important; }
 body.light-mode .summary-table thead tr:first-child th:nth-child(2) { color: #7c2d12 !important; }
 body.light-mode .summary-table thead tr:first-child th:nth-child(3) { color: #1e3a8a !important; }
-body.light-mode .summary-table thead tr:first-child th:nth-child(4) { color: #065f46 !important; }
-body.light-mode .summary-table td:first-child { background: #c8cdd4 !important; color: #1e293b; border-bottom: none !important; border-right: 1px solid #94a3b8 !important; }
-body.light-mode .summary-table .ten-nv-cell { background: #c8cdd4 !important; color: #334155; border-right: 1px solid #94a3b8 !important; border-bottom: none !important; }
-body.light-mode .summary-table tfoot td:first-child { background: #cbd5e1 !important; color: #000000 !important; }
-body.light-mode .summary-table td { color: #000000; border-bottom: none; background: #e2e8f0 !important; }
-body.light-mode .summary-table td:nth-child(2), body.light-mode .summary-table td:nth-child(3), body.light-mode .summary-table td:nth-child(4) { color: #7c2d12 !important; background: #e2e8f0 !important; }
-body.light-mode .summary-table td:nth-child(5), body.light-mode .summary-table td:nth-child(6), body.light-mode .summary-table td:nth-child(7) { color: #1e3a8a !important; background: #e2e8f0 !important; }
-body.light-mode .summary-table td:nth-child(8), body.light-mode .summary-table td:nth-child(9), body.light-mode .summary-table td:nth-child(10) { color: #065f46 !important; background: #e2e8f0 !important; }
+body.light-mode .summary-table thead tr:first-child th:nth-child(4) { color: #064e3b !important; }
+body.light-mode .summary-table td:first-child { background: #b0b9c5 !important; color: #1e293b; border-bottom: none !important; border-right: 1px solid #8a93a0 !important; }
+body.light-mode .summary-table .ten-nv-cell { background: #b0b9c5 !important; color: #334155; border-right: 1px solid #8a93a0 !important; border-bottom: none !important; }
+body.light-mode .summary-table tfoot td:first-child { background: #bcc6d4 !important; color: #000000 !important; }
+body.light-mode .summary-table td { color: #000000; border-bottom: none; background: #d2dae6 !important; }
+body.light-mode .summary-table td:nth-child(2), body.light-mode .summary-table td:nth-child(3), body.light-mode .summary-table td:nth-child(4) { color: #7c2d12 !important; background: #d2dae6 !important; }
+body.light-mode .summary-table td:nth-child(5), body.light-mode .summary-table td:nth-child(6), body.light-mode .summary-table td:nth-child(7) { color: #1e3a8a !important; background: #d2dae6 !important; }
+body.light-mode .summary-table td:nth-child(8), body.light-mode .summary-table td:nth-child(9), body.light-mode .summary-table td:nth-child(10) { color: #064e3b !important; background: #d2dae6 !important; }
 body.light-mode .summary-table tr:hover { background: #bfdbfe; }
-body.light-mode .summary-table tfoot td:nth-child(n) { color: #000000; background: #cbd5e1 !important; border-bottom: none !important; }
-body.light-mode .summary-table .tien-no-cell { color: #7c2d12; background: #e2e8f0 !important; }
+body.light-mode .summary-table tfoot td:nth-child(n) { color: #000000; background: #bcc6d4 !important; border-bottom: none !important; }
+body.light-mode .summary-table .tien-no-cell { color: #7c2d12; background: #d2dae6 !important; }
+/* Mũi tên ↕ (11px, `.sa-sum`) trên header mới + trạng thái đang sắp xếp của nó — xem chú thích ở
+   khối trên. Đo live: chưa sắp xếp **5,22 ✓** · đang sắp xếp **5,22 ✓** (dark: **6,93 / 6,99 ✓**).
+   ⛔ KHÔNG cần rule `th:hover` cho light: nhãn `th` đã bị `color … !important` ở trên giữ `#334155`
+   (5,22 ✓) và `.sa-sum` có màu RIÊNG nên hover không đổi gì ở cả hai theme. */
+body.light-mode .summary-table .sa-sum { color: #334155; }
+body.light-mode .summary-table th.sorted .sa-sum { color: #1e3a8a; }
 body.light-mode .tien-no { color: #166534 !important; }
 body.light-mode .tien-no.high { color: #b91c1c !important; }   /* red-700: dải nền row1 (14%) làm #dc2626 tụt 4,11:1 */
 body.light-mode .tien-no.low { color: #047857 !important; }
@@ -622,10 +736,15 @@ body.light-mode .count-tien.mid { color: #92400e; }   /* 4.81:1 trên nền tran
    `margin-bottom: 4px` giữ nguyên tác dụng cũ: neo ĐÁY nút ngang ĐÁY dòng chữ tiền.
    Lưới cao ~50px (dòng 1 ~21 + dòng 2 29) > nút 40px ⇒ nút **không còn tràn lên** dòng 1.
    ⚠️ ĐỪNG đưa nút về trong `.count-line2` — đó chính là lỗi vừa sửa.
-   ⚠️ Hai nút nằm trong CÙNG ô này (`.count-btns` là flex, `gap` riêng 4px) chứ **không** mở
+   ⚠️ Các nút nằm trong CÙNG ô này (`.count-btns` là flex, `gap` riêng 4px) chứ **không** mở
    cột thứ 3: `column-gap` của lưới là 10px, nếu tách thành 2 cột thì mất thêm 10px vào khe
-   — ở panel 320px phần chữ chỉ còn ~153px < 168px mà dòng `Tiền:` cần ⇒ **chữ tiền chui
-   xuống dưới nút**. Giữ 1 ô + gap 4px thì còn ~159px. */
+   ⇒ **chữ tiền chui xuống dưới nút**. Giữ 1 ô + gap 4px là rộng nhất có thể.
+   ⟳ Từ lượt “cho nút chỉnh độ sáng dời xuống kế nút chỉnh cỡ chữ”, ô này có **3 NÚT**:
+   `[dạng bảng] + 4 + [Aa 38] + 4 + [Nền 38]` = **119,4px** ở panel ≤359,98px (nút “dạng bảng”
+   35,43px) và **121,9px** từ 360px trở lên (nút đó 37,9px) — trước khi dời CHỈ là 79,9px.
+   ⇒ Ở panel **HẸP** (≤399.98px) 3 nút KHÔNG còn đủ chỗ nằm cạnh chữ:
+   có nhánh `@media` riêng cho chúng **XUỐNG HÀNG DƯỚI** — xem chú thích ở khối
+   `@media (max-width: 399.98px)` gần `.count-info`. */
 .count-btns { grid-column: 2; grid-row: 1 / span 2; align-self: end; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
 /* Nút “xem dạng máy tính” — icon-only (không nhãn) để không ăn thêm bề rộng của dòng `Tổng`/`Tiền`.
    Cùng hệ hình với `.export-btn` (cao 40, bán kính 10, cùng nền/viền) nhưng hẹp hơn: 17 + 8×2 + 2 viền ≈ 35px.
@@ -1113,10 +1232,58 @@ body.light-mode .filter-select[data-active="1"] { background-color: #bfdbfe; bor
 #sortTienNo.active { border-color: #8b5cf6; background: #5b21b6; box-shadow: none; }
 .sort-btn:active { background: rgba(59,130,246,0.22); }
 
+/* ── NÚT “Nền”: BA MỨC — MỖI THEME MỘT BỘ RIÊNG ───────────────────────────────
+   Bấm nút là xoay vòng 3 mức của ĐÚNG theme đang xem, và mỗi theme NHỚ RIÊNG mức của nó
+   (đổi theme rồi quay lại vẫn đúng mức cũ). Hai bộ độc lập:
+     · CHẾ ĐỘ SÁNG → attr `data-surface`      · khoá lưu `qlno_surface`
+       token `--light-surface` được `.table-wrap` + `.kh-card` + `.summary-wrap` dùng CHUNG
+       ⇒ đổi token là đổi CẢ BA bề mặt.
+     · CHẾ ĐỘ TỐI  → attr `data-surface-dark` · khoá lưu `qlno_surface_dark`
+       ba token `--dk-card` / `--dk-table` / `--dk-sum` (khai ở `:root`) — ba bề mặt tối này
+       vốn KHÁC màu nhau nên phải 3 token; mỗi mức dịch cả ba cùng hướng, giữ nguyên tương quan.
+   Mức “Chuẩn” là MẶC ĐỊNH nên KHÔNG có rule riêng — nó rơi về token gốc (`body.light-mode`
+   cho sáng, `:root` cho tối). Tên mức phải khớp `SURFACE_LEVELS` trong JS và 2 câu `if (__…)`
+   trong script khôi phục ngay sau <body>.
+   ⚠️ Mức “Dịu” ở chế độ SÁNG tối hơn ⇒ 2 chỗ SÁT NGƯỠNG phải đậm lên mới giữ AA (trên `#e3e9f0`):
+     · `.kh-name` `#2563eb` chỉ còn **4,27:1 ✗** ⇒ dùng `#1d4ed8` = **5,48:1 ✓**
+     · vạch “≥2 HĐ” `#0f9d58` chỉ còn **2,87:1 ✗** ⇒ `#059669` = **3,08:1 ✓** (ngưỡng 3:1)
+   Các màu còn lại đều còn dư ở mức Dịu: tiền `#b91c1c` 5,29 · `#334155` 8,47 ·
+   mã sổ trên dải 12% 5,50 · tên xanh trên dải 4,86 · badge nhóm >6.
+   ⚠️ Chỗ SÁT NGƯỠNG thứ ba ở mức Dịu là dấu phân cách `.kh-sep` (`--text-dim`) = **4,71:1**
+   trên `#e3e9f0` — đo lại khi định hạ nền thêm.
+   ⚠️ Chế độ TỐI đi NGƯỢC chiều: nền SÁNG lên là tương phản chữ TỤT. Chữ mờ nhất nằm TRỰC
+   TIẾP trên nền thẻ là `--text-dim` `#94a3b8` (**5,79:1** ở mức Chuẩn) ⇒ trần độ chói của
+   nền thẻ là L≈0,041; mức “Sáng” `#2a3444` đặt ở **4,89:1** (còn dư 0,39 so với ngưỡng 4,5).
+   ⛔ Đừng sáng thêm mà không đo lại `--text-dim` trên `.kh-card` — đây là chỗ rớt AA ĐẦU TIÊN;
+   mức “Dịu” làm nền tối đi nên mọi chữ chỉ được lợi. */
+body.light-mode[data-surface="sang"] { --light-surface: #ffffff; }
+body.light-mode[data-surface="diu"]  { --light-surface: #e3e9f0; --multi-hd: #059669; }
+body.light-mode[data-surface="diu"] .kh-name { color: #1d4ed8; }
+body:not(.light-mode)[data-surface-dark="sang"] { --dk-card: #2a3444; --dk-table: rgba(255,255,255,0.09); --dk-sum: #1c212b; }
+body:not(.light-mode)[data-surface-dark="diu"]  { --dk-card: #1b232f; --dk-table: rgba(255,255,255,0.02); --dk-sum: #111420; }
+/* Chấm chỉ mức đang dùng (1 = Sáng · 2 = Chuẩn · 3 = Dịu) — cùng cơ chế với nút “Aa”:
+   KHÔNG vẽ chấm bằng JS, để F5 xong vẫn đúng ngay cả trước khi script chính chạy.
+   ⚠️ Lớp riêng `.sf-btn-dots` (KHÔNG dùng lại `.fs-btn-dots`): dùng chung là 2 bộ rule
+   `body[data-fs]` + `body[data-surface]` cùng bật chấm trên MỘT nút ⇒ 2 chấm sáng cùng lúc.
+   ⚠️ MỖI theme đọc chấm theo attribute CỦA NÓ ⇒ phải khoanh `body.light-mode` / `body:not(.light-mode)`:
+   nếu để trần `body[data-surface=…]` thì ở chế độ tối nút sáng 2 chấm cùng lúc (mức sáng của
+   theme sáng + mức tối của theme tối — hai attribute luôn cùng tồn tại trên <body>). */
+.sf-btn-ico { display: block; }
+.sf-btn-dots { display: flex; gap: 2px; }
+.sf-btn-dots i { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: 0.35; }
+body.light-mode[data-surface="sang"] .sf-btn-dots i:nth-child(1),
+body.light-mode[data-surface="chuan"] .sf-btn-dots i:nth-child(2),
+body.light-mode[data-surface="diu"] .sf-btn-dots i:nth-child(3),
+body:not(.light-mode)[data-surface-dark="sang"] .sf-btn-dots i:nth-child(1),
+body:not(.light-mode)[data-surface-dark="chuan"] .sf-btn-dots i:nth-child(2),
+body:not(.light-mode)[data-surface-dark="diu"] .sf-btn-dots i:nth-child(3) { opacity: 1; }
+
 /* ── NÚT CHỌN CỠ CHỮ NỘI DUNG (“Aa”) ─────────────────────────────────────────
-   Xem markup + lý do ĐẶT CHỖ ở `.sort-row`. `flex: 0 0 auto` là điều kiện sống còn:
-   hai `.sort-btn` bên cạnh có `flex: 1` nên phần trống được chia cho CHÚNG, còn nút này
-   giữ đúng 38px ở mọi khổ ⇒ bố cục hai tab chỉ hụt đúng 42px (38 + 4px `gap`).
+   ⟳ Từ lượt “cho nút chỉnh độ sáng dời xuống kế nút chỉnh cỡ chữ”, **KHÔNG còn `.fs-btn` nào
+   ở hàng sắp xếp**: cả “Aa” lẫn “Nền” đều nằm trong `.count-btns` (xem markup ở khối `Tổng …`).
+   `flex: 0 0 auto` vẫn là điều kiện sống còn — trong `.count-btns` (flex) nó giữ đúng **38px**
+   ở mọi khổ; chiều cao THẬT là 40px (rule `.count-btns .fs-btn` bên dưới), còn base
+   `var(--ctl-h)` = 44px nay chỉ còn là giá trị DỰ PHÒNG.
    Bề mặt/viền COPY của `.sort-btn` (cùng họ control với ô lọc) — không tự nghĩ bộ màu mới.
    Ba chấm dưới “Aa” là chỉ mức ĐANG dùng (1=Nhỏ · 2=Chuẩn · 3=Lớn), do 3 rule
    `body[data-fs="…"]` bên dưới bật sáng — KHÔNG vẽ chấm bằng JS, để F5 xong vẫn đúng ngay
@@ -1273,14 +1440,41 @@ body.light-mode .nhom-sel-name {
   .count-info { font-size: 17px; }
 }
 
+/* Panel HẸP (≤ 399.98px): 3 nút KHÔNG còn đủ chỗ nằm cạnh 2 dòng chữ (nút “Nền” đã dời xuống
+   `Tổng …` — xem chú thích ở `.count-btns`) ⇒ lưới về **1 CỘT**, 3 nút xuống HÀNG DƯỚI, canh phải.
+   LÝ DO là số đo ở 320px, không phải cảm tính:
+     · cột chữ = `281,6 (bề rộng `.count-info` ở khổ 320px) − 4 (đệm 2px×2) − 10 (khe lưới)
+       − 119,4 (3 nút)` = **148,22px**
+     · cặp `Tổng nợ:` + số cần **188,93px** ở 17px (199,85px nếu 18px) ⇒ **THIẾU 40,7px**
+       (đã đo hai chiều: TẮT nhánh ⇒ `col1 = 148,22` vs `needL2 = 188,93` ⇒ **overBy +40,71** ✗;
+       BẬT nhánh ⇒ `col1 = 277,64` ⇒ **overBy −88,71** ✓)
+     · ngưỡng vừa chỗ để giữ 3 nút cạnh chữ là **≥ ~375px** (`199,85 + 4 + 10 + 121,9 + 38,4` bề
+       rộng ngoài) — chọn **399.98** để còn dư ~25px, vì bề rộng chữ còn TĂNG theo SỐ LIỆU
+       (tổng 12 chữ số…).
+   ⇒ Đổi lại: ở nhánh này hàng `Tổng …` CAO THÊM **~22px** (đo: `78,73px → 100,72px`) — ít hơn
+   con số “40px nút” vì khi còn 2 cột thì 2 dòng chữ + 3 nút vốn đã cao hơn 2 dòng chữ một mình.
+   KHÔNG thu nhỏ nút
+   và KHÔNG ẩn nút nào — cả 3 đều cần (dạng xem · cỡ chữ · mức nền), thu nhỏ nữa là phá vùng chạm.
+   ⛔ Đừng gỡ nhánh này mà không đo lại ở 320px.
+   ℹ️ Nhánh `font-size: 17px` ở trên VẪN GIỮ — từ nay nó không còn là điều kiện sống còn (chữ đã
+   có cả hàng cho riêng nó), nhưng nó là lựa chọn có sẵn cho panel rất hẹp; muốn 18px ở đây thì
+   gỡ khối đó (đo: 199,85px vẫn ≤ ~268px cột chữ khi 3 nút đã xuống hàng). */
+@media (max-width: 399.98px) {
+  .count-info { grid-template-columns: minmax(0, 1fr); }
+  .count-btns { grid-column: 1; grid-row: 3; align-self: auto; justify-content: flex-end; margin-top: 4px; margin-bottom: 0; }
+}
+
 /* ── CARD LIST (mobile view) ─────────────── */
 .card-list { display: flex; flex-direction: column; gap: 6px; }
 
 .kh-card {
-  background: #1f2836;
+  background: var(--dk-card);   /* chế độ tối: đổi theo mức “Nền” — xem mục “NÚT “Nền”” */
   /* Viền dùng màu riêng của thẻ, KHÔNG dùng --border (8% trắng): nền thẻ #1f2836
      chỉ cách nền trang #111318 1.3:1 nên viền phải gánh việc phân định thẻ
-     (yêu cầu 3:1 cho biên của control — WCAG 1.4.11). */
+     (yêu cầu 3:1 cho biên của control — WCAG 1.4.11).
+     ⚠️ Nền thẻ nay ĐỔI theo mức “Nền” ở chế độ tối ⇒ chênh nền thẻ với nền trang co lại còn
+     **1,18:1** ở mức “Dịu” (mức “Chuẩn” 1,25:1 · mức “Sáng” 1,48:1 — số ĐO THẬT trên trang).
+     Viền + bóng đổ là thứ tách thẻ khỏi nền trang ⇒ ⛔ đừng gỡ chúng, và đừng hạ “Dịu” nữa. */
   border: 1px solid rgba(255,255,255,0.34);
   box-shadow: 0 1px 3px rgba(0,0,0,0.45);
   border-radius: 10px;
@@ -1469,7 +1663,7 @@ body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
 
 /* ── TABLE (desktop view) ───────────────── */
 .table-wrap {
-  background: var(--card);
+  background: var(--dk-table);   /* chế độ tối: đổi theo mức “Nền” (sáng: `body.light-mode .table-wrap`) */
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: visible;
@@ -1826,7 +2020,7 @@ body.light-mode .page-act { background: #ffffff; border-color: var(--light-edge)
 
 /* ── SUMMARY TABLE ─────────────────────── */
 .summary-wrap {
-  background: #141720;
+  background: var(--dk-sum);   /* chế độ tối: đổi theo mức “Nền” (sáng: `body.light-mode .summary-wrap`) */
   border: 2px solid #3b4252;
   border-radius: var(--radius);
   overflow-x: auto;
@@ -2917,6 +3111,16 @@ body.force-desktop .table-view { display: block; }
     // Ba khoá hợp lệ phải khớp `FS_LEVELS` trong JS và 2 khối `body[data-fs="…"]` trong CSS.
     var __fs = localStorage.getItem('qlno_fs');
     if (__fs === 'nho' || __fs === 'chuan' || __fs === 'to') document.body.setAttribute('data-fs', __fs);
+    // MỨC NỀN đã chọn — MỖI THEME MỘT BỘ: ghi CẢ HAI attribute NGAY ĐÂY để không nháy nền khi
+    // tải, và để chấm chỉ mức đúng ngay từ lần vẽ đầu (CSS đọc chấm theo attribute CỦA THEME
+    // đang xem). Không có khoá nào trong máy ⇒ ghi `chuan` = mặc định (token gốc, không rule riêng).
+    // Khoá hợp lệ phải khớp `SURFACE_LEVELS` trong JS và các khối `body…[data-surface…]` trong CSS.
+    var __sf = localStorage.getItem('qlno_surface');
+    if (__sf !== 'sang' && __sf !== 'chuan' && __sf !== 'diu') __sf = 'chuan';
+    document.body.setAttribute('data-surface', __sf);
+    var __sfd = localStorage.getItem('qlno_surface_dark');
+    if (__sfd !== 'sang' && __sfd !== 'chuan' && __sfd !== 'diu') __sfd = 'chuan';
+    document.body.setAttribute('data-surface-dark', __sfd);
   } catch (e) {}
 })();
 </script>
@@ -3215,11 +3419,11 @@ body.force-desktop .table-view { display: block; }
           <button class="sort-btn" id="sortTienNo" onclick="sortBy('tien_no')">
             <span class="sort-ico"><svg viewBox="0 0 14 14" width="100%" height="100%" aria-hidden="true"><g fill="#46b07c"><ellipse cx="7" cy="3.4" rx="4.6" ry="1.8"/><path d="M2.4 5.2c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8v1.6c0 1-2.06 1.8-4.6 1.8S2.4 8.8 2.4 7.8z"/><path d="M2.4 8.4c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8v1.6c0 1-2.06 1.8-4.6 1.8S2.4 11.6 2.4 10.6z"/></g></svg></span>            <span class="sort-label">Tiền Nợ</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
           </button>
-          <!-- Nút “Aa” (cỡ chữ) ĐÃ DỜI khỏi hàng sắp xếp ở lượt “dời xuống kế nút dạng bảng”
-               ⇒ nay nằm trong `.count-btns` (xem markup ở khối `Tổng …`).
-               ℹ️ Hàng sắp xếp nay chì còn 2 tab: chúng có `flex: 1` nên **rộng ra** thêm ~42px
-               — không cần sửa CSS nào, và cũng đừng thêm nút nào vào đây nữa (đây là hàng duy
-               nhất còn co được ở panel hẹp). -->
+          <!-- ℹ️ Hàng sắp xếp nay **CHỈ CÒN 2 TAB**. Cả hai nút điều chỉnh hiển thị đã dời xuống
+               chung ô `.count-btns`: “Aa” (cỡ chữ) ở lượt “dời xuống kế nút dạng bảng”, và
+               “Nền” (mức nền) ở lượt “cho nút chỉnh độ sáng dời xuống kế nút chỉnh cỡ chữ”.
+               2 tab vẫn `flex: 1` nên tự chia hết chỗ trống ⇒ nhãn RỘNG HƠN trước (trước phải
+               chia chỗ cho nút “Nền”). Xem số đo ở mục “🌙/🎚️” trong run doc. -->
         </div>
       </div>
     </div>
@@ -3292,6 +3496,25 @@ body.force-desktop .table-view { display: block; }
         <button class="fs-btn" id="fsBtn" type="button" onclick="cycleFontSize()" data-tip="Cỡ chữ: Chuẩn" aria-label="Cỡ chữ: Chuẩn">
           <span class="fs-btn-aa" aria-hidden="true">Aa</span>
           <span class="fs-btn-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        </button>
+        <!-- Nút “Nền” (mức nền sáng/tối) DỜI XUỐNG ĐÂY — yêu cầu “cho nút chỉnh độ sáng dời
+             xuống kế nút chỉnh cỡ chữ”. Trước nó ở cuối HÀNG SẮP XẾP.
+             Cơ chế giữ nguyên: chế độ sáng đổi `data-surface` (token `--light-surface`), chế độ
+             tối đổi `data-surface-dark` (`--dk-card`/`--dk-table`/`--dk-sum`); hai bộ mức lưu
+             RIÊNG ở localStorage nên quay lại theme cũ vẫn đúng mức cũ.
+             ⚠️ Nút HIỆN ở cả 2 theme (không ẩn theo theme) — hợp đồng “theme chỉ đổi MÀU, không
+             đổi metric”: ẩn nút là hàng nút này đổi bề rộng, kéo theo cột chữ `Tổng nợ:` nhảy.
+             Nhãn ở `data-tip` + `aria-label`, do `applySurface()` cập nhật theo THEME đang xem.
+             ⚠️ Nhãn tĩnh dưới đây phải để dạng TRUNG TÍNH (“Nền: …”) — nhãn riêng theme chỉ có
+             sau khi script chính chạy, và “Nền sáng: …” sẽ SAI khi trang vừa mở ở chế độ tối.
+             ⚠️ Chiều cao phải là 40px cho bằng 2 nút bên cạnh — xem `.count-btns .fs-btn`
+             (base `.fs-btn` là `var(--ctl-h)` = 44px, cỡ của hàng sắp xếp cũ).
+             ⚠️ Ô này chỉ rộng ~119–122px khi có đủ 3 nút ⇒ ở panel hẹp (≤399.98px) 3 nút XUỐNG
+             HÀNG RIÊNG trong `.count-info` (hàng `Tổng …` cao thêm ~22px) — xem chú thích ở
+             khối `@media (max-width: 399.98px)`. -->
+        <button class="fs-btn" id="sfBtn" type="button" onclick="cycleSurface()" data-tip="Nền: Chuẩn" aria-label="Nền: Chuẩn — nhấn để đổi">
+          <svg class="sf-btn-ico" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>
+          <span class="sf-btn-dots" aria-hidden="true"><i></i><i></i><i></i></span>
         </button>
       </div>
     </div>
@@ -3670,6 +3893,9 @@ function toggleTheme() {
   const isLight = document.body.classList.contains('light-mode');
   syncThemeToggle(isLight);
   localStorage.setItem('qlno_theme', isLight ? 'light' : 'dark');
+  // Nút “Nền” phải đọc lại mức của THEME VỪA CHUYỂN: mỗi theme một bộ mức riêng, và nhãn nút
+  // (data-tip/aria-label) là thứ duy nhất nói cho người dùng biết đang ở mức nào.
+  applySurface();
 }
 /* Nhãn đúng ngay từ lần vẽ đầu tiên */
 syncThemeToggle(document.body.classList.contains('light-mode'));
@@ -4090,6 +4316,50 @@ function cycleFontSize() {
   applyFontSize();
 }
 applyFontSize();
+
+// ─── MỨC NỀN: 3 MỨC — MỖI THEME MỘT BỘ RIÊNG, LƯU Ở localStorage ──────────────
+// Nút “Nền” xoay vòng mức của ĐÚNG theme đang xem; hai bộ ĐỘC LẬP nhau:
+//    chế độ SÁNG → attr `data-surface`      · khoá lưu `qlno_surface`      (token `--light-surface`)
+//    chế độ TỐI  → attr `data-surface-dark` · khoá lưu `qlno_surface_dark` (token `--dk-card`
+//                                                                          `--dk-table`, `--dk-sum`)
+// JS CHỈ đặt attribute trên <body>, CSS tự lo phần màu. Thêm/bớt mức ⇒ sửa 4 chỗ cho khớp:
+//   1. mảng `SURFACE_LEVELS` (đây),  2. các khối `body…[data-surface…]` (CSS),
+//   3. hai câu `if (__sf…)` trong script khôi phục ngay sau <body> (chống nháy nền).
+// ⚠️ Nhãn nút đọc theo THEME đang xem nên `toggleTheme()` PHẢI gọi lại `applySurface()`.
+// Tên mức dùng CHUNG cho cả hai theme: “Sáng” = bề mặt sáng nhất, “Dịu” = dịu nhất.
+const SURFACE_LEVELS = [
+  { key: 'sang',  ten: 'Sáng' },
+  { key: 'chuan', ten: 'Chuẩn' },
+  { key: 'diu',   ten: 'Dịu' }
+];
+function sfIsLight() { return document.body.classList.contains('light-mode'); }
+function sfAttr()  { return sfIsLight() ? 'data-surface' : 'data-surface-dark'; }
+function sfStore() { return sfIsLight() ? 'qlno_surface' : 'qlno_surface_dark'; }
+function sfIndexOf(key) {
+  const i = SURFACE_LEVELS.findIndex(l => l.key === key);
+  return i < 0 ? 1 : i;                    // mức mặc định = “Chuẩn” (token gốc — không có rule riêng)
+}
+function applySurface() {
+  const attr = sfAttr();
+  const lv = SURFACE_LEVELS[sfIndexOf(document.body.getAttribute(attr))];
+  if (document.body.getAttribute(attr) !== lv.key) document.body.setAttribute(attr, lv.key);
+  const btn = document.getElementById('sfBtn');
+  if (btn) {
+    const nhan = 'Nền: ' + lv.ten;   // mức CỦA THEME ĐANG XEM, không phải mức của theme kia
+    // `data-tip` (nhãn nổi) và `aria-label` (trình đọc màn hình) PHẢI đổi cùng nhau — đúng luật
+    // đã ghi ở `applyFontSize()`. Điền thêm `title` là có HAI hộp nổi chồng nhau.
+    btn.setAttribute('data-tip', nhan);
+    btn.setAttribute('aria-label', nhan + ' — nhấn để đổi');
+  }
+}
+function cycleSurface() {
+  const attr = sfAttr();
+  const next = SURFACE_LEVELS[(sfIndexOf(document.body.getAttribute(attr)) + 1) % SURFACE_LEVELS.length];
+  document.body.setAttribute(attr, next.key);          // chỉ ghi attribute của theme đang xem
+  try { localStorage.setItem(sfStore(), next.key); } catch (e) {}
+  applySurface();
+}
+applySurface();
 
 // ── COMPUTE SUMMARY FROM DETAIL (Sheet 1) ──
 function computeSummaryFromDetail() {
@@ -4908,7 +5178,7 @@ function renderTable(q='') {
     // (Bảng 2 DÒNG trên điện thoại không dùng thứ tự này — nó đặt ô theo `nth-child` ở CSS.)
     return `<tr data-ma="${esc(maKH)}" class="${isMarked ? 'highlighted' : (isPurple ? 'highlighted-purple' : '')}">
       <td style="color:var(--text-dim);font-size:12px;white-space:nowrap">${r.stt ? hi(r.stt,q) : (start+i+1)}</td>
-      <td><span class="ma-kh">${hi(r.ma_khach_hang,q)}</span></td>
+      <td><span class="ma-kh" onclick="copyMaKH(event, this)" style="cursor:pointer" title="Chạm để copy mã KH">${hi(r.ma_khach_hang,q)}</span></td>
       <!-- HAI nhánh tên trong CÙNG một ô: span.ten-full cho BẢNG MÁY TÍNH (≥640px), span.ten-ngan
            cho bảng 3 hàng trên điện thoại. Bảng máy tính dùng CHUNG DOM với bảng 3 hàng nên nếu
            viết tắt thẳng vào ô thì bảng máy tính cũng đổi theo — tách nhánh là cách duy nhất giữ
@@ -5067,14 +5337,34 @@ function saoLuuDuLieu() {
   }
 }
 
+/* Chạm vào MÃ KH ở dạng bảng ⇒ COPY mã (y hệt ô mã KH trên thẻ card .kh-ma).
+   ⛔ Chỉ stopPropagation trên 'click', CỐ Ý KHÔNG đụng 'pointerdown': nhấn giữ 1,2 giây
+   trên hàng là ĐÁNH DẤU (uỷ nhiệm ở document, nghe pha bubble) — pointerdown từ ô mã vẫn
+   phải tới được document thì nhấn giữ TRÊN Ô MÃ mới đánh dấu được hàng như mọi chỗ khác.
+   Tap nhanh vẫn copy bình thường: pointerup đến sớm hủy timer nhấn-giữ (_lpCancel), click
+   sau đó chạy copyMaKH; còn nếu nhấn giữ đủ 1,2s thì cờ _lpFired chặn đúng cú click đó ở
+   pha capture ⇒ KHÔNG copy lúc đánh dấu. Hai thao tác không cắn nhau.
+   Copy giá trị từ el.textContent (span chứa cả mark tìm kiếm, textContent vẫn là mã đầy đủ)
+   thay vì nhúng mã vào thuộc tính onclick — không lo dấu nháy trong dữ liệu phá chuỗi.
+   ✓ xanh 1,2 giây do copyToClip tự làm (đúng như ô mã KH trên thẻ card). */
+function copyMaKH(e, el) {
+  e.stopPropagation();
+  copyToClip(el.textContent, el);
+}
+
 function copyToClip(text, el) {
   navigator.clipboard.writeText(text).then(() => {
     if (el) {
-      const orig = el.textContent;
+      /* ⚠️ copy 2 lần liên tiếp trên CÙNG một ô (lần 2 chạy khi ✓ lần 1 còn hiển thị):
+         nếu không phòng thì lần 2 bắt orig = '✓ …' và timer của nó trả lại chuỗi CÓ ✓ mãi mãi
+         (đã gặp thật trên preview: ô kẹt '✓ PB15020078145'). Phòng bằng: (1) huỷ timer cũ,
+         (2) tuột sẵn tiền tố '✓ ' khỏi orig. */
+      if (el._copyTimer) { clearTimeout(el._copyTimer); el._copyTimer = null; }
+      const orig = el.textContent.replace(/^✓\s*/, '');
       el.style.background = 'rgba(34,197,94,0.3)';
       el.style.borderRadius = '4px';
       el.textContent = '✓ ' + orig;
-      setTimeout(() => { el.style.background = ''; el.textContent = orig; }, 1200);
+      el._copyTimer = setTimeout(() => { el.style.background = ''; el.textContent = orig; el._copyTimer = null; }, 1200);
     }
   }).catch(() => {});
 }
