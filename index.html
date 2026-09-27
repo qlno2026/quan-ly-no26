@@ -32,6 +32,14 @@
   --navy: #111318;
   --navy-mid: #1a1d24;
   --navy-light: #121212;
+  /* ── NỀN TRANG — MỘT token cho `body` VÀ cho hàng “Tổng …” đang GHIM ────────────────
+     Hàng “Tổng …” nay là `position: sticky` (yêu cầu “tôi muốn hàng này đứng yên khi cuộn
+     trang”) nên nó **buộc phải có nền ĐỤC đúng màu nền trang**: trong suốt thì thẻ sẽ chui
+     QUA chữ khi cuộn. Vì nền hàng = nền trang nên khi KHÔNG ghim nó trông y như cũ.
+     Tối = `--navy` (`#111318`); sáng override ở `body.light-mode` = `#f8fafc`.
+     ⛔ Đổi nền trang thì sửa ở ĐÚNG HAI chỗ này (token + override sáng), đừng khai lại
+     màu nền vào `.count-info` — lệch một nấc là hàng ghim hiện ra như một dải khác màu. */
+  --page-bg: var(--navy);
   /* ── HEADER (dải trên cùng): nền TRUNG TÍNH + ĐỔI THEO CHẾ ĐỘ ─────────────
      Yêu cầu người dùng: “tôi muốn nền bảng này bỏ màu xanh và đổi màu theo chế độ sáng tối”
      (kèm ảnh header). Trước lượt này CẢ HAI theme dùng chung MỘT gradient XANH
@@ -161,14 +169,25 @@
   --border: rgba(255,255,255,0.08);
   --card: rgba(255,255,255,0.04);
   /* BỀ MẶT CHẾ ĐỘ TỐI — ba bề mặt này đi chung nút “Nền” (3 mức, xem mục “NÚT Nền” ở dưới):
-       · `--dk-card`  = nền THẺ khách hàng (`.kh-card`)      · `--dk-table` = nền BẢNG chính (`.table-wrap`)
+       · `--dk-card`  = nền THẺ khách hàng (`.kh-card`)      · nền BẢNG chính (`.table-wrap`) nay DÙNG CHUNG `--dk-card` (token `--dk-table` đã xoá 2026-09-27)
        · `--dk-sum`   = nền bảng TỔNG HỢP (`.summary-wrap`)
      Ba màu này KHÁC nhau từ trước (thẻ đục, bảng 4% trắng trên nền trang, Tổng hợp `#141720`)
      nên phải 3 token; mỗi mức dịch cả ba cùng một hướng. Giá trị ở đây = mức “Chuẩn”
      ⇒ mặc định KHÔNG đổi gì so với trước. Ở chế độ SÁNG ba bề mặt dùng CHUNG `--light-surface`
      (khai trong `body.light-mode`) vì đã được đồng bộ về một nền ở các lượt trước. */
   --dk-card: var(--ctl-solid);   /* mức “Chuẩn” = ĐÚNG màu control/tab — xem mục “NỀN THẺ = NỀN TAB” */
-  --dk-table: rgba(255,255,255,0.04);
+  /* ⟳ **2026-09-27 — NỀN BẢNG = NỀN THẺ CARD** (yêu cầu “tôi muốn màu nền khi xem dạng bảng
+     giống màu nền thẻ card”). Trước đây bảng là một **lớp alpha trắng** (`rgba(255,255,255,0.04)`)
+     ghép lên nền trang nên **BẢNG LUÔN TỐI HƠN THẺ một nấc** (đo ở mức “Dịu”: bảng ↔ thẻ
+     **1,16:1** — mắt thấy hai tầng). Nay bảng ăn thẳng token của thẻ ở `:root` ⇒ tự khớp ở
+     **CẢ BA mức “Nền”**, không còn token riêng nào để lệch.
+     ⛔ `--dk-table` ĐÃ XOÁ. ⚠️ **LƯU Ý CỦA CSS VARIABLES (đã đính đúng lỗi này một lần):** `var()`
+     được thay bằng giá trị tính được **TẠI CHÍNH PHẦN TỬ KHAI NÓ**, nên một alias đặt ở `:root`
+     kiểu `--dk-table: var(--dk-card)` LUÔN ra màu mức “Chuẩn” — vì ba mức “Nền” ghi `--dk-card`
+     lên <body>, chứ KHÔNG lên <html>. Đo được lúc đang làm: cạ 3 mức đều `rgb(36,42,52)`,
+     bấm nút “Nền” bảng ĐỨNG IM. ⇒ Muốn tách nền bảng khỏi nền thẻ thì khai token riêng
+     **TRÊN `body`**, đừng khai ở `:root`.
+     ⚠️ Đây là NỀN KHUNG (`.table-wrap`), KHÔNG phải dải “tên + tiền” (`--row1-bg`, khai riêng). */
   --dk-sum: #141720;
   /* ── ĐƯỜNG KẺ TRONG BẢNG (`--tb-line`) — MỘT TOKEN cho cả 2 theme ──────────────────
      Yêu cầu người dùng: “tôi muốn đường kẻ viền đậm hơn để dễ nhìn” (kèm ảnh bảng ở chế độ
@@ -381,24 +400,45 @@
        **chính nền thẻ** ⇒ mọi số AA ở TRÊN (đo trên lớp xanh 12–15%) **hết hiệu lực**; muốn kiểm
        lại thì đo chữ TÊN / TIỀN trên **nền thẻ** (`--dk-card` / `--light-card`). Số đo lượt này:
        run doc mục **“🎨 DẢI NỀN = NỀN THẺ CARD”**.
-     ⚠️ Ở DARK token đi theo nút “Nền” (`var(--dk-card)` = `#242a34` ở mức “Chuẩn”): dải vẫn
-       **thấy được** so với nền bảng — đo **1,18:1** (bản xanh cũ 1,20:1, gần như không đổi độ nổi).
+     ⛔ Cách cũ (HẾT hiệu lực từ 2026-09-27) ở DARK: dải = `var(--dk-card)` (`#242a34` ở mức
+       “Chuẩn”) ⇒ đo **1,18:1** so với nền bảng — trên giấy tờ là “thấy được” nhưng mắt không nhận ra.
+     ⟳ **2026-09-27 — DẢI NỀN ĐẬM HƠN** (yêu cầu “cho màu nền tên kh và tiền nợ đậm hơn cho dễ
+       nhìn”): dải DARK nay là **màu ĐỤC `#293653`**, KHÔNG còn `var(--dk-card)`.
+       ⚠️ Vì sao phải CẮT khỏi nút “Nền”: ăn theo nền thẻ thì ở CẢ BA mức dải chỉ đạt 1,16–1,24:1
+       — đúng cái “nhạt quá” mà người dùng phàn nàn. Màu đục này đạt **1,34–1,49:1** ở cả ba mức,
+       và vì nó KHÔNG đổi theo nút “Nền” nên tương phản chữ TÊN/TIỀN trên dải cũng không đổi.
      ⚠️ Ở LIGHT thì `--light-card` **TRÙNG** `--light-surface` ở cả ba mức ⇒ không thể dùng thẳng
        `var(--light-card)` (dải sẽ vô hình, 1,00:1) — xem chú thích ở rule `body.light-mode`. */
-  --row1-bg: var(--dk-card);
+  --row1-bg: #293653;
   --fs-tb-desk: 14px;    /* bảng 14 CỘT trên MÁY TÍNH — khối `@media (min-width: 640px)`
                             ⚠️ Tên cũ `--fs-tb-sm` dễ đọc nhầm thành “bản nhỏ ở điện thoại”, nhưng
                             khối đó là **min-width** ⇒ đây mới là cỡ THẬT của bảng máy tính
                             (đã đo ở 1600px: `chuan` = **14px**, hàng cao **32,64px**). */
+  /* ── HÀNG “TỔNG …” (nhãn trên — số dưới) ─────────────────────────────────────────────
+     ⟳ 2026-09-27f: hàng này TRƯỚC ĐÂY là px CỨNG ⇒ bấm nút “Aa” thì thẻ/bảng to ra còn hàng
+     Tổng đứng im (hai lần đo: nút “Aa” không chạm tới nó). Yêu cầu: “làm cho hàng Tổng ăn theo
+     nút cỡ chữ của app (nhỏ/chuẩn/lớn) thay vì px cứng, luôn giữ số lớn hơn nhãn một cấp”.
+     ⚠️ Vì sao PHẢI là **HAI** token: nhãn và SỐ lệch nhau ĐÚNG **2px** (“một cấp”) ở MỌI mức —
+     một token duy nhất không diễn tả được quan hệ đó. Giá trị theo mức:
+       · Nhãn (`--fs-count-lbl`):  nho **16** · chuan **17** · to **18px**
+       · Số  (`--fs-count-num`):  nho **18** · chuan **19** · to **20px**
+     ⚠️ Nhịp **±1px** giống hệt `--fs-card*`/`--fs-tb*` ở trên — đây chính là “ba mức” người dùng
+     đã chọn, đừng cho hàng Tổng nhảy 2px một mức.
+     ℹ️ Nhánh `@media (max-width: 359.98px)` KHÔNG cần khai lại theo mức: nó dùng `calc(… − 1px)`
+     nên tự đúng ở cả ba mức (xem chú thích trong nhánh đó). */
+  --fs-count-lbl: 17px;
+  --fs-count-num: 19px;
 }
 /* Ba mức. Tên mức phải khớp mảng `FS_LEVELS` trong JS và `data-fs` trên <body>. */
 body[data-fs="nho"] {
   --fs-card-big: 17px; --fs-card: 16px; --fs-card-sep: 12px;
   --fs-tb-row: 16px;   --fs-tb: 14px;   --fs-tb-desk: 13px;
+  --fs-count-lbl: 16px; --fs-count-num: 18px;
 }
 body[data-fs="to"] {
   --fs-card-big: 19px; --fs-card: 18px; --fs-card-sep: 14px;
   --fs-tb-row: 18px;   --fs-tb: 16px;   --fs-tb-desk: 15px;
+  --fs-count-lbl: 18px; --fs-count-num: 20px;
 }
 
 /* ── Viên (pill) trên card — light mode ── */
@@ -445,11 +485,16 @@ body.light-mode {
      ⚠️ Vì sao KHÔNG sáng hơn: ở mức “Sáng” nền bảng đã là `#ffffff` — không còn chỗ sáng hơn.
      Số đo (xem run doc): dải/nền bảng **1,10–1,12** (bản xanh cũ 1,13 · dark 1,18) — giữ đúng
      “độ nổi” mà người dùng đã duyệt, nhưng đổi TÔNG từ xanh sang tông thẻ.
+     ⟳ **2026-09-27 — DẢI NỀN ĐẬM HƠN** (yêu cầu “cho màu nền tên kh và tiền nợ đậm hơn cho dễ
+     nhìn”): mức “Chuẩn” `#e5ebf1` (1,10) → **`#d3dde9`** (dải/nền bảng **1,25**) · mức “Sáng”
+     `#eef2f7` → **`#dfe7f0`** (1,25 so với nền trắng) · mức “Dịu” `#d9dfe5` → **`#d3d9e2`** (1,16).
+     ⚠️ Mức “Dịu” chỉ nhích nhẹ là CỐ Ý: đó là mức tối nhất, chữ TIỀN trên dải còn **4,56** —
+     tối thêm nữa là tụt dưới AA (số đo đầy đủ ở run doc).
      ⚠️ Điều kiện đi kèm KHÔNG được tháo: chữ TIỀN light mode giữ `#b91c1c` (trên dải tối nhất
      “Dịu” còn **4,78** — xem bảng đo; trả về `#dc2626` là tụt xuống dưới AA).
      ⚠️ Đổi giá trị dải thì PHẢI đo lại chữ TÊN và TIỀN trên dải ở CẢ BA mức (dải tối hơn ⇒
      tương phản chữ đậm TỤT), đừng chỉ đổi màu rồi thôi. */
-  --row1-bg: #e5ebf1;
+  --row1-bg: #d3dde9;
 
   /* MỘT token cho MỌI đường bao ở light mode (thẻ khách hàng, bảng chi tiết, Sheet 2,
      nút phân trang). Trước đây thẻ dùng `#4b5563` còn panel dùng `#6b7280` → hai tầng viền
@@ -482,8 +527,7 @@ body.light-mode {
      control** ⇒ sau này ai đổi `--ctl-light-bg` thì nền thẻ đi theo, không thể lệch.
      ⛔ **VÌ SAO KHÔNG SỬA THẲNG `--light-surface`:** token đó đang được **BA** bề mặt dùng chung
      (`.kh-card` + `.table-wrap` + `.summary-wrap`). Chỉ THẺ được yêu cầu đổi; bảng chính và bảng
-     Tổng hợp phải giữ nền riêng — đó chính là PHÂN TẦNG mà chế độ tối cố ý giữ (`--dk-card`
-     không kéo `--dk-table`/`--dk-sum` theo). Sửa `--light-surface` là kéo cả hai bảng theo thẻ.
+     Tổng hợp phải giữ nền riêng — đó chính là PHÂN TẦNG mà chế độ tối cố ý giữ (`--dk-card`      không kéo `--dk-sum` theo). Sửa `--light-surface` là kéo bảng Tổng hợp theo thẻ.
      ⚠️ Mức “Sáng”/“Dịu” vẫn là hai ĐỘ LỆCH khỏi màu control (xem 2 rule theo mức ở dưới), đúng
      cùng nguyên tắc với chế độ tối: mức “Chuẩn” mới là “đúng màu tab”.
      ⚠️ Đã ĐO LẠI sau khi đổi (nền thẻ tối hơn `#f1f5f9` một chút ⇒ tương phản chữ tụt nhẹ, đo THẬT
@@ -564,7 +608,7 @@ body.light-mode {
 
 body {
   font-family: 'Inter', sans-serif;
-  background: var(--navy);
+  background: var(--page-bg);
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
@@ -586,7 +630,7 @@ body {
    tức là **code chết** (`.toolbar` còn mất luôn `background-color` vì rule riêng của nó chỉ khai
    `border-color` + `box-shadow`). Nay nhóm chỉ giữ những bề mặt **KHÔNG** có rule riêng và
    **KHÔNG** có phản hồi bấm ⇒ mỗi bề mặt chỉ có MỘT nơi khai nhịp. */
-.modal, .modal-header, .stat-card, .summary-wrap, .table-wrap, .cfg {
+.modal, .modal-header, .stat-card, .summary-wrap, .table-wrap, .cfg, .count-info {
   transition: background-color var(--theme-anim-dur) var(--theme-anim-ease), color var(--theme-anim-dur) var(--theme-anim-ease), border-color var(--theme-anim-dur) var(--theme-anim-ease), box-shadow var(--theme-anim-dur) var(--theme-anim-ease);
 }
 /* ➕ LỚP GẠT `body.theme-anim` — “cùng nhịp khi đổi theme, NHANH khi người dùng bấm”.
@@ -946,7 +990,8 @@ body.light-mode {
        "NGUYÊN NHÂN GỐC").
      ⚠️ Nền tối hơn kéo theo `.page-btn`: nền cũ `#e2e5ea` + viền `#d1d5db` = ĐÚNG BẰNG
      màu nền trang mới ⇒ viền nút phân trang biến mất. Đã sửa ở rule `body.light-mode .page-btn`. */
-  background: #f8fafc;
+  --page-bg: #f8fafc;
+  background: var(--page-bg);
   color: #000000;
 }
 /* ── HEADER · CHẾ ĐỘ SÁNG: nền XÁM RẤT NHẠT (không dùng trắng), chữ ĐẬM ────────────
@@ -1149,7 +1194,10 @@ body.light-mode .kh-thang { color: #334155; }
 body.light-mode .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #3b82f6; text-underline-offset: 3px; text-decoration-thickness: 2px; }
 body.light-mode .badge-blue { background: rgba(37,99,235,0.15); color: #1e40af !important; }
 body.light-mode .kh-addr-line { color: #334155; }
-body.light-mode .count-info { color: #334155; border-top-color: #e2e8f0; }
+/* ⟳ Nền hàng “Tổng …” = ĐÚNG nền thẻ card (yêu cầu “màu nền giống màu nền thẻ card”). Dùng
+   CHUNG token `--light-card` với `body.light-mode .kh-card` ở dòng ~1146 ⇒ không thể lệch màu,
+   và tự theo cả 3 mức “Nền” (`[data-surface="sang"|"diu"]` ghi đè `--light-card`). */
+body.light-mode .count-info { color: #334155; border-top-color: #e2e8f0; background: var(--light-card); }
 /* Nút phân trang: nền TRẮNG như thẻ + viền `--light-edge` (đậm hơn mức `#6b7280` cũ) —
    **9.85:1** so với nền trang. Bản cũ (`#e2e5ea` + `#d1d5db`) từng trùng đúng màu nền trang
    nên viền vô hình. */
@@ -1285,7 +1333,12 @@ body.light-mode .main { background: transparent; }
    hạ nền giống bảng”); ⟳ bảng **Tổng hợp** (`.summary-wrap`) cũng vào chung token ở lượt
    “bảng Tổng hợp nợ cũng hạ nền cho đồng bộ” ⇒ ba bề mặt sáng nay đi bằng MỘT token.
    ⛔ Hover `#e8eefc` vẫn phân biệt được (ngả xanh hơn nền mới) — đừng đổi kèm. */
-body.light-mode .table-wrap { background: var(--light-surface); border-color: var(--light-edge); }
+/* ⟳ 2026-09-27: nền bảng LIGHT nay lấy `--light-card` (nền THẺ) thay vì `--light-surface` — yêu cầu
+   “màu nền khi xem dạng bảng giống màu nền thẻ card”. Hai token này chỉ lệch **2 nấc màu** ở light
+   (`#f1f5f9` → `#eff1f5`) nên thay đổi gần như vô hình, nhưng nay bảng và thẻ dùng CHUNG một token
+   ⇒ không còn cửa nào để lệch nhau. ⚠️ Vẫn theo đúng 3 mức “Nền” vì các rule
+   `body.light-mode[data-surface=…]` ghi đè chính `--light-card`. */
+body.light-mode .table-wrap { background: var(--light-card); border-color: var(--light-edge); }
 
 /* ── BẢNG TỔNG HỢP (light mode): 4 TẦNG NỀN Ô — HẠ TÔNG 1 NẤC (2026-09-26) ─────────────
    Yêu cầu: “Hạ tông luôn cả các ô của bảng Tổng hợp (thân ô, header, dòng TỔNG) cho tối hơn”.
@@ -1377,7 +1430,8 @@ body.light-mode .count-tien.mid { color: #92400e; }   /* 4.81:1 trên nền tran
    4px lề đáy là nút được đẩy lên đúng 2px ⇒ hai bên mực chữ hở **ĐÚNG 4px / 4px**.
    ⛔ Bỏ `margin-bottom` là nút tụt xuống 2px (hở 6/2 — lệch lại); đổi thành `8px` là hở 2/6.
    Ô lưới cao ~52px (hàng 1 22 + hàng 2 30) > nút 40px ⇒ nút **không tràn lên** hàng 1.
-   ⚠️ ĐỪNG đưa nút về trong `.count-line2` — đó chính là lỗi vừa sửa.
+   ⚠️ ĐỪNG đưa nút vào trong khối CHỮ (trước là `.count-line2`, nay là `.count-stats`/`.count-stat`)
+   — đó chính là lỗi vừa sửa: nút phải luôn là **CỘT 2** của lưới `.count-info`.
    ⚠️ Nút nằm trong ô này (`.count-btns` là flex) chứ **không** mở cột thứ 3: `column-gap`
    của lưới là 10px, nếu tách thành 2 cột thì mất thêm 10px vào khe ⇒ **chữ tiền chui xuống
    dưới nút**. Giữ 1 ô là rộng nhất có thể.
@@ -1391,7 +1445,9 @@ body.light-mode .count-tien.mid { color: #92400e; }   /* 4.81:1 trên nền tran
 .count-btns { grid-column: 2; grid-row: 1 / span 2; align-self: center; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
 /* Nút ⚙ MỞ CÀI ĐẶT (`openCfg()`) — icon-only, cùng hệ hình với `.fs-btn` (nền/viền của
    control, bán kính 8px) và CÙNG chiều cao 40px với mọi control trong tấm cài đặt, để hàng
-   “Tổng …” không nhích. Bề rộng **38px** = icon 20px + `padding: 0 8px` + 2 viền 1px — đúng
+   “Tổng …” không nhích. ⟳ Nút đi HEADER một lượt rồi **VỀ LẠI ĐÂY** trong cùng ngày 2026-09-27
+   (“dời nút cài đặt xuống hàng này”) ⇒ vế “để hàng Tổng không nhích” lại ĐÚNG như bản gốc.
+   Bề rộng **38px** = icon 20px + `padding: 0 8px` + 2 viền 1px — đúng
    công thức của `.view-btn`/`.export-btn` (cùng họ hình với nút “dạng bảng” cũ).
    ⚠️ Nhãn của nút là `data-tip` + `aria-label` (icon-only) — ĐỪNG bỏ: mất cả hai là nút ⚙
    vô nghĩa với trình đọc màn hình, và trên cảm ứng thì không có `title` nào cứu được. */
@@ -1458,7 +1514,9 @@ body.light-mode.force-desktop .view-btn { background: #bfdbfe; border-color: #25
 
 /* ── ⚙️ TẤM CÀI ĐẶT (`#cfg`) — MỘT CHỖ CHỨA MỌI NÚT ĐIỀU KHIỂN ───────────────
    Yêu cầu người dùng: “cho thêm 1 nút cài đặt và bỏ tất cả các nút vào đó” (chốt lại:
-   **mọi nút trên màn hình**). Nút mở là `#cfgBtn` ở hàng “Tổng …”.
+   **mọi nút trên màn hình**). Nút mở là `#cfgBtn` ở hàng “Tổng …” — ô lưới cột 2 của
+   `.count-info` (`<div class="count-btns">`). ⚠️ Đã có lượt dời nó lên header rồi trả về
+   (2026-09-27): nơi ĐÚNG của nút là hàng “Tổng …”.
    Ba quyết định kỹ thuật, mỗi cái để chặn một lỗi đã biết:
    1. Ẩn/hiện bằng CLASS `.on`, ⛔ KHÔNG dùng thuộc tính `hidden`: tấm có khai `display:` ở
       đây nên `[hidden]` (chỉ là `display: none` của UA — độ ưu tiên thấp nhất) sẽ **bị đè**
@@ -2106,13 +2164,13 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
 
 /* ── NÚT “Nền”: BA MỨC — MỖI THEME MỘT BỘ RIÊNG ───────────────────────────────
    Bấm nút là xoay vòng 3 mức của ĐÚNG theme đang xem, và mỗi theme NHỚ RIÊNG mức của nó
-   (đổi theme rồi quay lại vẫn đúng mức cũ). Hai bộ độc lập:
-     · CHẾ ĐỘ SÁNG → attr `data-surface`      · khoá lưu `qlno_surface`
-       token `--light-surface` được `.table-wrap` + `.kh-card` + `.summary-wrap` dùng CHUNG
-       ⇒ đổi token là đổi CẢ BA bề mặt.
-     · CHẾ ĐỘ TỐI  → attr `data-surface-dark` · khoá lưu `qlno_surface_dark`
-       ba token `--dk-card` / `--dk-table` / `--dk-sum` (khai ở `:root`) — ba bề mặt tối này
-       vốn KHÁC màu nhau nên phải 3 token; mỗi mức dịch cả ba cùng hướng, giữ nguyên tương quan.
+   (đổi theme rồi quay lại vẫn đúng mức cũ). Hai bộ độc lập:      · CHẾ ĐỘ SÁNG → attr `data-surface`      · khoá lưu `qlno_surface`
+        token `--light-surface`/`--light-card` được `.table-wrap` (= thẻ, từ 2026-09-27) +
+        `.kh-card` + `.summary-wrap` dùng; đổi token là đổi các bề mặt đó.
+      · CHẾ ĐỘ TỐI  → attr `data-surface-dark` · khoá lưu `qlno_surface_dark`
+        token `--dk-card` / `--dk-sum` (khai ở `:root`) — ⚠️ từ 2026-09-27 BẢNG dùng chung
+        `--dk-card` với thẻ (token `--dk-table` đã xoá) nên THỰC TẾ chỉ còn **hai** bề mặt tối
+        khác nhau: THẺ+BẢNG và `--dk-sum`; mỗi mức dịch chúng cùng hướng, giữ nguyên tương quan.
    Mức “Chuẩn” là MẶC ĐỊNH nên KHÔNG có rule riêng — nó rơi về token gốc (`body.light-mode`
    cho sáng, `:root` cho tối). Tên mức phải khớp `SURFACE_LEVELS` trong JS và 2 câu `if (__…)`
    trong script khôi phục ngay sau <body>.
@@ -2161,14 +2219,18 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
    Chỉ khai một-hai cái là có mức “Sáng”/“Dịu” mà thẻ (hay bảng, hay dải) đứng im — nút “Nền”
    bấm vào như không có gì đổi ở nhóm bề mặt bị bỏ sót.
    ℹ️ `--row1-bg` là **màu ĐỤC**, không phải alpha (xem chú thích ở rule `body.light-mode` phía trên). */
-body.light-mode[data-surface="sang"] { --light-surface: #ffffff; --light-card: #ffffff; --danhso-bg: #e8f1fd; --row1-bg: #eef2f7; }
-body.light-mode[data-surface="diu"]  { --light-surface: #e3e9f0; --light-card: #e3e9f0; --multi-hd: #059669; --danhso-bg: #c7dbf5; --row1-bg: #d9dfe5; }
+body.light-mode[data-surface="sang"] { --light-surface: #ffffff; --light-card: #ffffff; --danhso-bg: #e8f1fd; --row1-bg: #dfe7f0; }
+body.light-mode[data-surface="diu"]  { --light-surface: #e3e9f0; --light-card: #e3e9f0; --multi-hd: #059669; --danhso-bg: #c7dbf5; --row1-bg: #d3d9e2; }
 body.light-mode[data-surface="diu"] .kh-name { color: #1d4ed8; }
 /* ⚠️ Hai mức dưới đây cũng bị lượt “nền thẻ = nền tab” DỊCH LÊN (xem ⟳ ngay trên): mức “Chuẩn”
    lấy đúng màu control `--ctl-solid` nên hai mức này phải đi theo, nếu không “Sáng” chỉ còn
-   cách “Chuẩn” **1,03:1** — mắt không thấy khác, nút “Nền” thành vô nghĩa. */
-body:not(.light-mode)[data-surface-dark="sang"] { --dk-card: #282e38; --dk-table: rgba(255,255,255,0.06); --dk-sum: #181c25; }
-body:not(.light-mode)[data-surface-dark="diu"]  { --dk-card: #1f252f; --dk-table: rgba(255,255,255,0.02); --dk-sum: #111420; }
+   cách “Chuẩn” **1,03:1** — mắt không thấy khác, nút “Nền” thành vô nghĩa.
+   ⟳ 2026-09-27: hai rule này **KHÔNG khai nền BẢNG nữa** — `.table-wrap` đọc **THẲNG**
+   `var(--dk-card)` ⇒ đổi `--dk-card` ở đây là bảng đổi theo; khai thêm là có hai nguồn sự thật cho
+   cùng một bề mặt. ⚠️ Và nhớ: một alias đặt ở `:root` sẽ **KHÔNG** theo được hai rule này
+   (xem chú thích `--dk-table` đã xoá ở `:root`). */
+body:not(.light-mode)[data-surface-dark="sang"] { --dk-card: #282e38; --dk-sum: #181c25; }
+body:not(.light-mode)[data-surface-dark="diu"]  { --dk-card: #1f252f; --dk-sum: #111420; }
 /* Chấm chỉ mức đang dùng (1 = Sáng · 2 = Chuẩn · 3 = Dịu) — cùng cơ chế với nút “Aa”:
    KHÔNG vẽ chấm bằng JS, để F5 xong vẫn đúng ngay cả trước khi script chính chạy.
    ⚠️ Lớp riêng `.sf-btn-dots` (KHÔNG dùng lại `.fs-btn-dots`): dùng chung là 2 bộ rule
@@ -2240,14 +2302,20 @@ body.light-mode .nhom-sel-name {
 }
 
 .count-info {
-  /* 17 → **18px** (yêu cầu người dùng: “cho chữ này 18 px”) — dùng chung cho CẢ 2 dòng
-     “Tổng HĐ: … · KH: …” và “Tổng nợ: …”.
-     ⚠️ Đổi cỡ chữ ở đây thì **`height: 29px` của `.count-line2` phải ĐO LẠI** (29 = dòng 21px
-     + 4px×2 khai theo cỡ 17px cũ) — xem chú thích ở `.count-line2`. */
-  font-size: 18px;
+  /* ⟳ 2026-09-27f: cỡ chữ nay là **TOKEN** `--fs-count-lbl` ⇒ ăn theo nút “Aa” (nho/chuan/to).
+     (Lịch sử: px cứng 17 → 18 → 17px, ba lượt liên tiếp của người dùng.)
+     ⚠️ SỐ khai riêng bằng `--fs-count-num` (luôn = nhãn + **2px** = một cấp): sửa một trong
+     hai token mà quên token kia là mất quan hệ “số lớn hơn nhãn”.
+     ⚠️ Đổi cỡ chữ ở đây thì phải ĐO LẠI hai thứ: (a) bề rộng cần của `.count-stats` (mỗi cột =
+     `max(nhãn, số)`) và (b) ngưỡng xuống hàng — xem chú thích `.count-stats` (đo ở mức “to” là
+     mức rộng nhất: `need` 214,55px ở nhánh nền · 205,21px ở nhánh hẹp).
+     ℹ️ `line-height: 22px` và `grid-template-rows: 22px 30px` của `.count-stat` là CỐ ĐỊNH ⇒ đổi
+     mức “Aa” KHÔNG đổi chiều cao hàng ghim (đo lại ở cả 3 mức: 56,95px y nguyên).*/
+  font-size: var(--fs-count-lbl);
   /* `line-height` khai TƯỜNG MINH (trước là `normal`) để chiều cao dòng không phụ thuộc
      metric của font: 18px → `normal` cho ra 22.1px, còn số nguyên 22px mới khớp phép tính
-     của `.count-line2` (30 = 22 + 4×2). Đổi cỡ chữ thì phải đo lại cả hai số. */
+     của HÀNG SỐ trong `.count-stats` (nay khai thẳng `grid-template-rows: 22px 30px`; 30 = 22 + 4×2
+     theo bản cũ). Đổi cỡ chữ thì phải đo lại cả hai số. */
   line-height: 22px;
   color: var(--text-dim);
   font-weight: 500;
@@ -2258,7 +2326,12 @@ body.light-mode .nhom-sel-name {
      ĐỪNG đổi thành 4px: `.sort-row` là con của `.toolbar`, còn `.count-info` là con của
      `main`, nên 1px viền của `.toolbar` nằm CHEN GIỮA hai thứ đó — muốn tổng là 4px thì
      margin phải là 3px. */
-  margin-top: 3px;
+  /* ⟳ Nay khai qua `--info-gap` (GIÁ TRỊ KHÔNG ĐỔI: vẫn 3px) vì khoảng này còn được dùng
+     LẦN THỨ HAI ở `box-shadow` phía dưới: khi hàng bị GHIM, đúng 3px đó phải được tô bằng màu
+     nền trang, nếu không nội dung cuộn sẽ lộ ra thành một khe 3px giữa thanh công cụ và hàng.
+     Một token cho cả hai chỗ ⇒ sau này sửa 1 nơi, không lệch. */
+  --info-gap: 3px;
+  margin-top: var(--info-gap);
   padding-top: 4px;                     /* hàng kẻ → chữ "Tổng" ĐÚNG 4px (trước là 8px).
                                            Đo bằng: `line1.top - (.count-info.top + border-top-width)` */
   border-top: 1px solid rgba(255,255,255,0.1);
@@ -2269,10 +2342,53 @@ body.light-mode .nhom-sel-name {
      `minmax(0, 1fr)` (không phải `1fr`): mặc định `1fr` = `minmax(auto, 1fr)` và `auto`
      lấy min-content của cột → cột chữ không co được xuống dưới bề rộng từ dài nhất.
      `column-gap: 10px` giữ đúng khoảng cách cũ giữa chữ tiền và nút.
-     Nút `display:none` khi chưa nạp dữ liệu → cột `auto` rộng 0, không ảnh hưởng gì. */
+     Nút `display:none` khi chưa nạp dữ liệu → cột `auto` rộng 0, không ảnh hưởng gì.
+     ⟳ CỘT 2 ĐÃ ĐƯỢC DỰNG LẠI (2026-09-27): lượt trước nút ⚙ dời lên header nên cột này bị gỡ;
+     lượt này người dùng yêu cầu **“dời nút cài đặt xuống hàng này”** ⇒ trả về NGUYÊN bản gốc:
+     lưới 2 cột + `column-gap: 10px`. Cột chữ lại bị TRỪ đúng `38px` (nút) + `10px` (khe) như
+     mọi số đo cũ trong file ⇒ các ngưỡng ngắt dòng đã ghi (dòng 1 **225,25px** · dòng 2
+     **188,93px** · cột chữ ở 320px **229,6px** ⇒ thừa 40,67px) VẪN ĐÚNG, không phải đo lại.
+     ⚠️ Lượt nào gỡ nút này đi nữa: gỡ CẢ cột 2 + `column-gap`, đừng để lại ô rỗng (ô rỗng vẫn
+     ăn 10px khe và để lại một cái tên nói dối). */
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   column-gap: 10px;
+  /* ── GHIM HÀNG “TỔNG …” KHI CUỘN (yêu cầu: “tôi muốn hàng này đứng yên khi cuộn trang”) ──
+     Dùng `position: sticky` chứ KHÔNG dùng `fixed` như `.toolbar`: hàng vẫn nằm trong flow
+     nên **không cần sentinel** và không phải tự canh `left/right`/`max-width` theo `.main`.
+     ⚠️ `top` KHÔNG thể là hằng số: nó phải bằng `header (56px) + CHIỀU CAO THANH CÔNG CỤ`,
+     mà chiều cao thanh công cụ **đổi theo bề rộng** (flex-wrap) và theo font ⇒ JS
+     `updateToolbar()` (hàm ghim thanh công cụ) đẩy số đúng vào `--sticky-info-top`.
+     Mặc định `56px` chỉ là LƯỚI AN TOÀN (chỉ kể header) cho lần vẽ đầu.
+     ⚠️ `z-index: 140` cố ý nằm GIỮA hai mốc có sẵn: TRÊN `thead th` sticky (10) và trên thẻ
+     (`.kh-card` static) để thẻ chui DƯỚI hàng, nhưng DƯỚI `.toolbar` (150) để dropdown
+     lọc/sắp xếp vẫn vẽ ĐÈ lên hàng như cũ.
+     ⚠️ NỀN **PHẢI ĐỤC** và nay = **ĐÚNG NỀN THẺ CARD** (`var(--dk-card)`; light override
+     `var(--light-card)` ở `body.light-mode .count-info`) — yêu cầu “tôi muốn có màu nền giống
+     màu nền thẻ card”. Dùng TOKEN của thẻ chứ không chép mã màu: cả 3 mức “Nền” đều ghi đè
+     `--dk-card`/`--light-card` (xem `[data-surface-dark]` / `[data-surface]`) nên hàng tự
+     khớp thẻ ở mọi mức, không phải khai lại gì.
+     ⟳ 2026-09-27b: **BẢNG CŨNG ĐÃ LÀ NỀN THẺ** (yêu cầu “màu nền khi xem dạng bảng giống màu
+     nền thẻ card”) ⇒ hàng ghim và nền bảng nay **CÙNG MỘT MÀU**: khi cuộn, thẻ/bảng chui dưới
+     hàng KHÔNG còn thấy mối nối (trước đây hàng nổi hơn nền bảng một nấc). Vẫn đúng ý đồ gốc
+     “hàng phải ĐỤC để không thấy nội dung chạy qua”. Muốn hàng nổi lại thì thêm viền/bóng cho
+     CHÍNH NÓ — ⛔ đừng trả nền bảng về lớp alpha trắng cũ (`rgba(255,255,255,0.04)`).
+     ⛔ Đừng bỏ nền và đừng đổi sang `rgba(...)`: hở một nấc trong suốt là thấy thẻ chạy qua.
+     ⚠️ Vệt tô ở `box-shadow` bên dưới VẪN giữ `var(--page-bg)`: nó là KHE 3px giữa thanh công
+     cụ và hàng (không thuộc hàng), phải trùng màu NỀN TRANG — lấy màu thẻ là khe đó thành một
+     dải màu thẻ lơ lửng. */
+  position: sticky;
+  top: var(--sticky-info-top, 56px);
+  z-index: 140;
+  background: var(--dk-card);
+  /* ⚠️ OFFSET ÂM = “tô” thêm `--info-gap` (3px) PHÍA TRÊN hộp, cùng màu nền trang.
+     Vì sao cần: `top` cố ý cho hàng ghim ĐÚNG VỊ TRÍ TỰ NHIÊN của nó (đo được 199,97px) nên khi
+     ghim, dải 196,92→199,97 (đáy thanh công cụ → mép trên hàng) KHÔNG thuộc phần tử nào —
+     thiếu vệt tô này là thẻ chạy qua đó thành một khe 3px nhấp nháy giữa thanh và hàng.
+     Khi CHƯA cuộn, 3px đó vốn đã là nền trang ⇒ vệt tô trùng màu ⇒ không thấy gì khác lạ.
+     ⚠️ Dùng `box-shadow` (không chiếm chỗ) chứ KHÔNG dùng `padding`/`::before`: đổi padding là
+     đổi metric (hàng cao thêm 3px ⇒ cả danh sách thẻ dịch xuống). */
+  box-shadow: 0 calc(-1 * var(--info-gap)) 0 0 var(--page-bg);
 }
 
 .count-info span { font-weight: 500; }
@@ -2298,7 +2414,98 @@ body.light-mode .nhom-sel-name {
    chữ tiền cách thẻ đầu tiên đúng 4px (4px đó là phần dòng chữ canh giữa trong hàng 29px).
    ⚠️ ĐỔI CỠ CHỮ dòng tổng thì số 29 này sai ngay — phải đo lại (21px chính là
    chiều cao dòng chữ hiện tại). */
-.count-line1 { grid-column: 1; grid-row: 1; }
+/* ── LƯỚT 2026-09-27: HÀNG “TỔNG …” XẾP LẠI THÀNH 3 CỘT — NHÃN TRÊN, SỐ DƯỚI ──────────────
+   Yêu cầu: “thử sắp lại chữ HĐ, KH, Tiền nợ và số tương ứng nằm phía dưới”; người dùng đã chọn
+   phương án **“ba cột: nhãn trên, số dưới”**.
+   TRƯỚC: `.count-line1` = “Tổng HĐ: 951 · KH: 913” (22px) + `.count-line2` = “Tổng nợ: …” (30px).
+   NAY: `.count-stats` là một `flex-wrap` gồm **3 mục `.count-stat`**, mỗi mục là lưới 2 hàng
+   **nhãn ở TRÊN · số ở DƯỚI** ⇒ ba nhãn nằm chung hàng 1, ba số nằm chung hàng 2, ba cột thẳng nhau.
+   ⚠️ Vì sao FLEX-WRAP chứ không phải lưới 3 cột cố định: bề rộng cần phụ thuộc SỐ TIỀN
+   (`max(nhãn, số)` của mục “Tổng nợ:”) — số 9 chữ số cần ~250px, 12 chữ số cần ~314px. Lưới cột
+   CỐ ĐỊNH sẽ TRÀN vào nút ⚙ ở panel hẹp; `flex-wrap` tự đẩy mục không vừa xuống hàng dưới
+   (vẫn “nhãn trên, số dưới”) nên đúng ở MỌI khổ, không phải thêm ngưỡng `@media` nào.
+   `grid-template-rows: 22px 30px` của TỪNG mục = ĐÚNG hai con số của bố cục cũ (dòng nhãn 22px +
+   hàng số 30px) nên **chiều cao hàng GHIM KHÔNG ĐỔI (57px)** khi ba mục nằm chung một hàng:
+   mép trên thẻ đầu tiên, khe 3px và ngưỡng `--sticky-info-top` (JS tính theo header + thanh
+   công cụ, KHÔNG đọc chiều cao hàng) đều nguyên.
+   ĐO LIVE (panel 427px, cột chữ 335,6px): ba cột = **81,6px · 31,2px · 109,1px** + 2×`column-gap`
+   14px ⇒ cần **249,9px** trong khi cột chữ có 335,6px ✓ thừa 85,7px.
+   ⟳ 2026-09-27c: **BA NHÃN GỌN LẠI, HẾT DẤU HAI CHẤM** — nhãn 1 “Tổng HĐ:” → **“HĐ”**, rồi
+   “KH:” → **“KH”**, cuối cùng “Tổng nợ” → **“Nợ”** (ba yêu cầu liên tiếp của người dùng).
+   ĐO LIVE (panel 427px): ba cột `32,4 · 32,9 · 121,25px` (sau khi SỐ lên 20px — xem ⟳ 2026-09-27d
+   ngay dưới) — cột 1/2 do SỐ 3 chữ số quyết định, cột 3 do **SỐ** `826.944.474`; cả khối cần
+   **214,55px**, cột chữ có 335,65px. (Lịch sử: 249,9px khi nhãn còn “Tổng HĐ:/KH:/Tổng nợ:” ⇒
+   **195,91px** sau khi rút nhãn ⇒ **214,55px** sau khi số lên 20px.)
+   ⚠️ **NGƯỠNG PANEL HẸP — ĐO BẰNG CHIA ĐÔI (bisection) TRÊN BỀ RỘNG KHỐI, KHÔNG ĐOÁN:**
+   khối còn **1 HÀNG (hàng ghim cao 56,95px)** khi bề rộng khả dụng **≥ `need`** (= tổng bề rộng
+   3 mục + 2×`column-gap` 14px); hụt 0,5px là mục 3 rơi xuống HÀNG DƯỚI và hàng ghim cao lên
+   **108,95px** (vẫn KHÔNG đè nút ⚙ — `flex-wrap` lo).
+   ⟳ 2026-09-27e (nhãn **17** / số **19px**): `need` = **205,21px** ở nhánh NỀN · **195,91px** ở
+   nhánh `@media ≤359,98px` (nhãn 16 / số 18px). Bisection bằng cách bó `max-width` của
+   `.count-stats`: **196px vẫn 1 HÀNG, 195px thì mục 3 rơi xuống** ⇒ khớp ĐÚNG `need` 195,91px.
+   (Cách bó `max-width` là cách duy nhất ở panel này: tool `resize` chặn ở **240px** thiết bị =
+   vp 298 vì client zoom 0,75.)
+   ⟳ 2026-09-27f: **`need` ĐỔI THEO MỨC “Aa”** (hàng Tổng nay ăn token `--fs-count-lbl/num`).
+   ĐO LIVE cả 3 mức ở CẢ HAI nhánh — hàng ghim **56,95px ở MỌI mức** (vì `.count-stat` cố định
+   `22px 30px`, cỡ chữ KHÔNG đụng chiều cao):
+     · nhánh NỀN: `nho` **195,91** · `chuan` **205,21** · `to` **214,55px**
+     · nhánh HẸP (`calc − 1px`): `nho` **186,57** · `chuan` **195,91** · `to` **205,21px**
+   ⇒ NGƯỠNG XẤU NHẤT = mức `to` ở nhánh hẹp: **205,21 + 68 ≈ 273px**, vẫn dưới panel hẹp nhất
+   đã đo (298px, còn thừa **24px**) ⇒ ⛔ đừng gỡ nhánh hẹp; và thêm mức “Aa” thứ tư là phải đo lại.
+   ⚠️ **`K = vp − cột chữ` = 68px, KHÔNG phải 90,35px** — đo lại 3 lần: vp 404 ⇒ 68,35 · vp 361 ⇒
+   67,64 · vp 321 và 298 ⇒ 68. Cấu tạo: `padding` **8** mỗi bên của `.main` (panel hẹp dùng nhánh
+   8px) + `padding` **2** mỗi bên của `.count-info` + nút ⚙ **38** + `column-gap` **10** = 68 ✓.
+   ⛔ Con số **90,35px** ghi ở các lượt TRƯỚC là **SAI**: nó cộng thêm **22px scrollbar** trong khi
+   `documentElement.clientWidth` ĐÃ trừ scrollbar rồi ⇒ mọi ngưỡng ghi theo nó bị đội lên ~22px.
+   ⇒ NGƯỠNG THẬT: nhánh NỀN chỉ chạy khi vp > 359,98px nên cột chữ luôn ≥ 291,98px > `need`
+   205,21px ⇒ **không bao giờ xuống hàng**; nhánh HẸP xuống hàng khi vp < **195,91 + 68 ≈ 264px**.
+   Panel hẹp nhất từng đo (298px; 303px trong run doc) vẫn còn thừa **34px** ⇒ an toàn.
+   ⛔ Đừng chép `vp − 68,32px` ở chú thích `.count-sep` — đó là bố cục 2 DÒNG cũ và chưa kể scrollbar.
+   ⛔ **RÚT NGẮN NHÃN 3 KHÔNG NÂNG ĐƯỢC NGƯỠNG** (đo: **195,91px → 195,91px** y nguyên): bề rộng khối
+   = `Σ max(nhãn, số)`, mà ở mục 3 **SỐ** (`826.944.474` = **109,13px** ở 18px · 115,18px ở 19px ·
+   121,25px ở 20px) luôn > nhãn “Nợ” (24,4px). Muốn HẠ ngưỡng thật thì phải làm **SỐ** hẹp lại
+   (hiển thị `826,9 tr` / bớt chữ số) — còn số TO lên là thứ ĐẨY ngưỡng lên (đánh đổi đã biết của
+   lượt 2026-09-27d, rồi được bù lại một phần ở lượt **2026-09-27e**: hạ cả hàng 1px ⇒ `need`
+   205,21px, vẫn thừa 34px ở panel hẹp nhất đã đo).
+   ⛔ `.count-line1` / `.count-line2` / `.count-sep` / `.count-tien-wrap` ĐÃ XOÁ cùng lượt này
+   (markup không còn dùng) — các khối chú thích còn nhắc tới chúng bên dưới là **LỊCH SỬ**,
+   đừng dựng lại bố cục theo các chú thích đó.
+   ⛔ JS không dựng lại markup này: mọi chỗ đều ghi số qua `#countKH` / `#countHoaDon` /
+   `#countTongTien` (đổi `id` là số điền lệch mà không báo lỗi). */
+.count-stats {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  column-gap: 14px;
+  row-gap: 0;
+  min-width: 0;
+}
+/* Mỗi mục = **nhãn trên, số dưới** trong một lưới 2 hàng CỐ ĐỊNH 22px / 30px — hai con số này
+   chính là thứ giữ cho hàng ghim cao ĐÚNG 57px như bản 2 dòng cũ (22 + 30 = 52, còn 5px là viền
+   1px + `padding-top` 4px của `.count-info`).
+   `min-width: 0` để mục co được thay vì đẩy tràn; chữ đã `nowrap` nên mục chỉ co tới max-content. */
+.count-stat { display: grid; grid-template-rows: 22px 30px; align-items: center; min-width: 0; }
+/* SỐ canh giữa trong ô 30px của nó — trước đây `.count-line2 { height: 30px }` + `align-items:
+   center` làm việc này. Thiếu `line-height` này thì số dồn lên ĐỈNH ô 30px (cách nhãn 0px thay
+   vì 4px) ⇒ chiều cao hàng vẫn 57px nhưng mực chữ trong hàng sai.
+   ⟳ 2026-09-27d: **SỐ TO HƠN NHÃN** (yêu cầu “cho SỐ trong hàng Tổng lớn hơn nhãn một cấp chữ để
+   dễ liếc”): nhãn giữ **18px**, số lên **20px** — thang cỡ chữ CỦA APP (`[data-fs]`) bước **1px**
+   mỗi mức nên một bước thật (19px) gần như không thấy; 20px là mức nhỏ nhất CÓ THỂ LIẾC ra khác
+   biệt. ⚠️ `line-height` VẪN **30px** (không phải 20px): hàng số trong `.count-stat` cao cố định
+   30px nên hàng ghim **không cao thêm** (đo lại: 56,95px y nguyên) — đổi `line-height` theo
+   `font-size` là hàng cao thêm 2px và cả danh sách thẻ dịch xuống.
+   ⟳ 2026-09-27e: **HẠ CẢ HÀNG 1px** (yêu cầu “cho cỡ chữ hàng này nhỏ lại 1px”): nhãn 18 → **17px**,
+   số 20 → **19px** (vẫn hơn nhãn 2px = một cấp). ĐO LẠI: hàng ghim **56,95px y nguyên** · nhãn
+   `top 204,95` / số `top 226,95` (cách 22px) · ghim `rowTop = 200` ở 0→1→3→60→300→700 (**travel 0**) ·
+   AA **y nguyên** vì tỉ lệ chỉ phụ thuộc MÀU (dark nền “Chuẩn”: nhãn **5,63** · số xanh **5,67** ·
+   số hổ phách **11,58**; light: **9,16** / **7,71** / **6,27**) · `need` 214,55 → **205,21px**.
+   ⟳ 2026-09-27f: **CỠ NAY LÀ TOKEN**, không còn px cứng ⇒ số hơn nhãn **2px** ở CẢ BA mức:
+   18/16 (nho) · 19/17 (chuan) · 20/18 (to).
+   ⚠️ Nhãn ↔ số lệch CỠ nhưng KHÔNG lệch màu/độ dày: số vẫn `font-weight: 400`, tông màu giữ
+   nguyên ⇒ mọi tỉ lệ AA đã ghi không đổi (chỉ to hơn). */
+.count-info .count-kh-hd, .count-info .count-tien { line-height: 30px; font-size: var(--fs-count-num); }
 /* Dấu `·` ngăn hai nhóm “Tổng HĐ: …” và “KH: …”.
    ⛔ KHÔNG thay bằng 2 dấu cách trong markup: đo được ở 18px, bản dấu cách cần **230,84px**
    trong khi cột chữ ở khổ **360px** chỉ có **228,5px** ⇒ dòng 1 **xuống 2 dòng** trên đúng
@@ -2312,17 +2519,14 @@ body.light-mode .nhom-sel-name {
    (**340,68px** ở vp 409 · **291,68px** ở 360px · **251,68px** ở 320px) trong khi dòng 1 chỉ cần
    **225,19px** ở margin 2px và **237,20px** ở margin 8px ⇒ 360px **và cả 320px** vẫn **1 DÒNG**.
    (Vẫn giữ 1 span `.count-sep`: hai dấu cách trong markup tốn ~9,2px và không canh được.) */
-.count-sep { display: inline-block; margin: 0 8px; }
 /* `.count-line2` cố ý chỉ còn **ĐÚNG 1 con** (bỏ `justify-content: space-between` vì thừa):
    nút "Xuất" đã ra cột 2. Đừng thêm con thứ hai vào đây — đó là làm lại đúng lỗi cũ. */
-.count-line2 { grid-column: 1; grid-row: 2; display: flex; align-items: center; gap: 10px; margin-top: 0; height: 30px; }
 /* "Tổng nợ" là NHÃN chứ không phải số → thừa hưởng `color: var(--text-dim)` của
    `.count-info`, y hệt "Tổng"/"KH"/"HĐ" ở dòng 1; số vẫn đỏ qua `.count-tien`.
    ⚠️ Vẫn phải BỌC nhãn + số vào `.count-tien-wrap` (dù `.count-line2` nay chỉ còn 1 con và
    `justify-content: space-between` đã bỏ): cặp đó là **một đơn vị** "Tổng nợ: 405.085.558"
    cần đi liền nhau, và `gap: 4px` bên trong mới cho đúng khoảng nhãn ↔ số.
    `align-items: baseline` để hai chữ khác cỡ vẫn ngồi chung một dòng cơ sở. */
-.count-tien-wrap { display: inline-flex; align-items: baseline; gap: 4px; }
 /* ⚠️ Nhãn “Tổng nợ:” và SỐ **không được xuống dòng** (thêm khi chữ lên 18px — đã đo, không phải phòng xa):
    ở panel 320px cột chữ chỉ còn **173.87px** trong khi cặp `Tổng nợ:` + số cần **~173.9px** ⇒ flex
    co nhãn lại ⇒ nhãn tự ngắt thành **2 dòng** ⇒ `.count-tien-wrap` cao **44px** nằm trong hàng cao
@@ -2331,17 +2535,30 @@ body.light-mode .nhom-sel-name {
    `nowrap` giữ cặp này ĐÚNG 1 DÒNG; nếu vẫn thiếu chỗ thì nó tràn **NGANG** vào khe 10px của
    lưới `.count-info` — **không bao giờ chạm nút Xuất** vì nút là **cột riêng** (xem chú thích
    `.count-info`). Thà tràn ngang vài phần mười px còn hơn đè lên chữ. */
-.count-tien, .count-tien-label { white-space: nowrap; }
-.count-info .count-kh-hd { color: #60a5fa; }
-.count-info .count-tien { color: #ff8888; font-weight: 500; }
+.count-tien, .count-lbl { white-space: nowrap; }
+/* ── SỐ NHẸ HƠN NHÃN: 500 → **400** (yêu cầu “cho nét chữ hàng này bằng nhau”) ──────────
+   ĐO TRƯỚC KHI SỬA (để không chữa một bệnh không có): cả hàng VỐN ĐÃ cùng 500 — kiểm bằng cách
+   so bề rộng chữ DOM với canvas ở 3 nấc: nhãn `Tổng HĐ: ` = **86,441px** vs canvas-500
+   **86,440px**; số `951` = **29,670px** vs canvas-500 **29,663px** ⇒ đều là 500 THẬT.
+   Nhưng chữ số của Inter ở cùng weight **vốn dày hơn ký tự chữ** (raster 18px: run trung bình
+   **2,32px** cho số vs **2,13px** cho chữ, ~9%), lại thêm cao bằng cap-height và màu bão hoà
+   ⇒ mắt đọc số là “đậm hơn”. Người dùng đã chọn hướng: **hạ SỐ xuống 400, giữ NHÃN 500**.
+   ⚠️ Phải khai ở `.count-info .count-kh-hd` / `.count-info .count-tien` (độ đặc hiệu 0,2,0) mới
+   THẮNG được `.count-info span { font-weight: 500 }` (0,1,1). ⛔ Đừng sửa rule `span` đó thành    400: nó còn phải giữ 500 cho **cả ba NHÃN** (`.count-lbl`: “HĐ” · “KH” · “Nợ”) —
+   hạ luôn là lệch sang hướng ngược lại (số 400 mà nhãn cũng 400 thì không giải quyết gì).
+   ℹ️ Đổi weight làm chữ số HẸP lại một chút (18px: `951` 29,663 → 29,162px) ⇒ mọi ngưỡng
+   ngắt dòng của 2 dòng này chỉ có thể LÙI VỀ SAU, không hồi quy.
+   ⚠️ Tương phản KHÔNG đổi (chỉ đổi độ dày nét, không đổi MÀU) ⇒ mọi tỉ lệ AA đã ghi vẫn đúng. */
+.count-info .count-kh-hd { color: #60a5fa; font-weight: 400; }
+.count-info .count-tien { color: #ff8888; font-weight: 400; }
 /* Số tổng đổi màu theo quy mô: <100tr xanh · 100tr–1tỷ vàng · ≥1tỷ đỏ (mặc định) */
 .count-info .count-tien.low { color: #86efac; }
 .count-info .count-tien.mid { color: #fde68a; }
-/* Panel RẤT hẹp (≤ 359.98px): hạ cỡ chữ khối tổng về 17px (cỡ cũ).
-   LÝ DO là số đo, không phải cảm tính: ở panel **320px**, cột chữ có **192.16px** trong khi cặp
-   `Tổng nợ:` + số ở 18px cần **~200.1px** ⇒ thò **~8px** vào khe 10px của lưới `.count-info`
-   (cách mép trái nút Xuất còn ~2.2px). Ở 17px cặp đó cần **188.98px** ⇒ thừa **3.18px**,
-   cách nút **13.18px**. Từ **360px** trở lên cột rộng **≥ 228.5px** ⇒ **giữ 18px**.
+/* Panel RẤT hẹp (≤ 359.98px): hạ cỡ chữ khối tổng **ĐÚNG 1px so với mức “Aa” đang chọn**.
+   ⟳ 2026-09-27f: nay bằng `calc(token − 1px)` nên đúng ở cả BA mức mà không phải khai 3 lần.
+   ⛔ Ba con số “192,16px / 200,1px / 188,98px” ở dưới là **LỊCH SỬ** của bố cục 2 DÒNG + nhãn
+   “Tổng nợ:” (đã bỏ 2026-09-27) — đừng dùng lại. Số đo HIỆN HÀNH: xem ⟳ 2026-09-27e/f ở chú
+   thích `.count-stats` (`need` 195,91px ở nhánh hẹp mức “Chuẩn”; ngưỡng vp ≈ 264px).
    ⚠️ Nhãn nay là “Tổng nợ:” (dài hơn “Tiền:” ~34px) nên cặp này **sát ngưỡng hơn trước** —
    đừng gỡ nhánh 17px mà không đo lại ở 320px.
    ⚠️ `line-height: 22px` khai ở `.count-info` nên hạ cỡ chữ KHÔNG làm xê dịch dòng:
@@ -2349,7 +2566,16 @@ body.light-mode .nhom-sel-name {
    ⚠️ Cùng ngưỡng 359.98px với nhánh thu gọn của nút “Xuất file” — cố ý, để chỉ có MỘT
    ngưỡng “rất hẹp” phải nhớ trong file. */
 @media (max-width: 359.98px) {
-  .count-info { font-size: 17px; }
+  .count-info { font-size: calc(var(--fs-count-lbl) - 1px); }
+  /* ⚠️ Nay KHÔNG cần nhánh `.count-stats` riêng cho panel hẹp: `.count-stats` là `flex-wrap` nên
+     tự đẩy mục không vừa xuống hàng dưới (xem chú thích `.count-stats`). Nhánh này giữ lại
+     chỉ để tiết kiệm bề rộng ở khổ ≤359,98px.
+     ⚠️ Kèm theo phải hạ cả SỐ xuống đúng 1px: để SỐ đứng nguyên là bước nhảy thành 3px ở panel
+     hẹp — nhìn lệch hơn hẳn, và cũng không còn là “một cấp”.
+     ⟳ 2026-09-27f: dùng `calc(token − 1px)` chứ KHÔNG ghi số cứng — nhờ vậy “nhánh hẹp nhỏ hơn
+     nhánh nền đúng 1px” và “SỐ hơn NHÃN đúng 2px” tự đúng ở cả BA mức “Aa” (nho 15/17 ·
+     chuan 16/18 · to 17/19). ⛔ Ghi số cứng ở đây là quên một mức ngay khi thêm mức mới. */
+  .count-info .count-kh-hd, .count-info .count-tien { font-size: calc(var(--fs-count-num) - 1px); }
 }
 
 /* ⛔ ĐÃ XOÁ khối `@media (max-width: 399.98px)` của lượt trước (đẩy 3 nút điều khiển xuống
@@ -2563,12 +2789,24 @@ body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
 
 /* ── TABLE (desktop view) ───────────────── */
 .table-wrap {
-  background: var(--dk-table);   /* chế độ tối: đổi theo mức “Nền” (sáng: `body.light-mode .table-wrap`) */
+  background: var(--dk-card);    /* NỀN BẢNG = NỀN THẺ CARD (yêu cầu 2026-09-27). Đọc `--dk-card`
+                                    NGAY TẠI ĐÂY (không qua alias ở `:root`) nên tự theo cả 3 mức
+                                    “Nền” — các rule `[data-surface-dark]` ghi `--dk-card` lên <body>.
+                                    ・sáng: `body.light-mode .table-wrap` dùng `var(--light-card)` */
   /* Khung dùng token RIÊNG `--tb-edge` (sáng bị `body.light-mode .table-wrap` ghi đè về
      `--light-edge`). ⚠️ Trước đây là `--border` (8% trắng = 1,23:1 — vô hình trong tối). */
   border: 1px solid var(--tb-edge);
   border-radius: var(--radius);
-  overflow: visible;
+  /* ⛔ `overflow: visible` gây lỗi THẤY ĐƯỢC: khung bo góc `var(--radius)` (12px) nhưng
+     `.table-scroll` bên trong (`overflow-x: auto`) chỉ cắt theo hình CHỮ NHẬT ⇒ DẢI NỀN
+     `tr::after` của hàng “tên + tiền” đầu bảng **lòi ra ngoài đường bo ở góc trên**
+     (người dùng: “nền xanh lấn ra viền ngay góc”).
+     `overflow: clip` (KHÔNG phải `hidden`) cắt con theo ĐÚNG đường bo của khung mà **không** tạo
+     scroll container ⇒ `.table-scroll` vẫn cuộn ngang bình thường, `position: sticky` của
+     `thead th` không đổi hành vi (vốn đã không ghim được — xem rule `.table-view thead th`).
+     Đo live: KHÔNG con nào của khung vượt padding box ⇒ clip không cắt mất thứ gì khác.
+     ℹ️ `@media print` đã ghi đè `overflow: visible !important` (giấy không có góc bo). */
+  overflow: clip;
 }
 
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; position: relative; } .table-scroll table { overflow: visible; }
@@ -4037,7 +4275,8 @@ body.force-desktop .table-view { display: block; }
    ⚠️ Phải ẩn cả `#pageActions` (cụm nút) — quên nó là chính nút “In” được in ra giấy, lỗi
      kinh điển của mọi print-stylesheet.
    ⚠️ Ép về ĐEN-TRẮNG là CHỦ Ý: ở dark mode nền tối in ra một trang đen (tốn mực, chữ trên giấy
-     mất tương phản). Tuy nhiên **vẫn giữ `.count-info`** (dòng `Tổng HĐ… / Tổng nợ…`) vì đó là
+     mất tương phản). Tuy nhiên **vẫn giữ `.count-info`** (hàng `Tổng HĐ:` / `KH:` / `Tổng nợ:` +
+     số — từ 2026-09-27 là 3 cột “nhãn trên, số dưới”) vì đó là
      thông tin đáng in; chỉ đổi màu nó về đen.
    ⚠️ In ĐÚNG thứ đang hiển thị (đang ở dạng thẻ thì in thẻ, đang ở dạng bảng thì in bảng) —
      KHÔNG tự ép sang dạng bảng, vì bấm In khi đang xem dạng nào là ý người dùng là dạng đó.
@@ -4450,9 +4689,18 @@ body.force-desktop .table-view { display: block; }
            — đổi vị trí hai span trong markup KHÔNG làm lẫn số, nhưng ⛔ **đừng đổi `id`**: đổi id
            là số điền vào sai ô mà KHÔNG có lỗi nào hiện ra (chỉ hai chữ số đổi chỗ cho nhau).
            Lợi thêm: dòng 1 ngắn đi ~10px nên **ngưỡng ngắt dòng lùi về sau** (xem run doc). -->
-      <div class="count-line1">Tổng HĐ: <span id="countHoaDon" class="count-kh-hd">0</span><span class="count-sep">·</span>KH: <span id="countKH" class="count-kh-hd">0</span></div>
-      <div class="count-line2">
-        <!-- Đấu `:` nằm TRONG nhãn `Tổng nợ` (không phải một span thứ ba) vì `.count-tien-wrap`
+      <!-- ⛔ Khối chú thích NGAY TRÊN (nói về “dòng 1”/“dòng 2” và dấu `·`) là **LỊCH SỬ**:
+           từ 2026-09-27 hàng này xếp **3 CỘT — nhãn ở hàng trên, số ở hàng dưới** (`.count-stats`);
+           đọc chú thích ở rule `.count-stats` trong CSS. Đổi lại bố cục chỉ cần sửa 6 span dưới
+           đây: JS ghi số theo `id` và KHÔNG dựng lại markup này.
+           ⚠️ Mỗi mục là MỘT `.count-stat` bọc đúng cặp (nhãn, số) — `flex-wrap` chỉ ngắt được ở
+           ranh giới giữa các mục, nên ⛔ đừng để nhãn và số của cùng một mục rời nhau ra. -->
+      <div class="count-stats">
+        <div class="count-stat"><span class="count-lbl">HĐ</span><span id="countHoaDon" class="count-kh-hd">0</span></div>
+        <div class="count-stat"><span class="count-lbl">KH</span><span id="countKH" class="count-kh-hd">0</span></div>
+        <!-- ⛔ **LỊCH SỬ** — bố cục 2 dòng đã bỏ 2026-09-27 (nay `.count-stats` 3 cột, nhãn trên
+             số dưới). Đoạn dưới nói về `.count-tien-wrap` (đã xoá), giữ lại chỉ để đọc lịch sử lỗi:
+             Dấu `:` nằm TRONG nhãn `Tổng nợ` (không phải một span thứ ba) vì `.count-tien-wrap`
              là `inline-flex` + `gap: 4px` giữa nhãn và số → "Tổng nợ:" + 4px + số = đúng
              "Tổng nợ: 405.085.558". Thêm span thứ ba cũng bị `gap` chen vào, y như bẫy đã
              ghi ở `.count-line2`.
@@ -4461,7 +4709,7 @@ body.force-desktop .table-view { display: block; }
              bên dưới `.count-info`.
              ⚠️ Số tổng nay **KHÔNG còn hậu tố `đ`** (yêu cầu “bỏ chữ đ sau số tiền”) — cả ở
              markup này (`0đ` → `0`) lẫn ở JS (`elTongTien.textContent`). -->
-        <span class="count-tien-wrap"><span class="count-tien-label">Tổng nợ:</span> <span id="countTongTien" class="count-tien low">0</span></span>
+        <div class="count-stat"><span class="count-lbl">Nợ</span><span id="countTongTien" class="count-tien low">0</span></div>
       </div>
       <!-- Nút "Xuất" là **anh em** của `.count-line2`, KHÔNG nằm trong nó: nó là ô của
            CỘT 2 trong lưới `.count-info`. Nằm trong `.count-line2` thì nó tràn 15px lên
@@ -4469,10 +4717,15 @@ body.force-desktop .table-view { display: block; }
            ⚠️ Đổi vị trí trong DOM KHÔNG ảnh hưởng JS: mọi chỗ đều gọi `getElementById`,
            và `.export-btn` vẫn được bật/tắt bằng `display: flex/none`. -->
       <!-- ⚙️ NÚT CÀI ĐẶT — NÚT DUY NHẤT của ô lưới này (`grid-column: 2` của `.count-info`;
-           số đo + lịch sử ở chú thích `.count-btns`). Mọi nút điều khiển khác — giao diện
-           sáng/tối · cỡ chữ · mức nền · dạng xem · 2 tab sắp xếp · Xuất/In/Sao lưu · chọn tệp
-           Excel — nay nằm trong tấm `#cfg` do nút này mở (`openCfg()`), theo yêu cầu “cho thêm
-           1 nút cài đặt và bỏ tất cả các nút vào đó” (người dùng chốt: mọi nút trên màn hình).
+           số đo + lịch sử ở chú thích `.count-btns`).
+           ⟳ 2026-09-27: nút đi HEADER một lượt (“dời lên gần đồng hồ”) rồi **VỀ LẠI ĐÂY** trong
+           cùng ngày — yêu cầu “tôi muốn có màu nền giống màu nền thẻ card, và dời nút cài đặt
+           xuống hàng này” (kèm ảnh hàng “Tổng HĐ:/Tổng nợ:”). ⇒ Cột 2 của lưới `.count-info`
+           được dựng lại y bản gốc, xem chú thích `.count-info`.
+           Mọi nút điều khiển khác — giao diện sáng/tối · cỡ chữ · mức nền · dạng xem · 2 tab
+           sắp xếp · Xuất/In/Sao lưu · chọn tệp Excel — nay nằm trong tấm `#cfg` do nút này mở
+           (`openCfg()`), theo yêu cầu “cho thêm 1 nút cài đặt và bỏ tất cả các nút vào đó”
+           (người dùng chốt: mọi nút trên màn hình).
            Icon-only ⇒ BẮT BUỘC có `data-tip` (nhãn nổi cho MẮT, `initTips()`) và `aria-label`
            (nhãn cho trình đọc màn hình). ⛔ Đừng điền thêm `title`: sẽ có 2 hộp nổi chồng nhau.
            ⚠️ Bề rộng 38px × cao 40px khai ở `.cfg-btn` — đổi là hàng “Tổng …” nhích và cột
@@ -4722,7 +4975,8 @@ body.force-desktop .table-view { display: block; }
        · ô nhập liệu (tìm kiếm) + 2 ô lọc + nút ✕ xoá nhanh của ô tìm kiếm (gắn liền ô nhập);
        · nút phân trang (JS dựng lại mỗi lần render — xem `renderPagination`);
        · nút ✕ đóng banner “phạm vi nhân viên” và ✕ của modal chi tiết (đóng ngữ cảnh);
-       · logo NGÔI SAO + đồng hồ ở header (nay là ảnh/khối hiển thị, không bấm được);
+       · logo NGÔI SAO + đồng hồ ở header (logo là nút đổi theme; đồng hồ là khối HIỂN THỊ,
+         không bấm được);
        · nút “Chọn file” ở MÀN HÌNH CHÀO — màn đó không có hàng “Tổng …” nên không mở được
          cài đặt; bỏ nút đó là app không còn cách nào nạp file.
      ⚠️ Nhãn giá trị (`<i class="cfg-val">`) do JS ghi lại: `syncThemeToggle` · `applyFontSize`
@@ -4765,8 +5019,8 @@ body.force-desktop .table-view { display: block; }
   </div>
 
   <!-- 3. MỨC NỀN (nút “Nền” cũ) — ĐỔI THEO THEME ĐANG XEM: chế độ sáng ghi `data-surface`
-       (token `--light-surface`), chế độ tối ghi `data-surface-dark` (`--dk-card` ·
-       `--dk-table` · `--dk-sum`); hai bộ mức lưu RIÊNG ở localStorage (`qlno_surface` /
+       (token `--light-surface`/`--light-card`), chế độ tối ghi `data-surface-dark` (`--dk-card` —
+       nay cả BẢNG dùng chung token này — và `--dk-sum`); hai bộ mức lưu RIÊNG ở localStorage (`qlno_surface` /
        `qlno_surface_dark`) nên quay lại theme cũ vẫn đúng mức cũ.
        ⚠️ Nhãn TĨNH dưới đây để dạng TRUNG TÍNH (“Nền: …”) — nhãn riêng theme chỉ có sau khi
        script chính chạy, và “Nền sáng: …” sẽ SAI khi trang vừa mở ở chế độ tối (xem
@@ -5536,8 +5790,8 @@ applyFontSize();
 // ─── MỨC NỀN: 3 MỨC — MỖI THEME MỘT BỘ RIÊNG, LƯU Ở localStorage ──────────────
 // Nút “Nền” xoay vòng mức của ĐÚNG theme đang xem; hai bộ ĐỘC LẬP nhau:
 //    chế độ SÁNG → attr `data-surface`      · khoá lưu `qlno_surface`      (token `--light-surface`)
-//    chế độ TỐI  → attr `data-surface-dark` · khoá lưu `qlno_surface_dark` (token `--dk-card`
-//                                                                          `--dk-table`, `--dk-sum`)
+//    chế độ TỐI  → attr `data-surface-dark` · khoá lưu `qlno_surface_dark` (token `--dk-card` —
+//                     nay THẺ và BẢNG dùng chung — và `--dk-sum`; `--dk-table` đã xoá 2026-09-27)
 // JS CHỈ đặt attribute trên <body>, CSS tự lo phần màu. Thêm/bớt mức ⇒ sửa 4 chỗ cho khớp:
 //   1. mảng `SURFACE_LEVELS` (đây),  2. các khối `body…[data-surface…]` (CSS),
 //   3. hai câu `if (__sf…)` trong script khôi phục ngay sau <body> (chống nháy nền).
@@ -7093,6 +7347,21 @@ const toolbarEl = document.querySelector('.toolbar');
 const headerEl = document.querySelector('.header');
 if (toolbarEl && headerEl) {
   const headerH = headerEl.offsetHeight;
+  // ── Hàng “Tổng …” GHIM bằng `position: sticky` (xem chú thích `.count-info`) ───────────────
+  // Ngưỡng `top` của nó = đáy thanh công cụ đang ghim + `--info-gap`. Phải CỘNG `--info-gap`
+  // để hàng ghim ĐÚNG VỊ TRÍ TỰ NHIÊN của nó: thiếu 3px đó thì mỗi lần bắt đầu cuộn hàng bị kéo
+  // lên 3px rồi mới đứng yên (đo được: 199,97 → 199,01 → 198,05 → 197,09 → 197,00 — yêu cầu
+  // “hàng đứng yên khi cuộn” nên phải là 0px dịch chuyển).
+  const infoEl = document.querySelector('.count-info');
+  const infoGap = infoEl ? (parseFloat(getComputedStyle(infoEl).marginTop) || 0) : 0;
+  let lastInfoTop = null;
+  function setInfoTop(v) {
+    // ⛔ Đừng set lại mỗi sự kiện `scroll`: mỗi lần `setProperty` là một lần vô hiệu hoá style
+    // của cả tài liệu (đúng thứ gây giật khi cuộn nhanh). Chỉ ghi khi giá trị THẬT SỰ đổi.
+    if (v === lastInfoTop) return;
+    lastInfoTop = v;
+    document.documentElement.style.setProperty('--sticky-info-top', v + 'px');
+  }
   const sentinel = document.createElement('div');
   sentinel.style.height = '0';
   sentinel.style.visibility = 'hidden';
@@ -7115,6 +7384,10 @@ if (toolbarEl && headerEl) {
       toolbarEl.style.margin = '0 auto';
       toolbarEl.style.zIndex = '150';
       toolbarEl.classList.add('stuck');
+      // Hàng “Tổng …” (`position: sticky`) phải ghim NGAY DƯỚI thanh công cụ đang ghim ⇒
+      // ngưỡng `top` = đáy thanh = `headerH + toolbarH`. Thanh cao bao nhiêu là do flex-wrap
+      // quyết định nên KHÔNG thể viết số vào CSS (xem chú thích `.count-info`).
+      setInfoTop(headerH + toolbarH + infoGap);
     } else {
       sentinel.style.height = '0';
       toolbarEl.style.position = '';
@@ -7124,6 +7397,9 @@ if (toolbarEl && headerEl) {
       toolbarEl.style.maxWidth = '';
       toolbarEl.style.margin = '';
       toolbarEl.classList.remove('stuck');
+      // Chưa ghim thanh công cụ ⇒ hàng “Tổng …” chỉ được ghim dưới HEADER. Đặt lại (chứ không
+      // xoá) để `top` không bao giờ về 0 — về 0 là hàng chui xuống DƯỚI header và mất chữ.
+      setInfoTop(headerH + infoGap);
     }
   }
   window.addEventListener('scroll', updateToolbar, { passive: true });
