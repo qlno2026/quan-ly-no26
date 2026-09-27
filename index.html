@@ -299,7 +299,7 @@
   --ic-blue-soft: #60a5fa;   /* mũi tên danh số */
   --ic-blue-pale: #dbeafe;   /* dấu trang trên sổ */
   --ic-blue-light: #93c5fd;  /* người thứ hai trong icon "nhóm" */
-  --ic-hash: #35a3e0;        /* icon tab Danh Số */
+  --ic-hash: #35a3e0;        /* XANH CỦA 4 TAB thanh công cụ + viền khi ĐANG CHỌN — icon 4 tab, viền 2 nút sắp xếp active và viền 2 ô lọc `[data-active="1"]` (light đổi thành blue-600 ở dưới) */
   --ic-folder: #e9a13b;      /* thư mục — mặt trước */
   --ic-folder-back: #f7c65a; /* thư mục — mặt sau */
   --ic-page: #f8fbff;
@@ -531,6 +531,15 @@ body.light-mode {
      ⚠️ Các tông khác TRÙNG nhau ở 2 theme là chủ ý (màu ngữ nghĩa: SĐT đỏ, mã vàng…). */
   --ic-blue-pale: #ffffff;
   --ic-green: #2f8a5f;
+  /* ⟳ (27/9) Icon CÁC TAB (2 ô lọc + 2 nút sắp xếp) xanh theo yêu cầu "icon các tab có màu
+     xanh cho dễ nhìn": dark dùng `#35a3e0` (bản gốc `:root`, **5,12:1** trên nền control tối);
+     light đổi sang blue-600 `#2563eb` = **4,57:1** trên nền control sáng `#eff1f5` (đo live;
+     `#35a3e0` chỉ 2,49 trên nền sáng). Inline style `var(--ic-hash)` của icon tự ăn theo
+     override này vì var() phân giải tại đúng phần tử nằm trong body.light-mode. Token này
+     CŨNG là màu viền khi ĐANG CHỌN: 2 nút sắp xếp (`#sortDanhSo.active`/`#sortTienNo.active`)
+     và 2 ô lọc `.filter-select[data-active="1"]`, ở CẢ HAI theme ⇒ đổi nó là đổi cả icon lẫn
+     viền (3 chỗ) — đừng tách token mới trừ khi muốn chúng khác màu nhau. */
+  --ic-hash: #2563eb;
   --vien-bg: #f0f6ff;
   --vien-fg: #1e3a8a;
   --vien-vien: #93b8e8;
@@ -1027,7 +1036,7 @@ body.light-mode .export-btn { background: var(--ctl-light-bg); border-color: #c7
 /* Bề mặt control ở light: nền xám nhạt `--ctl-light-bg` + viền TRUNG TÍNH `--ctl-light-line`.
    ⟳ Bản cũ ghi “nền xanh nhạt + viền tím nhạt, khớp với ô tìm kiếm” — lượt “trung tính hoá
    thanh công cụ” đã BỎ tông xanh/tím ở nhóm ô lọc + 2 nút sắp xếp. */
-body.light-mode .filter-row select, body.light-mode .filter-select { color: #000000; background: var(--ctl-light-bg); border: 1px solid var(--ctl-light-line); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='%235b6777'%3E%3Cpath d='M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+body.light-mode .filter-row select, body.light-mode .filter-select { color: #000000; background: var(--ctl-light-bg); border: 1px solid var(--ctl-light-line); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17' viewBox='0 0 24 24' fill='%235b6777'%3E%3Cpath d='M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 9px center; }
 body.light-mode .nhom-dropdown { background: #ffffff !important; border-color: #cbd5e1 !important; }
 /* font-size ở đây có !important nên ĐÈ mọi inline font-size của các .nhom-option
    (markup + chuỗi innerHTML trong JS). Đổi cỡ chữ dropdown phải sửa CẢ 2 nơi:
@@ -1085,8 +1094,15 @@ body.light-mode .sort-row { background: transparent; border-radius: 0; }
    đổi MÀU, không đổi tông quan hệ”: 2 tab đang chọn phải trông như cùng một vật liệu ở cả 2 chế độ.
    Bóng đổi sang tông trung tính của chế độ sáng (`rgba(15,23,42,0.22)`, đúng họ bóng đang dùng cho
    thẻ/tấm) và vệt sáng trên cùng nhỉnh hơn (0,22) vì nền sáng làm vệt 0,18 gần như tan. */
-body.light-mode #sortDanhSo.active { background: #536274; border-color: #e2e8f0; color: #ffffff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 2px 8px rgba(15,23,42,0.22); }
-body.light-mode #sortTienNo.active { background: #536274; border-color: #e2e8f0; color: #ffffff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 2px 8px rgba(15,23,42,0.22); }
+/* ⟳ (27/9) VIỀN XANH khi đang chọn theo yêu cầu "cho màu xanh viền tab khi chọn":
+   viền `var(--ic-hash)` (= `#2563eb` ở light qua override token) thay `#e2e8f0`. ĐO LIVE:
+   vs NỀN TOOLBAR TRẮNG **5,17:1** ✓ (mặt NGOÀI của viền — chỗ mắt nhìn) · vs NỀN NÚT
+   `#536274` 1,21:1 (mặt trong — viền đứng trên nền đậm của chính nút, không cần chênh lớn).
+   Viền trắng cũ chỉ **1,23:1** so với toolbar trắng ⇒ gần như VÔ HÌNH (bản cũ đọc được nhờ
+   bóng đổ, không nhờ viền). Chữ trắng trên nền giữ nguyên **6,24:1** ✓. ⛔ KHÔNG gộp
+   2 rule: ghi chú ở `#sortDanhSo.active` cấm để 2 nút anh em lệch nhau. */
+body.light-mode #sortDanhSo.active { background: #536274; border-color: var(--ic-hash); color: #ffffff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 2px 8px rgba(15,23,42,0.22); }
+body.light-mode #sortTienNo.active { background: #536274; border-color: var(--ic-hash); color: #ffffff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 2px 8px rgba(15,23,42,0.22); }
 /* Thẻ: nền trắng trên nền trang xám xanh, viền đủ đậm để phân định (3.1:1).
    border-width vẫn 1px như dark — chỉ đổi màu, không đổi metric. */
 /* Viền thẻ ở light mode: LỊCH SỬ đậm dần theo yêu cầu người dùng —
@@ -1858,11 +1874,25 @@ body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
    Đo (dark): nền đang lọc `rgba(148,163,184,0.22)` ghép lên bề mặt ô → so với ô CHƯA lọc
    **1,58:1** (bản xanh cũ ~1,6:1 ⇒ ngang nhau), chữ `--text` trên nền đó **~7,2 ✓**,
    viền `#cbd5e1` **~6,0 ✓** trên nền đang lọc. */
-.filter-select[data-active="1"] { border-color: #cbd5e1; background-color: rgba(148,163,184,0.22); }
+/* ⟳ (27/9) VIỀN XANH cho trạng thái ĐANG CHỌN theo yêu cầu “cho màu xanh viền tab khi chọn”
+   (ảnh người dùng: ô “DS nhóm” đã chọn nhóm ⇒ hàng lọc): `#cbd5e1` → `var(--ic-hash)`
+   (`#35a3e0` ở dark). CHỈ đổi VIỀN — NỀN vẫn trung tính như lượt “trung tính hoá”: đổi được
+   một mình vì nền đang-lọc vốn đã tách khỏi nền chưa-lọc **1,58:1** (xem đo ngay trên).
+   Đo (dark): viền vs NỀN TOOLBAR `rgb(17,19,24)` **6,61:1** ✓≥3 (mặt ngoài, chỗ mắt nhìn) ·
+   viền vs NỀN Ô ĐANG LỌC (ghép alpha ra `rgb(46,51,59)`) **4,53:1** ✓≥3 (mặt trong).
+   ⛔ Đây là NGOẠI LỆ CÓ CHỦ ĐÍCH so với lượt “trung tính hoá” (lượt đó BỎ tông xanh/tím của
+   nhóm ô lọc) — chỉ áp cho trạng thái ĐANG CHỌN. Ô CHƯA chọn vẫn viền trung tính
+   (`--ctl-light-line` / dark `rgba(71,85,105,0.35)`) — ĐỪNG tô xanh ô chưa chọn (lỗi này
+   đã từng mắc và đã bị bỏ một lần, xem ghi chú `#filterLoaiBtn` ở khối `.filter-row`). */
+.filter-select[data-active="1"] { border-color: var(--ic-hash); background-color: rgba(148,163,184,0.22); }
 /* Đo (light): nền đang lọc `#cfd6e0` vs ô chưa lọc `#eff1f5` = **1,29:1** (bản xanh cũ
    `#bfdbfe` = 1,25 ⇒ ngang nhau) · chữ `#000` trên nền đang lọc **14,2 ✓** ·
    viền `#475569` **5,12 ✓** · viền chưa lọc `#64748b` **4,21 ✓** — hai trạng thái vẫn tách. */
-body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; border-color: #475569; }
+/* ⟳ (27/9) viền nay XANH `var(--ic-hash)` = `#2563eb` — CÙNG token với icon 4 tab và viền 2
+   nút sắp xếp đang chọn (yêu cầu “cho màu xanh viền tab khi chọn”). Đo: **5,17:1** vs NỀN
+   TOOLBAR TRẮNG ✓ · **3,53:1** trên NỀN Ô ĐANG LỌC `#cfd6e0` ✓ (bản `#475569` đạt 5,12 nhưng
+   là xám — user muốn xanh). Nền `#cfd6e0` + mọi metric GIỮ NGUYÊN (chỉ đổi màu viền). */
+body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; border-color: var(--ic-hash); }
 .filter-select {
   flex: 1;
   /* `background` ở đây chứa mũi tên SVG data-URI: chỉ animate background-color
@@ -1897,12 +1927,20 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
   /* Mũi tên dropdown: chevron cùng họ với mũi tên sắp xếp (trước là hình tam giác
      đặc), màu mờ đi để không sáng hơn chữ của chính nút. Data-URI không dùng được
      currentColor nên phải ghi màu theo từng theme (xem rule light bên dưới). */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='%2394a3b8'%3E%3Cpath d='M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17' viewBox='0 0 24 24' fill='%2394a3b8'%3E%3Cpath d='M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 10px center;
+  background-position: right 9px center;
   padding-right: 30px;
   min-width: 0;
 }
+/* ⟳ (27/9) Icon ô lọc 16 → **19px** theo yêu cầu “cho các icon … ở tab to hơn”, nhưng
+   **BÙ LẠI ĐÚNG 3px** bằng `margin-right` âm ⇒ tổng bề rộng nhãn KHÔNG ĐỔI, nên cơ chế
+   `fitFilterLabels()`/`fitFilterLabel()` (bỏ icon khi hết chỗ) hành xử Y NHƯ với cỡ 16px
+   ở mọi bề rộng — đã quét đối chiếu 16px (không bù) vs 19px (có bù) qua 11 mức bề rộng
+   nhãn, kết quả giống hệt nhau. Khe hở icon↔chữ vốn là một ký tự space (~5px) nên bù 3px
+   không làm chữ dính icon. ⚠️ Selector `.filter-select svg.ic` CHỈ trúng icon của 2 TAB
+   (icon trong dropdown là `.nhom-option` — anh em ruột, không nằm trong `.filter-select`). */
+.filter-select svg.ic { margin-right: -3px; }
 .filter-select option {
   background: var(--navy-mid);
   color: var(--text);
@@ -1980,15 +2018,25 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
   height: var(--ctl-h);
 }
 .sort-label { overflow: hidden; text-overflow: ellipsis; }
-/* Hộp cố định 13×13 cho mũi tên: glyph ↕/↓/↑ trước đây rộng 6px vs 10px nên mỗi lần
+/* Hộp cố định cho mũi tên: glyph ↕/↓/↑ trước đây rộng 6px vs 10px nên mỗi lần
    đổi cột sắp xếp là nhãn bị đẩy đi và cả hàng chia lại (flex:1). SVG cũng nét ở
-   mọi màn hình, không phụ thuộc font hệ thống. */
-.sort-btn .sort-arrow { width: 13px; height: 13px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text-dim); }
-/* Icon phía TRƯỚC nhãn nút sắp xếp (yêu cầu người dùng). Cùng cơ chế màu với mũi tên:
-   `var(--text-dim)` khi bình thường, trắng khi nút đang được sắp xếp — đúng quy tắc
-   "icon ở thanh công cụ là trung tính, màu chỉ hiện cho trạng thái đang bật".
-   SVG dùng `fill="currentColor"` nên tự ăn theo, KHÔNG cần khai màu cho từng icon. */
-.sort-btn .sort-ico { width: 13px; height: 13px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text-dim); }
+   mọi màn hình, không phụ thuộc font hệ thống.
+   ⟳ (27/9) **13 → 15px** (desktop `@media (min-width: 640px)`: 14 → 16px) theo yêu cầu
+   “cho các icon và dấu sort, mũi tên ở tab to hơn”. ⚠️ Hộp này nằm CHUNG hàng flex với
+   `.sort-ico` + nhãn + `padding: 6px 12px` nên nới nó là ĂN bề rộng nhãn: đo ở khổ panel
+   hẹp nhất mà app còn dùng được (320px) nhãn vẫn không bị ellipsis — xem mục cuối run doc. */
+.sort-btn .sort-arrow { width: 15px; height: 15px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text-dim); }
+/* Icon phía TRƯỚC nhãn nút sắp xếp (yêu cầu người dùng). ⟳ (27/9) MÀU XANH theo yêu cầu
+   "icon các tab có màu xanh cho dễ nhìn": bình thường là `var(--ic-hash)` = `#35a3e0` —
+   token CÓ SẴN ở `:root` (chú thích gốc gọi nó là "icon tab Danh Số"; lượt "icon tối giản"
+   nó hết chỗ dùng nên được tái sử dụng đúng tên). Đo **5,12:1** trên nền nút chưa chọn ghép
+   `rgb(36,42,52)` (dark) — vượt 3:1 của WCAG 1.4.11; light mode tự thành `#2563eb` qua
+   override `body.light-mode { --ic-hash }` = **4,57:1** (xem khối token light).
+   Mũi tên bên phải GIỮ `--text-dim`: nó là chỉ-trạng-thái sắp xếp, không phải nhận diện tab.
+   Khi nút ĐANG sắp xếp: icon về TRẮNG như cũ — xanh `#35a3e0` trên nền active `#536274`
+   chỉ 2,22:1, trong khi trắng đo được 6,24:1; nền active đậm + viền xanh đã là dấu hiệu
+   "đang bật" đủ rõ. SVG dùng `currentColor` nên tự ăn theo, không khai màu từng icon. */
+.sort-btn .sort-ico { width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--ic-hash); }   /* ⟳ (27/9) 13 → 16px (desktop: 14 → 17px) cùng lượt “icon/dấu sort to hơn” */
 .sort-btn.active .sort-ico { color: #ffffff; }
 .sort-btn.active { color: #ffffff; }
 .sort-btn.active .sort-arrow { color: #ffffff; }
@@ -2036,7 +2084,7 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
    Đo lại (live): chữ trắng trên `#536274` **7,58 → 6,24:1** ✓ (vẫn xa ngưỡng 4,5 của chữ thường) ·
    chữ trắng trên nền TOOLBAR `rgb(17,19,24)` **16,86** · nút vẫn cao **43,99px** (bóng đổ KHÔNG
    thuộc layout nên hàng sắp xếp không nhích). Xem mục **“💠 NÚT ĐANG SẮP XẾP SANG HƠN”** cuối file. */
-#sortDanhSo.active { border-color: #e2e8f0; background: #536274; box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 8px rgba(0,0,0,0.45); }
+#sortDanhSo.active { border-color: var(--ic-hash); background: #536274; box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 8px rgba(0,0,0,0.45); }  /* ⟳ (27/9) viền XANH `#35a3e0` khi đang chọn (đúng token icon xanh — dark dùng tông sáng, light tự thành `#2563eb`): đo ~6,6:1 vs NỀN TOOLBAR `rgb(17,19,24)` ✓≥3 (mặt ngoài; bản trắng cũ 13,68 nhưng đó là "khung sáng", không phải viền MÀU như yêu cầu) · 2,22:1 vs NỀN NÚT (mặt trong, chấp nhận được); chữ trắng giữ 6,24 ✓. */
 /* "Tiền Nợ" dùng **TÍM ĐẬM** theo yêu cầu người dùng (trước là cam `#b45009` / viền
    `#f97316`). Chọn đúng thang "đậm" của nút anh em `#sortDanhSo` (nền `#166534` = green-800,
    viền `#22c55e` = green-500) nên lấy cặp tương ứng của tím:
@@ -2053,7 +2101,7 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
 /* (đã XOÁ `#sortTienNo { background: rgba(91,33,182,0.10) }` — cùng lý do như `#sortDanhSo`.) */
 /* ⟳ Cùng bộ màu/bóng với `#sortDanhSo.active` (2 nút LOẠI TRỪ NHAU nên phải y hệt nhau) —
    xem khối chú thích đầy đủ + bảng đo ở rule `#sortDanhSo.active`. ⛔ Đừng để 2 nút lệch nhau. */
-#sortTienNo.active { border-color: #e2e8f0; background: #536274; box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 8px rgba(0,0,0,0.45); }
+#sortTienNo.active { border-color: var(--ic-hash); background: #536274; box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 8px rgba(0,0,0,0.45); }  /* ⟳ (27/9) viền XANH cùng bộ với `#sortDanhSo.active` ngay trên — 2 nút LOẠI TRỪ NHAU nên phải y hệt (đã đo: bản dùng `--ic-blue-dark` cho ra `#2563eb` chỉ 3,6:1 vs toolbar, LỆCH với `#35a3e0` 6,61:1 của nút kia ⇒ đã đồng bộ về `var(--ic-hash)`). */
 .sort-btn:active { background: rgba(148,163,184,0.22); }   /* ⟳ nhấn giữ: xám trung tính (trước là xanh `rgba(59,130,246,0.22)`) */
 
 /* ── NÚT “Nền”: BA MỨC — MỖI THEME MỘT BỘ RIÊNG ───────────────────────────────
@@ -3250,8 +3298,8 @@ body.force-desktop .table-view { display: block; }
   /* padding dọc 10px → 6px cho khớp `height: 36px` (trước đây hàng cao 42px nên 10px
      không sao; nay content box chỉ còn 36 − 20 − 2 = 14px < dòng chữ 21px). */
   .sort-btn { padding: 6px 12px; font-size: var(--ctl-fs); flex: 1; }
-  .sort-btn .sort-arrow { width: 14px; height: 14px; }
-  .sort-btn .sort-ico { width: 14px; height: 14px; }
+  .sort-btn .sort-arrow { width: 16px; height: 16px; }
+  .sort-btn .sort-ico { width: 17px; height: 17px; }
   .sort-label { font-size: var(--ctl-fs); }
   .header-sub { max-width: 300px; }
   /* Desktop: data 14px */
@@ -4316,16 +4364,16 @@ body.force-desktop .table-view { display: block; }
              tìm trong cả `r.ma_sogcs`). -->
         <div class="filter-row" style="position:relative;">
           <div class="filter-select" id="filterNhomBtn" onclick="toggleNhomDropdown()" style="display:flex;align-items:center;gap:4px;cursor:pointer;position:relative">
-            <span id="filterNhomLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</span>
+            <span id="filterNhomLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</span>
           </div>
           <div class="nhom-dropdown" id="nhomDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
-            <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</div>
+            <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</div>
           </div>
           <input type="hidden" id="filterNhom" value="">
         </div>
         <div class="filter-row" style="position:relative">
           <div class="filter-select" id="filterLoaiBtn" onclick="toggleLoaiDropdown()" style="display:flex;align-items:center;gap:4px;cursor:pointer;position:relative">
-            <span id="filterLoaiLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-receipt"/></svg></span> Chi tiết nợ</span>
+            <span id="filterLoaiLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-receipt"/></svg></span> Chi tiết nợ</span>
           </div>
           <div class="nhom-dropdown" id="loaiDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
             <!-- ⚠️ 8 hàng của danh sách "Chi tiết nợ": MỖI hàng có ĐÚNG MỘT dấu hiệu ở đầu,
@@ -4347,7 +4395,7 @@ body.force-desktop .table-view { display: block; }
                  đừng gỡ chấm ở 5 hàng phân loại (người dùng đã yêu cầu 2 lần).
                  ⚠️ Markup TĨNH — không có đoạn JS nào dựng lại `#loaiDropdown` (khác
                  `#nhomDropdown` do `initFilters()` dựng lại), nên sửa chấm phải sửa Ở ĐÂY. -->
-            <div class="nhom-option" data-val="" onclick="selectLoai('')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-receipt"/></svg></span> Chi tiết nợ</div>
+            <div class="nhom-option" data-val="" onclick="selectLoai('')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-receipt"/></svg></span> Chi tiết nợ</div>
             <div class="nhom-option" data-val="old" onclick="selectLoai('old')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#ef4444"></span> Nợ ≥ 3Tr</div>
             <div class="nhom-option" data-val="1tr" onclick="selectLoai('1tr')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#ea580c"></span> Nợ 1Tr đến 3Tr</div>
             <div class="nhom-option" data-val="oldky" onclick="selectLoai('oldky')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#8b5cf6"></span> Nợ cũ, nhiều kỳ</div>
@@ -5802,8 +5850,8 @@ function tenKHNgan(name) {
    chung, xem chú thích `🚫 ĐÃ XOÁ Ô LỌC "Mã sổ"`.)
    ⚠️ Tên hằng đổi theo hình mới (`IC_FOLDER`/`IC_PAGE` → `IC_PEOPLE` / `IC_RECEIPT`) —
    đừng quay lại tên cũ vì tên cũ nói sai hình. */
-const IC_PEOPLE   = '<svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-people"/></svg>';
-const IC_RECEIPT  = '<svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-receipt"/></svg>';
+const IC_PEOPLE   = '<svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-people"/></svg>';
+const IC_RECEIPT  = '<svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-receipt"/></svg>';
 
 const FILTER_ICONS = {
   /* **CẢ 2 icon ô lọc là VECTOR 16×16 vẽ tay theo phong cách emoji.**
@@ -5825,8 +5873,14 @@ const FILTER_ICONS = {
   nhom:  IC_PEOPLE,
   loai:  IC_RECEIPT
 };
+/* ⟳ (27/9) Icon ô lọc XANH theo yêu cầu "icon các tab có màu xanh cho dễ nhìn" — kể cả option
+   "DS nhóm" trong dropdown và nhãn dựng lại ở đây, để 3 chỗ luôn đồng bộ. Màu `var(--ic-hash)`
+   = `#35a3e0` ở dark (**4,14:1** trên nền ô), tự thành `#2563eb` (**4,57:1**) ở light qua
+   override token trong `body.light-mode`. ⚠️ Chỉ icon MẶC ĐỊNH của ô lọc là xanh: khi đã chọn
+   nhóm/loại, nhãn lấy dấu hiệu TRỰC TIẾP từ hàng dropdown (chấm màu phân loại / icon ống nghe
+   đỏ / điện thoại xanh) — giữ nguyên màu NGỮ NGHĨA của từng hàng, đừng tô xanh đè lên. */
 function filterLabelHTML(icon, text) {
-  return '<span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center">' + icon + '</span> ' + text;
+  return '<span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center">' + icon + '</span> ' + text;
 }
 /* Nhãn ô lọc tự **BỎ ICON** khi không đủ chỗ — dùng cho "DS nhóm" và "Chi tiết nợ".
 
@@ -5988,7 +6042,7 @@ function initFilters() {
   const nhomSet = [...new Set(allData.map(r=>r.ma_nhom).filter(Boolean))].sort();
   const dd = document.getElementById('nhomDropdown');
   // keep the first option (Tất cả)
-  dd.innerHTML = '<div class="nhom-option" data-val="" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none" onmouseenter="this.style.background=\'rgba(100,116,139,0.16)\'" onmouseleave="this.style.background=\'\'" ><span style="color:var(--text-dim);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</div>';
+  dd.innerHTML = '<div class="nhom-option" data-val="" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none" onmouseenter="this.style.background=\'rgba(100,116,139,0.16)\'" onmouseleave="this.style.background=\'\'" ><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</div>';
   nhomSet.forEach(v => {
     const d = document.createElement('div');
     d.className = 'nhom-option';
