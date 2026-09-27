@@ -376,9 +376,16 @@
        · dark 15% → nền hàng `31,44,65`: tiền `6,12` ✓ · mã sổ `5,47` ✓ · danh số `4,59` ✓ · tên `11,4` ✓
        · light 14% → nền hàng `228,238,254`: tên `18,3` ✓ · mã kh `9,0` ✓ · mã sổ `6,6` ✓ · danh số `6,2` ✓
          ⚠️ ĐI KÈM BẮT BUỘC: chữ TIỀN ở light mode phải là `#b91c1c` (xem khối “ZEBRA”).
-     ⛔ Trần đã đo — đừng nâng thêm mà không đo lại: light **14%** (với `#b91c1c`), dark
-       **~15%** (danh số tụt 4,51:1 ở 16% và **4,27:1 — dưới AA — ở 20%**). */
-  --row1-bg: rgba(59,130,246,0.15);
+     ⟳ **2026-09-27 — DẢI NỀN NAY ĂN THEO NỀN THẺ CARD** (yêu cầu “cho màu nền giống màu nền
+       thẻ card ở dark mode và light mode”): token này **KHÔNG còn là lớp xanh pha alpha** mà =
+       **chính nền thẻ** ⇒ mọi số AA ở TRÊN (đo trên lớp xanh 12–15%) **hết hiệu lực**; muốn kiểm
+       lại thì đo chữ TÊN / TIỀN trên **nền thẻ** (`--dk-card` / `--light-card`). Số đo lượt này:
+       run doc mục **“🎨 DẢI NỀN = NỀN THẺ CARD”**.
+     ⚠️ Ở DARK token đi theo nút “Nền” (`var(--dk-card)` = `#242a34` ở mức “Chuẩn”): dải vẫn
+       **thấy được** so với nền bảng — đo **1,18:1** (bản xanh cũ 1,20:1, gần như không đổi độ nổi).
+     ⚠️ Ở LIGHT thì `--light-card` **TRÙNG** `--light-surface` ở cả ba mức ⇒ không thể dùng thẳng
+       `var(--light-card)` (dải sẽ vô hình, 1,00:1) — xem chú thích ở rule `body.light-mode`. */
+  --row1-bg: var(--dk-card);
   --fs-tb-desk: 14px;    /* bảng 14 CỘT trên MÁY TÍNH — khối `@media (min-width: 640px)`
                             ⚠️ Tên cũ `--fs-tb-sm` dễ đọc nhầm thành “bản nhỏ ở điện thoại”, nhưng
                             khối đó là **min-width** ⇒ đây mới là cỡ THẬT của bảng máy tính
@@ -428,9 +435,21 @@ body.light-mode {
      ⚠️ Đo lại trên dải 12% (blend = `rgb(221,232,249)`): tiền `#b91c1c` **5,23:1** ✓ · tên
      `#1d4ed8` 5,42 ✓ · mã sổ `#475569` 6,13 ✓ · danh số `#1e3a8a` 8,38 ✓ — TẤT CẢ trên AA;
      hạ alpha làm nền dải SÁNG hơn nên chữ đậm nằm trên nó chỉ được lợi, không có rủi ro AA.
-     ⚠️ Điều kiện đi kèm KHÔNG được tháo: chữ TIỀN light mode phải là `#b91c1c`; trả về
-     `#dc2626` là chỉ còn **~3,9:1 trên dải 12% — dưới AA** (trên trắng thì 4,83:1). */
-  --row1-bg: rgba(59,130,246,0.12);
+     ⟳ **2026-09-27 — LIGHT: DẢI = NỀN THẺ DỊCH MỘT NẤC** (đọc khối chú thích dài ở `:root` trước
+     khi sửa). Lượt trước đặt dải = `var(--light-card)` ⇒ **dải biến mất**: ở light, `--light-card`
+     BẰNG ĐÚNG `--light-surface` (nền bảng) ở cả ba mức ⇒ tỉ lệ **1,00:1**. Người dùng đã chọn
+     “giữ cho dải vẫn thấy được bằng cách dịch màu dải MỘT NẤC so với nền thẻ” ⇒ nay mỗi mức nền
+     có một giá trị riêng (khai thêm ở 2 rule `body.light-mode[data-surface=…]` bên dưới).
+     Hướng dịch: **TỐI hơn một nấc**, giống nhau ở CẢ BA mức (không đảo hướng — đảo là bấm nút
+     “Nền” thấy dải lúc nhạt lúc đậm, rất khó chịu).
+     ⚠️ Vì sao KHÔNG sáng hơn: ở mức “Sáng” nền bảng đã là `#ffffff` — không còn chỗ sáng hơn.
+     Số đo (xem run doc): dải/nền bảng **1,10–1,12** (bản xanh cũ 1,13 · dark 1,18) — giữ đúng
+     “độ nổi” mà người dùng đã duyệt, nhưng đổi TÔNG từ xanh sang tông thẻ.
+     ⚠️ Điều kiện đi kèm KHÔNG được tháo: chữ TIỀN light mode giữ `#b91c1c` (trên dải tối nhất
+     “Dịu” còn **4,78** — xem bảng đo; trả về `#dc2626` là tụt xuống dưới AA).
+     ⚠️ Đổi giá trị dải thì PHẢI đo lại chữ TÊN và TIỀN trên dải ở CẢ BA mức (dải tối hơn ⇒
+     tương phản chữ đậm TỤT), đừng chỉ đổi màu rồi thôi. */
+  --row1-bg: #e5ebf1;
 
   /* MỘT token cho MỌI đường bao ở light mode (thẻ khách hàng, bảng chi tiết, Sheet 2,
      nút phân trang). Trước đây thẻ dùng `#4b5563` còn panel dùng `#6b7280` → hai tầng viền
@@ -608,10 +627,11 @@ body.theme-anim .view-btn {
 .kh-phone .ic { color: var(--ic-red); }
 .kh-ma .ic { color: var(--ic-amber); }
 .kh-abc .ic { color: var(--ic-blue); }
-.kh-ghichu-row > .ic { color: var(--ic-blue); }   /* icon ghi chú = `#i-pencil-bold` (cây viết nét 3.4); rule này VỐN đã có nhưng chỉ tới lượt trước mới thực sự có tác dụng — icon cũ viết cứng `stroke="#3b82f6"` và không có `class="ic"` */
+.kh-ghichu-row > .ic { color: var(--ic-blue); }   /* icon ghi chú = `#i-pencil` (cây viết NÉT **+ gạch dưới**, lưới 24); `#i-pencil-bold` (đặc) đã XOÁ ở lượt “icon tối giản” — xem chú thích ở symbol */
 .addr-ico { color: var(--ic-blue); }
+.kh-abc-ico { color: var(--ic-blue); }   /* thẻ ABC: icon nay là NÉT qua `#i-tag` (lượt “icon tối giản”); chỗ dùng là span bọc ngoài `.kh-abc` nên KHÔNG dùng được `.kh-abc .ic` */
 .kh-danhso .ic { color: var(--ic-blue-soft); }
-/* Mũi tên Danh Số `#i-arrow-right-bold`: trên nền thẻ TRẮNG `--ic-blue-soft` (#60a5fa) chỉ
+/* Mũi tên Danh Số `#i-arrow-right` (nay là NÉT): trên nền thẻ TRẮNG `--ic-blue-soft` (#60a5fa) chỉ
    **2.54:1** ⇒ dưới ngưỡng 3:1 của WCAG 1.4.11 (đồ hoạ). Đổi sang `--ic-blue` (#3b82f6) =
    **3.68:1** ✓. Nền tối giữ nguyên `--ic-blue-soft` (**5.84:1** ✓) — đó cũng là tông mà bảng
    `--ic-*` đã ghi chú sẵn là “mũi tên danh số”. */
@@ -982,7 +1002,21 @@ body.light-mode .search-box { background: var(--ctl-light-bg); border: none; bor
 /* giữ nguyên độ dày border 1px như dark (chỉ đổi màu → trong suốt):
    bỏ hẳn border sẽ đổi bề rộng nội tại của input, kéo theo chia lại flex của cả hàng */
 body.light-mode .search-box input { color: #1e293b; border-color: transparent; background: transparent; caret-color: #1e293b; }
-body.light-mode .search-box input::placeholder { color: #5b6777; }
+/* ── PLACEHOLDER Ô TÌM KIẾM — 3 LẦN NGƯỜI DÙNG YÊU CẦU NHẠT HƠN (đọc kỹ trước khi sửa) ──
+   1) 2026-09-27 `#5b6777 → #606f7e` (yêu cầu “chữ mờ hơn”): 5,09 → **4,56:1** trên `#eff1f5`.
+   2) 2026-09-27 `#606f7e → #75828f` (yêu cầu “cho chữ ở tìm kiếm nhạt hơn” — người dùng
+      **ĐÃ ĐƯỢC CẢNH BÁO** rằng 4,56 là mức cuối còn đạt AA và vẫn chọn nhạt hơn) ⇒ **3,47:1**.
+   3) 2026-09-27 `#75828f → #7c8896` + **nét `--ctl-fw` 500 → 400** (yêu cầu “nhạt và nét mỏng
+      hơn nữa” — đã cảnh báo trước, người dùng vẫn chọn) ⇒ **3,19:1**.
+   ⚠️ **CỐ Ý DƯỚI AA 4,5.** Placeholder là chữ control (`--ctl-fs` 19px) nên theo WCAG ngưỡng của
+   nó là **4,5:1**, KHÔNG phải 3:1 của đồ hoạ (nét 400 vẫn không phải “large text” — cần ≥18,66px
+   VÀ đậm ≥700) ⇒ từ mốc này nó là **chữ gợi ý mờ**, đọc được nhưng không còn “đạt chuẩn”.
+   ⛔ **`#7c8896` (3,19) LÀ NẤC CUỐI AN TOÀN** — người dùng đã 3 lần bác cảnh báo, nhưng dưới ~3
+   là vùng placeholder “vô hình” trên điện thoại ngoài trời. Muốn quay lại đạt AA: **`#606f7e`**.
+   Bảng tham chiếu đo trên `#eff1f5`: `#6d7c8b` 3,79 · `#75828f` 3,47 · **`#7c8896` 3,19** ·
+   `#8590a0` 2,86 · `#8d98a4` 2,63 · `#94a3b8` 2,27.
+   ℹ️ Ô CHỮ ĐÃ GÕ: MÀU không đụng (`#1e293b`) — chỉ đổi NÉT (500 → 400) cho khớp placeholder. */
+body.light-mode .search-box input::placeholder { color: #7c8896; }
 body.light-mode .search-box input:focus { border-color: transparent; outline: none; }
 body.light-mode .search-box:focus-within { border: none; border-radius: 10px; box-shadow: inset 0 0 0 1px #3b82f6; }
 body.light-mode .filter-row { background: transparent; }
@@ -1317,8 +1351,16 @@ body.light-mode .count-tien.mid { color: #92400e; }   /* 4.81:1 trên nền tran
 .toolbar-top .filter-row { width: calc(50% - 3px); min-width: 0; margin-bottom: 0; }
 /* ⚠️ CỤM NÚT là ô của **cột 2, trải CẢ 2 HÀNG** trong lưới `.count-info` (xem chú thích
    ở `.count-line1`/`.count-line2` và mục "Nút Xuất che dòng Tổng" trong run doc).
-   `margin-bottom: 4px` giữ nguyên tác dụng cũ: neo ĐÁY nút ngang ĐÁY dòng chữ tiền.
-   Lưới cao ~50px (dòng 1 ~21 + dòng 2 29) > nút 40px ⇒ nút **không còn tràn lên** dòng 1.
+   ⚙ **CANH GIỮA — `align-self: center`** (yêu cầu người dùng: “canh cho nút cài đặt nằm xích
+   lên cho đều”). Trước đây là `align-self: end` ⇒ nút neo ĐÁY: đo được nút `212,7 → 252,7`
+   trong khi khối chữ `204,7 → 256,7` ⇒ **hở trên 8px / hở dưới 4px**, mắt đọc ra nút bị TRỄ XUỐNG.
+   Nay nút canh giữa theo **MỰC CHỮ** của khối 2 dòng (không phải theo ô lưới).
+   ⚠️ **`margin-bottom: 4px` KHÔNG còn là “neo đáy”** — nó bù **4px đệm ẢO ở đáy dòng 2**:
+   `.count-line2` cao **30px** mà chữ chỉ **22px** và canh giữa ⇒ có 4px trống dưới mực chữ
+   (đo: đáy ô `256,7` · đáy mực chữ `252,7`). `align-self: center` canh theo **HỘP LỀ**, nên giữ
+   4px lề đáy là nút được đẩy lên đúng 2px ⇒ hai bên mực chữ hở **ĐÚNG 4px / 4px**.
+   ⛔ Bỏ `margin-bottom` là nút tụt xuống 2px (hở 6/2 — lệch lại); đổi thành `8px` là hở 2/6.
+   Ô lưới cao ~52px (hàng 1 22 + hàng 2 30) > nút 40px ⇒ nút **không tràn lên** hàng 1.
    ⚠️ ĐỪNG đưa nút về trong `.count-line2` — đó chính là lỗi vừa sửa.
    ⚠️ Nút nằm trong ô này (`.count-btns` là flex) chứ **không** mở cột thứ 3: `column-gap`
    của lưới là 10px, nếu tách thành 2 cột thì mất thêm 10px vào khe ⇒ **chữ tiền chui xuống
@@ -1330,7 +1372,7 @@ body.light-mode .count-tien.mid { color: #92400e; }   /* 4.81:1 trên nền tran
    `@media (max-width: 399.98px)` (đẩy 3 nút xuống hàng dưới) đã **XOÁ** — nó chỉ tồn tại
    vì bản 3 nút (119,4px) bóp cột chữ còn 148,22px. ⛔ Đừng thêm lại nút thứ hai vào ô này
    mà không đo lại ở 320px. */
-.count-btns { grid-column: 2; grid-row: 1 / span 2; align-self: end; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+.count-btns { grid-column: 2; grid-row: 1 / span 2; align-self: center; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
 /* Nút ⚙ MỞ CÀI ĐẶT (`openCfg()`) — icon-only, cùng hệ hình với `.fs-btn` (nền/viền của
    control, bán kính 8px) và CÙNG chiều cao 40px với mọi control trong tấm cài đặt, để hàng
    “Tổng …” không nhích. Bề rộng **38px** = icon 20px + `padding: 0 8px` + 2 viền 1px — đúng
@@ -1716,7 +1758,13 @@ body.light-mode .cfg-row, body.light-mode .cfg-hd { border-bottom-color: #cbd5e1
      + 4 rule trong 2 khối @media + 11 chuỗi inline của `.nhom-option`** — xem chú thích
      ở rule `.nhom-option`. */
   font-size: var(--ctl-fs);
-  font-weight: var(--ctl-fw);
+  /* 500 (token) → **400** — yêu cầu “nét mỏng hơn nữa” cho chữ ô tìm kiếm.
+     ⛔ KHÔNG sửa `--ctl-fw`: token đó dùng CHUNG cho 2 ô lọc, 2 nút sắp xếp và
+     `.nhom-option` (đổi token là mỏng cả thanh công cụ) ⇒ override CỤC BỘ ở đây.
+     Inter 100–700 đều đã nạp (`@import` đầu file) nên 400 là nét THẬT, không giả lập.
+     Nét này áp cho CẢ chữ đã gõ lẫn placeholder (placeholder thừa hưởng) — cố ý, để gõ
+     vào không bị “dày lên” đột ngột. Bề rộng chữ không đổi kích thước ô (input `width:100%`). */
+  font-weight: 400;
   font-family: 'Inter', sans-serif;
   outline: none;
   transition: border-color 0.2s;
@@ -1725,7 +1773,11 @@ body.light-mode .cfg-row, body.light-mode .cfg-hd { border-bottom-color: #cbd5e1
   caret-width: 2px;
 }
 .search-box input:focus { border: 1px solid #3b82f6; outline: none; }
-.search-box input::placeholder { color: #94a3b8; }
+/* ⚠️ placeholder là chữ CONTROL theo --ctl-fs (19px) ⇒ ngưỡng AA là 4.5:1, không phải 3:1 của icon
+   (nét 400 vẫn KHÔNG phải "large text" của WCAG: cỡ ≥18,66px **VÀ** đậm ≥700 mới hạ ngưỡng).
+   Ba lượt người dùng yêu cầu nhạt hơn: `#94a3b8` 5,62 → `#7f8ea3` 4,32 → **`#74839a` 3,75:1**.
+   ⛔ ĐỪNG mờ thêm mà không hỏi (xem bảng tham chiếu ở rule light phía trên). */
+.search-box input::placeholder { color: #74839a; }   /* DARK: nay **`#74839a` = 3,75:1** trên nền ghép `rgb(36,42,52)` — cùng lượt “nhạt + nét mỏng hơn” với nhánh light (2 theme đổi CÙNG LÚC để không lệch nhau khi người dùng đổi sáng/tối). Màu cũ để tham chiếu: `#7f8ea3` 4,32 · `#94a3b8` 5,62. */
 .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-dim); pointer-events: none; display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; }
 
 /* Nút xuất Excel: trước đây là emoji 📥 trôi tự do, không có bề mặt nút nào. */
@@ -2056,11 +2108,13 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
    ⚠️ Mức “Dịu” thẻ tối nhất (`#e3e9f0`) nên viên phải ĐẬM HƠN THẺ mới đọc ra — đó chính là
    yêu cầu “màu nền danh số đậm hơn cho dễ nhìn”; trước lượt này viên ở mức “Dịu” còn SÁNG HƠN
    thẻ nên nó đọc như một vết sáng, không như một cái viên. */
-/* ⚠️ Hai rule theo mức nền nay phải khai **CẢ HAI** token: `--light-surface` (bảng chính + bảng
-   Tổng hợp) và `--light-card` (thẻ KH). Chỉ khai một cái là có mức “Sáng”/“Dịu” mà thẻ đứng im
-   hoặc bảng đứng im — nút “Nền” bấm vào như không có gì đổi ở một trong hai nhóm bề mặt. */
-body.light-mode[data-surface="sang"] { --light-surface: #ffffff; --light-card: #ffffff; --danhso-bg: #e8f1fd; }
-body.light-mode[data-surface="diu"]  { --light-surface: #e3e9f0; --light-card: #e3e9f0; --multi-hd: #059669; --danhso-bg: #c7dbf5; }
+/* ⚠️ Hai rule theo mức nền nay phải khai **BA** token: `--light-surface` (bảng chính + bảng
+   Tổng hợp) · `--light-card` (thẻ KH) · `--row1-bg` (DẢI NỀN hàng “tên + tiền” của bảng 3 hàng).
+   Chỉ khai một-hai cái là có mức “Sáng”/“Dịu” mà thẻ (hay bảng, hay dải) đứng im — nút “Nền”
+   bấm vào như không có gì đổi ở nhóm bề mặt bị bỏ sót.
+   ℹ️ `--row1-bg` là **màu ĐỤC**, không phải alpha (xem chú thích ở rule `body.light-mode` phía trên). */
+body.light-mode[data-surface="sang"] { --light-surface: #ffffff; --light-card: #ffffff; --danhso-bg: #e8f1fd; --row1-bg: #eef2f7; }
+body.light-mode[data-surface="diu"]  { --light-surface: #e3e9f0; --light-card: #e3e9f0; --multi-hd: #059669; --danhso-bg: #c7dbf5; --row1-bg: #d9dfe5; }
 body.light-mode[data-surface="diu"] .kh-name { color: #1d4ed8; }
 /* ⚠️ Hai mức dưới đây cũng bị lượt “nền thẻ = nền tab” DỊCH LÊN (xem ⟳ ngay trên): mức “Chuẩn”
    lấy đúng màu control `--ctl-solid` nên hai mức này phải đi theo, nếu không “Sáng” chỉ còn
@@ -2203,8 +2257,14 @@ body.light-mode .nhom-sel-name {
    khổ Android phổ biến nhất (375px vẫn 1 dòng). `display: inline-block` + `margin: 0 2px`
    cho khoảng hở thấy được mà chỉ tốn **4px** thay vì **9,2px** ⇒ vừa 1 dòng ở 360px.
    Chiều cao: `inline-block` kế thừa `line-height: 22px` của `.count-info` nên **hàng không cao thêm**
-   (`getBoundingClientRect` của `.count-line1` vẫn đúng 22px). */
-.count-sep { display: inline-block; margin: 0 2px; }
+   (`getBoundingClientRect` của `.count-line1` vẫn đúng 22px).
+   ⟳ LƯỢT 2026-09-27 (yêu cầu “dấu chấm ở giữa tổng HĐ và KH xích ra”): `margin: 0 2px → 0 8px`.
+   ⚠️ Con số `228,5px` ở chú thích CŨ đã LỖI THỜI — đó là bề rộng cột chữ hồi `.count-btns` còn
+   **3 nút** (~131,5px). Nay chỉ còn **1 nút ⚙ 38px**; ĐO LIVE: cột chữ = `vp − 68,32px`
+   (**340,68px** ở vp 409 · **291,68px** ở 360px · **251,68px** ở 320px) trong khi dòng 1 chỉ cần
+   **225,19px** ở margin 2px và **237,20px** ở margin 8px ⇒ 360px **và cả 320px** vẫn **1 DÒNG**.
+   (Vẫn giữ 1 span `.count-sep`: hai dấu cách trong markup tốn ~9,2px và không canh được.) */
+.count-sep { display: inline-block; margin: 0 8px; }
 /* `.count-line2` cố ý chỉ còn **ĐÚNG 1 con** (bỏ `justify-content: space-between` vì thừa):
    nút "Xuất" đã ra cột 2. Đừng thêm con thứ hai vào đây — đó là làm lại đúng lỗi cũ. */
 .count-line2 { grid-column: 1; grid-row: 2; display: flex; align-items: center; gap: 10px; margin-top: 0; height: 30px; }
@@ -3386,20 +3446,56 @@ body.force-desktop .table-view { display: block; }
        này họ chọn **sát mép**.
        ⚠️ Đổi lại được **lợi**: cột tên rộng hết phần còn lại (375px → ~222px) nên **không
        tên nào bị cắt** — trong khi bản cột cố định `12em` cắt 7/1.472 hàng. */
-    grid-template-columns: 1fr auto;
-    /* ⚠️ THỨ TỰ 3 HÀNG — lượt “đổi chỗ mã KH ↔ danh số” (mới nhất):
-         hàng 1: TÊN KH        · tiền nợ
-         hàng 2: **DANH SỐ**   · tháng nợ     (trước đây là mã KH)
-         hàng 3: **MÃ KH**     · mã sổ        (trước đây là danh số)
-       Đổi vị trí chỉ bằng cách đổi TÊN VÙNG ở đây — các ô tự đi theo tên vùng của chúng
-       (`td:nth-child(6) { grid-area: danhso }` vẫn nguyên, xem khối `grid-area` bên dưới),
-       nên KHÔNG phải sửa `nth-child`, căn lề hay sàn `min-width: max-content`.
-       ℹ️ Cột TRÁI vẫn là tên · danh số · mã KH (đủ 3 ô, chỉ đổi thứ tự hàng) ⇒ hai ô mới
-       vào hàng 2/3 đều đã `text-align: left` từ trước, không phải đổi căn lề. */
+    grid-template-columns: max-content max-content minmax(0, 1fr) max-content;
+    /* ⚠️ **3 HÀNG × 4 CỘT** — lượt 2026-09-27 (yêu cầu “tôi muốn mã sổ đổi chỗ cho tháng nợ, và
+       mã sổ nằm gần danh số có dấu chấm giữa danh số và mã sổ”):
+         hàng 1: TÊN KH (trải cột 1–3)             · tiền nợ (cột 4)
+         hàng 2: **DANH SỐ** (cột 1)               · tháng nợ (cột 4)
+         hàng 3: **MÃ SỔ** (cột 1) · MÃ KH (trải cột 2–3) · (trống)
+
+       ⟳ **CẬP NHẬT 2026-09-27 (yêu cầu “cho mã sổ dời xuống trước mã kh ở bảng này”):**
+       mã sổ rời cột 2 xuống **cùng hàng với mã kh**, đứng TRƯỚC nó. Hệ quả CẦN BIẾT:
+         · cột 1 nay chứa **danh số (hàng 2) + mã sổ (hàng 3)** ⇒ sàn của nó =
+           `max(danh số 95,18 · mã sổ 85,50)` = **95,18** ⇒ **mã sổ vẫn thẳng mép trái với
+           danh số** (đúng kiểu thẻ card), chỉ khác là mất phần đuôi 9,7px của cột.
+         · cột 2 **KHÔNG còn ô nào** (mã kh trải cột 2–3) ⇒ nó tự về **0px**. Nhờ vậy mã kh
+           bắt đầu đúng **4px sau mép cột 1** (khe cột) chứ không bị đẩy sang phải.
+         · ⛔ **ĐỪNG “chữa” cột 2 thành `auto`/`max-content` để lấy chỗ thở:** nó sẽ ăn một
+           phần bề rộng mã kh ⇒ mã kh trôi xa sang phải và dấu `·` rời khỏi mã sổ.
+         · 🔬 **ĐÃ ĐO, KHÔNG ĐOÁN (khổ CSS 320px, A/B bằng cách chèn TẠM lại lưới cũ rồi gỡ):**
+           bề rộng HÀNG **KHÔNG đổi** — **280px ở CẢ HAI lưới** (hàng luôn kín bề rộng khung), và
+           A/B cho **cùng** `pageOverflow = 19px`. ⛔ **Đừng hứa “hết vuốt ngang”**: 19px đó đến
+           từ `.header-right` (đồng hồ ở header) — **không phải bảng** (2 phần tử tràn là
+           `DIV.header-right` 317,2 và `DIV.clock-box` 317,2 trên khung 298).
+         · ⚠️ **Hệ quả CẦN BIẾT ở khổ hẹp:** mã kh (rộng tới 135px) nằm trong vùng lưới chỉ
+           ~76px ⇒ **ô TRÀN khỏi vùng lưới nhưng KHÔNG bị cắt** (`scrollWidth − clientWidth = 0`,
+           nhờ `min-width: max-content` đặt trên chính ô đó) và vẫn nằm gọn trong hàng (đo:
+           ô kết thúc 235,9 < 280). Nếu sau này gỡ `min-width` đó thì mã kh **bị cắt cụt**.
+         · ⚠️ Mã kh nay **đi qua một track MỀM** (`1fr` cột 3) — sàn của nó được đưa vào cột 3
+           theo luật “spanning item crossing a flexible track”, cột 2 vẫn 0px.
+       ⚠️ **VÌ SAO PHẢI LÀ 4 CỘT, KHÔNG CÒN 2:** muốn danh số và mã sổ ĐỨNG CẠNH NHAU thì chúng
+       phải nằm ở hai **track LIỀN NHAU** — lưới 2 cột cũ đẩy mã sổ sang tận mép phải (đo được ở
+       panel 404px: danh số `x=15`, mã sổ `x≈301`). Dấu `·` là `td:nth-child(5)::before`.
+       Cột 3 là track `1fr` **chỉ để trải tên / mã kh** (hàng 1 và 3 trải cột 1–3) ⇒ bề rộng CÓ
+       SẴN cho tên KHÔNG đổi: `cột1 + cột2 + cột3` = đúng bằng cột 1 (`1fr`) cũ.
+       ⚠️ **CÁI GIÁ — PHẢI ĐO LẠI, KHÔNG ĐOÁN:** sàn bề rộng hàng nay là
+       `danh số + khe + (dấu + mã sổ) + khe + 0 + khe + max(tiền · tháng)`
+       thay vì `max(tên · danh số · mã kh) + khe + max(tiền · mã sổ · tháng)` của lưới 2 cột ⇒
+       **rộng thêm đúng bằng `danh số + 2 khe`** (~100px ở cỡ chữ đang dùng). Khổ hẹp (≤ ~355px)
+       sẽ phải vuốt ngang phần thừa; các khổ phổ thông 360/375/390/430px đã đo lại và ghi số
+       trong run doc (mục “MÃ SỔ CẠNH DANH SỐ”).
+       ⛔ Đừng “tối ưu” bằng cách cho cột mã sổ co được (`minmax(0, max-content)`) — co là
+       **CẮT MÃ SỔ**, phạm đúng luật “KHÔNG BAO GIỜ CẮT MÃ” ở cuối khối này.
+       ⚠️ Tháng nợ nay ở **cột 4** (cùng cột với tiền nợ) ⇒ sàn cột 4 = `max(tiền · tháng)`,
+       **không đổi** so với cột 2 cũ (vốn là `max(tiền · tháng · mã sổ)`).
+       ℹ️ Đổi vị trí ô thì chỉ đổi TÊN VÙNG ở đây — các ô tự đi theo `grid-area` của chúng
+       (xem khối `grid-area` bên dưới), KHÔNG phải sửa `nth-child`.
+       ⛔ **Chỉ được MỘT ô mỗi vùng, trừ khi chúng trải trên các track khác nhau** — nhét 2 ô
+       vào cùng một vùng là chúng CHỒNG lên nhau (grid không tự xếp cạnh). */
     grid-template-areas:
-      "ten     tien"
-      "danhso  thang"
-      "makh    sogcs";
+      "ten    ten   ten   tien"
+      "danhso .     .     thang"
+      "sogcs  makh  makh  .";
     /* ── LƯỢT “GỌN + HẾT VUỐT NGANG” (mới nhất): `6px → 4px` ─────────────────────
        Khe cột là một phần của "chrome" ngang: `chrome = 2 × lề hàng + 3 × khe cột`.
        Chrome cũ **34px** (2×8 + 3×6) quá dày ⇒ cùng lúc không thể vừa đủ chỗ vừa giữ cỡ chữ.
@@ -3586,7 +3682,21 @@ body.force-desktop .table-view { display: block; }
   body.force-desktop .table-view tbody td:nth-child(6) { display: block; grid-area: danhso; text-align: left; }
   body.force-desktop .table-view tbody td:nth-child(8) { display: block; grid-area: tien;  text-align: right; }
   body.force-desktop .table-view tbody td:nth-child(2) { display: block; grid-area: makh;   text-align: left; }
-  body.force-desktop .table-view tbody td:nth-child(5) { display: block; grid-area: sogcs;  text-align: right; }
+  body.force-desktop .table-view tbody td:nth-child(5) { display: block; grid-area: sogcs;  text-align: left; }
+  /* ── DẤU `·` GIỮA **MÃ SỔ** VÀ **MÃ KH** (lượt 2026-09-27) ──────────────────────────────
+     Lịch sử: dấu này từng nằm ở `td:nth-child(5)` (MÃ SỔ) để ngăn **danh số · mã sổ**. Khi mã sổ
+     dời xuống cùng hàng với mã kh (yêu cầu “cho mã sổ dời xuống trước mã kh”), dấu chuyển sang
+     `td:nth-child(2)` (MÃ KH) — vẫn giữ nguyên nguyên tắc CŨ: dấu là `::before` của ô ĐỨNG SAU.
+     ⚠️ Vì sao KHÔNG dùng `::after` của ô mã sổ: ô đó có `min-width: max-content` ⇒ nội dung giả
+     (`·` + `margin`) bị tính vào bề rộng nội dung ⇒ **sàn cột 1 phình thêm ~9px** (đo: mã sổ
+     85,50 + dấu ≈ 94,5 — sát trần 95,18 của danh số, chỉ cần mã sổ dài hơn chút là cột 1 nở ra,
+     kéo cả mã kh sang phải). `::before` của ô mã kh nằm về phía track `1fr` nên vô hại.
+     ⚠️ Khe 4px của lưới nằm SẴN giữa cột 1 và cột 2 ⇒ `margin-right` ở đây chỉnh phần còn lại.
+     ⚠️ Đo đúng: mép trái chữ = mép trái ô + khe cột; đừng đo bằng `getBoundingClientRect()` của
+     ô rồi tưởng dấu “dính” — xem số đo 3 khoảng (mã sổ → dấu · dấu → mã kh) ở run doc.
+     ⛔ Đừng chuyển dấu sang `::after` của ô danh số rồi thêm `margin-left` lớn — khe cột đã có
+     sẵn, cộng thêm là hai mã bị đẩy ra xa, đúng thứ yêu cầu này muốn dẹp. */
+  body.force-desktop .table-view tbody td:nth-child(2)::before { content: '·'; margin-right: 4px; }
   body.force-desktop .table-view tbody td:nth-child(7) { display: block; grid-area: thang; text-align: right; }
 
   /* ── CỠ CHỮ BẢNG 2 DÒNG: **TỰ CO THEO BỀ RỘNG KHUNG** ────────────────────────
@@ -3834,10 +3944,13 @@ body.force-desktop .table-view { display: block; }
   body.force-desktop .table-view tbody td.cell-tenkh .ten-ngan { display: inline; }
 
   /* ── KHÔNG BAO GIỜ CẮT MÃ (＝ sàn theo NỘI DUNG cho cả 4 cột) ───────────────────
-     `min-width: max-content` đặt lên **5 ô mã/tiền** của lưới 2 dòng (ô TÊN thì ngược lại, phải
-     `min-width: 0` — xem cuối khối). Mỗi cột lấy sàn từ ô rộng nhất của nó ⇒
-       cột 1 ← mã sổ (5) · cột 2 ← mã kh (2) · cột 3 ← danh số (6) · cột 4 ← tiền nợ (8)
-     (tháng nợ ở ô 7 **trải cột 3–4** nên đóng góp vào cả hai, xem khối “LƯỚI 4 CỘT”)
+     `min-width: max-content` đặt lên **5 ô mã/tiền** của lưới này (ô TÊN thì ngược lại, phải
+     `min-width: 0` — xem cuối khối). Mỗi CỘT lấy sàn từ ô rộng nhất của nó ⇒
+       cột 1 ← max(danh số (6) · mã sổ (5)) · cột 2 ← (KHÔNG ô nào ⇒ 0px) ·
+       cột 3 ← mã kh (2) trải cột 2–3 (đi qua track mềm ⇒ sàn vào đây) ·
+       cột 4 ← max(tiền nợ 8 · tháng nợ 7)
+     (mã kh (2) và tên (3) **trải cột 1–3** nên đóng góp vào CẢ BA track — nhưng sàn của chúng
+     nhỏ hơn tổng sàn của ba track đó nên KHÔNG làm cột phình; đã đo ở lưới này.)
      Vì sao cần sàn: cột `auto` ở lưới này VẪN CO ĐƯỢC vì `tbody td:not(.cell-ghi)` có
      `overflow: hidden` (với `overflow: hidden`, kích thước tối thiểu tự động của grid item = 0)
      — đã đo được đúng hiện tượng đó ở panel 320px: mã kh cần **119px** mà chỉ được **95px**
@@ -3942,9 +4055,12 @@ body.force-desktop .table-view { display: block; }
 
      3 QUY TẮC để cả app giữ một phong cách (đổi/thêm icon thì theo đúng 3 quy tắc):
        1. LƯỚI 24×24 cho MỌI icon (`viewBox="0 0 24 24"`) — trừ 3 icon nhỏ đã ghi rõ lý do.
-       2. ICON NÉT: `fill="none" stroke="currentColor" stroke-width="2.2"` +
+       2. ICON NÉT MẢNH: `fill="none" stroke="currentColor" stroke-width="2.2"` +
           `stroke-linecap/linejoin="round"` ⇒ ăn màu theo CSS, không hard-code.
-       3. ICON 2 TÔNG: lấy màu từ biến `--ic-*` khai ở `:root`, KHÔNG viết mã màu thẳng.
+       3. MỘT TÔNG: KHÔNG còn icon “đặc / 2 tông” (`--ic-*`) nữa — yêu cầu người dùng “cho
+          các icon mang phong cách tối giản” ⇒ MỌI icon đi theo `currentColor` của class CHA
+          (màu ngữ nghĩa vẫn giữ: SĐT đỏ, mã KH vàng, ghim xanh…). Ngoại lệ DUY NHẤT là LOGO
+          ngôi sao (`theme-logo-ico`) — nó là logo, không phải icon; đừng “tối giản” nó.
 
      ⚠️ Sprite KHÔNG dùng `display:none` (một số trình duyệt không render `<use>` trỏ vào
         `<symbol>` nằm trong cây `display:none`) — dùng width/height 0 + `overflow:hidden`.
@@ -3959,14 +4075,28 @@ body.force-desktop .table-view { display: block; }
   <!-- ── Nét (ăn theo currentColor) ── -->
   <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="10.6" cy="10.6" r="6.6"/><path d="M15.4 15.4 20.6 20.6"/></symbol>
   <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6.6 6.6 17.4 17.4M17.4 6.6 6.6 17.4"/></symbol>
-  <symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></symbol>
+  <!-- `i-pencil` — CÂY VIẾT **CÓ NÉT GẠCH DƯỚI** cho hàng “ghi chú” của thẻ KH.
+       Yêu cầu người dùng: “thêm nét gạch dưới cây viết ghi chú”. Lượt “icon tối giản” đã bỏ gạch
+       cho đồng bộ bộ icon nét — nay **chỉ TRẢ LẠI đúng cái gạch**, vẫn nét mảnh **2,2**, KHÔNG
+       quay lại bản ĐẶC `i-pencil-bold` đã xoá.
+       ⚠️ **BẮT BUỘC có `<g transform="… scale(0.75)">`:** cây viết ở lưới 24 đã chạm `y = 22`
+       (đầu bút ở `(2, 22)`) nên **không còn chỗ** cho gạch ngang. Thu 0,75 ⇒ cây viết còn
+       `x 4,49→19,19` · `y 2,56→16,81`, gạch ngang ở `y 22,2` (rộng `x 3,4→20,6`) ⇒ khe giữa hai
+       thứ **3,2 đơn vị = 1,87px ở 14px** (bản đặc cũ chỉ 1,17px — nét mảnh tự cho khe rộng hơn).
+       ⚠️ **Vì `scale()` thu CẢ nét vẽ**, `stroke-width` TRONG nhóm phải là **2,9333** (= 2,2 ÷ 0,75)
+       mới ra nét thật **2,2** — bằng đúng mọi icon khác. Muốn dày/mảnh hơn thì sửa số này (và số
+       2,2 của gạch ngang cho khớp). ⛔ **ĐỪNG** thử bằng CSS: `stroke-width` khai trong `<symbol>`
+       KHÔNG bị CSS bên ngoài đè (đã đo ở các lượt trước: `.ic{stroke-width}`, `use{…}` và cả
+       thuộc tính inline trên `<use>` đều KHÔNG ăn).
+       ⛔ `viewBox` vẫn **0 0 24 24** — cây viết + gạch vừa khít lưới 24, đừng nới ra. -->
+  <symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(2.99 0.31) scale(0.75)" stroke-width="2.9333"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></g><path d="M3.4 22.2h17.2"/></symbol>
   <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6v11.2"/><path d="M7.3 10.3 12 15l4.7-4.7"/><path d="M4.6 20.2h14.8"/></symbol>
   <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h14"/><path d="M12.6 6.6 18 12l-5.4 5.4"/></symbol>
   <symbol id="i-file-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.6A2.4 2.4 0 0 1 7.4 2.2h6L19 7.8v11.6a2.4 2.4 0 0 1-2.4 2.4H7.4A2.4 2.4 0 0 1 5 19.4z"/><path d="M13.4 2.2 19 7.8h-5.6z"/><path d="M12 17.4v-6"/><path d="M9.2 13.6 12 10.8l2.8 2.8"/></symbol>
   <!-- `i-monitor` — nút “xem dạng máy tính” cạnh nút Xuất file (chỉ hiện ở bố cục ĐIỆN THOẠI).
        Màn hình + chân đế, nét 2.2 theo quy tắc 2 của bộ icon, màu `currentColor`. -->
   <symbol id="i-monitor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.4" y="3.6" width="19.2" height="12.8" rx="2.2"/><path d="M8.2 20.4h7.6"/><path d="M12 16.4v4"/></symbol>
-  <!-- ── Đặc / 2 tông (màu từ --ic-*) ── -->
+  <!-- ── Nét mảnh, MỘT tông (màu theo `color` của class cha) — lượt “icon tối giản” ── -->
   <!-- Icon ô lọc — bộ "người · biên lai" (người dùng chọn trong 4 bộ phương án).
        ⚠️ ĐÂY LÀ NGUỒN DUY NHẤT của 2 icon này: markup tĩnh trong `.toolbar`, option trong
        dropdown, và 2 hằng `IC_PEOPLE`/`IC_RECEIPT` (JS dựng lại nhãn) đều
@@ -3977,19 +4107,22 @@ body.force-desktop .table-view { display: block; }
   <!-- `i-folder` CHƯA dùng ở đâu: để dành cho nút "Chọn file" ở màn hình trống (hiện vẫn
        là emoji 📂 — xem mục empty-state trong run doc). Đừng xoá nếu chưa chuyển nút đó
        sang icon, cũng đừng dùng nó cho 3 ô lọc (bộ đang dùng là people/notebook/receipt). -->
-  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M2.6 6.6A2.4 2.4 0 0 1 5 4.2h3.5a2.4 2.4 0 0 1 1.92.96l1.03 1.37h7.55A2.4 2.4 0 0 1 21.4 8.93v8.47A2.4 2.4 0 0 1 19 19.8H5a2.4 2.4 0 0 1-2.4-2.4z" fill="var(--ic-folder-back)"/><path d="M2.6 10.4h18.8v7A2.4 2.4 0 0 1 19 19.8H5a2.4 2.4 0 0 1-2.4-2.4z" fill="var(--ic-folder)"/></symbol>
-  <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9.2" cy="8" r="3.4" fill="var(--ic-blue)"/><path d="M3 20c0-3.4 2.7-5.6 6.2-5.6S15.4 16.6 15.4 20z" fill="var(--ic-blue-dark)"/><circle cx="17.2" cy="9.4" r="2.6" fill="var(--ic-blue-light)"/><path d="M14 20c0-2.8 1.5-4.6 3.2-4.6S20.4 17.2 20.4 20z" fill="var(--ic-blue-soft)"/></symbol>
-  <symbol id="i-notebook" viewBox="0 0 24 24"><path d="M4 5.4A2.4 2.4 0 0 1 6.4 3h11.2A2.4 2.4 0 0 1 20 5.4v13.2A2.4 2.4 0 0 1 17.6 21H6.4A2.4 2.4 0 0 1 4 18.6z" fill="var(--ic-blue)"/><path d="M4 5.4A2.4 2.4 0 0 1 6.4 3h2.8v18H6.4A2.4 2.4 0 0 1 4 18.6z" fill="var(--ic-blue-dark)"/><path d="M14 3h4v7.4l-2-1.5-2 1.5z" fill="var(--ic-blue-pale)"/></symbol>
-  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M5.4 4.2A2 2 0 0 1 7.4 2.2h9.2a2 2 0 0 1 2 2V21l-2.3-1.6-1.9 1.6-1.8-1.6-1.9 1.6-1.8-1.6L7.4 21z" fill="var(--ic-green)"/><g stroke="#ffffff" stroke-width="1.6" stroke-linecap="round"><path d="M8.8 8.4h6.4M8.8 12.4h6.4M8.8 16.4h3.8"/></g></symbol>
-  <symbol id="i-hash" viewBox="0 0 24 24" fill="none" stroke="var(--ic-hash)" stroke-width="2.4" stroke-linecap="round"><path d="M9.4 3.4 7.6 20.6M16.4 3.4 14.6 20.6M4.2 9.2h15.6M3.6 15.2h15.6"/></symbol>
-  <symbol id="i-coins" viewBox="0 0 24 24"><g fill="var(--ic-green)"><ellipse cx="12" cy="5.6" rx="8" ry="3.1"/><path d="M4 8.7c0 1.71 3.58 3.1 8 3.1s8-1.39 8-3.1v2.8c0 1.71-3.58 3.1-8 3.1s-8-1.39-8-3.1z"/><path d="M4 14.4c0 1.71 3.58 3.1 8 3.1s8-1.39 8-3.1v2.8c0 1.71-3.58 3.1-8 3.1s-8-1.39-8-3.1z"/></g></symbol>
-  <symbol id="i-chart" viewBox="0 0 24 24"><rect x="3.6" y="13.4" width="4.4" height="6.6" rx="1.2" fill="var(--ic-chart-1)"/><rect x="9.8" y="8.6" width="4.4" height="11.4" rx="1.2" fill="var(--ic-chart-2)"/><rect x="16" y="4" width="4.4" height="16" rx="1.2" fill="var(--ic-chart-3)"/><path d="M3 21.4h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.2 18a2.4 2.4 0 0 1-2.4 2.4H6.2A2.4 2.4 0 0 1 3.8 18V6.4A2.4 2.4 0 0 1 6.2 4h3.6l2.1 2.6h8.3z"/></symbol>
+  <symbol id="i-people" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7.8" r="3.4"/><path d="M2.8 20.2c0-3.4 2.8-5.8 6.2-5.8s6.2 2.4 6.2 5.8"/><path d="M16.4 5.2a3 3 0 0 1 0 5.4"/><path d="M17.6 14.6c2 .7 3.6 2.5 3.6 5"/></symbol>
+  <symbol id="i-notebook" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.2h9.4A2.4 2.4 0 0 1 19.8 5.6v12.8a2.4 2.4 0 0 1-2.4 2.4H8"/><path d="M5.6 5.6A2.4 2.4 0 0 1 8 3.2v17.6a2.4 2.4 0 0 1-2.4-2.4z"/><path d="M5.6 8.6h3.2M5.6 12h3.2M5.6 15.4h3.2"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 21.4V4a1.8 1.8 0 0 1 1.8-1.8h8a1.8 1.8 0 0 1 1.8 1.8v17.4l-2.9-1.9-2.9 1.9-2.9-1.9z"/><path d="M9.4 7.6h5.2M9.4 11.4h5.2M9.4 15.2h3"/></symbol>
+  <symbol id="i-hash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9.4 3.4 7.6 20.6M16.4 3.4 14.6 20.6M4.2 9.2h15.6M3.6 15.2h15.6"/></symbol>
+  <symbol id="i-coins" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.9" rx="7.6" ry="3.1"/><path d="M4.4 5.9v5.5c0 1.71 3.4 3.1 7.6 3.1s7.6-1.39 7.6-3.1V5.9"/><path d="M4.4 11.4v5.5c0 1.71 3.4 3.1 7.6 3.1s7.6-1.39 7.6-3.1v-5.5"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="3.8" y="13.4" width="4.6" height="7" rx="1.3"/><rect x="9.7" y="9" width="4.6" height="11.4" rx="1.3"/><rect x="15.6" y="3.6" width="4.6" height="16.8" rx="1.3"/></symbol>
   <!-- ── Đơn sắc cho thẻ khách hàng / modal (màu theo `color` của class cha) ── -->
-  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 8.5c0 4.8 6.12 11.06 6.36 11.31.18.19.46.19.64 0 .24-.25 6.36-6.51 6.36-11.31C19 5.13 15.87 2 12 2zm0 9a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" fill="var(--ic-blue)"/></symbol>
-  <symbol id="i-call" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></symbol>
-  <symbol id="i-mobile" viewBox="0 0 24 24" fill="currentColor"><path d="M17 1.01 7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></symbol>
-  <symbol id="i-tag" viewBox="0 0 24 24" fill="currentColor"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></symbol>
-  <!-- `i-pencil-bold` — CÂY VIẾT nét ĐẬM **CÓ GẠCH NGANG DƯỚI CHÂN** cho hàng “ghi chú” của thẻ KH.
+  <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.8 9.8c0 3.9-3.1 7.6-6.8 11.6C8.3 17.4 5.2 13.7 5.2 9.8a6.8 6.8 0 1 1 13.6 0z"/><circle cx="12" cy="9.7" r="2.6"/></symbol>
+  <symbol id="i-call" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+  <symbol id="i-mobile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.2" y="2.2" width="11.6" height="19.6" rx="2.4"/><path d="M11 18.1h2"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.1"/></symbol>
+  <!-- 🚫 `i-pencil-bold` — ĐÃ XOÁ ở lượt “cho các icon mang phong cách tối giản”: hàng “ghi chú”
+       của thẻ KH nay dùng `#i-pencil` (cây viết NÉT, lưới 24). Phần dưới là LỊCH SỬ của bản đặc
+       đã bỏ — ĐỪNG dựng lại.
+       CÂY VIẾT nét ĐẬM **CÓ GẠCH NGANG DƯỚI CHÂN** cho hàng “ghi chú” của thẻ KH.
        Lịch sử yêu cầu: “thay icon ghi chú cho dễ nhìn” → “cây viết nhưng cho nét đậm” → “thêm nét
        gạch ngang dưới icon cây viết”. (Hình trang giấy `i-note` của lượt giữa đã bị XOÁ; path cũ
        nằm trong run doc nếu cần dựng lại.)
@@ -4012,20 +4145,20 @@ body.force-desktop .table-view { display: block; }
        `stroke-width` khai trong `<symbol>` KHÔNG bị CSS bên ngoài đè (đã đo: `.ic{stroke-width}`,
        `use{...}` và cả thuộc tính inline trên `<use>` đều KHÔNG ăn; chỉ rule nhắm vào phần tử
        BÊN TRONG symbol mới ăn). -->
-  <symbol id="i-pencil-bold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(2.99 0.31) scale(0.75)" stroke-width="4.5333"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></g><path d="M3.4 22.2h17.2"/></symbol>
-  <!-- `i-arrow-right-bold` — mũi tên ĐẶC dày cho ô “Danh Số” của thẻ khách hàng.
+  <!-- 🚫 `i-arrow-right-bold` — ĐÃ XOÁ ở lượt “icon tối giản”: ô “Danh Số” của thẻ KH nay dùng
+       `#i-arrow-right` (mũi tên NÉT). Phần dưới là LỊCH SỬ của bản đặc đã bỏ — ĐỪNG dựng lại.
+       Mũi tên ĐẶC dày cho ô “Danh Số” của thẻ khách hàng.
        Cùng họ hình với glyph Material cũ (`M12 4l-1.41…`) nhưng thân dày **2.8** thay vì 2
        đơn vị lưới ⇒ ở 15px thân 1.75px thay vì 1.25px, mực in **+50%** (12.37% → 18.54%
        diện tích hộp 15×15, đo bằng raster). Giữ **kiểu ĐẶC** cho đồng bộ với các icon
        cùng hàng trong thẻ (ghim, SĐT, mã KH đều đặc).
-       Màu: `currentColor` ⇒ `.kh-danhso .ic { color: var(--ic-blue-soft) }` khi nền tối,
-       `body.light-mode .kh-danhso .ic { color: var(--ic-blue) }` khi nền sáng (2.54:1 → 3.68:1).
-       ⚠️ Khác `i-arrow-right` (mũi tên NÉT của sprite): đừng tráo hai cái cho nhau. -->
-  <symbol id="i-arrow-right-bold" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.2l-2.1 2.1L15.4 10.6H3v2.8h12.4L9.9 18.7 12 20.8l8.6-8.8z"/></symbol>
+       Màu: nay mũi tên NÉT `#i-arrow-right` cũng ăn qua `.kh-danhso .ic { color: var(--ic-blue-soft) }`
+       khi nền tối, `body.light-mode .kh-danhso .ic { color: var(--ic-blue-dark) }` khi nền sáng —
+       cùng lý do tương phản (2.54:1 → 3.68:1) như bản đặc đã bỏ. -->
   <!-- ── Mũi tên sắp xếp (đổi hình theo trạng thái + màu theo `.sort-btn.active`) ── -->
-  <symbol id="i-sort" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></symbol>
-  <symbol id="i-sort-asc" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6 1.41 1.41z"/></symbol>
-  <symbol id="i-sort-desc" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></symbol>
+  <symbol id="i-sort" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.4 9.4 12 5.8l3.6 3.6"/><path d="M8.4 14.6 12 18.2l3.6-3.6"/></symbol>
+  <symbol id="i-sort-asc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14.6 12 9.6l5 5"/></symbol>
+  <symbol id="i-sort-desc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.4 12 14.4l5-5"/></symbol>
 </svg>
 
 <!-- HEADER -->
@@ -4172,7 +4305,7 @@ body.force-desktop .table-view { display: block; }
                  ⚠️ Cỡ **18px** phải khớp đúng hộp `.search-icon` (18×18) vì `#searchInput`
                  chừa chỗ bằng `padding-left: 40px` (icon `left: 12px` + 18px) — đổi cỡ icon
                  là chữ trong ô xê dịch. -->
-            <span class="search-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.3"/><path d="M15.1 15.1 20 20"/></svg></span>
+            <span class="search-icon" aria-hidden="true"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-search"/></svg></span>
             <input type="text" id="searchInput" placeholder="Tìm tên, mã KH, SĐT, địa chỉ..." oninput="handleSearch()" autocomplete="off" autocorrect="off" autocapitalize="off">
             <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
           </div>
@@ -4220,8 +4353,8 @@ body.force-desktop .table-view { display: block; }
             <div class="nhom-option" data-val="oldky" onclick="selectLoai('oldky')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#8b5cf6"></span> Nợ cũ, nhiều kỳ</div>
             <div class="nhom-option" data-val="summary" onclick="selectLoai('summary')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#3b82f6"></span> Tổng hợp nợ</div>
             <div class="nhom-option" data-val="marked" onclick="selectLoai('marked')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span class="nhom-dot" style="background:#b45309"></span> Chú ý</div>
-            <div class="nhom-option" data-val="called" onclick="selectLoai('called')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:var(--ic-green);display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02z"/></svg></span> KH đã gọi</div>
-            <div class="nhom-option" data-val="notcalled" onclick="selectLoai('notcalled')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:#ef4444;display:inline-flex;flex-shrink:0;align-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M17 1.01 7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg></span> KH chưa gọi</div>
+            <div class="nhom-option" data-val="called" onclick="selectLoai('called')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:var(--ic-green);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-call"/></svg></span> KH đã gọi</div>
+            <div class="nhom-option" data-val="notcalled" onclick="selectLoai('notcalled')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:#ef4444;display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-mobile"/></svg></span> KH chưa gọi</div>
           </div>
           <input type="hidden" id="filterLoai" value="">
         </div>
@@ -4237,10 +4370,10 @@ body.force-desktop .table-view { display: block; }
              còn ~303px, mỗi tab đã ~119px ở khổ hẹp). -->
         <div class="sort-row">
           <button class="sort-btn" id="sortDanhSo" onclick="sortBy('danh_so')">
-            <span class="sort-ico"><svg viewBox="0 0 14 14" width="100%" height="100%" aria-hidden="true"><g stroke="#35a3e0" stroke-width="1.5" stroke-linecap="round"><path d="M5.5 2.6 4.5 11.4M9.5 2.6 8.5 11.4M2.4 5.4h9.2M2.2 8.6h9.2"/></g></svg></span><span class="sort-label">Danh Số</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
+            <span class="sort-ico"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-hash"/></svg></span><span class="sort-label">Danh Số</span><span class="sort-arrow"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort"/></svg></span>
           </button>
           <button class="sort-btn" id="sortTienNo" onclick="sortBy('tien_no')">
-            <span class="sort-ico"><svg viewBox="0 0 14 14" width="100%" height="100%" aria-hidden="true"><g fill="#46b07c"><ellipse cx="7" cy="3.4" rx="4.6" ry="1.8"/><path d="M2.4 5.2c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8v1.6c0 1-2.06 1.8-4.6 1.8S2.4 8.8 2.4 7.8z"/><path d="M2.4 8.4c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8v1.6c0 1-2.06 1.8-4.6 1.8S2.4 11.6 2.4 10.6z"/></g></svg></span><span class="sort-label">Tiền Nợ</span><span class="sort-arrow"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg></span>
+            <span class="sort-ico"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-coins"/></svg></span><span class="sort-label">Tiền Nợ</span><span class="sort-arrow"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort"/></svg></span>
           </button>
         </div>
       </div>
@@ -4298,7 +4431,7 @@ body.force-desktop .table-view { display: block; }
            chữ “Tổng nợ:” hụt theo. -->
       <div class="count-btns">
         <button class="cfg-btn" id="cfgBtn" type="button" onclick="openCfg()" data-tip="Cài đặt" aria-label="Cài đặt">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.04.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.11-1.51 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.51 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>
         </button>
       </div>
     </div>
@@ -4566,8 +4699,8 @@ body.force-desktop .table-view { display: block; }
   <div class="cfg-row">
     <span class="cfg-lb">Giao diện<i class="cfg-val" id="cfgThemeVal">Tối</i></span>
     <button class="cfg-btn cfg-theme-btn" type="button" id="themeToggle" onclick="toggleTheme()" title="Chuyển sang chế độ sáng" aria-label="Chuyển sang chế độ sáng">
-      <svg class="cfg-ico-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.4" fill="currentColor" stroke="none"/><path d="M12 2.4v2.2M12 19.4v2.2M2.4 12h2.2M19.4 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
-      <svg class="cfg-ico-moon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M20.6 14.6A8.7 8.7 0 0 1 9.4 3.4a8.7 8.7 0 1 0 11.2 11.2z"/></svg>
+      <svg class="cfg-ico-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.4v2.2M12 19.4v2.2M2.4 12h2.2M19.4 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+      <svg class="cfg-ico-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 14.6A8.7 8.7 0 0 1 9.4 3.4a8.7 8.7 0 1 0 11.2 11.2z"/></svg>
     </button>
   </div>
 
@@ -4593,7 +4726,7 @@ body.force-desktop .table-view { display: block; }
   <div class="cfg-row">
     <span class="cfg-lb">Mức nền<i class="cfg-val" id="cfgSfVal">Chuẩn</i></span>
     <button class="fs-btn" id="sfBtn" type="button" onclick="cycleSurface()" data-tip="Nền: Chuẩn" aria-label="Nền: Chuẩn — nhấn để đổi">
-      <svg class="sf-btn-ico" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>
+      <svg class="sf-btn-ico" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 3.5v17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
       <span class="sf-btn-dots" aria-hidden="true"><i></i><i></i><i></i></span>
     </button>
   </div>
@@ -4621,9 +4754,9 @@ body.force-desktop .table-view { display: block; }
   <div class="cfg-row cfg-row-col">
     <span class="cfg-lb">Tác vụ bảng</span>
     <div class="page-actions" id="pageActions">
-      <button id="exportBtn" class="page-act" onclick="closeCfg(); exportExcel()" data-tip="Xuất file Excel" aria-label="Xuất file Excel"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"/></svg><span class="page-act-lb">Xuất file</span></button>
-      <button id="printBtn" class="page-act" onclick="closeCfg(); inBang()" data-tip="In bảng" aria-label="In bảng"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M19 8H5c-1.66 0-3 1.34-3 3v4h4v4h12v-4h4v-4c0-1.66-1.34-3-3-3zm-3 9H8v-5h8v5zm3-5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zM17 3H7v4h10V3z"/></svg><span class="page-act-lb">In bảng</span></button>
-      <button id="backupBtn" class="page-act" onclick="closeCfg(); saoLuuDuLieu()" data-tip="Sao lưu dữ liệu" aria-label="Sao lưu dữ liệu"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg><span class="page-act-lb">Sao lưu</span></button>
+      <button id="exportBtn" class="page-act" onclick="closeCfg(); exportExcel()" data-tip="Xuất file Excel" aria-label="Xuất file Excel"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-download"/></svg><span class="page-act-lb">Xuất file</span></button>
+      <button id="printBtn" class="page-act" onclick="closeCfg(); inBang()" data-tip="In bảng" aria-label="In bảng"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3.4h10v6H7z"/><path d="M7 11.4H5.4A2.4 2.4 0 0 0 3 13.8v4.8A2.4 2.4 0 0 0 5.4 21h13.2A2.4 2.4 0 0 0 21 18.6v-4.8a2.4 2.4 0 0 0-2.4-2.4H17"/><path d="M7 21v-5.6h10V21"/></svg><span class="page-act-lb">In bảng</span></button>
+      <button id="backupBtn" class="page-act" onclick="closeCfg(); saoLuuDuLieu()" data-tip="Sao lưu dữ liệu" aria-label="Sao lưu dữ liệu"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.4 21H4.6A1.6 1.6 0 0 1 3 19.4V4.6A1.6 1.6 0 0 1 4.6 3h11.1l4.7 4.7v11.7A1.6 1.6 0 0 1 19.4 21z"/><path d="M16.6 21v-7.4H7.4V21"/><path d="M7.4 3v5.2h7.2"/></svg><span class="page-act-lb">Sao lưu</span></button>
     </div>
   </div>
 
@@ -6121,9 +6254,9 @@ function sortBy(col) {
 // Mũi tên là SVG (không dùng glyph ↕/↓/↑ vì bề rộng khác nhau 6px vs 10px làm nhãn
 // bị đẩy đi mỗi lần đổi cột, và glyph phụ thuộc font hệ thống).
 const SORT_ICONS = {
-  none: '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/></svg>',
-  asc:  '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6 1.41 1.41z"/></svg>',
-  desc: '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>'
+  none: '<svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort"/></svg>',
+  asc:  '<svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort-asc"/></svg>',
+  desc: '<svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort-desc"/></svg>'
 };
 function updateSortButtons() {
   // `ma_sogcs` → 'sortSoGCS' và 'ten_khach_hang' → 'sortTenKH' là **NO-OP**: tab "Mã Sổ"
@@ -6179,18 +6312,18 @@ function renderCards(q='') {
         </div>
       </div>
       <div class="kh-card-mid">
-        ${r.danh_so ? `<span class="kh-danhso"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-arrow-right-bold"/></svg>${hi(r.danh_so,q)}</span>` : ''}
+        ${r.danh_so ? `<span class="kh-danhso"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-arrow-right"/></svg>${hi(r.danh_so,q)}</span>` : ''}
         ${r.danh_so && r.ma_sogcs ? `<span class="kh-sep">-</span>` : ''}
         ${r.ma_sogcs ? `<span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span>` : ''}
         ${r.ma_sogcs && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}
         ${r.so_tbi ? `<span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}
-        ${r.dia_chi ? `<div class="kh-addr-line" style="flex:0 0 100%;margin-top:5px"><svg class="addr-ico" width="15" height="15" viewBox="0 0 24 24" fill="#3b82f6" style="vertical-align:middle;margin-right:6px"><path d="M12 2C8.13 2 5 5.13 5 8.5c0 4.8 6.12 11.06 6.36 11.31.18.19.46.19.64 0 .24-.25 6.36-6.51 6.36-11.31C19 5.13 15.87 2 12 2zm0 9a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>${hi(trimDiaChi(r.dia_chi),q)}</div>` : ''}
-        ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg width="15" height="15" viewBox="0 0 24 24" fill="#ef4444" style="vertical-align:middle;margin-right:4px"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>${hi(phone,q)}</a>` : ''}${phone && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="event.stopPropagation();copyToClip('${esc(r.ma_khach_hang)}',this)" style="cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b" style="vertical-align:middle;margin-right:4px"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>${hi(r.ma_khach_hang,q)}</span>` : ''}</span>` : ''}
+        ${r.dia_chi ? `<div class="kh-addr-line" style="flex:0 0 100%;margin-top:5px"><svg class="addr-ico" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><use href="#i-pin"/></svg>${hi(trimDiaChi(r.dia_chi),q)}</div>` : ''}
+        ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}${phone && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="event.stopPropagation();copyToClip('${esc(r.ma_khach_hang)}',this)" style="cursor:pointer"><svg class="ic" width="14" height="14" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-tag"/></svg>${hi(r.ma_khach_hang,q)}</span>` : ''}</span>` : ''}
       </div>
       <div class="kh-ghichu-row">
-        <svg class="ic" width="14" height="14" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><use href="#i-pencil-bold"/></svg>
+        <svg class="ic" width="14" height="14" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><use href="#i-pencil"/></svg>
         <input type="text" class="kh-ghichu-input" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" oninput="saveGhiChu(this)" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()" onpointerdown="event.stopPropagation()" onpointerup="event.stopPropagation()">
-        ${r.abc ? `<span style="margin-left:8px;display:flex;align-items:center;gap:4px;flex-shrink:0;min-width:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" style="vertical-align:middle"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg><span class="kh-abc" style="font-size:var(--fs-card)">${hi(r.abc,q)}</span></span>` : ''}
+        ${r.abc ? `<span style="margin-left:8px;display:flex;align-items:center;gap:4px;flex-shrink:0;min-width:0"><svg class="ic kh-abc-ico" width="14" height="14" aria-hidden="true" style="vertical-align:middle"><use href="#i-tag"/></svg><span class="kh-abc" style="font-size:var(--fs-card)">${hi(r.abc,q)}</span></span>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -6644,7 +6777,7 @@ function fitGhiChuInput(input) {
   ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
   const textW = input.value ? ctx.measureText(input.value).width : 0;
   const need = Math.ceil(textW) + 16;   // padding 6px x2 + viền 2px + con trỏ nháy
-  // Chừa chỗ cho icon ghi chú (`#i-pencil-bold`) và phần ABC (nếu có) ở cuối hàng
+  // Chừa chỗ cho icon ghi chú (`#i-pencil`) và phần ABC (nếu có) ở cuối hàng
   let occupied = 0;
   for (const el of row.children) {
     if (el === input) continue;
