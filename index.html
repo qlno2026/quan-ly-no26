@@ -2377,18 +2377,18 @@ body.light-mode .nhom-sel-name {
      ⚠️ Vệt tô ở `box-shadow` bên dưới VẪN giữ `var(--page-bg)`: nó là KHE 3px giữa thanh công
      cụ và hàng (không thuộc hàng), phải trùng màu NỀN TRANG — lấy màu thẻ là khe đó thành một
      dải màu thẻ lơ lửng. */
-  position: sticky;
-  top: var(--sticky-info-top, 56px);
-  z-index: 140;
+  /* ⟳ 2026-09-27i: HÀNG “TỔNG …” KHÔNG CÒN GHIM — nó CUỘN THEO TRANG như mọi nội dung khác.
+     Ba lượt yêu cầu liên tiếp của người dùng (“cuộn lên thì hàng cũng cuộn lên theo” · “cuộn
+     xuống thì hàng cũng cuộn theo” · “khi cuộn thì hàng này cũng cuộn theo”) ⇒ chốt lại là
+     BỎ GHIM HẲN. Đã GỠ: `position: sticky` + `top: var(--sticky-info-top)` + `z-index: 140` +
+     `transition: top` + vệt tô `box-shadow`; JS `updateToolbar()` không còn đụng tới hàng
+     (thanh công cụ VẪN ghim như cũ).
+     ⛔ Muốn GHIM LẠI thì phải khôi phục ĐỦ BỐN thứ vừa gỡ (sticky + `top` + `z-index: 140` +
+     vệt tô 3px) — thiếu vệt tô là hở khe 3px cho thẻ chạy qua giữa thanh công cụ và hàng. */
   background: var(--dk-card);
-  /* ⚠️ OFFSET ÂM = “tô” thêm `--info-gap` (3px) PHÍA TRÊN hộp, cùng màu nền trang.
-     Vì sao cần: `top` cố ý cho hàng ghim ĐÚNG VỊ TRÍ TỰ NHIÊN của nó (đo được 199,97px) nên khi
-     ghim, dải 196,92→199,97 (đáy thanh công cụ → mép trên hàng) KHÔNG thuộc phần tử nào —
-     thiếu vệt tô này là thẻ chạy qua đó thành một khe 3px nhấp nháy giữa thanh và hàng.
-     Khi CHƯA cuộn, 3px đó vốn đã là nền trang ⇒ vệt tô trùng màu ⇒ không thấy gì khác lạ.
-     ⚠️ Dùng `box-shadow` (không chiếm chỗ) chứ KHÔNG dùng `padding`/`::before`: đổi padding là
-     đổi metric (hàng cao thêm 3px ⇒ cả danh sách thẻ dịch xuống). */
-  box-shadow: 0 calc(-1 * var(--info-gap)) 0 0 var(--page-bg);
+  /* ⟳ 2026-09-27i: vệt tô `box-shadow` (3px) đã GỠ cùng lượt với việc bỏ GHIM — nó chỉ tồn
+     tại để bịt khe 3px giữa thanh công cụ và hàng KHI HÀNG ĐANG GHIM; hàng cuộn theo trang
+     thì không còn khe nào để bịt. */
 }
 
 .count-info span { font-weight: 500; }
@@ -7347,21 +7347,9 @@ const toolbarEl = document.querySelector('.toolbar');
 const headerEl = document.querySelector('.header');
 if (toolbarEl && headerEl) {
   const headerH = headerEl.offsetHeight;
-  // ── Hàng “Tổng …” GHIM bằng `position: sticky` (xem chú thích `.count-info`) ───────────────
-  // Ngưỡng `top` của nó = đáy thanh công cụ đang ghim + `--info-gap`. Phải CỘNG `--info-gap`
-  // để hàng ghim ĐÚNG VỊ TRÍ TỰ NHIÊN của nó: thiếu 3px đó thì mỗi lần bắt đầu cuộn hàng bị kéo
-  // lên 3px rồi mới đứng yên (đo được: 199,97 → 199,01 → 198,05 → 197,09 → 197,00 — yêu cầu
-  // “hàng đứng yên khi cuộn” nên phải là 0px dịch chuyển).
-  const infoEl = document.querySelector('.count-info');
-  const infoGap = infoEl ? (parseFloat(getComputedStyle(infoEl).marginTop) || 0) : 0;
-  let lastInfoTop = null;
-  function setInfoTop(v) {
-    // ⛔ Đừng set lại mỗi sự kiện `scroll`: mỗi lần `setProperty` là một lần vô hiệu hoá style
-    // của cả tài liệu (đúng thứ gây giật khi cuộn nhanh). Chỉ ghi khi giá trị THẬT SỰ đổi.
-    if (v === lastInfoTop) return;
-    lastInfoTop = v;
-    document.documentElement.style.setProperty('--sticky-info-top', v + 'px');
-  }
+  // ── Hàng “Tổng …” NAY CUỘN THEO TRANG, KHÔNG ghim (yêu cầu người dùng — xem chú thích
+  // `.count-info`, mục ⟳ 2026-09-27i). Đã gỡ hẳn `setInfoTop()` / `--sticky-info-top`; khối dưới
+  // CHỈ còn ghim THANH CÔNG CỤ.
   const sentinel = document.createElement('div');
   sentinel.style.height = '0';
   sentinel.style.visibility = 'hidden';
@@ -7384,10 +7372,6 @@ if (toolbarEl && headerEl) {
       toolbarEl.style.margin = '0 auto';
       toolbarEl.style.zIndex = '150';
       toolbarEl.classList.add('stuck');
-      // Hàng “Tổng …” (`position: sticky`) phải ghim NGAY DƯỚI thanh công cụ đang ghim ⇒
-      // ngưỡng `top` = đáy thanh = `headerH + toolbarH`. Thanh cao bao nhiêu là do flex-wrap
-      // quyết định nên KHÔNG thể viết số vào CSS (xem chú thích `.count-info`).
-      setInfoTop(headerH + toolbarH + infoGap);
     } else {
       sentinel.style.height = '0';
       toolbarEl.style.position = '';
@@ -7397,9 +7381,6 @@ if (toolbarEl && headerEl) {
       toolbarEl.style.maxWidth = '';
       toolbarEl.style.margin = '';
       toolbarEl.classList.remove('stuck');
-      // Chưa ghim thanh công cụ ⇒ hàng “Tổng …” chỉ được ghim dưới HEADER. Đặt lại (chứ không
-      // xoá) để `top` không bao giờ về 0 — về 0 là hàng chui xuống DƯỚI header và mất chữ.
-      setInfoTop(headerH + infoGap);
     }
   }
   window.addEventListener('scroll', updateToolbar, { passive: true });
