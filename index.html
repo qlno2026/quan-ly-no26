@@ -913,6 +913,15 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue-dark); }
 }
 @media (prefers-reduced-motion: reduce) {
   .theme-logo.spin .theme-logo-ico { animation: none; }
+  /* ⟳ 2026-09-28d: đồng hồ cát hàng Tổng cũng TẮT XOAY tại đây — nó thuần trang trí (`aria-hidden`),
+     người tắt chuyển động không cần nó nhúc nhích. Thêm SELECTOR vào rule `prefers-reduced-motion`
+     DUY NHẤT sẵn có, KHÔNG mở media query thứ hai (giữ nguyên luật khoanh hẹp ghi ở trên).
+     ⚠️ ĐO ĐƯỢC THỰC TẾ: rule `.count-row-ic svg` THUA vì khai TRƯỚC rule animation (nằm ở phần
+     `.count-info` dưới cuối file) — cùng đặc hiệu thì rule SAU thắng ⇒ phải nâng đặc hiệu lên
+     `.count-info .count-row-ic svg` (0,2,1) để thắng bất kể thứ tự. Đã kiểm: reduce=true mà
+     animation vẫn `running` trước khi sửa. ⟳ cùng ngày: thêm DÒNG CÁT — rule phủ CẢ svg dòng cát
+     lẫn `line` bên trong nó (nét dashoffset). */
+  .count-info .count-row-ic svg, .count-info .count-row-ic line { animation: none; }
   /* Cùng nhịp với cú xoay và với chuyển màu (`--theme-anim-*`), chỉ đổi CÁCH phản hồi (màu thay vì
      xoay) — nhờ vậy “một cử chỉ” giữ nguyên dù hệ điều hành có tắt chuyển động hay không. */
   .theme-logo.spin { animation: logoThemeFlash var(--theme-anim-dur) var(--theme-anim-ease); }
@@ -2505,6 +2514,47 @@ body.light-mode .nhom-sel-name {
    từ đầu vì `0` nhỏ hơn cả max-content); ngắt dòng là việc của `flex-wrap` ở RANH GIỮA các
    mục, không phải việc của flex co. */
 .count-stat { display: grid; grid-template-rows: 22px 30px; align-items: center; min-width: max-content; }
+/* ⟳ 2026-09-28d: ICON ĐẦU HÀNG “TỔNG” (yêu cầu “thêm icon trước hàng này cho dễ phân biệt”; ⟳
+   cùng ngày đổi sang `#i-hourglass` — SYMBOL MỚI THÊM vào sprite theo đúng pattern stroke —
+   sau khi xem ảnh thực tế, icon `#i-coins` trông giống icon “cơ sở dữ liệu”) —
+   mục ĐẦU TIÊN của `.count-stats`, cùng thuộc flex-wrap nên: (a) co giãn theo đúng hợp đồng,
+   (b) `fitCountRow()` tự tính cả icon vào phép `need` (là con trực tiếp đang hiện) ⇒ khổ hẹp
+   + chữ to thì cơ chế thu VẪN đúng, không phải khai ngưỡng mới. `display:flex` +
+   `align-items:center` để icon 19px ngồi GIỮA chiều cao 52px của hàng (trùng mực số);
+   màu = `--ic-hash` — cùng tông xanh icon của app (như icon biên lai ô “Chi tiết nợ”).
+   ⛔ ĐỪng nhét icon vào TRONG `.count-stat` đầu: mục đó bị `switchTab()` ẨN ở tab Tổng hợp
+   ⇒ icon biến mất đúng lúc hàng chỉ còn 2 mục — icon là DẤU HIỆU CỦA HÀNG, phải đứng độc lập. */
+.count-row-ic { display: flex; align-items: center; min-width: max-content; color: var(--ic-hash); position: relative; }
+/* ⟳ 2026-09-28d: CHUYỂN ĐỘNG “lật đồng hồ cát” — xoay 180° quanh tâm. ⟳ CÙNG NGÀY, yêu cầu
+   “nhịp lật nhanh hơn và thêm hiệu ứng cát chảy mỏng ở cổ đồng hồ khi lật xong”:
+   · NHỊP: chu kỳ 2,8s → **1,6s**; pha đổi thành GIỮ 0–40% · LẬT 40–60% · GIỮ 60–100% — lật xong
+     sớm ở 60% để DÒNG CÁT có 40% chu kỳ (0,64s) sống sau cú lật.
+   · DÒNG CÁT: svg PHỦ ĐÈ `.count-row-ic-flow` (absolute đúng 19×19 trên icon, viewBox 24) vẽ
+     MỘT NÉT MẢNH ở cổ (x=12, y 10,4→13,6) với `stroke-dasharray: 1.1 1.5` = HẠT cát. Hai
+     animation: FADE `countRowIcFlowFade` đồng bộ cùng chu kỳ 1,6s (0–60% ẩn: chưa lật xong ·
+     66–88% hiện: cát đang chảy · 100% đứt hẳn để vòng sau không “nháy” dòng cũ) + MARCH
+     `countRowIcFlowMarch` chạy `stroke-dashoffset` 2,6→0 (chu kỳ dấu = 1,1+1,5 = 2,6 ⇒ lặp liền
+     mạch; GIẢM offset = hạt trôi XUỐNG theo hướng nét). Mặc định `opacity: 0` ⇒ khi
+     reduce-motion tắt hết animation, dòng cát biến mất hoàn toàn chứ không đứng hình hiện ra.
+   Vòng lặp SEAMLESS nhờ đồng hồ cát đối xứng: 180° nhìn giống 0° nên nhảy 100%→0% không thấy gãy.
+   `transform` không đụng bố cục (không phải metric) ⇒ phép đo của `fitCountRow()` không đổi; icon
+   vẫn `aria-hidden` nên trình đọc màn hình bỏ qua.
+   ⚠️ Selector animation xoay là `.count-row-ic .count-row-ic-flip` — KHÔNG dùng `.count-row-ic svg`
+   chung: span còn chứa svg DÒNG CÁT cần keyframes KHÁC; dùng chung là dòng cát bị xoay theo. */
+@keyframes countRowIcFlip {
+  0%, 40%  { transform: rotate(0deg); }
+  60%, 100% { transform: rotate(180deg); }
+}
+.count-row-ic .count-row-ic-flip { animation: countRowIcFlip 1.6s ease-in-out infinite; }
+@keyframes countRowIcFlowFade {
+  0%, 60%  { opacity: 0; }
+  66%      { opacity: 1; }
+  88%      { opacity: 1; }
+  100%     { opacity: 0; }
+}
+@keyframes countRowIcFlowMarch { from { stroke-dashoffset: 2.6; } to { stroke-dashoffset: 0; } }
+.count-row-ic-flow { position: absolute; top: 0; left: 0; opacity: 0; pointer-events: none; animation: countRowIcFlowFade 1.6s linear infinite; }
+.count-row-ic-flow line { animation: countRowIcFlowMarch 0.45s linear infinite; }
 /* SỐ canh giữa trong ô 30px của nó — trước đây `.count-line2 { height: 30px }` + `align-items:
    center` làm việc này. Thiếu `line-height` này thì số dồn lên ĐỈNH ô 30px (cách nhãn 0px thay
    vì 4px) ⇒ chiều cao hàng vẫn 57px nhưng mực chữ trong hàng sai.
@@ -4420,8 +4470,10 @@ body.force-desktop .table-view { display: block; }
   <symbol id="i-people" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7.8" r="3.4"/><path d="M2.8 20.2c0-3.4 2.8-5.8 6.2-5.8s6.2 2.4 6.2 5.8"/><path d="M16.4 5.2a3 3 0 0 1 0 5.4"/><path d="M17.6 14.6c2 .7 3.6 2.5 3.6 5"/></symbol>
   <symbol id="i-notebook" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.2h9.4A2.4 2.4 0 0 1 19.8 5.6v12.8a2.4 2.4 0 0 1-2.4 2.4H8"/><path d="M5.6 5.6A2.4 2.4 0 0 1 8 3.2v17.6a2.4 2.4 0 0 1-2.4-2.4z"/><path d="M5.6 8.6h3.2M5.6 12h3.2M5.6 15.4h3.2"/></symbol>
   <symbol id="i-receipt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 21.4V4a1.8 1.8 0 0 1 1.8-1.8h8a1.8 1.8 0 0 1 1.8 1.8v17.4l-2.9-1.9-2.9 1.9-2.9-1.9z"/><path d="M9.4 7.6h5.2M9.4 11.4h5.2M9.4 15.2h3"/></symbol>
-  <symbol id="i-hash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9.4 3.4 7.6 20.6M16.4 3.4 14.6 20.6M4.2 9.2h15.6M3.6 15.2h15.6"/></symbol>
-  <symbol id="i-coins" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.9" rx="7.6" ry="3.1"/><path d="M4.4 5.9v5.5c0 1.71 3.4 3.1 7.6 3.1s7.6-1.39 7.6-3.1V5.9"/><path d="M4.4 11.4v5.5c0 1.71 3.4 3.1 7.6 3.1s7.6-1.39 7.6-3.1v-5.5"/></symbol>
+  <symbol id="i-hash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9.4 3.4 7.6 20.6M16.4 3.4 14.6 20.6M4.2 9.2h15.6M3.6 15.2h15.6"/></symbol>   <symbol id="i-coins" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.9" rx="7.6" ry="3.1"/><path d="M4.4 5.9v5.5c0 1.71 3.4 3.1 7.6 3.1s7.6-1.39 7.6-3.1V5.9"/><path d="M4.4 11.4v5.5c0 1.71 3.4 3.1 7.6 3.1s7.6-1.39 7.6-3.1v-5.5"/></symbol>
+   <symbol id="i-hourglass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></symbol>
+   <symbol id="i-hourglass-sand" viewBox="0 0 24 24" fill="none"><!-- ⟳ 2026-09-28d: bản MÀU kiểu emoji ⏳ theo yêu cầu “như thế này và cho chuyển động”: VIỀN kính xanh `--ic-hash` + CÁT hổ phách `--ic-amber` (đúng token app ⇒ tự theo theme sáng/tối). ⚠️ Màu dùng `style="stroke/fill: var(--…)”` chứ KHÔNG dùng attribute `stroke="var(…)"` — presentation attribute KHÔNG nhận `var()`. Bản 1 màu `#i-hourglass` giữ lại trong thư viện sprite (tiền lệ `#i-notebook`). -->
+     <path d="M7.2 2.6v3.3c0 .63.25 1.23.7 1.68L11.2 10.9a1.55 1.55 0 0 1 0 2.2l-3.3 3.32c-.45.45-.7 1.05-.7 1.68v3.3" style="stroke:var(--ic-hash)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.8 2.6v3.3c0 .63-.25 1.23-.7 1.68L12.8 10.9a1.55 1.55 0 0 0 0 2.2l3.3 3.32c.45.45.7 1.05.7 1.68v3.3" style="stroke:var(--ic-hash)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.4 2.6h13.2M5.4 21.4h13.2" style="stroke:var(--ic-hash)" stroke-width="2" stroke-linecap="round"/><path d="M9.7 6.3c0-.94.76-1.7 1.7-1.7h1.2c.94 0 1.7.76 1.7 1.7 0 .34-.1.67-.3.94L12 10 10 7.24a1.7 1.7 0 0 1-.3-.94z" style="fill:var(--ic-amber)"/><path d="M11.3 10.6h1.4v6h-1.4z" style="fill:var(--ic-amber)"/><path d="M8.9 19.4c0-1.72 1.39-3.1 3.1-3.1s3.1 1.38 3.1 3.1z" style="fill:var(--ic-amber)"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="3.8" y="13.4" width="4.6" height="7" rx="1.3"/><rect x="9.7" y="9" width="4.6" height="11.4" rx="1.3"/><rect x="15.6" y="3.6" width="4.6" height="16.8" rx="1.3"/></symbol>
   <!-- ── Đơn sắc cho thẻ khách hàng / modal (màu theo `color` của class cha) ── -->
   <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.8 9.8c0 3.9-3.1 7.6-6.8 11.6C8.3 17.4 5.2 13.7 5.2 9.8a6.8 6.8 0 1 1 13.6 0z"/><circle cx="12" cy="9.7" r="2.6"/></symbol>
@@ -4718,6 +4770,11 @@ body.force-desktop .table-view { display: block; }
            ⚠️ Mỗi mục là MỘT `.count-stat` bọc đúng cặp (nhãn, số) — `flex-wrap` chỉ ngắt được ở
            ranh giới giữa các mục, nên ⛔ đừng để nhãn và số của cùng một mục rời nhau ra. -->
       <div class="count-stats">
+        <!-- ⟳ 2026-09-28d: icon đầu hàng (yêu cầu “thêm icon trước hàng này cho dễ phân biệt”) —
+             MỤC ĐỘC LẬP của `.count-stats`, KHÔNG nằm trong `.count-stat` nào (mục KH bị ẩn ở
+             tab Tổng hợp — icon phải còn). `aria-hidden` vì chỉ trang trí; đọc chú thích
+             `.count-row-ic` trong CSS. -->
+        <span class="count-row-ic" aria-hidden="true"><svg class="ic count-row-ic-flip" width="19" height="19"><use href="#i-hourglass-sand"/></svg><svg class="count-row-ic-flow" viewBox="0 0 24 24" width="19" height="19"><line x1="12" y1="10.4" x2="12" y2="13.6" style="stroke:var(--ic-amber)" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="1.1 1.5"/></svg></span>
         <div class="count-stat"><span class="count-lbl">HĐ</span><span id="countHoaDon" class="count-kh-hd">0</span></div>
         <div class="count-stat"><span class="count-lbl">KH</span><span id="countKH" class="count-kh-hd">0</span></div>
         <!-- ⛔ **LỊCH SỬ** — bố cục 2 dòng đã bỏ 2026-09-27 (nay `.count-stats` 3 cột, nhãn trên
@@ -5728,7 +5785,13 @@ function switchTab(tab) {
   document.getElementById('detailView').style.display = showDetail ? 'block' : 'none';
   document.getElementById('summaryView').style.display = tab === 'summary' ? 'block' : 'none';
   document.getElementById('oldView').style.display = showOld ? 'block' : 'none';
-  document.getElementById('countKH').parentElement.style.display = (showDetail || showOld) ? 'block' : 'none';
+  // ⟳ 2026-09-28c: trả về `''` thay vì `'block'` — NGUYÊN NHÂN “nhảy hàng khi chọn trạng
+  // thái ở Chi tiết nợ” (ảnh crop: `KH27` cạnh nhau + 3 mục lệch trần). `countKH.parentElement`
+  // là mục KH `.count-stat` = LƯỚI 2 HÀNG (`display:grid`); hồi bố cục 2 dòng cũ cha của nó
+  // là dòng block nên gán `'block'` vô hại, còn nay nó là GRID ⇒ bị ép block ⇒ nhãn “KH” và
+  // số nằm CẠNH nhau trên một dòng, lệch trần với 2 mục grid còn lại ⇒ cả hàng “nhảy”.
+  // Gán `''` cho stylesheet tự trả `grid`. (Ẩn vẫn giữ `'none'`: tab Tổng hợp không có cột KH.)
+  document.getElementById('countKH').parentElement.style.display = (showDetail || showOld) ? '' : 'none';
   currentPage = 1; applyFilters();
 }
 
@@ -6245,12 +6308,17 @@ function fitAllFilterLabels() {
    `fitCountRow()` ngay lúc nạp trang, mà lúc đó mọi `const` khai SAU đây còn nằm trong
    “vùng chết tạm thời” ⇒ hằng ở ngoài sẽ làm **nổ** lượt nạp trang trên đúng máy đang lỗi.
    `MIN` = 0,6 ≈ 10px ở mức “Chuẩn” — nhỏ hơn nữa thì không còn đọc được. */
-/* Ba mục `.count-stat` nằm chung một hàng ⇔ `top` của chúng bằng nhau (cho 1px dung sai vì
-   `getBoundingClientRect` trả số thập phân). */
+/* Ba mục `.count-stat` ĐANG HIỆN nằm chung một hàng ⇔ `top` của chúng bằng nhau (cho 1px dung
+   sai vì `getBoundingClientRect` trả số thập phân).
+   ⟳ 2026-09-28c: BỎ QUA mục `display:none` — tab “Tổng hợp nợ” ẨN mục KH (`switchTab()`),
+   rect của mục ẩn = 0×0 với `top` 0 ⇒ nếu tính vào phép so `top` thì hàm báo “đang ngắt” ẢO
+   ⇒ `fitCountRow()` đập `--count-fit` xuống SÀN 0,6 (đo được sống: fit `0.6000` dù hàng thẳng,
+   một mục w:0) — và khi quay về tab có đủ 3 mục thì chữ đã bị thu oan vĩnh viễn. Chỉ còn < 2
+   mục hiện thì không thể “ngắt” — trả false. */
 function countRowWrapped() {
   const stats = document.querySelector('.count-stats');
   if (!stats) return false;
-  const items = Array.prototype.slice.call(stats.children);
+  const items = Array.prototype.slice.call(stats.children).filter(el => getComputedStyle(el).display !== 'none');
   if (items.length < 2) return false;
   const t0 = items[0].getBoundingClientRect().top;
   return items.some(el => Math.abs(el.getBoundingClientRect().top - t0) > 1);
@@ -6265,7 +6333,10 @@ function fitCountRow() {
   if (!countRowWrapped()) return;                     // đường thường: một phép đo rồi thoát
   let k = 1;
   for (let i = 0; i < 8 && k > MIN; i++) {
-    const items = Array.prototype.slice.call(stats.children);
+    /* ⟳ 2026-09-28c: phép `need` cũng CHỈ tính mục ĐANG HIỆN — mục ẩn có width 0 nên không
+       làm `need` sai, nhưng `(items.length - 1)` thừa 1 bậc `gap` và nhất là đồng bộ đúng
+       tập mục với `countRowWrapped()` (xem chú thích ngay trên). */
+    const items = Array.prototype.slice.call(stats.children).filter(el => getComputedStyle(el).display !== 'none');
     const gap = parseFloat(getComputedStyle(stats).columnGap) || 0;
     const need = items.reduce((a, el) => a + el.getBoundingClientRect().width, 0) + gap * (items.length - 1);
     if (need <= stats.clientWidth) break;
