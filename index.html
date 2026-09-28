@@ -408,7 +408,17 @@
        — đúng cái “nhạt quá” mà người dùng phàn nàn. Màu đục này đạt **1,34–1,49:1** ở cả ba mức,
        và vì nó KHÔNG đổi theo nút “Nền” nên tương phản chữ TÊN/TIỀN trên dải cũng không đổi.
      ⚠️ Ở LIGHT thì `--light-card` **TRÙNG** `--light-surface` ở cả ba mức ⇒ không thể dùng thẳng
-       `var(--light-card)` (dải sẽ vô hình, 1,00:1) — xem chú thích ở rule `body.light-mode`. */
+       `var(--light-card)` (dải sẽ vô hình, 1,00:1) — xem chú thích ở rule `body.light-mode`.
+     ⟳ **2026-09-28f — DẢI NỀN LIGHT ĐẬM HƠN LẦN NỮA; DARK GIỮ NGUYÊN (có lý do, đọc kỹ):**
+       yêu cầu lặp lại “cho nền tên và tiền đậm hơn cho dễ nhìn” (ảnh: dải hàng `tên + tiền` ở
+       chế độ SÁNG).
+       ⚠️ **VÌ SAO KHÔNG ĐỤNG DARK:** ở chế độ tối dải nằm **SÁNG HƠN** nền bảng — đó chính là cách
+       nó đọc ra thành dải ⇒ làm nó TỐI đi là làm nó **BIẾN MẤT** (nền bảng tối `#1f252f`–`#242a34`,
+       dải hiện `#293653`). Muốn nó nổi hơn ở dark thì phải SÁNG hơn nữa, mà trần đã chạm:
+       tên `.cell-tenkh` dark `#60a5fa` trên dải chỉ còn **4,71:1** (L dải 0,0375 → trần AA 4,5
+       là L ≤ **0,0417**) ⇒ sáng thêm là tên TỤT xuống dưới AA. Vậy dark ĐỨNG YÊN cho tới khi
+       đổi luôn màu chữ tên ở dark (hỏi trước khi làm).
+       Ở LIGHT thì ngược lại: nền bảng sáng ⇒ dải **TỐI hơn** nền mới đọc ra thành dải. */
   --row1-bg: #293653;
   --fs-tb-desk: 14px;    /* bảng 14 CỘT trên MÁY TÍNH — khối `@media (min-width: 640px)`
                             ⚠️ Tên cũ `--fs-tb-sm` dễ đọc nhầm thành “bản nhỏ ở điện thoại”, nhưng
@@ -467,6 +477,23 @@ body.light-mode {
      tới — muốn hết hẳn thì phải xử lý riêng và ĐO LẠI (xem run doc). */
   --ctl-light-line: #64748b;
 
+  /* ⟳ 2026-09-28f: DẢI ĐẬM HƠN LẦN NỮA — mức “Chuẩn” `#d3dde9` → **`#bfcede`** (dải/nền bảng
+     **1,25 → 1,42**), “Sáng” `#dfe7f0` → **`#c9d6e5`** (1,25 → 1,48), “Dịu” `#d3d9e2` → **`#b9c5d4`**
+     (1,16 → 1,43). Ba mức nay **độ nổi gần bằng nhau** (1,42–1,48) — trước đây mức “Dịu” cố ý
+     nhích nhẹ vì chữ TIỀN ở đó đã sát sàn 4,56; nay tiền đã hạ tông (xem dưới) nên hết ràng buộc.
+     ⚠️ **ĐI KÈM BẮT BUỘC — 4 MÀU CHỮ TRÊN DẢI PHẢI HẠ THEO** (dải tối đi ⇒ tương phản chữ TỤT;
+     đo bằng công thức WCAG trên L của từng màu, KHÔNG đoán):
+       · TÊN (`.cell-tenkh`)      `#1d4ed8` → **`#1e40af`**  (4,98 trên dải “Dịu”) — trùng tông
+         `.count-kh-hd` của light mode nên vẫn đúng hệ màu app.
+       · TIỀN `.high`              `#b91c1c` → **`#991b1b`**  (4,75 — đây là chỗ SÁT SÀN NHẤT) —
+         trùng tông `.count-tien` của light mode.
+       · TIỀN `.low` (nợ < 2 triệu) `#047857` → **`#064e3b`** (5,55) — ⚠️ xanh `#047857` vốn ĐÃ
+         dưới AA trên dải từ trước (3,91), nay buộc phải hạ; đây là chỗ chỉ đạt AA nhờ đổi màu.
+       · `.mil-digit`              `#b91c1c` → **`#991b1b`** (cùng tông với `.high` — sửa lẻ là
+         số tiền hai tông).
+     ⛔ Nếu sau này ai muốn dải SÁNG lại thì phải kéo 4 màu này về — chúng đã hạ hết biên.
+     ⛔ ĐỪNG hạ dải tiếp mà không đo lại: `.tien-no.high` là màu chạm sàn đầu tiên.
+
   /* Dải nền hàng “tên + tiền” ở light mode.
      Lịch sử: **5%** (nhạt quá — yêu cầu người dùng) → **14%** → ⟳ **12%** ở lượt “cân lại
      cho hài hòa”: nền BẢNG vừa hạ `#ffffff → #f1f5f9`, mà blend alpha ra tông ĐẬM theo nền
@@ -494,7 +521,7 @@ body.light-mode {
      “Dịu” còn **4,78** — xem bảng đo; trả về `#dc2626` là tụt xuống dưới AA).
      ⚠️ Đổi giá trị dải thì PHẢI đo lại chữ TÊN và TIỀN trên dải ở CẢ BA mức (dải tối hơn ⇒
      tương phản chữ đậm TỤT), đừng chỉ đổi màu rồi thôi. */
-  --row1-bg: #d3dde9;
+  --row1-bg: #bfcede;
 
   /* MỘT token cho MỌI đường bao ở light mode (thẻ khách hàng, bảng chi tiết, Sheet 2,
      nút phân trang). Trước đây thẻ dùng `#4b5563` còn panel dùng `#6b7280` → hai tầng viền
@@ -913,15 +940,11 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue-dark); }
 }
 @media (prefers-reduced-motion: reduce) {
   .theme-logo.spin .theme-logo-ico { animation: none; }
-  /* ⟳ 2026-09-28d: đồng hồ cát hàng Tổng cũng TẮT XOAY tại đây — nó thuần trang trí (`aria-hidden`),
-     người tắt chuyển động không cần nó nhúc nhích. Thêm SELECTOR vào rule `prefers-reduced-motion`
-     DUY NHẤT sẵn có, KHÔNG mở media query thứ hai (giữ nguyên luật khoanh hẹp ghi ở trên).
-     ⚠️ ĐO ĐƯỢC THỰC TẾ: rule `.count-row-ic svg` THUA vì khai TRƯỚC rule animation (nằm ở phần
-     `.count-info` dưới cuối file) — cùng đặc hiệu thì rule SAU thắng ⇒ phải nâng đặc hiệu lên
-     `.count-info .count-row-ic svg` (0,2,1) để thắng bất kể thứ tự. Đã kiểm: reduce=true mà
-     animation vẫn `running` trước khi sửa. ⟳ cùng ngày: thêm DÒNG CÁT — rule phủ CẢ svg dòng cát
-     lẫn `line` bên trong nó (nét dashoffset). */
-  .count-info .count-row-ic svg, .count-info .count-row-ic line { animation: none; }
+  /* ⟳ 2026-09-28g: rule TẮT ANIMATION cho ĐỒNG HỒ CÁT hàng Tổng đã **XOÁ** cùng lượt bỏ icon đó
+     (`.count-info .count-row-ic svg, .count-info .count-row-ic line { animation: none; }`).
+     Hai icon mới (biên lai / chồng xu) là ảnh TĨNH — ⛔ đừng thêm selector nào ở đây cho chúng
+     trừ khi sau này icon mới có chuyển động. Giữ chỗ này lại làm dấu vết để biết rule cũ từng có
+     (bài học đặc hiệu của nó ghi ở chú thích `.count-ic` + run doc 2026-09-28d). */
   /* Cùng nhịp với cú xoay và với chuyển màu (`--theme-anim-*`), chỉ đổi CÁCH phản hồi (màu thay vì
      xoay) — nhờ vậy “một cử chỉ” giữ nguyên dù hệ điều hành có tắt chuyển động hay không. */
   .theme-logo.spin { animation: logoThemeFlash var(--theme-anim-dur) var(--theme-anim-ease); }
@@ -1065,21 +1088,25 @@ body.light-mode .search-box { background: var(--ctl-light-bg); border: none; bor
 /* giữ nguyên độ dày border 1px như dark (chỉ đổi màu → trong suốt):
    bỏ hẳn border sẽ đổi bề rộng nội tại của input, kéo theo chia lại flex của cả hàng */
 body.light-mode .search-box input { color: #1e293b; border-color: transparent; background: transparent; caret-color: #1e293b; }
-/* ── PLACEHOLDER Ô TÌM KIẾM — 3 LẦN NGƯỜI DÙNG YÊU CẦU NHẠT HƠN (đọc kỹ trước khi sửa) ──
+/* ── PLACEHOLDER Ô TÌM KIẾM — 4 LẦN NGƯỜI DÙNG YÊU CẦU NHẠT HƠN (đọc kỹ trước khi sửa) ──
    1) 2026-09-27 `#5b6777 → #606f7e` (yêu cầu “chữ mờ hơn”): 5,09 → **4,56:1** trên `#eff1f5`.
    2) 2026-09-27 `#606f7e → #75828f` (yêu cầu “cho chữ ở tìm kiếm nhạt hơn” — người dùng
       **ĐÃ ĐƯỢC CẢNH BÁO** rằng 4,56 là mức cuối còn đạt AA và vẫn chọn nhạt hơn) ⇒ **3,47:1**.
    3) 2026-09-27 `#75828f → #7c8896` + **nét `--ctl-fw` 500 → 400** (yêu cầu “nhạt và nét mỏng
       hơn nữa” — đã cảnh báo trước, người dùng vẫn chọn) ⇒ **3,19:1**.
+   4) 2026-09-28 `#7c8896 → #8d98a4` (yêu cầu **“cho hàng chữ ở tìm kiếm thật mờ”**) ⇒ **2,63:1**,
+      và nhánh DARK hạ cùng lúc xuống **2,60:1** để 2 theme không lệch độ mờ (trước đó lệch:
+      3,19 light / 3,75 dark). Đây là lựa chọn có chủ đích sau 3 lần bác cảnh báo.
    ⚠️ **CỐ Ý DƯỚI AA 4,5.** Placeholder là chữ control (`--ctl-fs` 19px) nên theo WCAG ngưỡng của
    nó là **4,5:1**, KHÔNG phải 3:1 của đồ hoạ (nét 400 vẫn không phải “large text” — cần ≥18,66px
    VÀ đậm ≥700) ⇒ từ mốc này nó là **chữ gợi ý mờ**, đọc được nhưng không còn “đạt chuẩn”.
-   ⛔ **`#7c8896` (3,19) LÀ NẤC CUỐI AN TOÀN** — người dùng đã 3 lần bác cảnh báo, nhưng dưới ~3
-   là vùng placeholder “vô hình” trên điện thoại ngoài trời. Muốn quay lại đạt AA: **`#606f7e`**.
-   Bảng tham chiếu đo trên `#eff1f5`: `#6d7c8b` 3,79 · `#75828f` 3,47 · **`#7c8896` 3,19** ·
-   `#8590a0` 2,86 · `#8d98a4` 2,63 · `#94a3b8` 2,27.
+   ⛔ **`#8d98a4` (2,63) LÀ MỨC NGƯỜI DÙNG ĐÃ CHỐT — ĐỪNG MỜ THÊM MÀ KHÔNG HỎI**: dưới ~2 là vùng
+   placeholder “vô hình” trên điện thoại ngoài trời (nắng + màn hình giảm độ sáng).
+   Muốn quay lại đạt AA: **`#606f7e`** (4,56). Muốn lùi 1 nấc: **`#8590a0`** (2,86).
+   Bảng tham chiếu đo trên `#eff1f5`: `#6d7c8b` 3,79 · `#75828f` 3,47 · `#7c8896` 3,19 ·
+   `#8590a0` 2,86 · **`#8d98a4` 2,63** · `#94a3b8` 2,27.
    ℹ️ Ô CHỮ ĐÃ GÕ: MÀU không đụng (`#1e293b`) — chỉ đổi NÉT (500 → 400) cho khớp placeholder. */
-body.light-mode .search-box input::placeholder { color: #7c8896; }
+body.light-mode .search-box input::placeholder { color: #8d98a4; }
 body.light-mode .search-box input:focus { border-color: transparent; outline: none; }
 body.light-mode .search-box:focus-within { border: none; border-radius: 10px; box-shadow: inset 0 0 0 1px #3b82f6; }
 body.light-mode .filter-row { background: transparent; }
@@ -1399,10 +1426,16 @@ body.light-mode .summary-table .tien-no-cell { color: #7c2d12; background: #d2da
 body.light-mode .summary-table .sa-sum { color: #334155; }
 body.light-mode .summary-table th.sorted .sa-sum { color: #1e3a8a; }
 body.light-mode .tien-no { color: #166534 !important; }
-body.light-mode .tien-no.high { color: #b91c1c !important; }   /* red-700: dải nền row1 (14%) làm #dc2626 tụt 4,11:1 */
-body.light-mode .tien-no.low { color: #047857 !important; }
+/* ⟳ 2026-09-28f: BA màu TIỀN trên dải hạ theo lượt “dải đậm hơn lần nữa” — số đo trên dải
+   “Dịu” `#b9c5d4` (L 0,550): `#991b1b` **4,75** ✓ (bản cũ `#b91c1c` chỉ còn **4,10 ✗**) ·
+   `#064e3b` **5,55** ✓ (bản cũ `#047857` vốn đã **3,91 ✗** từ trước, nay mới đạt AA) ·
+   `.mid` `#166534` **5,32** ✓ giữ nguyên (bảng không dùng `.mid`, chỉ modal — modal có
+   rule riêng ở `.i-tien`). ⚠️ Ba rule `.high`/`.low`/`.mil-digit` phải sửa CÙNG NHAU với
+   `.cell-tenkh` — sửa lẻ là đúng ô đó tụt dưới AA mà không có gì báo. */
+body.light-mode .tien-no.high { color: #991b1b !important; }   /* red-800: trên dải mới #b9c5d4 = 4,75 ✓ (bản #b91c1c chỉ 4,10) */
+body.light-mode .tien-no.low { color: #064e3b !important; }
 body.light-mode .tien-no.mid { color: #166534 !important; }
-body.light-mode .tien-no .mil-digit { color: #b91c1c !important; }   /* cùng lý do trên — sửa LẺ rule này là số tiền hai tông */
+body.light-mode .tien-no .mil-digit { color: #991b1b !important; }   /* cùng lý do trên — sửa LẺ rule này là số tiền hai tông */
 body.light-mode .kh-tien { color: #b91c1c; }
 body.light-mode .kh-tien.high { color: #b91c1c; }   /* thẻ card: 6,6:1 trên nền thẻ (trước #dc2626 = 4,83:1) */
 body.light-mode .kh-tien.low { color: #047857; }
@@ -1858,9 +1891,11 @@ body.light-mode .cfg-row, body.light-mode .cfg-hd { border-bottom-color: #cbd5e1
 .search-box input:focus { border: 1px solid #3b82f6; outline: none; }
 /* ⚠️ placeholder là chữ CONTROL theo --ctl-fs (19px) ⇒ ngưỡng AA là 4.5:1, không phải 3:1 của icon
    (nét 400 vẫn KHÔNG phải "large text" của WCAG: cỡ ≥18,66px **VÀ** đậm ≥700 mới hạ ngưỡng).
-   Ba lượt người dùng yêu cầu nhạt hơn: `#94a3b8` 5,62 → `#7f8ea3` 4,32 → **`#74839a` 3,75:1**.
+   Bốn lượt người dùng yêu cầu nhạt hơn: `#94a3b8` 5,62 → `#7f8ea3` 4,32 → `#74839a` 3,75 →
+   **`#5f697a` 2,60:1** (2026-09-28 “thật mờ”; hạ cùng lượt với nhánh light `#8d98a4` 2,63
+   để 2 theme bằng độ mờ — trước đó light 3,19 / dark 3,75 lệch nhau).
    ⛔ ĐỪNG mờ thêm mà không hỏi (xem bảng tham chiếu ở rule light phía trên). */
-.search-box input::placeholder { color: #74839a; }   /* DARK: nay **`#74839a` = 3,75:1** trên nền ghép `rgb(36,42,52)` — cùng lượt “nhạt + nét mỏng hơn” với nhánh light (2 theme đổi CÙNG LÚC để không lệch nhau khi người dùng đổi sáng/tối). Màu cũ để tham chiếu: `#7f8ea3` 4,32 · `#94a3b8` 5,62. */
+.search-box input::placeholder { color: #5f697a; }   /* DARK: nay **`#74839a` = 3,75:1** trên nền ghép `rgb(36,42,52)` — cùng lượt “nhạt + nét mỏng hơn” với nhánh light (2 theme đổi CÙNG LÚC để không lệch nhau khi người dùng đổi sáng/tối). Màu cũ để tham chiếu: `#7f8ea3` 4,32 · `#94a3b8` 5,62. */
 .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-dim); pointer-events: none; display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; }
 
 /* Nút xuất Excel: trước đây là emoji 📥 trôi tự do, không có bề mặt nút nào. */
@@ -2228,8 +2263,11 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
    Chỉ khai một-hai cái là có mức “Sáng”/“Dịu” mà thẻ (hay bảng, hay dải) đứng im — nút “Nền”
    bấm vào như không có gì đổi ở nhóm bề mặt bị bỏ sót.
    ℹ️ `--row1-bg` là **màu ĐỤC**, không phải alpha (xem chú thích ở rule `body.light-mode` phía trên). */
-body.light-mode[data-surface="sang"] { --light-surface: #ffffff; --light-card: #ffffff; --danhso-bg: #e8f1fd; --row1-bg: #dfe7f0; }
-body.light-mode[data-surface="diu"]  { --light-surface: #e3e9f0; --light-card: #e3e9f0; --multi-hd: #059669; --danhso-bg: #c7dbf5; --row1-bg: #d3d9e2; }
+/* ⟳ 2026-09-28f: `--row1-bg` của cả ba mức đã HẠ MỘT NẤC MẠNH (xem chú thích ở rule
+   `body.light-mode` phía trên) — hai rule này phải đi CÙNG NHAU với mức “Chuẩn”, thiếu một mức
+   là bấm nút “Nền” thấy dải đậm nhạt khác thường. */
+body.light-mode[data-surface="sang"] { --light-surface: #ffffff; --light-card: #ffffff; --danhso-bg: #e8f1fd; --row1-bg: #c9d6e5; }
+body.light-mode[data-surface="diu"]  { --light-surface: #e3e9f0; --light-card: #e3e9f0; --multi-hd: #059669; --danhso-bg: #c7dbf5; --row1-bg: #b9c5d4; }
 body.light-mode[data-surface="diu"] .kh-name { color: #1d4ed8; }
 /* ⚠️ Hai mức dưới đây cũng bị lượt “nền thẻ = nền tab” DỊCH LÊN (xem ⟳ ngay trên): mức “Chuẩn”
    lấy đúng màu control `--ctl-solid` nên hai mức này phải đi theo, nếu không “Sáng” chỉ còn
@@ -2315,9 +2353,10 @@ body.light-mode .nhom-sel-name {
      (Lịch sử: px cứng 17 → 18 → 17px, ba lượt liên tiếp của người dùng.)
      ⚠️ SỐ khai riêng bằng `--fs-count-num` (luôn = nhãn + **2px** = một cấp): sửa một trong
      hai token mà quên token kia là mất quan hệ “số lớn hơn nhãn”.
-     ⚠️ Đổi cỡ chữ ở đây thì phải ĐO LẠI hai thứ: (a) bề rộng cần của `.count-stats` (mỗi cột =
-     `max(nhãn, số)`) và (b) ngưỡng xuống hàng — xem chú thích `.count-stats` (đo ở mức “to” là
-     mức rộng nhất: `need` 214,55px ở nhánh nền · 205,21px ở nhánh hẹp).
+     ⚠️ Đổi cỡ chữ ở đây thì phải ĐO LẠI bề rộng cần của hàng — xem chú thích `.count-lines`
+     và `.count-stats`. ⟳ 2026-09-28e: số đo `need` cũ (214,55px / 205,21px) là **LỊCH SỬ** của
+     bố cục 3 CỘT nằm NGANG; bố cục 2 DÒNG nay đo lại: `need` ≈ **181px** ở mức “Chuẩn”
+     (icon 19 + khe 14 + khối 2 dòng ~148px) ⇒ khổ hẹp nhất từng đo (298px) **thừa ~117px**.
      ℹ️ `line-height: 22px` và `grid-template-rows: 22px 30px` của `.count-stat` là CỐ ĐỊNH ⇒ đổi
      mức “Aa” KHÔNG đổi chiều cao hàng ghim (đo lại ở cả 3 mức: 56,95px y nguyên).*/
   /* ⟳ 2026-09-28: `--count-fit` = HỆ SỐ THU do **JS ĐO ĐƯỢC** (mặc định **1** = không đụng gì).
@@ -2335,8 +2374,8 @@ body.light-mode .nhom-sel-name {
   font-size: calc(var(--fs-count-lbl) * var(--count-fit));
   /* `line-height` khai TƯỜNG MINH (trước là `normal`) để chiều cao dòng không phụ thuộc
      metric của font: 18px → `normal` cho ra 22.1px, còn số nguyên 22px mới khớp phép tính
-     của HÀNG SỐ trong `.count-stats` (nay khai thẳng `grid-template-rows: 22px 30px`; 30 = 22 + 4×2
-     theo bản cũ). Đổi cỡ chữ thì phải đo lại cả hai số. */
+     của HÀNG SỐ trong `.count-stats` (nay là `.count-line-1` cao **22px** + `.count-line-2` cao
+     **30px**; 30 = 22 + 4×2 theo bản cũ). Đổi cỡ chữ thì phải đo lại cả hai số. */
   line-height: 22px;
   color: var(--text-dim);
   font-weight: 500;
@@ -2513,48 +2552,62 @@ body.light-mode .nhom-sel-name {
    lại đúng hợp đồng ghi ở chú thích `.count-stats` ("mục chỉ co tới max-content" vốn đã sai
    từ đầu vì `0` nhỏ hơn cả max-content); ngắt dòng là việc của `flex-wrap` ở RANH GIỮA các
    mục, không phải việc của flex co. */
-.count-stat { display: grid; grid-template-rows: 22px 30px; align-items: center; min-width: max-content; }
-/* ⟳ 2026-09-28d: ICON ĐẦU HÀNG “TỔNG” (yêu cầu “thêm icon trước hàng này cho dễ phân biệt”; ⟳
-   cùng ngày đổi sang `#i-hourglass` — SYMBOL MỚI THÊM vào sprite theo đúng pattern stroke —
-   sau khi xem ảnh thực tế, icon `#i-coins` trông giống icon “cơ sở dữ liệu”) —
-   mục ĐẦU TIÊN của `.count-stats`, cùng thuộc flex-wrap nên: (a) co giãn theo đúng hợp đồng,
-   (b) `fitCountRow()` tự tính cả icon vào phép `need` (là con trực tiếp đang hiện) ⇒ khổ hẹp
-   + chữ to thì cơ chế thu VẪN đúng, không phải khai ngưỡng mới. `display:flex` +
-   `align-items:center` để icon 19px ngồi GIỮA chiều cao 52px của hàng (trùng mực số);
-   màu = `--ic-hash` — cùng tông xanh icon của app (như icon biên lai ô “Chi tiết nợ”).
-   ⛔ ĐỪng nhét icon vào TRONG `.count-stat` đầu: mục đó bị `switchTab()` ẨN ở tab Tổng hợp
-   ⇒ icon biến mất đúng lúc hàng chỉ còn 2 mục — icon là DẤU HIỆU CỦA HÀNG, phải đứng độc lập. */
-.count-row-ic { display: flex; align-items: center; min-width: max-content; color: var(--ic-hash); position: relative; }
-/* ⟳ 2026-09-28d: CHUYỂN ĐỘNG “lật đồng hồ cát” — xoay 180° quanh tâm. ⟳ CÙNG NGÀY, yêu cầu
-   “nhịp lật nhanh hơn và thêm hiệu ứng cát chảy mỏng ở cổ đồng hồ khi lật xong”:
-   · NHỊP: chu kỳ 2,8s → **1,6s**; pha đổi thành GIỮ 0–40% · LẬT 40–60% · GIỮ 60–100% — lật xong
-     sớm ở 60% để DÒNG CÁT có 40% chu kỳ (0,64s) sống sau cú lật.
-   · DÒNG CÁT: svg PHỦ ĐÈ `.count-row-ic-flow` (absolute đúng 19×19 trên icon, viewBox 24) vẽ
-     MỘT NÉT MẢNH ở cổ (x=12, y 10,4→13,6) với `stroke-dasharray: 1.1 1.5` = HẠT cát. Hai
-     animation: FADE `countRowIcFlowFade` đồng bộ cùng chu kỳ 1,6s (0–60% ẩn: chưa lật xong ·
-     66–88% hiện: cát đang chảy · 100% đứt hẳn để vòng sau không “nháy” dòng cũ) + MARCH
-     `countRowIcFlowMarch` chạy `stroke-dashoffset` 2,6→0 (chu kỳ dấu = 1,1+1,5 = 2,6 ⇒ lặp liền
-     mạch; GIẢM offset = hạt trôi XUỐNG theo hướng nét). Mặc định `opacity: 0` ⇒ khi
-     reduce-motion tắt hết animation, dòng cát biến mất hoàn toàn chứ không đứng hình hiện ra.
-   Vòng lặp SEAMLESS nhờ đồng hồ cát đối xứng: 180° nhìn giống 0° nên nhảy 100%→0% không thấy gãy.
-   `transform` không đụng bố cục (không phải metric) ⇒ phép đo của `fitCountRow()` không đổi; icon
-   vẫn `aria-hidden` nên trình đọc màn hình bỏ qua.
-   ⚠️ Selector animation xoay là `.count-row-ic .count-row-ic-flip` — KHÔNG dùng `.count-row-ic svg`
-   chung: span còn chứa svg DÒNG CÁT cần keyframes KHÁC; dùng chung là dòng cát bị xoay theo. */
-@keyframes countRowIcFlip {
-  0%, 40%  { transform: rotate(0deg); }
-  60%, 100% { transform: rotate(180deg); }
-}
-.count-row-ic .count-row-ic-flip { animation: countRowIcFlip 1.6s ease-in-out infinite; }
-@keyframes countRowIcFlowFade {
-  0%, 60%  { opacity: 0; }
-  66%      { opacity: 1; }
-  88%      { opacity: 1; }
-  100%     { opacity: 0; }
-}
-@keyframes countRowIcFlowMarch { from { stroke-dashoffset: 2.6; } to { stroke-dashoffset: 0; } }
-.count-row-ic-flow { position: absolute; top: 0; left: 0; opacity: 0; pointer-events: none; animation: countRowIcFlowFade 1.6s linear infinite; }
-.count-row-ic-flow line { animation: countRowIcFlowMarch 0.45s linear infinite; }
+/* ⟳ 2026-09-28e: **2 DÒNG** thay cho 3 cột “nhãn trên — số dưới” (yêu cầu “xếp lại hàng trên
+   HĐ: 813 - KH: 781 ở dưới là Nợ:”). Con của `.count-stats` nay CHỈ CÒN MỘT khối
+   `.count-lines` gồm 2 dòng xếp DỌC, mỗi dòng là các cặp `nhãn: số` nằm NGANG (icon của mỗi
+   dòng nằm TRONG dòng đó — xem `.count-ic`).
+   ⚠️ CHIỀU CAO VẪN ĐÚNG 52px (22 + 30) — đây là HẰNG SỐ của hàng, mọi số đo trong run doc
+   (hàng cao 56,95px; nhãn `top` 204,95 · số `top` 226,95) dựa vào nó: dòng 1 cao **22px**,
+   dòng 2 cao **30px** y như hai hàng lưới cũ. ⛔ Đổi hai số này là cả danh sách thẻ dịch xuống.
+   ⚠️ Lưới `.count-info` (cột chữ | nút ⚙) KHÔNG đổi: `.count-stats` vẫn là con duy nhất của CỘT 1.
+   `min-width: max-content` giữ nguyên hợp đồng cũ — khối 2 dòng không bao giờ bị flex BÓP nhỏ
+   hơn nội dung (bóp là số bẻ dòng trong cặp, đúng lỗi 2026-09-28b). */
+.count-lines { display: flex; flex-direction: column; min-width: max-content; }
+/* Mỗi dòng `nowrap` + `align-items: baseline` để nhãn 17px và số 19px ngồi CHUNG một dòng cơ sở
+   (thiếu baseline là hai cỡ chữ lệch mực, nhìn như số bị trễ xuống). */
+.count-line { display: flex; align-items: baseline; white-space: nowrap; }
+.count-line-1 { height: 22px; gap: 6px; }
+.count-line-2 { height: 30px; }
+/* Cặp `nhãn: số` — `inline-flex` cho khoảng hở `gap: 3px` đều nhau (dấu cách thật trong markup
+   vừa rộng hơn vừa không co giãn được). Dấu `-` ngăn hai nhóm nằm TRONG `.count-kh-group` vì
+   `switchTab()` ẩn cả nhóm ở tab “Tổng hợp nợ” (xem chú thích ở markup). */
+.count-pair, .count-kh-group { display: inline-flex; align-items: baseline; }
+.count-pair { gap: 3px; }
+.count-kh-group { gap: 6px; }
+/* Dấu `-` mờ như nhãn, không tranh chú ý với hai con số. */
+.count-sep { color: var(--text-dim); }
+/* ⟳ 2026-09-28g: ICON **Ở ĐẦU MỖI DÒNG**, THAY ICON ĐỒNG HỒ CÁT Ở ĐẦU HÀNG (người dùng chọn
+   phương án “chèn icon TRƯỚC nhãn, bỏ đồng hồ cát”): **biên lai** (`#i-receipt`) trước `HĐ:` và
+   **chồng xu** (`#i-coins`) trước `Nợ:` — đúng cặp icon đã dùng ở thanh công cụ (“Chi tiết nợ” =
+   biên lai · “Tiền Nợ” = chồng xu), nên lấy luôn token **`--ic-green`** của cặp đó (đo: light
+   **3,49** ở mức “Dịu” · **3,78** “Chuẩn” · **4,27** “Sáng” · dark **5,29** ⇒ trên ngưỡng 3:1
+   của WCAG 1.4.11 cho đồ hoạ ở MỌI mức, cả hai theme).
+   · `align-self: center` để icon nằm GIỮA dòng: `.count-pair` khai `align-items: baseline`,
+     mà SVG không có baseline CHỮ nên mặc định nó bị neo xuống đáy hàng.
+  · ⟳ 2026-09-28i: **CỠ ICON 16 → 20 → 18px** (hai yêu cầu liên tiếp trong cùng ngày: “cho icon
+    to hơn” rồi “cho icon 18px” ⇒ **CHỐT Ở 18px**). Cỡ nằm Ở MARKUP (`width/height` của svg),
+    không phải CSS — `.count-ic` chỉ lo căn giữa + không bóp.
+    ⚠️ **TRẦN LÀ 22px, ĐỪNG VƯỢT:** dòng 1 (`.count-line-1`) cao **22px** ⇒ icon lớn hơn là
+    **TRÀN RA NGOÀI dòng và ĐÈ LÊN dòng 2** (ở 20px đo được chỉ còn **0,88px** dư ở đáy ⇒ 24px
+    là chạm). Giữ hai icon CÙNG cỡ (dòng 2 cao 30px nên riêng nó chịu được icon lớn hơn, nhưng
+    lệch cỡ là hàng trông lệch ngay).
+    Đo ở 18px: icon **18,00×18,00** · `need` 173,48 (bản 16) → **175,51px** (18 = 16 + 2 ⇒ +2px,
+    vì icon nằm TRONG dòng nên không nhân đôi).
+   · `min-width: max-content` + `.ic { flex-shrink: 0 }` ⇒ icon không bị bóp khi hàng hẹp.
+   ⛔ **HỆ QUẢ BỐ CỤC:** `.count-stats` nay chỉ còn MỘT con (`.count-lines`) ⇒ `fitCountRow()`
+     đo `need` = đúng bề rộng khối 2 dòng, và icon nằm TRONG dòng nên tự được tính — ⛔ đừng
+     dựng lại icon ở cấp `.count-stats` (hợp đồng 2026-09-28d cũ đã hết hiệu lực).
+   ⛔ Icon là ANH EM ĐỨNG TRƯỚC nhãn, ⛔ KHÔNG nằm trong `#countHoaDon` / `#countTongTien`: JS ghi
+     số bằng `textContent` nên nhét icon vào trong là icon bị XOÁ mỗi lần cập nhật số.
+   ⚠️ Symbol đồng hồ cát (`#i-hourglass` 1 màu + `#i-hourglass-sand` 2 màu) VẪN GIỮ trong sprite
+     (tiền lệ `#i-notebook`); lượt này chỉ XOÁ phần CSS dùng chúng: rule `.count-row-ic` +
+     `@keyframes countRowIcFlip` / `countRowIcFlowFade` / `countRowIcFlowMarch` + 2 rule `-flow`.
+     ⛔ Muốn dựng lại thì khôi phục ĐỦ cả 3 keyframes + 4 rule (thông số đầy đủ ở run doc mục
+     **2026-09-28d**, gồm cả bẫy đặc hiệu của `prefers-reduced-motion`).
+     ℹ️ Nhắc lại lý do KHÔNG dùng `--ic-hash` như icon cũ: đây là cặp icon BIÊN LAI + CHỒNG XU,
+     và tông của cặp đó trong app là `--ic-green` (xem chú thích `:root` “biên lai + chồng xu”). */
+.count-ic { display: inline-flex; align-items: center; align-self: center; min-width: max-content; color: var(--ic-green); }
+.count-ic .ic { display: block; }
 /* SỐ canh giữa trong ô 30px của nó — trước đây `.count-line2 { height: 30px }` + `align-items:
    center` làm việc này. Thiếu `line-height` này thì số dồn lên ĐỈNH ô 30px (cách nhãn 0px thay
    vì 4px) ⇒ chiều cao hàng vẫn 57px nhưng mực chữ trong hàng sai.
@@ -2574,6 +2627,11 @@ body.light-mode .nhom-sel-name {
    ⚠️ Nhãn ↔ số lệch CỠ nhưng KHÔNG lệch màu/độ dày: số vẫn `font-weight: 400`, tông màu giữ
    nguyên ⇒ mọi tỉ lệ AA đã ghi không đổi (chỉ to hơn). */
 .count-info .count-kh-hd, .count-info .count-tien { line-height: 30px; font-size: calc(var(--fs-count-num) * var(--count-fit)); }
+/* ⟳ 2026-09-28e: số ở **DÒNG 1** nằm trong dòng cao **22px** ⇒ phải hạ `line-height` từ 30px
+   xuống 22px, không thì hộp chữ 30px tràn khỏi dòng 22px và đè vào dòng 2.
+   ⚠️ Đặc hiệu **0,3,0** để thắng rule (0,2,0) ngay trên BẤT KỂ thứ tự khai — đúng bài học đã
+   gặp ở `prefers-reduced-motion` (cùng đặc hiệu mà khai trước là thua). */
+.count-info .count-line-1 .count-kh-hd { line-height: 22px; }
 /* Dấu `·` ngăn hai nhóm “Tổng HĐ: …” và “KH: …”.
    ⛔ KHÔNG thay bằng 2 dấu cách trong markup: đo được ở 18px, bản dấu cách cần **230,84px**
    trong khi cột chữ ở khổ **360px** chỉ có **228,5px** ⇒ dòng 1 **xuống 2 dòng** trên đúng
@@ -4287,8 +4345,14 @@ body.force-desktop .table-view { display: block; }
      như nhau. Muốn khớp CHÍNH XÁC thì phải hạ dải nền hoặc chấp nhận dưới AA — hỏi trước khi đổi.
      ⚠️ `!important` ở nhánh light là BẮT BUỘC: rule nền `body.light-mode .table-view .cell-tenkh`
      đang là `#000000 !important` (phạm vi rộng hơn), thiếu nó là light mode vẫn đen. */
+  /* ⟳ 2026-09-28f: **`#1d4ed8` → `#1e40af`** CÙNG LƯỢT với việc hạ tông dải nền (yêu cầu “cho nền
+     tên và tiền đậm hơn cho dễ nhìn”). Dải “Dịu” nay `#b9c5d4` (L 0,550) và `#1d4ed8` trên nó
+     chỉ còn **4,46:1 ✗**; `#1e40af` = **4,98:1 ✓** (và trùng tông `.count-kh-hd` của light mode).
+     ⚠️ Vẫn KHÁC màu tên trên THẺ CARD ở mức “Dịu” (`#1d4ed8`) một bậc — điều kiện cũ (“tên bảng
+     ăn theo thẻ card”) đã nhường cho AA: thẻ đứng trên nền thẻ, còn tên trong bảng đứng trên
+     DẢI NỀN nên hai bên không thể cùng một mã MÀ vẫn đạt AA khi dải đã đậm lên. */
   body.force-desktop .table-view tbody td.cell-tenkh { color: #60a5fa; }
-  body.light-mode.force-desktop .table-view tbody td.cell-tenkh { color: #1d4ed8 !important; }
+  body.light-mode.force-desktop .table-view tbody td.cell-tenkh { color: #1e40af !important; }
 
   /* ── TÊN KH RÚT GỌN: chỉ ở BẢNG 3 HÀNG NÀY ───────────────────────────────────
      Yêu cầu người dùng: “tên kh quá 4 chữ thì rút gọn, ví dụ BAN QUẢN LÝ DỰ ÁN…”
@@ -4471,6 +4535,19 @@ body.force-desktop .table-view { display: block; }
   <symbol id="i-notebook" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.2h9.4A2.4 2.4 0 0 1 19.8 5.6v12.8a2.4 2.4 0 0 1-2.4 2.4H8"/><path d="M5.6 5.6A2.4 2.4 0 0 1 8 3.2v17.6a2.4 2.4 0 0 1-2.4-2.4z"/><path d="M5.6 8.6h3.2M5.6 12h3.2M5.6 15.4h3.2"/></symbol>
   <symbol id="i-receipt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 21.4V4a1.8 1.8 0 0 1 1.8-1.8h8a1.8 1.8 0 0 1 1.8 1.8v17.4l-2.9-1.9-2.9 1.9-2.9-1.9z"/><path d="M9.4 7.6h5.2M9.4 11.4h5.2M9.4 15.2h3"/></symbol>
   <symbol id="i-hash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9.4 3.4 7.6 20.6M16.4 3.4 14.6 20.6M4.2 9.2h15.6M3.6 15.2h15.6"/></symbol>   <symbol id="i-coins" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.9" rx="7.6" ry="3.1"/><path d="M4.4 5.9v5.5c0 1.71 3.4 3.1 7.6 3.1s7.6-1.39 7.6-3.1V5.9"/><path d="M4.4 11.4v5.5c0 1.71 3.4 3.1 7.6 3.1s7.6-1.39 7.6-3.1v-5.5"/></symbol>
+  <!-- ➕ `#i-dollar` (2026-09-28h): SYMBOL MỚI, vẽ theo yêu cầu “có icon này $ cho hàng nợ không”.
+       Trước lượt này sprite **KHÔNG có** icon nào dạng `$` / tờ tiền — nhóm “tiền” chỉ có
+       `#i-coins` (chồng xu). Hình: dấu `$` NÉT, đúng quy ước sprite (`stroke="currentColor"`,
+       `stroke-width: 2.2`, bo nét `round`, viewBox 24) nên tự ăn màu theo `color` của chỗ dùng.
+       · Nét dọc `M12 2.4v19.2` cố ý chừa 2,4 ở hai đầu: với `stroke-width: 2.2` thì nửa nét (1,1)
+         vẫn nằm trong hộp 24 — sát mép hơn là bị cắt khi icon được vẽ ở 16px.
+       · Phần chữ `S` lấy tỉ lệ bộ `dollar-sign` quen dùng (bar trên từ `x 16.8 → 9.6`, hai cung
+         `r 3.4`, bar dưới hạ xuống `x 6.8`) — đo ở 16px thì đọc ra `$` chứ không thành nét ngoằn ngoèo.
+       ⛔ ĐỪNG thay bằng `<text>$</text>`: phụ thuộc font của máy, và `<text>` không ăn
+       `stroke` của sprite (sẽ ra chữ đặc, lệch hẳn các icon khác).
+       ℹ️ `#i-coins` VẪN GIỮ trong sprite (thư viện icon) — vẫn là icon của nút “Tiền Nợ” ở thanh
+       công cụ. -->
+  <symbol id="i-dollar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.4v19.2"/><path d="M16.8 5.2H9.6a3.4 3.4 0 0 0 0 6.8h4.8a3.4 3.4 0 0 1 0 6.8H6.8"/></symbol>
    <symbol id="i-hourglass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></symbol>
    <symbol id="i-hourglass-sand" viewBox="0 0 24 24" fill="none"><!-- ⟳ 2026-09-28d: bản MÀU kiểu emoji ⏳ theo yêu cầu “như thế này và cho chuyển động”: VIỀN kính xanh `--ic-hash` + CÁT hổ phách `--ic-amber` (đúng token app ⇒ tự theo theme sáng/tối). ⚠️ Màu dùng `style="stroke/fill: var(--…)”` chứ KHÔNG dùng attribute `stroke="var(…)"` — presentation attribute KHÔNG nhận `var()`. Bản 1 màu `#i-hourglass` giữ lại trong thư viện sprite (tiền lệ `#i-notebook`). -->
      <path d="M7.2 2.6v3.3c0 .63.25 1.23.7 1.68L11.2 10.9a1.55 1.55 0 0 1 0 2.2l-3.3 3.32c-.45.45-.7 1.05-.7 1.68v3.3" style="stroke:var(--ic-hash)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.8 2.6v3.3c0 .63-.25 1.23-.7 1.68L12.8 10.9a1.55 1.55 0 0 0 0 2.2l3.3 3.32c.45.45.7 1.05.7 1.68v3.3" style="stroke:var(--ic-hash)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.4 2.6h13.2M5.4 21.4h13.2" style="stroke:var(--ic-hash)" stroke-width="2" stroke-linecap="round"/><path d="M9.7 6.3c0-.94.76-1.7 1.7-1.7h1.2c.94 0 1.7.76 1.7 1.7 0 .34-.1.67-.3.94L12 10 10 7.24a1.7 1.7 0 0 1-.3-.94z" style="fill:var(--ic-amber)"/><path d="M11.3 10.6h1.4v6h-1.4z" style="fill:var(--ic-amber)"/><path d="M8.9 19.4c0-1.72 1.39-3.1 3.1-3.1s3.1 1.38 3.1 3.1z" style="fill:var(--ic-amber)"/></symbol>
@@ -4767,16 +4844,34 @@ body.force-desktop .table-view { display: block; }
            từ 2026-09-27 hàng này xếp **3 CỘT — nhãn ở hàng trên, số ở hàng dưới** (`.count-stats`);
            đọc chú thích ở rule `.count-stats` trong CSS. Đổi lại bố cục chỉ cần sửa 6 span dưới
            đây: JS ghi số theo `id` và KHÔNG dựng lại markup này.
-           ⚠️ Mỗi mục là MỘT `.count-stat` bọc đúng cặp (nhãn, số) — `flex-wrap` chỉ ngắt được ở
-           ranh giới giữa các mục, nên ⛔ đừng để nhãn và số của cùng một mục rời nhau ra. -->
+           ⟳ 2026-09-28e: nay xếp **2 DÒNG** — con của `.count-stats` chỉ còn MỘT khối
+           `.count-lines` (dòng 1 `HĐ: … - KH: …`, dòng 2 `Nợ: …`); đọc chú thích ở rule
+           `.count-lines` trong CSS. ⛔ Đừng để nhãn và số của cùng một CẶP rời nhau ra.
+           ⛔ `#i-hourglass-sand` KHÔNG còn trong markup (bỏ ở lượt 2026-09-28g) — symbol
+           vẫn nằm trong sprite, nhưng đừng đi tìm chỗ dùng nó ở đây. -->
       <div class="count-stats">
-        <!-- ⟳ 2026-09-28d: icon đầu hàng (yêu cầu “thêm icon trước hàng này cho dễ phân biệt”) —
-             MỤC ĐỘC LẬP của `.count-stats`, KHÔNG nằm trong `.count-stat` nào (mục KH bị ẩn ở
-             tab Tổng hợp — icon phải còn). `aria-hidden` vì chỉ trang trí; đọc chú thích
-             `.count-row-ic` trong CSS. -->
-        <span class="count-row-ic" aria-hidden="true"><svg class="ic count-row-ic-flip" width="19" height="19"><use href="#i-hourglass-sand"/></svg><svg class="count-row-ic-flow" viewBox="0 0 24 24" width="19" height="19"><line x1="12" y1="10.4" x2="12" y2="13.6" style="stroke:var(--ic-amber)" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="1.1 1.5"/></svg></span>
-        <div class="count-stat"><span class="count-lbl">HĐ</span><span id="countHoaDon" class="count-kh-hd">0</span></div>
-        <div class="count-stat"><span class="count-lbl">KH</span><span id="countKH" class="count-kh-hd">0</span></div>
+        <!-- ⟳ 2026-09-28g: BỎ ICON ĐỒNG HỒ CÁT ĐẦU HÀNG (người dùng chọn “chèn icon TRƯỚC
+             nhãn, bỏ đồng hồ cát”) ⇒ nay MỖI DÒNG có icon riêng đứng trước CHÍNH NHÃN của nó:
+             **biên lai** (`#i-receipt`) cho `HĐ:` · **dấu `$`** (`#i-dollar`) cho `Nợ:`.
+             ⟳ 2026-09-28h: icon hàng Nợ đổi `#i-coins` → `#i-dollar` (yêu cầu “có icon này $ cho
+             hàng nợ không” — trước đó sprite KHÔNG có icon `$` nào, nên đã VẼ THÊM symbol).
+             `aria-hidden` vì thuần trang trí; màu + cỡ ở rule `.count-ic` trong CSS.
+             ⛔ Icon KHÔNG nằm trong `#countHoaDon` / `#countTongTien`: JS ghi số bằng
+             `textContent` nên nhét icon vào trong là icon bị XOÁ mỗi lần số cập nhật. -->
+        <!-- ⟳ 2026-09-28e: XẾP LẠI THÀNH 2 DÒNG (yêu cầu “xếp lại hàng trên HĐ: 813 - KH: 781
+             ở dưới là Nợ:”). Dòng 1 = `HĐ: 813 - KH: 784`, dòng 2 = `Nợ: 692.915.197`.
+             ⛔ Bố cục **3 CỘT “nhãn trên — số dưới”** (lớp `.count-stat`, `grid-template-rows`)
+             ĐÃ BỎ cùng lượt này ⇒ đừng dựng lại theo các chú thích cũ phía dưới.
+             ⚠️ Dấu `:` nằm TRONG span nhãn (`.count-lbl`), ⛔ KHÔNG phải một text node riêng:
+             cặp `nhãn + số` là `inline-flex` có `gap` nên text node sẽ bị `gap` chen hai bên
+             ⇒ ra “HĐ : 813” (đúng bẫy đã ghi ở chú thích `.count-tien-wrap`).
+             ⚠️ Nhóm KH phải gói **dấu `-` + nhãn + số vào CÙNG** `.count-kh-group`: `switchTab()`
+             ẩn mục KH ở tab “Tổng hợp nợ” bằng `countKH.parentElement.style.display` ⇒ để dấu
+             `-` ở ngoài là tab đó còn lại một dấu gạch trơ giữa hàng. -->
+        <div class="count-lines">
+          <div class="count-line count-line-1">
+            <span class="count-pair"><span class="count-ic" aria-hidden="true"><svg class="ic" width="18" height="18"><use href="#i-receipt"/></svg></span><span class="count-lbl">HĐ:</span><span id="countHoaDon" class="count-kh-hd">0</span></span><span class="count-kh-group"><span class="count-sep">-</span><span class="count-lbl">KH:</span><span id="countKH" class="count-kh-hd">0</span></span>
+          </div>
         <!-- ⛔ **LỊCH SỬ** — bố cục 2 dòng đã bỏ 2026-09-27 (nay `.count-stats` 3 cột, nhãn trên
              số dưới). Đoạn dưới nói về `.count-tien-wrap` (đã xoá), giữ lại chỉ để đọc lịch sử lỗi:
              Dấu `:` nằm TRONG nhãn `Tổng nợ` (không phải một span thứ ba) vì `.count-tien-wrap`
@@ -4788,7 +4883,10 @@ body.force-desktop .table-view { display: block; }
              bên dưới `.count-info`.
              ⚠️ Số tổng nay **KHÔNG còn hậu tố `đ`** (yêu cầu “bỏ chữ đ sau số tiền”) — cả ở
              markup này (`0đ` → `0`) lẫn ở JS (`elTongTien.textContent`). -->
-        <div class="count-stat"><span class="count-lbl">Nợ</span><span id="countTongTien" class="count-tien low">0</span></div>
+          <div class="count-line count-line-2">
+            <span class="count-pair"><span class="count-ic" aria-hidden="true"><svg class="ic" width="18" height="18"><use href="#i-dollar"/></svg></span><span class="count-lbl">Nợ:</span><span id="countTongTien" class="count-tien low">0</span></span>
+          </div>
+        </div>
       </div>
       <!-- Nút "Xuất" là **anh em** của `.count-line2`, KHÔNG nằm trong nó: nó là ô của
            CỘT 2 trong lưới `.count-info`. Nằm trong `.count-line2` thì nó tràn 15px lên
@@ -5785,12 +5883,14 @@ function switchTab(tab) {
   document.getElementById('detailView').style.display = showDetail ? 'block' : 'none';
   document.getElementById('summaryView').style.display = tab === 'summary' ? 'block' : 'none';
   document.getElementById('oldView').style.display = showOld ? 'block' : 'none';
-  // ⟳ 2026-09-28c: trả về `''` thay vì `'block'` — NGUYÊN NHÂN “nhảy hàng khi chọn trạng
-  // thái ở Chi tiết nợ” (ảnh crop: `KH27` cạnh nhau + 3 mục lệch trần). `countKH.parentElement`
-  // là mục KH `.count-stat` = LƯỚI 2 HÀNG (`display:grid`); hồi bố cục 2 dòng cũ cha của nó
-  // là dòng block nên gán `'block'` vô hại, còn nay nó là GRID ⇒ bị ép block ⇒ nhãn “KH” và
-  // số nằm CẠNH nhau trên một dòng, lệch trần với 2 mục grid còn lại ⇒ cả hàng “nhảy”.
-  // Gán `''` cho stylesheet tự trả `grid`. (Ẩn vẫn giữ `'none'`: tab Tổng hợp không có cột KH.)
+  // ⟳ 2026-09-28c/e: trả về `''` thay vì `'block'` — NGUYÊN NHÂN “nhảy hàng khi chọn trạng
+  // thái ở Chi tiết nợ” (ảnh crop: `KH27` cạnh nhau + 3 mục lệch trần): hồi bố cục 2 dòng cũ
+  // cha của `#countKH` là dòng block nên gán `'block'` vô hại, còn khi nó là mục của một
+  // HÀNG FLEX/LƯỚI thì bị ép block và lệch trần với các mục còn lại ⇒ cả hàng “nhảy”.
+  // ⟳ 2026-09-28e: cha của `#countKH` nay là `.count-kh-group` (dấu `-` + nhãn + số) — gói
+  // chung một span để ẩn ở tab “Tổng hợp nợ” là ẩn CẢ dấu `-`, không để lại gạch trơ.
+  // Gán `''` cho stylesheet tự trả `display` đúng (nay là `inline-flex`).
+  // (Ẩn vẫn giữ `'none'`: tab Tổng hợp không có cột KH.)
   document.getElementById('countKH').parentElement.style.display = (showDetail || showOld) ? '' : 'none';
   currentPage = 1; applyFilters();
 }
@@ -6315,13 +6415,31 @@ function fitAllFilterLabels() {
    ⇒ `fitCountRow()` đập `--count-fit` xuống SÀN 0,6 (đo được sống: fit `0.6000` dù hàng thẳng,
    một mục w:0) — và khi quay về tab có đủ 3 mục thì chữ đã bị thu oan vĩnh viễn. Chỉ còn < 2
    mục hiện thì không thể “ngắt” — trả false. */
+/* Bề rộng ĐÒI HỎI của hàng = tổng bề rộng các CON ĐANG HIỆN của `.count-stats` + khe giữa chúng.
+   ⟳ 2026-09-28e: con của `.count-stats` nay chỉ còn **icon + `.count-lines`** (2 dòng xếp dọc,
+   mỗi dòng `nowrap`) ⇒ công thức này vẫn đúng nguyên, vì `min-width: max-content` của
+   `.count-lines` khiến bề rộng đo được CHÍNH LÀ bề rộng không thể co thêm.
+   ⚠️ Mục `display:none` (tab “Tổng hợp nợ” ẩn nhóm KH) phải bị loại: rect của nó = 0×0 và
+   `(length−1)` thừa một bậc `gap` ⇒ `need` sai, và tệ hơn là lệch tập mục với hàm ngắt dòng
+   (đó chính là lỗi 2026-09-28c). */
+function countRowNeed() {
+  const stats = document.querySelector('.count-stats');
+  if (!stats) return 0;
+  const items = Array.prototype.slice.call(stats.children).filter(el => getComputedStyle(el).display !== 'none');
+  if (!items.length) return 0;
+  const gap = parseFloat(getComputedStyle(stats).columnGap) || 0;
+  return items.reduce((a, el) => a + el.getBoundingClientRect().width, 0) + gap * (items.length - 1);
+}
+/* ⟳ 2026-09-28e: **ĐỔI CÁCH PHÁT HIỆN “hàng có vừa không”.** Bản cũ so `top` giữa các mục để
+   biết `flex-wrap` có đẩy mục nào xuống hàng — nhưng ở bố cục 2 DÒNG, hai dòng là con của
+   CÙNG một khối `.count-lines` nên **không có mục nào để `flex-wrap` đẩy xuống** và mọi `top`
+   đều bằng nhau ⇒ hàm cũ sẽ LUÔN trả `false`, tức cơ chế tự thu `--count-fit` CHẾT HẲN.
+   Nay đo TRỰC TIẾP: bề rộng đòi hỏi vượt chỗ trống ⇒ đang tràn ⇒ phải thu cỡ chữ.
+   ⛔ Đừng quay lại so `top`: nó chỉ đúng cho bố cục nhiều mục NẰM NGANG. */
 function countRowWrapped() {
   const stats = document.querySelector('.count-stats');
-  if (!stats) return false;
-  const items = Array.prototype.slice.call(stats.children).filter(el => getComputedStyle(el).display !== 'none');
-  if (items.length < 2) return false;
-  const t0 = items[0].getBoundingClientRect().top;
-  return items.some(el => Math.abs(el.getBoundingClientRect().top - t0) > 1);
+  if (!stats || !stats.clientWidth) return false;
+  return countRowNeed() > stats.clientWidth + 0.5;   // +0,5 = dung sai cho số thập phân của rect
 }
 function fitCountRow() {
   const MIN = 0.6;                                    // xem chú thích SÀN ngay trên
@@ -6333,12 +6451,10 @@ function fitCountRow() {
   if (!countRowWrapped()) return;                     // đường thường: một phép đo rồi thoát
   let k = 1;
   for (let i = 0; i < 8 && k > MIN; i++) {
-    /* ⟳ 2026-09-28c: phép `need` cũng CHỈ tính mục ĐANG HIỆN — mục ẩn có width 0 nên không
-       làm `need` sai, nhưng `(items.length - 1)` thừa 1 bậc `gap` và nhất là đồng bộ đúng
-       tập mục với `countRowWrapped()` (xem chú thích ngay trên). */
-    const items = Array.prototype.slice.call(stats.children).filter(el => getComputedStyle(el).display !== 'none');
-    const gap = parseFloat(getComputedStyle(stats).columnGap) || 0;
-    const need = items.reduce((a, el) => a + el.getBoundingClientRect().width, 0) + gap * (items.length - 1);
+    /* ⟳ 2026-09-28e: `need` nay lấy từ `countRowNeed()` — **CÙNG một phép đo với
+       `countRowWrapped()`** nên hai bên không thể lệch nhau (trước đây mỗi hàm tự tính lấy,
+       và lệch tập mục chính là lỗi 2026-09-28c). */
+    const need = countRowNeed();
     if (need <= stats.clientWidth) break;
     k = Math.max(MIN, k * (stats.clientWidth / need) * 0.985);            // 0,985 = chừa mép
     info.style.setProperty('--count-fit', k.toFixed(4));
