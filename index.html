@@ -2311,7 +2311,19 @@ body.light-mode .nhom-sel-name {
      mức rộng nhất: `need` 214,55px ở nhánh nền · 205,21px ở nhánh hẹp).
      ℹ️ `line-height: 22px` và `grid-template-rows: 22px 30px` của `.count-stat` là CỐ ĐỊNH ⇒ đổi
      mức “Aa” KHÔNG đổi chiều cao hàng ghim (đo lại ở cả 3 mức: 56,95px y nguyên).*/
-  font-size: var(--fs-count-lbl);
+  /* ⟳ 2026-09-28: `--count-fit` = HỆ SỐ THU do **JS ĐO ĐƯỢC** (mặc định **1** = không đụng gì).
+     Yêu cầu: “kiểm tra lại, bị nhảy dòng khi xem trên điện thoại”.
+     Hàng `Tổng …` là `flex-wrap` nên nó tự ngắt dòng khi chữ RỘNG HƠN thiết kế — máy thật bật
+     **cỡ chữ hệ thống/browser lớn** là đúng tình huống đó (ĐO ĐƯỢC: ở vp **320**, chữ ×**1,3**
+     ⇒ mục 3 rơi xuống hàng dưới, hàng cao **56,95 → 108,95px**; ở vp 360 phải ×1,55 mới ngắt).
+     `fitCountRow()` (JS) đo bề rộng thật rồi hạ hệ số này VỪA ĐỦ để ba mục ở lại MỘT hàng.
+     ⛔ **KHÔNG phải cách lách nút “Aa”**: ở mọi khổ người dùng từng dùng (≥298px) và mọi mức
+     “Aa”, `need` vẫn < chỗ trống ⇒ hệ số giữ nguyên **1** và cỡ chữ KHÔNG đổi một ly.
+     ⚠️ Hệ số nhân vào CẢ nhãn LẪN số (rule số ở dưới + hai nhánh `@media ≤359,98px`) để giữ
+     đúng quan hệ “số hơn nhãn 2px” ở mọi hệ số — nhân thiếu một chỗ là hai hàng lệch cỡ.
+     ⚠️ `line-height` KHÔNG nhân theo (vẫn 22px/30px) ⇒ hàng KHÔNG cao thêm khi bị thu. */
+  --count-fit: 1;
+  font-size: calc(var(--fs-count-lbl) * var(--count-fit));
   /* `line-height` khai TƯỜNG MINH (trước là `normal`) để chiều cao dòng không phụ thuộc
      metric của font: 18px → `normal` cho ra 22.1px, còn số nguyên 22px mới khớp phép tính
      của HÀNG SỐ trong `.count-stats` (nay khai thẳng `grid-template-rows: 22px 30px`; 30 = 22 + 4×2
@@ -2486,7 +2498,13 @@ body.light-mode .nhom-sel-name {
    chính là thứ giữ cho hàng ghim cao ĐÚNG 57px như bản 2 dòng cũ (22 + 30 = 52, còn 5px là viền
    1px + `padding-top` 4px của `.count-info`).
    `min-width: 0` để mục co được thay vì đẩy tràn; chữ đã `nowrap` nên mục chỉ co tới max-content. */
-.count-stat { display: grid; grid-template-rows: 22px 30px; align-items: center; min-width: 0; }
+/* ⟳ 2026-09-28: `min-width: 0` → **`max-content`** — nguyên nhân CÒN LẠI của nhảy dòng trên
+   máy thật: `0` cho phép flex BÓP mục nhỏ hơn nội dung khi chữ phóng to (máy bật cỡ chữ hệ
+   thống) ⇒ số bẻ dòng TRONG mục thay vì cả mục nhảy xuống hàng gọn gàng. `max-content` trả
+   lại đúng hợp đồng ghi ở chú thích `.count-stats` ("mục chỉ co tới max-content" vốn đã sai
+   từ đầu vì `0` nhỏ hơn cả max-content); ngắt dòng là việc của `flex-wrap` ở RANH GIỮA các
+   mục, không phải việc của flex co. */
+.count-stat { display: grid; grid-template-rows: 22px 30px; align-items: center; min-width: max-content; }
 /* SỐ canh giữa trong ô 30px của nó — trước đây `.count-line2 { height: 30px }` + `align-items:
    center` làm việc này. Thiếu `line-height` này thì số dồn lên ĐỈNH ô 30px (cách nhãn 0px thay
    vì 4px) ⇒ chiều cao hàng vẫn 57px nhưng mực chữ trong hàng sai.
@@ -2505,7 +2523,7 @@ body.light-mode .nhom-sel-name {
    18/16 (nho) · 19/17 (chuan) · 20/18 (to).
    ⚠️ Nhãn ↔ số lệch CỠ nhưng KHÔNG lệch màu/độ dày: số vẫn `font-weight: 400`, tông màu giữ
    nguyên ⇒ mọi tỉ lệ AA đã ghi không đổi (chỉ to hơn). */
-.count-info .count-kh-hd, .count-info .count-tien { line-height: 30px; font-size: var(--fs-count-num); }
+.count-info .count-kh-hd, .count-info .count-tien { line-height: 30px; font-size: calc(var(--fs-count-num) * var(--count-fit)); }
 /* Dấu `·` ngăn hai nhóm “Tổng HĐ: …” và “KH: …”.
    ⛔ KHÔNG thay bằng 2 dấu cách trong markup: đo được ở 18px, bản dấu cách cần **230,84px**
    trong khi cột chữ ở khổ **360px** chỉ có **228,5px** ⇒ dòng 1 **xuống 2 dòng** trên đúng
@@ -2535,7 +2553,11 @@ body.light-mode .nhom-sel-name {
    `nowrap` giữ cặp này ĐÚNG 1 DÒNG; nếu vẫn thiếu chỗ thì nó tràn **NGANG** vào khe 10px của
    lưới `.count-info` — **không bao giờ chạm nút Xuất** vì nút là **cột riêng** (xem chú thích
    `.count-info`). Thà tràn ngang vài phần mười px còn hơn đè lên chữ. */
-.count-tien, .count-lbl { white-space: nowrap; }
+/* ⟳ 2026-09-28: thêm `.count-kh-hd` — SỐ HĐ/KH thiếu nowrap là một trong hai nguyên nhân nhảy
+   dòng trên máy thật (ảnh người dùng: "27" bẻ nằm CẠNH "KH" cùng hàng): mục bị co bóp làm
+   chữ số bẻ nhiều dòng trong khi NHÃN vẫn nowrap ⇒ bố cục lệch và mọi phép đo của
+   `fitCountRow()` đọc bề rộng BỊ BÓP ⇒ tưởng vừa chỗ và không bao giờ thu `--count-fit`. */
+.count-tien, .count-lbl, .count-kh-hd { white-space: nowrap; }
 /* ── SỐ NHẸ HƠN NHÃN: 500 → **400** (yêu cầu “cho nét chữ hàng này bằng nhau”) ──────────
    ĐO TRƯỚC KHI SỬA (để không chữa một bệnh không có): cả hàng VỐN ĐÃ cùng 500 — kiểm bằng cách
    so bề rộng chữ DOM với canvas ở 3 nấc: nhãn `Tổng HĐ: ` = **86,441px** vs canvas-500
@@ -2566,7 +2588,7 @@ body.light-mode .nhom-sel-name {
    ⚠️ Cùng ngưỡng 359.98px với nhánh thu gọn của nút “Xuất file” — cố ý, để chỉ có MỘT
    ngưỡng “rất hẹp” phải nhớ trong file. */
 @media (max-width: 359.98px) {
-  .count-info { font-size: calc(var(--fs-count-lbl) - 1px); }
+  .count-info { font-size: calc((var(--fs-count-lbl) - 1px) * var(--count-fit)); }
   /* ⚠️ Nay KHÔNG cần nhánh `.count-stats` riêng cho panel hẹp: `.count-stats` là `flex-wrap` nên
      tự đẩy mục không vừa xuống hàng dưới (xem chú thích `.count-stats`). Nhánh này giữ lại
      chỉ để tiết kiệm bề rộng ở khổ ≤359,98px.
@@ -2575,7 +2597,7 @@ body.light-mode .nhom-sel-name {
      ⟳ 2026-09-27f: dùng `calc(token − 1px)` chứ KHÔNG ghi số cứng — nhờ vậy “nhánh hẹp nhỏ hơn
      nhánh nền đúng 1px” và “SỐ hơn NHÃN đúng 2px” tự đúng ở cả BA mức “Aa” (nho 15/17 ·
      chuan 16/18 · to 17/19). ⛔ Ghi số cứng ở đây là quên một mức ngay khi thêm mức mới. */
-  .count-info .count-kh-hd, .count-info .count-tien { font-size: calc(var(--fs-count-num) - 1px); }
+  .count-info .count-kh-hd, .count-info .count-tien { font-size: calc((var(--fs-count-num) - 1px) * var(--count-fit)); }
 }
 
 /* ⛔ ĐÃ XOÁ khối `@media (max-width: 399.98px)` của lượt trước (đẩy 3 nút điều khiển xuống
@@ -5778,6 +5800,9 @@ function applyFontSize() {
   // ⚠️ Đặt NGOÀI `if (btn)` — nhãn chữ phải đúng kể cả khi nút icon vắng mặt.
   const val = document.getElementById('cfgFsVal');
   if (val) val.textContent = lv.ten;
+  // Cỡ chữ đổi ⇒ đo lại hàng “Tổng …”: bậc “Lớn” là bậc rộng nhất nên đây chính là lúc hệ số
+  // thu `--count-fit` cần được tính lại (xem `fitCountRow()`).
+  fitCountRow();
 }
 function cycleFontSize() {
   const next = FS_LEVELS[(fsIndexOf(document.body.getAttribute('data-fs')) + 1) % FS_LEVELS.length];
@@ -6194,6 +6219,66 @@ function fitAllFilterLabels() {
     fitFilterLabel(document.getElementById('filterLoaiLabel'), FILTER_ICONS.loai, 'Chi tiết nợ');
   }
 }
+/* 📐 HÀNG “Tổng …” KHÔNG ĐƯỢC NGẮT DÒNG — ĐO RỒI THU VỪA (2026-09-28)
+   Yêu cầu: “kiểm tra lại, bị nhảy dòng khi xem trên điện thoại”.
+
+   ⚠️ **ĐÃ ĐO TRƯỚC KHI SỬA** (đừng “sửa” lại theo cảm giác): với dữ liệu thật, hàng này ở MỘT
+   hàng tại **mọi** bề rộng panel từ **298px** trở lên (vp 320 ⇒ `need` 186,62px · chỗ trống
+   230px; vp 360 ⇒ 270px) và ở CẢ BA mức “Aa”. ⇒ Nguyên nhân ngắt dòng trên máy thật KHÔNG phải
+   bề rộng, mà là **CỠ CHỮ** — máy bật cỡ chữ hệ thống/browser lớn thì chữ rộng ra ngoài dự kiến:
+   ở vp 320, chữ ×1,3 là đã ngắt (hàng cao 56,95 → **108,95px**), ×1,15 thì còn vừa.
+
+   CÁCH LÀM — cùng kiểu `fitFilterLabel()` ở trên (đo bằng `getBoundingClientRect`, KHÔNG đoán):
+   thấy hàng bị ngắt thì hạ `--count-fit` theo đúng tỉ lệ `chỗ trống / bề rộng cần`   rồi đo lại,
+   lặp vài lần cho tới khi về MỘT hàng (hoặc chạm SÀN `MIN` = 0,6 khai ngay trong hàm).
+
+   ⚠️ **Vì sao hạ cỡ khai báo lại ăn cả khi trình duyệt phóng to chữ:** hệ số nhân vào cỡ KHAI
+   BÁO, mà trình duyệt nhân tiếp cùng một hệ số cho MỌI cỡ ⇒ tỉ lệ `cần / có` giữ nguyên và
+   phép thu hội tụ. ⛔ Đừng “sửa” bằng cách chặn `resize` hay bỏ `flex-wrap`: `flex-wrap` vẫn
+   phải giữ làm LƯỚI AN TOÀN cho khổ cực hẹp (khi đã chạm SÀN mà vẫn không đủ chỗ thì nó vẫn
+   tự xuống hàng gọn gàng, `nhãn trên — số dưới`).
+
+   ⛔ **KHÔNG đụng `line-height`** (`22px` / `30px` là hằng số của `.count-stat`) ⇒ hàng cao y
+   nguyên khi bị thu; và ở đường thường hàm này `return` ngay sau một phép đo nên giá trị tính
+   toán của hàng không đổi một ly. */
+/* ⚠️ SÀN khai NGAY TRONG hàm (không phải hằng ở phạm vi script): `applyFontSize()` gọi
+   `fitCountRow()` ngay lúc nạp trang, mà lúc đó mọi `const` khai SAU đây còn nằm trong
+   “vùng chết tạm thời” ⇒ hằng ở ngoài sẽ làm **nổ** lượt nạp trang trên đúng máy đang lỗi.
+   `MIN` = 0,6 ≈ 10px ở mức “Chuẩn” — nhỏ hơn nữa thì không còn đọc được. */
+/* Ba mục `.count-stat` nằm chung một hàng ⇔ `top` của chúng bằng nhau (cho 1px dung sai vì
+   `getBoundingClientRect` trả số thập phân). */
+function countRowWrapped() {
+  const stats = document.querySelector('.count-stats');
+  if (!stats) return false;
+  const items = Array.prototype.slice.call(stats.children);
+  if (items.length < 2) return false;
+  const t0 = items[0].getBoundingClientRect().top;
+  return items.some(el => Math.abs(el.getBoundingClientRect().top - t0) > 1);
+}
+function fitCountRow() {
+  const MIN = 0.6;                                    // xem chú thích SÀN ngay trên
+  const info = document.querySelector('.count-info');
+  const stats = document.querySelector('.count-stats');
+  if (!info || !stats) return;
+  info.style.removeProperty('--count-fit');          // luôn bắt đầu từ cỡ THIẾT KẾ
+  if (!stats.clientWidth) return;                     // đang `display:none` → chưa đo được
+  if (!countRowWrapped()) return;                     // đường thường: một phép đo rồi thoát
+  let k = 1;
+  for (let i = 0; i < 8 && k > MIN; i++) {
+    const items = Array.prototype.slice.call(stats.children);
+    const gap = parseFloat(getComputedStyle(stats).columnGap) || 0;
+    const need = items.reduce((a, el) => a + el.getBoundingClientRect().width, 0) + gap * (items.length - 1);
+    if (need <= stats.clientWidth) break;
+    k = Math.max(MIN, k * (stats.clientWidth / need) * 0.985);            // 0,985 = chừa mép
+    info.style.setProperty('--count-fit', k.toFixed(4));
+    void info.offsetWidth;                            // buộc tính lại layout TRƯỚC khi đo tiếp
+    if (!countRowWrapped()) return;
+  }
+  /* ⟳ 2026-09-28: CHỐT SÀN sau vòng lặp — có thể hội tụ về đúng `MIN` ở vòng CUỐI (vòng đó
+     bị nhảy cóc phép kiểm ngắt) ⇒ nếu vẫn còn ngắt thì đặt hẳn `MIN`. Với `nowrap` +
+     `max-content` của lượt này, bề rộng đo bên trong không còn bị bóp nên `MIN` đủ tin cậy. */
+  if (countRowWrapped()) info.style.setProperty('--count-fit', MIN.toFixed(4));
+}
 /* 🏷️ Nhãn ô "Chi tiết nợ" theo giá trị ĐANG lọc — dùng chung cho lúc CHỌN (`selectLoai()`)
    và lúc ĐỔI BỀ RỘNG (`resize`) nên chỉ có một nguồn, không lệch nhau.
    · `val` rỗng → nhãn mặc định `[icon] Chi tiết nợ` (đo lại theo bề rộng thật).
@@ -6538,6 +6623,9 @@ function applyFilters() {
   // “Tổng nợ:”. Đừng thêm lại `+ 'đ'`: chuỗi này còn đi qua `.count-tien` (đổi màu theo quy mô).
   elTongTien.textContent = tongTien.toLocaleString('vi-VN');
   elTongTien.className = 'count-tien ' + (tongTien >= 1000000000 ? 'high' : (tongTien >= 100000000 ? 'mid' : 'low'));
+  // Số vừa đổi ⇒ bề rộng hàng “Tổng …” đổi theo ⇒ đo lại (dữ liệu lớn hơn là hàng rộng hơn,
+  // xem `fitCountRow()`).
+  fitCountRow();
   const q2 = document.getElementById('searchInput').value.trim();
   renderCards(q2);
   renderTable(q2);
@@ -7101,6 +7189,18 @@ function fitGhiChuInputs() {
 }
 
 window.addEventListener('resize', fitGhiChuInputs);
+// Hàng “Tổng …” phải đo lại khi bề rộng panel đổi — hẹp ra thì hệ số thu `--count-fit` mới cần
+// bật (xem `fitCountRow()`); nới ra thì nó tự trả về **1**.
+window.addEventListener('resize', fitCountRow);
+/* ⟳ 2026-09-28: `resize` chỉ bắn khi **VIEWPORT** đổi — nhưng thực tế trong app là bề rộng CỘT
+   CHỮ của `.count-info` đổi (mở/tấm `#cfg`, ẩn/hiện nút, `resize` lưới bên trong) mà viewport
+   KHÔNG đổi ⇒ hệ số thu `--count-fit` không được tính lại. Quan sát bằng ResizeObserver trên
+   `.count-stats` (rộng/hẹp lại là dấu hiệu duy nhất cần đuổi) — có sẵn `ResizeObserver` ở mọi
+   trình duyệt hiện đại, và hàm tự thoát nếu trang không có hàng này. */
+if (typeof ResizeObserver !== 'undefined') {
+  const __statsEl = document.querySelector('.count-stats');
+  if (__statsEl) new ResizeObserver(fitCountRow).observe(__statsEl);
+}
 // Nhãn các ô lọc phải đo lại khi bề rộng panel đổi: **nới ra là icon quay về**, thu vào là
 // bỏ icon (xem `fitFilterLabel()`).
 window.addEventListener('resize', fitAllFilterLabels);
@@ -7388,6 +7488,8 @@ if (toolbarEl && headerEl) {
   // xong — đo lại để sentinel luôn cao đúng bằng thanh đang ghim.
   window.addEventListener('resize', updateToolbar, { passive: true });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateToolbar).catch(function () {});
+  // Font Inter nạp xong là bề rộng chữ ĐỔI (font dự phòng rộng/hẹp khác) ⇒ đo lại hàng “Tổng …”.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitCountRow).catch(function () {});
   window.updateToolbar = updateToolbar;
   updateToolbar();
 }
