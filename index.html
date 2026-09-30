@@ -29,7 +29,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap');
 
 :root {
-  --navy: #111318;
+  /* ⟳ 2026-09-30g: nền trang hạ **MỘT NẤC** `#111318 → #0b0d12` (yêu cầu “hạ nền trang dark một
+     nấc”). Người dùng chọn phương án **nền bảng nổi TRÊN trang** ⇒ kéo theo ba giá trị
+     `--dk-table` phải nhích lên (xem khối `--dk-table` bên dưới).
+     ⚠️ Nền trang là MỘT giá trị cho MỌI mức “Nền” (ba mức chỉ dịch THẺ/BẢNG/TỔNG HỢP) ⇒ hạ ở
+     đây là hạ cho cả ba mức. ⛔ LIGHT không đụng (`body.light-mode` ghi đè `--page-bg`). */
+  --navy: #0b0d12;
   --navy-mid: #1a1d24;
   --navy-light: #121212;
   /* ── NỀN TRANG — MỘT token cho `body` VÀ cho hàng “Tổng …” đang GHIM ────────────────
@@ -169,19 +174,40 @@
   --border: rgba(255,255,255,0.08);
   --card: rgba(255,255,255,0.04);
   /* BỀ MẶT CHẾ ĐỘ TỐI — ba bề mặt này đi chung nút “Nền” (3 mức, xem mục “NÚT Nền” ở dưới):
-       · `--dk-card`  = nền THẺ khách hàng (`.kh-card`)      · nền BẢNG chính (`.table-wrap`) nay DÙNG CHUNG `--dk-card` (token `--dk-table` đã xoá 2026-09-27)
+       · `--dk-card`  = nền THẺ khách hàng (`.kh-card`)      · nền BẢNG chính (`.table-wrap`) = token RIÊNG `--dk-table` (tách lại khỏi thẻ 2026-09-30 — xem khối ngay dưới)
        · `--dk-sum`   = nền bảng TỔNG HỢP (`.summary-wrap`)
      Ba màu này KHÁC nhau từ trước (thẻ đục, bảng 4% trắng trên nền trang, Tổng hợp `#141720`)
      nên phải 3 token; mỗi mức dịch cả ba cùng một hướng. Giá trị ở đây = mức “Chuẩn”
      ⇒ mặc định KHÔNG đổi gì so với trước. Ở chế độ SÁNG ba bề mặt dùng CHUNG `--light-surface`
      (khai trong `body.light-mode`) vì đã được đồng bộ về một nền ở các lượt trước. */
   --dk-card: var(--ctl-solid);   /* mức “Chuẩn” = ĐÚNG màu control/tab — xem mục “NỀN THẺ = NỀN TAB” */
-  /* ⟳ **2026-09-27 — NỀN BẢNG = NỀN THẺ CARD** (yêu cầu “tôi muốn màu nền khi xem dạng bảng
+  /* ⟳ **2026-09-30 — NỀN BẢNG TÁCH LẠI KHỎI THẺ** (yêu cầu “cho nền này màu tối hơn khi xem
+     dạng bảng dark mode”, ảnh crop thân hàng bảng): `.table-wrap` KHÔNG còn dùng `--dk-card`
+     mà dùng token RIÊNG `--dk-table` ngay dưới đây.
+     ⚠️ **PHẢI LÀ MÀU ĐỤC KHAI TRÊN BODY ở 3 mức** — đừng lặp bẫy cũ: alias ở `:root` kiểu
+     `--dk-table: var(--dk-card)` sẽ KHÔNG theo được 2 rule `[data-surface-dark]` (chúng ghi
+     `--dk-card` lên <body>, `var()` ở `:root` tính đúng MỘT lần lúc khai) ⇒ giá trị ở đây là
+     MÀU ĐỤC của mức “Chuẩn”, hai mức còn lại ghi đè bằng màu đục trong rule của chúng.
+     ⟳ **2026-09-30g — ĐỊNH NGHĨA LẠI: BẢNG = NỀN TRANG + MỘT NẤC** (yêu cầu “hạ nền trang dark
+     một nấc và giữ nền bảng luôn nổi trên trang đúng một nấc ở cả 3 mức” — người dùng chọn
+     phương án bảng NHẠT hơn trang).
+     Vì sao nay lại SÁNG hơn: ba lượt 30/9b–30/9f đã hạ bảng liên tiếp (−8, −8, −6 mỗi kênh) tới
+     mức nền bảng “Chuẩn” TRÙNG nền trang (1,00) và “Dịu” TỐI HƠN trang (0,97) ⇒ bảng mất mặt
+     nền. Lượt này: nền TRANG hạ một nấc (`#111318 → #0b0d12`, xem `--navy`) và BA giá trị bảng
+     được NÂNG lên ≈ nền-trang + 6/+9/+12 mỗi kênh (mỗi mức nhích thêm ~3/kênh; làm tròn kênh nên lệch ≤2)
+     ⇒ **bảng↔trang = 1,05 / 1,08 / 1,11** (Dịu/Chuẩn/Sáng) — bảng LUÔN nổi trên trang.
+     ⛔ Giá trị SÁNG HƠN ba lượt trước (Chuẩn `#0e131b → #12171f`) là HỆ QUẢ BẮT BUỘC của “bảng
+     phải nằm trên trang”, KHÔNG phải sửa lạc. Muốn nền tuyệt đối tối hơn nữa thì phải hạ CẢ
+     nền trang LẪN nền bảng cùng lúc (xem run.md 2026-09-30g) — ⛔ đừng hạ riêng `--dk-table`.
+     ĐO LIVE: bảng↔thẻ **1,23–1,28** · dải↔bảng **1,24–1,31**.
+     ⛔ Dải “tên + tiền” (`--row1-bg`) và bảng Tổng hợp (`--dk-sum`) KHÔNG đụng. */
+  --dk-table: #12171f;   /* mức “Chuẩn” — hai mức còn lại ghi ở rule `[data-surface-dark]` */
+  /* ⟳ **2026-09-27 — NỀN BẢNG = NỀN THẺ CARD — ĐÃ THAY bởi token riêng `--dk-table` ở trên (2026-09-30)** — KHỐI DƯỚI LỊCH SỬ, giữ để đối chiếu (yêu cầu khi đó: “tôi muốn màu nền khi xem dạng bảng
      giống màu nền thẻ card”). Trước đây bảng là một **lớp alpha trắng** (`rgba(255,255,255,0.04)`)
      ghép lên nền trang nên **BẢNG LUÔN TỐI HƠN THẺ một nấc** (đo ở mức “Dịu”: bảng ↔ thẻ
      **1,16:1** — mắt thấy hai tầng). Nay bảng ăn thẳng token của thẻ ở `:root` ⇒ tự khớp ở
      **CẢ BA mức “Nền”**, không còn token riêng nào để lệch.
-     ⛔ `--dk-table` ĐÃ XOÁ. ⚠️ **LƯU Ý CỦA CSS VARIABLES (đã đính đúng lỗi này một lần):** `var()`
+     ⟳ 2026-09-30: `--dk-table` ĐÃ PHỤC HỒI (khối ngay trên). ⚠️ **LƯU Ý CỦA CSS VARIABLES (đã đính đúng lỗi này một lần):** `var()`
      được thay bằng giá trị tính được **TẠI CHÍNH PHẦN TỬ KHAI NÓ**, nên một alias đặt ở `:root`
      kiểu `--dk-table: var(--dk-card)` LUÔN ra màu mức “Chuẩn” — vì ba mức “Nền” ghi `--dk-card`
      lên <body>, chứ KHÔNG lên <html>. Đo được lúc đang làm: cạ 3 mức đều `rgb(36,42,52)`,
@@ -225,7 +251,14 @@
      trên nền bảng **4,73** · viền control trên nền control **4,16**), và phải giữ khả năng
      chỉnh lệch (kẻ hàng tách hai KHÁCH, viền control chỉ ôm một control).
      ⚠️ ĐỔI Ở ĐÂY LÀ ĐỔI CẢ 2 THEME (nếu chỉ muốn nền tối thì sửa `body.light-mode` bên dưới). */
-  --tb-line: rgba(148,163,184,0.8);   /* ⟳ 0,6 → 0,8 cùng lượt với `2px → 1px` — xem khối chú thích ngay trên */
+  /* ⟳ 2026-09-30h: ĐẬM LÊN cho bảng còn “đọc ra là tấm nền” sau khi nền trang hạ một nấc
+     (yêu cầu “làm khung bảng và kẻ hàng dark mode đậm hơn”): `rgba(148,163,184,0.8)` →
+     **`rgba(160,176,198,1)`**. ⛔ GIỮ NGUYÊN **1px** — tăng bề dày là cộng vào chiều cao
+     `.table-wrap` và làm lệch MỌI số đo chiều cao bảng trong run doc.
+     ĐO LIVE: kẻ hàng trên nền bảng **5,17 → 8,15** · trên dải **3,58 → 6,39** · khung trên nền
+     trang **5,18 → 8,81**. Vẫn ĐÚNG màu với `--tb-edge` (cố ý — cả bảng đọc ra như MỘT lưới 1px).
+     ℹ️ Nấc tiếp theo nếu còn nhạt: `rgba(184,198,216,1)` (≈10:1) — hỏi trước, đừng nhảy cóc. */
+  --tb-line: rgba(160,176,198,1);
   /* ── VIỀN XUNG QUANH BẢNG (`--tb-edge`) — CHỈ dùng cho khung `.table-wrap`, chỉ ĐỔI
      Ở CHẾ ĐỘ TỐI (chế độ sáng đã có viền thật `--light-edge` `#374151` = 9,85:1).
      Yêu cầu người dùng: “cho viền xung quanh bảng sáng hơn dark mode” (kèm ảnh bảng tối).
@@ -247,7 +280,10 @@
      giảm riêng chỗ đó được.
      ⛔ Chỉ đổi MÀU: bề dày vẫn `1px` — tăng lên `2px` là cộng thêm vào chiều cao `.table-wrap`
      và làm lệch mọi số đo chiều cao bảng trong run doc. */
-  --tb-edge: rgba(148,163,184,0.8);
+  /* ⟳ 2026-09-30h: `rgba(148,163,184,0.8)` → **`rgba(160,176,198,1)`** — cùng lượt và cùng lý do
+     với `--tb-line`: khung là thứ DUY NHẤT vẽ ra bảng khi nền bảng chỉ còn hơn nền trang ~1 nấc.
+     ⛔ Vẫn **1px**. Đo live khung trên nền trang: **5,18 → 8,81**. */
+  --tb-edge: rgba(160,176,198,1);
   /* Viền control NHÓM MẢNH của thanh công cụ (ô tìm kiếm, nút xuất file, nút dạng xem).
      --border (8% trắng) gần như vô hình trên nền toolbar nên control bị "phẳng".
      ⚠️ 2 ô lọc / 2 tab sắp xếp / nút “Aa” / nút “⚙” KHÔNG dùng token này — xem `--ctl-line`. */
@@ -409,17 +445,26 @@
        và vì nó KHÔNG đổi theo nút “Nền” nên tương phản chữ TÊN/TIỀN trên dải cũng không đổi.
      ⚠️ Ở LIGHT thì `--light-card` **TRÙNG** `--light-surface` ở cả ba mức ⇒ không thể dùng thẳng
        `var(--light-card)` (dải sẽ vô hình, 1,00:1) — xem chú thích ở rule `body.light-mode`.
-     ⟳ **2026-09-28f — DẢI NỀN LIGHT ĐẬM HƠN LẦN NỮA; DARK GIỮ NGUYÊN (có lý do, đọc kỹ):**
+     ⟳ **2026-09-28f — DẢI NỀN LIGHT ĐẬM HƠN LẦN NỮA; DARK KHI ĐÓ GIỮ NGUYÊN — TIỀN ĐỀ NÀY NAY ĐÃ HẾT HIỆU LỰC, đọc 2026-09-30e ngay dưới:**
        yêu cầu lặp lại “cho nền tên và tiền đậm hơn cho dễ nhìn” (ảnh: dải hàng `tên + tiền` ở
        chế độ SÁNG).
-       ⚠️ **VÌ SAO KHÔNG ĐỤNG DARK:** ở chế độ tối dải nằm **SÁNG HƠN** nền bảng — đó chính là cách
+       ⚠️ **VÌ SAO KHI ĐÓ KHÔNG ĐỤNG DARK (tiền đề nay KHÔNG CÒN — xem 2026-09-30e):** ở chế độ tối dải nằm **SÁNG HƠN** nền bảng — đó chính là cách
        nó đọc ra thành dải ⇒ làm nó TỐI đi là làm nó **BIẾN MẤT** (nền bảng tối `#1f252f`–`#242a34`,
        dải hiện `#293653`). Muốn nó nổi hơn ở dark thì phải SÁNG hơn nữa, mà trần đã chạm:
        tên `.cell-tenkh` dark `#60a5fa` trên dải chỉ còn **4,71:1** (L dải 0,0375 → trần AA 4,5
        là L ≤ **0,0417**) ⇒ sáng thêm là tên TỤT xuống dưới AA. Vậy dark ĐỨNG YÊN cho tới khi
        đổi luôn màu chữ tên ở dark (hỏi trước khi làm).
        Ở LIGHT thì ngược lại: nền bảng sáng ⇒ dải **TỐI hơn** nền mới đọc ra thành dải. */
-  --row1-bg: #293653;
+  /* ⟳ **2026-09-30e — DẢI NỀN DARK HẠ XUỐNG CHO HÀI VỚI NỀN BẢNG MỚI** (yêu cầu “làm dải nền hàng
+     ‘tên + tiền’ trong bảng dark mode tối hơn cho hài với nền bảng mới”):
+     `#293653` → **`#212b42`** = ĐÚNG màu cũ **× 0,80** (giữ nguyên hue/độ bão hoà, chỉ hạ độ chói).
+     Vì sao ĐÚNG lúc này: nền bảng đã tối đi 2 nấc nên dải cũ bị LỆCH TÔNG — nó vọt lên
+     **1,43–1,51:1** so với nền bảng (trước chỉ ~1,13–1,28); nay về lại **1,22–1,29** ở cả ba mức.
+     ✅ Chữ trên dải chỉ ĐƯỢC LỢI (dải tối đi): chữ phụ `#94a3b8` **4,69 → 5,50** · tên `#60a5fa`
+     **4,73 → 5,55** ⇒ chỗ RÀNG BUỘC NHẤT của bảng nay thôi sát AA. Đo đầy đủ ở run.md 2026-09-30e.
+     ⚠️ MỘT giá trị cho CẢ BA mức “Nền” (cố ý như trước — đổi theo mức là tương phản chữ trên dải
+     đổi theo). ⛔ LIGHT KHÔNG ĐỤNG (ba giá trị light ở `body.light-mode` + 2 rule `[data-surface]`). */
+  --row1-bg: #212b42;
   --fs-tb-desk: 14px;    /* bảng 14 CỘT trên MÁY TÍNH — khối `@media (min-width: 640px)`
                             ⚠️ Tên cũ `--fs-tb-sm` dễ đọc nhầm thành “bản nhỏ ở điện thoại”, nhưng
                             khối đó là **min-width** ⇒ đây mới là cỡ THẬT của bảng máy tính
@@ -2212,9 +2257,12 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
         token `--light-surface`/`--light-card` được `.table-wrap` (= thẻ, từ 2026-09-27) +
         `.kh-card` + `.summary-wrap` dùng; đổi token là đổi các bề mặt đó.
       · CHẾ ĐỘ TỐI  → attr `data-surface-dark` · khoá lưu `qlno_surface_dark`
-        token `--dk-card` / `--dk-sum` (khai ở `:root`) — ⚠️ từ 2026-09-27 BẢNG dùng chung
-        `--dk-card` với thẻ (token `--dk-table` đã xoá) nên THỰC TẾ chỉ còn **hai** bề mặt tối
-        khác nhau: THẺ+BẢNG và `--dk-sum`; mỗi mức dịch chúng cùng hướng, giữ nguyên tương quan.
+        token `--dk-card` (THẺ) / `--dk-table` (BẢNG) / `--dk-sum` (TỔNG HỢP) — khai ở `:root`
+        cho mức “Chuẩn”, ghi đè bằng màu đục trong 2 rule `[data-surface-dark]`.
+        ⟳ 2026-09-30: BẢNG TÁCH LẠI khỏi thẻ — `--dk-table` phục hồi, luôn TỐI HƠN `--dk-card`
+        ở CẢ BA mức (bảng nằm một nấc dưới thẻ). Từ 2026-09-27 tới 2026-09-30 bảng dùng chung
+        `--dk-card` (token `--dk-table` khi đó đã xoá) — giai đoạn đó chỉ còn hai bề mặt tối
+        khác nhau (THẺ+BẢNG và `--dk-sum`); nay lại là BA. Mỗi mức dịch cả ba cùng hướng.
    Mức “Chuẩn” là MẶC ĐỊNH nên KHÔNG có rule riêng — nó rơi về token gốc (`body.light-mode`
    cho sáng, `:root` cho tối). Tên mức phải khớp `SURFACE_LEVELS` trong JS và 2 câu `if (__…)`
    trong script khôi phục ngay sau <body>.
@@ -2232,6 +2280,8 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
    xuống” — người dùng chọn “hạ 1 nấc, vẫn phân biệt 3 mức”):
      · `--dk-card`  `#2a3444` → **`#232c3a`** (chữ mờ nhất 4,90:1 → **5,49:1**)
      · `--dk-table` alpha **0,09 → 0,06** (ghép lên nền trang ra `rgb(31,33,38)`, 5,73 → 6,28:1)
+       — ⚠️ **SỐ LỊCH SỬ**: bản `--dk-table` còn là lớp ALPHA trước 2026-09-27; token nay là
+       MÀU ĐỤC từng mức (xem khối ở `:root`) ⇒ đừng lấy giá trị alpha này ra dùng lại.
      · `--dk-sum`   `#1c212b` → **`#181c25`**
    Mức “Chuẩn” (`#1f2836` / 4% / `#141720`) và “Dịu” (`#1b232f` / 2% / `#111420`) GIỮ NGUYÊN,
    nên 3 mức vẫn phân biệt được: thẻ `#232c3a` > `#1f2836` > `#1b232f` (thứ tự không đổi).
@@ -2272,12 +2322,12 @@ body.light-mode[data-surface="diu"] .kh-name { color: #1d4ed8; }
 /* ⚠️ Hai mức dưới đây cũng bị lượt “nền thẻ = nền tab” DỊCH LÊN (xem ⟳ ngay trên): mức “Chuẩn”
    lấy đúng màu control `--ctl-solid` nên hai mức này phải đi theo, nếu không “Sáng” chỉ còn
    cách “Chuẩn” **1,03:1** — mắt không thấy khác, nút “Nền” thành vô nghĩa.
-   ⟳ 2026-09-27: hai rule này **KHÔNG khai nền BẢNG nữa** — `.table-wrap` đọc **THẲNG**
-   `var(--dk-card)` ⇒ đổi `--dk-card` ở đây là bảng đổi theo; khai thêm là có hai nguồn sự thật cho
-   cùng một bề mặt. ⚠️ Và nhớ: một alias đặt ở `:root` sẽ **KHÔNG** theo được hai rule này
-   (xem chú thích `--dk-table` đã xoá ở `:root`). */
-body:not(.light-mode)[data-surface-dark="sang"] { --dk-card: #282e38; --dk-sum: #181c25; }
-body:not(.light-mode)[data-surface-dark="diu"]  { --dk-card: #1f252f; --dk-sum: #111420; }
+   ⟳ 2026-09-27: hai rule này từng KHÔNG khai nền BẢNG (bảng dùng chung `--dk-card`).
+   ⟳ 2026-09-30: hai rule này khai LẠI nền bảng qua token `--dk-table` (màu ĐỤC từng mức —
+   bảng tách khỏi thẻ, TỐI HƠN thẻ; xem khối chú thích ở `:root`). ⚠️ Nhớ: alias đặt ở `:root`
+   kiểu `--dk-table: var(--dk-card)` KHÔNG theo được hai rule này — phải ghi màu đục sẵn. */
+body:not(.light-mode)[data-surface-dark="sang"] { --dk-card: #282e38; --dk-sum: #181c25; --dk-table: #151a22; }
+body:not(.light-mode)[data-surface-dark="diu"]  { --dk-card: #1f252f; --dk-sum: #111420; --dk-table: #0f141c; }
 /* Chấm chỉ mức đang dùng (1 = Sáng · 2 = Chuẩn · 3 = Dịu) — cùng cơ chế với nút “Aa”:
    KHÔNG vẽ chấm bằng JS, để F5 xong vẫn đúng ngay cả trước khi script chính chạy.
    ⚠️ Lớp riêng `.sf-btn-dots` (KHÔNG dùng lại `.fs-btn-dots`): dùng chung là 2 bộ rule
@@ -2445,7 +2495,14 @@ body.light-mode .nhom-sel-name {
      (thanh công cụ VẪN ghim như cũ).
      ⛔ Muốn GHIM LẠI thì phải khôi phục ĐỦ BỐN thứ vừa gỡ (sticky + `top` + `z-index: 140` +
      vệt tô 3px) — thiếu vệt tô là hở khe 3px cho thẻ chạy qua giữa thanh công cụ và hàng. */
-  background: var(--dk-card);
+  /* ⟳ 2026-09-30: nền hàng nay ĐEN `#000` (yêu cầu: “cho hàng này nền màu đen dark mode”).
+     ⚠️ TỰ Ý LỆCH TOKEN: trước đây hàng dùng CHUNG `--dk-card` với thẻ card + bảng chính;
+     nay CHỈ hàng đổi đen, thẻ + bảng giữ nguyên token ⇒ đừng “sửa lại” cho về chung token,
+     và ⛔ đừng đổi `--dk-card` cho việc khác (sẽ không còn liên quan gì đến hàng này).
+     Chữ trên nền đen chỉ TĂNG tương phản so với `--dk-card` cũ (mọi màu chữ hàng đều sáng:
+     nhãn `--text-dim`, số xanh/đỏ/vàng, icon `--ic-green`) ⇒ không phải đo lại tương phản.
+     Riêng LIGHT vẫn nền thẻ (`--light-card`) ở rule `body.light-mode .count-info` — KHÔNG đụng. */
+  background: #000000;
   /* ⟳ 2026-09-27i: vệt tô `box-shadow` (3px) đã GỠ cùng lượt với việc bỏ GHIM — nó chỉ tồn
      tại để bịt khe 3px giữa thanh công cụ và hàng KHI HÀNG ĐANG GHIM; hàng cuộn theo trang
      thì không còn khe nào để bịt. */
@@ -2919,9 +2976,11 @@ body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
 
 /* ── TABLE (desktop view) ───────────────── */
 .table-wrap {
-  background: var(--dk-card);    /* NỀN BẢNG = NỀN THẺ CARD (yêu cầu 2026-09-27). Đọc `--dk-card`
-                                    NGAY TẠI ĐÂY (không qua alias ở `:root`) nên tự theo cả 3 mức
-                                    “Nền” — các rule `[data-surface-dark]` ghi `--dk-card` lên <body>.
+  background: var(--dk-table);   /* ⟳ 2026-09-30: NỀN BẢNG TỐI HƠN THẺ — token RIÊNG `--dk-table`
+                                    (yêu cầu “cho nền này màu tối hơn khi xem dạng bảng dark mode”).
+                                    Token khai ở 3 chỗ trên <body>: `:root` (mức “Chuẩn”) + 2 rule
+                                    `[data-surface-dark]` ⇒ tự theo nút “Nền”. ⟳ 2026-09-30g: mỗi
+                                    mức = **NỀN TRANG + một nấc** (bảng nổi TRÊN trang; xem `:root`).
                                     ・sáng: `body.light-mode .table-wrap` dùng `var(--light-card)` */
   /* Khung dùng token RIÊNG `--tb-edge` (sáng bị `body.light-mode .table-wrap` ghi đè về
      `--light-edge`). ⚠️ Trước đây là `--border` (8% trắng = 1,23:1 — vô hình trong tối). */
