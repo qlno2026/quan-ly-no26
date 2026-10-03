@@ -24,7 +24,7 @@
      ⛔ Đừng gộp favicon với `.theme-logo`: sửa logo trong trang KHÔNG làm favicon đổi theo,
      phải sửa cả chuỗi SVG ở đây. -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cstyle%3Epath%7Bfill:%23111827%7D@media (prefers-color-scheme:dark)%7Bpath%7Bfill:%23ffffff%7D%7D%3C/style%3E%3Cpath d='M22 2 C24 14 30 20 42 22 C30 24 24 30 22 42 C20 30 14 24 2 22 C14 20 20 14 22 2 Z'/%3E%3C/svg%3E">
-<title>Quản Lý Nợ</title>
+<title>Quanlythughibr</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap');
 
@@ -1473,7 +1473,18 @@ body:not(.light-mode) .kh-ma { color: var(--vien-fg) !important; background: var
    **7,25** là chỗ THẤP NHẤT nhưng vẫn dư xa ngưỡng 4,5. ⚠️ Thang phải nhớ: mốc **6,96**
    (`#d1d5db`) từng bị chính người dùng nói “khó nhìn” (2026-10-03x) ⇒ ĐỪNG hạ quá tay xuống
    dưới ~7,5; **8,33** là điểm giữa hai phản hồi. Mũi tên `--ic-blue-soft` không đụng. */
-body:not(.light-mode) .kh-danhso { color: #e2e8f0 !important; background: var(--danhso-bg); }
+/* ⟳ 2026-10-03ai: CHỮ VIÊN DANH SÁNG XANH — yêu cầu “cho màu danh số ở thẻ màu nền xanh chữ xanh”.
+   NỀN viên ĐÃ là xanh lam từ trước (`--danhso-bg: rgba(59,130,246,0.26)` — alpha tự ghép lên
+   nền thẻ từng mức “Nền”) ⇒ chỉ còn đổi CHỮ: `#e2e8f0` (xám-trắng) → **`#93c5fd`** = blue-300,
+   tông đã có sẵn trong palette (`--ic-blue-light`) nên KHÔNG sinh tông mới.
+   ĐO LIVE sau reload (computed + ghép alpha 0,26 lên nền thẻ TẤNG mức, dark): CHỮ **6,94 / 6,43 /
+   5,69 / 4,96 / 4,73** (Rất dịu → Rất sáng) — tất cả TRÊN ngưỡng 4,5 ✓; MŨI TÊN **4,92 / 4,56 /
+   4,04 / 3,52 / 3,35** — vẫn TRÊN ngưỡng 3,0 của đồ hoạ ✓ (chỗ sát nhất là mức “Rất sáng”).
+   ⚠️ Đây là chữ xanh SÁNG NHẤT còn đạt AA: ⛔ đừng lên `#bfdbfe` nữa (mức “Rất sáng” sẽ tụt
+   dưới 4,5 ✗) và ⛔ đừng xuống `#60a5fa`/`#60a5fa` (trùng tông MŨI TÊN trong viên
+   `--ic-blue-soft`) — chữ phải NHẠT HƠN mũi tên thì hai lớp mới phân tầng được.
+   Chế độ SÁNG không đụng (light đã là chữ xanh navy `#172554`, 9,17). */
+body:not(.light-mode) .kh-danhso { color: #93c5fd !important; background: var(--danhso-bg); }
 body:not(.light-mode) .kh-phone { color: var(--vien-fg) !important; background: var(--vien-sdt-bg); }
 body.light-mode .kh-thang { color: #334155; }
 body.light-mode .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #3b82f6; text-underline-offset: 3px; text-decoration-thickness: 2px; }
@@ -5071,7 +5082,7 @@ body.force-desktop .table-view { display: block; }
     </button>
     <div class="title-wrap">
 
-      <div class="header-title">Quản Lý Nợ</div>
+      <div class="header-title">Quanlythughibr</div>
       <div class="header-sub" id="fileLabel">Chưa có dữ liệu</div>
     </div>
   </div>
@@ -6418,15 +6429,24 @@ applyFontSize();
 //   3. hai câu `if (__sf…)` trong script khôi phục ngay sau <body> (chống nháy nền).
 // ⚠️ Nhãn nút đọc theo THEME đang xem nên `toggleTheme()` PHẢI gọi lại `applySurface()`.
 // Tên mức dùng CHUNG cho cả hai theme: “Rất sáng” = bề mặt sáng nhất, “Rất dịu” = dịu nhất.
-// ⟳ 2026-10-03ag: 3 → 5 mức (thêm “Rất sáng” / “Rất dịu”). Thứ tự mảng = thứ tự TRÊN THANH KÉO
-// (trái = sáng nhất → phải = dịu nhất) và = chỉ số `value` của `#sfRange` ⇒ ⛔ ĐỪNG sắp lại.
-// ⚠️ Điều này đúng cho CẢ hai theme: ở dark “sáng hơn” = nền NHẠT hơn (xem chú thích CSS).
+// ⚠️ Đại lượng “sáng hơn” khác nhau theo theme: ở LIGHT nền sáng hơn = nền NHẠT hơn (mã hex
+// cao hơn); ở DARK nền sáng hơn = nền CŨNG NHẠT hơn (hex cao hơn) — cùng một chiều, nên MỘT
+// thứ tự mảng đúng cho cả hai. ⛔ Đừng “đảo riêng cho dark”.
+// ⟳ 2026-10-03ag: 3 → 5 mức (thêm “Rất sáng” / “Rất dịu”).
+// ⟳ 2026-10-03aj: ĐẢO CHIỀU — yêu cầu “tôi muốn tăng độ sáng theo thứ tự là rất dịu, dịu, chuẩn,
+//   sáng, rất sáng”. Trước lượt này thứ tự là SÁNG→DỊU (trái = “Rất sáng”), tức kéo sang PHẢI
+//   thì nền TỐI ĐI — ngược với thanh kéo “Cỡ chữ” ngay trên nó (trái = nhỏ nhất, phải = lớn
+//   nhất). Nay hai thanh cùng chiều “tăng dần khi kéo sang phải”.
+// Thứ tự mảng = thứ tự TRÊN THANH KÉO (trái = DỊU nhất → phải = SÁNG nhất) và = chỉ số
+// `value` của `#sfRange` ⇒ ⛔ ĐỪNG sắp lại.
+// ⚠️ Điều này đúng cho CẢ hai theme: ở dark “sáng hơn” = nền NHẠ hơn (xem chú thích CSS).
+// ⚠️ Mức “Chuẩn” vẫn ở GIỮA (chỉ số 2) nên mặc định + mọi chỗ rơi về mặc định KHÔNG đổi.
 const SURFACE_LEVELS = [
-  { key: 'ratsang', ten: 'Rất sáng' },
-  { key: 'sang',    ten: 'Sáng' },
-  { key: 'chuan',   ten: 'Chuẩn' },
+  { key: 'ratdiu',  ten: 'Rất dịu' },
   { key: 'diu',     ten: 'Dịu' },
-  { key: 'ratdiu',  ten: 'Rất dịu' }
+  { key: 'chuan',   ten: 'Chuẩn' },
+  { key: 'sang',    ten: 'Sáng' },
+  { key: 'ratsang', ten: 'Rất sáng' }
 ];
 function sfIsLight() { return document.body.classList.contains('light-mode'); }
 function sfAttr()  { return sfIsLight() ? 'data-surface' : 'data-surface-dark'; }
@@ -7529,7 +7549,7 @@ function saoLuuDuLieu() {
   const hai = (x) => String(x).padStart(2, '0');
   const tem = `${d.getFullYear()}-${hai(d.getMonth() + 1)}-${hai(d.getDate())}_${hai(d.getHours())}${hai(d.getMinutes())}`;
   const goi = {
-    ungDung: 'Quản Lý Nợ',
+    ungDung: 'Quanlythughibr',
     phienBan: 1,
     thoiDiem: d.toISOString(),
     soKH: new Set(allData.map(r => r.ma_khach_hang || r.ten_khach_hang)).size,
