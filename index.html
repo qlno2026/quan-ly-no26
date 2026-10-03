@@ -545,7 +545,17 @@
   --fs-count-lbl: 17px;
   --fs-count-num: 19px;
 }
-/* Ba mức. Tên mức phải khớp mảng `FS_LEVELS` trong JS và `data-fs` trên <body>. */
+/* NĂM mức. Tên mức phải khớp mảng `FS_LEVELS` trong JS và `data-fs` trên <body>.
+   ⟳ 2026-10-03ag: 3 mức → **5 MỨC** (yêu cầu “có 5 mức, thêm mức rất nhỏ, rất lớn”).
+   Mức “Chuẩn” (giữa) KHÔNG có rule riêng — nó rơi về token gốc ở `:root` (đúng như cũ),
+   nên 4 rule dưới chỉ ghi 4 mức còn lại. ⚠️ Vẫn giữ NHỊP ±1px đều nhau giữa hai mức liền kề
+   (16/17/18/19/20 ở `--fs-card-big`) — đây là bước người dùng đã chọn và đã quen, thêm 2 mức
+   là NỐI DÀI cùng một thang chứ không đổi bước. */
+body[data-fs="ratnho"] {
+  --fs-card-big: 16px; --fs-card: 15px; --fs-card-sep: 11px;
+  --fs-tb-row: 15px;   --fs-tb: 13px;   --fs-tb-desk: 12px;
+  --fs-count-lbl: 15px; --fs-count-num: 17px;
+}
 body[data-fs="nho"] {
   --fs-card-big: 17px; --fs-card: 16px; --fs-card-sep: 12px;
   --fs-tb-row: 16px;   --fs-tb: 14px;   --fs-tb-desk: 13px;
@@ -555,6 +565,11 @@ body[data-fs="to"] {
   --fs-card-big: 19px; --fs-card: 18px; --fs-card-sep: 14px;
   --fs-tb-row: 18px;   --fs-tb: 16px;   --fs-tb-desk: 15px;
   --fs-count-lbl: 18px; --fs-count-num: 20px;
+}
+body[data-fs="ratto"] {
+  --fs-card-big: 20px; --fs-card: 19px; --fs-card-sep: 15px;
+  --fs-tb-row: 19px;   --fs-tb: 17px;   --fs-tb-desk: 16px;
+  --fs-count-lbl: 19px; --fs-count-num: 21px;
 }
 
 /* ── Viên (pill) trên card — light mode ── */
@@ -808,8 +823,11 @@ body {
    nó sẽ đổi màu nhanh hơn phần còn lại khi đổi theme — đúng lỗi lượt này đang sửa, nên hãy soi lại
    danh sách này mỗi khi thêm control.
    ⚠️ Lớp gạt này mở ở **HAI** chỗ, không chỉ đổi theme: `toggleTheme()` và `cycleSurface()` (nút
-   “Nền”) — vì đổi mức nền cũng là đổi diện mạo toàn cục. Cả hai đi qua **CÙNG** `startThemeAnim()`
-   nên không thể lệch thời lượng. */
+   “Nền”) — vì đổi mức nền cũng là đổi diện mạo toàn cục.
+   ⟳ 2026-10-03ag: `cycleSurface()` ĐÃ XOÁ (nút “Nền” → thanh kéo `#sfRange`). Hàm thay nó,
+   `setSurface()`, **CÓ CHỦ Ý KHÔNG mở cửa sổ gạt**: kéo thanh trượt là thao tác LIÊN TỤC, mỗi
+   bước mà mở cửa sổ 0,45s thì thanh kéo bị “dính” và giật. Đổi THEME (`toggleTheme`) vẫn mở
+   gạt như cũ — đổi theme là một lần, toàn cục, đúng loại thay đổi cửa sổ gạt sinh ra để phục vụ. */
 body.theme-anim .kh-card,
 body.theme-anim .sort-btn,
 body.theme-anim .page-btn,
@@ -837,6 +855,15 @@ body.theme-anim .view-btn {
 .kh-abc .ic { color: var(--ic-blue); }
 .kh-ghichu-row > .ic { color: var(--ic-blue); }   /* icon ghi chú = `#i-pencil` (cây viết NÉT **+ gạch dưới**, lưới 24); `#i-pencil-bold` (đặc) đã XOÁ ở lượt “icon tối giản” — xem chú thích ở symbol */
 .addr-ico { color: var(--ic-blue); }
+/* ⟳ 2026-10-03ag: GHIM ĐỊA CHỈ ở light mode tụt dưới ngưỡng icon (3:1) ở HAI mức tối nhất —
+   đo live: `--ic-blue` `#3b82f6` trên thẻ 5 mức = 3,52 / 3,30 / 3,03 / **2,64** / **2,36**.
+   Hai mức “Rất sáng”/“Sáng” vẫn ổn nhưng 3 mức còn lại thì không ⇒ đậm lên **blue-600**
+   (`--ic-blue-dark`) cho CẢ 3 mức tối: `#2563eb` = **4,29 / 3,73 / 3,35** ✓ (ngưỡng 3,0).
+   ⚠️ Đây là vấn đề CÓ SẴN từ trước (mức “Dịu” cũ đã 2,64) — lượt này chỉ mở rộng phạm vi
+   fix sang cả 5 mức. ⛔ Đừng gỡ: thẻ càng tối thì ghim càng khó đọc. */
+body.light-mode[data-surface="chuan"] .addr-ico,
+body.light-mode[data-surface="diu"] .addr-ico,
+body.light-mode[data-surface="ratdiu"] .addr-ico { color: var(--ic-blue-dark); }
 .kh-abc-ico { color: var(--ic-blue); }   /* thẻ ABC: icon nay là NÉT qua `#i-tag` (lượt “icon tối giản”); chỗ dùng là span bọc ngoài `.kh-abc` nên KHÔNG dùng được `.kh-abc .ic` */
 .kh-danhso .ic { color: var(--ic-blue-soft); }
 /* Mũi tên Danh Số `#i-arrow-right` (nay là NÉT): trên nền thẻ TRẮNG `--ic-blue-soft` (#60a5fa) chỉ
@@ -2542,6 +2569,22 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
 body.light-mode[data-surface="sang"] { --light-surface: #ffffff; --light-card: #f0f3f6; --row1-bg: #c9d6e5; }   /* ⟳ 2026-10-03q: thẻ #f2f5f9 → #eaedf1 · ⟳ 2026-10-03v: thẻ #eaedf1 → #f0f3f6 · ⟳ 2026-10-03z: BỎ `--danhso-bg` theo mức — light dùng chung alpha với dark */
 body.light-mode[data-surface="diu"]  { --light-surface: #e3e9f0; --light-card: #d5dbe3; --multi-hd: #047857; --row1-bg: #b9c5d4; --text-dim: #4f5b6b; }   /* ⟳ 2026-10-03q: thẻ #e3e9f0 → #dbe1e8; vạch #059669 → #047857 · ⟳ 2026-10-03v: thẻ #dbe1e8 → #d5dbe3 + `--text-dim` #5b6777 → #4f5b6b · ⟳ 2026-10-03z: BỎ `--danhso-bg` theo mức — light dùng chung alpha với dark */
 body.light-mode[data-surface="diu"] .kh-name { color: #1d4ed8; }
+/* ⟳ 2026-10-03ag: 3 mức → **5 MỨC** (yêu cầu “thêm mức rất dịu, rất sáng”). Hai mức mới là
+   hai ĐẦU của thang; “Chuẩn” (giữa) vẫn rơi về token gốc ⇒ hai rule dưới ghi 2 mức còn lại.
+   ⚠️ Vẫn giữ ĐÚNG NHỊP cũ giữa hai mức liền kề (thẻ “Sáng” `#f0f3f6` → “Chuẩn” `#e7e9ed`
+   → “Dịu” `#d5dbe3`) — hai mức mới chỉ NỐI DÀI thang, không đổi bước giữa 3 mức cũ.
+   ⚠️ Mức “Rất dịu” thẻ tối nhất (`#c8d0da`) ⇒ 2 chỗ SÁT NGƯỠNG đều phải bù lại:
+     · `.kh-name` `#1d4ed8` chỉ còn **4,28 ✗** ⇒ dùng `#1e40af` = **6,20 ✓**
+     · vạch “≥2 HĐ” `#047857` chỉ còn **2,88 ✗** ⇒ dùng `#036647` = **3,13 ✓** (ngưỡng 3:1)
+   ⚠️ `--text-dim` `#46525f` trên `#c8d0da` = **6,60:1** ✓ (đậm hơn mức “Dịu” — nhất quán). */
+body.light-mode[data-surface="ratsang"] { --light-surface: #ffffff; --light-card: #f8fafc; --row1-bg: #d3deeb; }   /* nửa bước từ “Chuẩn” về “Sáng”: thẻ #f8fafc (vẫn đọc ra khỏi nền trang #f8fafc nhờ viền+bóng) */
+body.light-mode[data-surface="ratdiu"]  { --light-surface: #dae1ea; --light-card: #c8d0da; --multi-hd: #036647; --row1-bg: #adbaca; --text-dim: #46525f; }
+body.light-mode[data-surface="ratdiu"] .kh-name { color: #1e40af; }   /* navy-800 — thay `#1d4ed8` (chỉ 4,28 trên thẻ tối nhất) */
+/* Mức “Rất dịu”: thẻ tối nhất nên SỐ TIỀN trên thẻ cũng phải đậm lại — `.kh-tien` `#b91c1c`
+   trên `#c8d0da` chỉ còn **4,16 ✗** ⇒ dùng `#991b1b` = **5,37 ✓** (đúng mức red-800 đã có sẵn
+   trong palette). ⚠️ Phải sửa CÙNG `.mil-digit` (`#c2410c → #9a3412`) — lệch là số tiền hai tông. */
+body.light-mode[data-surface="ratdiu"] .kh-tien { color: #991b1b; }
+body.light-mode[data-surface="ratdiu"] .kh-tien .mil-digit { color: #9a3412; }
 /* ⚠️ Hai mức dưới đây cũng bị lượt “nền thẻ = nền tab” DỊCH LÊN (xem ⟳ ngay trên): mức “Chuẩn”
    lấy đúng màu control `--ctl-solid` nên hai mức này phải đi theo, nếu không “Sáng” chỉ còn
    cách “Chuẩn” **1,03:1** — mắt không thấy khác, nút “Nền” thành vô nghĩa.
@@ -2551,6 +2594,13 @@ body.light-mode[data-surface="diu"] .kh-name { color: #1d4ed8; }
    kiểu `--dk-table: var(--dk-card)` KHÔNG theo được hai rule này — phải ghi màu đục sẵn. */
 body:not(.light-mode)[data-surface-dark="sang"] { --dk-card: #2e3644; --dk-sum: #1c212c; --dk-table: #191f29; }   /* ⟳ 2026-10-03v: mở rộng khoảng cách 3 mức (thẻ #282e38 → #2e3644) */
 body:not(.light-mode)[data-surface-dark="diu"]  { --dk-card: #1a1f28; --dk-sum: #0e1119; --dk-table: #0c1117; }   /* ⟳ 2026-10-03v: mở rộng khoảng cách 3 mức (thẻ #1f252f → #1a1f28) */
+/* ⟳ 2026-10-03ag: 3 mức → **5 MỨC** ở DARK — hai ĐẦU thang. “Chuẩn” vẫn là token gốc
+   (`--dk-card: var(--ctl-solid)` = `#242a34` + `--dk-table: #12171f` + `--dk-sum: #141720`).
+   ⚠️ Thang thẻ giãn ĐỀU: **#323a49 / #2e3644 / #242a34 / #1a1f28 / #141820** (Sáng→Rất dịu).
+   ⚠️ CHIỀU NGHỊCH: dark đi SÁNG hơn là chữ TỤT tương phản ⇒ mức “Rất sáng” (`#323a49`) rất
+   sát trần — xem khối BÙ CHỮ ngay dưới (phải có mặt “ratsang”). */
+body:not(.light-mode)[data-surface-dark="ratsang"] { --dk-card: #323a49; --dk-sum: #1f2530; --dk-table: #1c222c; }
+body:not(.light-mode)[data-surface-dark="ratdiu"]  { --dk-card: #141820; --dk-sum: #0a0d13; --dk-table: #080b10; }
 /* ➕ 2026-10-03ab — BÙ CHỮ CHO MỨC “SÁNG” Ở DARK (rá soát tương phản toàn thẻ, 3 mức).
    Khi giãn 3 mức (2026-10-03v), thẻ “Sáng” nhạt lên `#282e38` → `#2e3644` nên MỌI chữ trên thẻ
    tụt tương phản. KHÔNG chỗ nào rớt dưới ngưỡng (chữ ≥4,5 · icon ≥3) nhưng 3 chỗ rớt khỏi MỨC NỀN
@@ -2573,32 +2623,94 @@ body:not(.light-mode)[data-surface-dark="sang"] .kh-name { color: #7cb5fb; }
 body:not(.light-mode)[data-surface-dark="sang"] .addr-ico { color: #60a5fa; }
 body:not(.light-mode)[data-surface-dark="sang"] .kh-card .kh-tien.high,
 body:not(.light-mode)[data-surface-dark="sang"] .kh-card .mil-digit { color: #ffa0a0; }
-/* Chấm chỉ mức đang dùng (1 = Sáng · 2 = Chuẩn · 3 = Dịu) — cùng cơ chế với nút “Aa”:
-   KHÔNG vẽ chấm bằng JS, để F5 xong vẫn đúng ngay cả trước khi script chính chạy.
-   ⚠️ Lớp riêng `.sf-btn-dots` (KHÔNG dùng lại `.fs-btn-dots`): dùng chung là 2 bộ rule
-   `body[data-fs]` + `body[data-surface]` cùng bật chấm trên MỘT nút ⇒ 2 chấm sáng cùng lúc.
-   ⚠️ MỖI theme đọc chấm theo attribute CỦA NÓ ⇒ phải khoanh `body.light-mode` / `body:not(.light-mode)`:
-   nếu để trần `body[data-surface=…]` thì ở chế độ tối nút sáng 2 chấm cùng lúc (mức sáng của
-   theme sáng + mức tối của theme tối — hai attribute luôn cùng tồn tại trên <body>). */
-.sf-btn-ico { display: block; }
-.sf-btn-dots { display: flex; gap: 2px; }
-.sf-btn-dots i { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: 0.35; }
-body.light-mode[data-surface="sang"] .sf-btn-dots i:nth-child(1),
-body.light-mode[data-surface="chuan"] .sf-btn-dots i:nth-child(2),
-body.light-mode[data-surface="diu"] .sf-btn-dots i:nth-child(3),
-body:not(.light-mode)[data-surface-dark="sang"] .sf-btn-dots i:nth-child(1),
-body:not(.light-mode)[data-surface-dark="chuan"] .sf-btn-dots i:nth-child(2),
-body:not(.light-mode)[data-surface-dark="diu"] .sf-btn-dots i:nth-child(3) { opacity: 1; }
+/* ⟳ 2026-10-03ag: MỨC “RẤT SÁNG” (thẻ `#323a49`) — CÙNG lý do như khối “Sáng” ngay trên:
+   nền thẻ nhạt hơn ⇒ mọi chữ tụt tương phản. Nâng thêm ĐÚNG một nấc so với mức “Sáng” để
+   giữ CÙNG độ đọc (đo lại: xám **5,83** · tên **5,76** · ghim **4,69** · tiền **6,31** — đều
+   bằng/xấp xỉ mức “Sáng” 5,90/5,70/4,78/6,25). ⛔ Đây là chỗ SÁT TRẦN NHẤT của dark: đừng nâng
+   `--dk-card` mức “Rất sáng” thêm nữa mà không đo lại `--text-dim` trên thẻ. */
+body:not(.light-mode)[data-surface-dark="ratsang"] .kh-thang,
+body:not(.light-mode)[data-surface-dark="ratsang"] .kh-sogcs,
+body:not(.light-mode)[data-surface-dark="ratsang"] .kh-tbi,
+body:not(.light-mode)[data-surface-dark="ratsang"] .kh-addr-line,
+body:not(.light-mode)[data-surface-dark="ratsang"] .kh-sep { color: #adbad0; }
+body:not(.light-mode)[data-surface-dark="ratsang"] .kh-name { color: #85bcfa; }
+body:not(.light-mode)[data-surface-dark="ratsang"] .addr-ico { color: #64a9fb; }
+body:not(.light-mode)[data-surface-dark="ratsang"] .kh-card .kh-tien.high,
+body:not(.light-mode)[data-surface-dark="ratsang"] .kh-card .mil-digit { color: #ffaaaa; }
+/* ── THANH KÉO (slider) cho “Cỡ chữ” VÀ “Mức nền” ───────────────────────────────────
+   ⟳ 2026-10-03ag: hai control này từ NÚT (bấm xoay vòng) chuyển thành THANH KÉO 5 mức.
+   ⇒ hai khối chấm 3px cũ (`.sf-btn-dots` + `.fs-btn-dots` + các rule `nth-child` bật sáng
+   theo `data-fs`/`data-surface`) đã XOÁ: thanh kéo tự cho thấy mức đang dùng bằng vị trí
+   con trượt, không cần chấm. Đừng dựng lại — sẽ thành hai chỉ báo cho cùng một mức.
+   ⚠️ `<input type="range">` mặc định KHÁC hẳn giữa các trình duyệt ⇒ phải vẽ lại toàn bộ
+   (`.cfg-range` + 2 pseudo) và khai `-webkit-appearance: none`. Chỉ vẽ được RÃNH + CON TRƯỢT
+   bằng pseudo; các MỐC (5 vạch) vẽ bằng `repeating-linear-gradient` NGAY TRÊN chính input
+   (nền của input = rãnh) — không thêm phần tử nào vào markup.
+   ⚠️ Bề rộng chốt **170px** (thanh kéo + 2 khe 10px + 5 mốc ở mức rộng nhất “Rất lớn” ~68px
+   + nhãn hàng ~120px = **~278px** < 303px = khổ hẹp nhất từng đo) ⇒ hàng vẫn 1 dòng.
+   ⚠️ Cùng họ hình với các control khác trong tấm: rãnh 4px bo tròn, con trượt 16px bo tròn,
+   cao hàng 40px — KHÔNG tự nghĩ bộ màu mới (theo token control như `.cfg-btn`). */
+.cfg-range {
+  -webkit-appearance: none; appearance: none;
+  flex: 0 0 auto;
+  width: 170px;
+  height: 40px;                 /* vùng bấm = cả hàng cho dễ chạm (rãnh chỉ 4px) */
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: pan-y;
+}
+/* Rãnh + 5 mốc: 5 vạch mờ chia thanh thành 4 khoảng bằng nhau. */
+.cfg-range::-webkit-slider-runnable-track {
+  height: 4px; border-radius: 2px;
+  background-color: var(--ctl-line);
+  background-image: repeating-linear-gradient(to right, rgba(255,255,255,0.42) 0 1.5px, transparent 1.5px 25%);
+  background-repeat: no-repeat;
+}
+.cfg-range::-moz-range-track {
+  height: 4px; border-radius: 2px;
+  background-color: var(--ctl-line);
+  background-image: repeating-linear-gradient(to right, rgba(255,255,255,0.42) 0 1.5px, transparent 1.5px 25%);
+  background-repeat: no-repeat;
+}
+/* Con trượt 16px — nền ĐẶC, có viền + bóng để nổi trên rãnh ở cả 2 theme. */
+.cfg-range::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 16px; height: 16px; margin-top: -6px;   /* (16 − 4)/2 = 6 ⇒ canh giữa rãnh 4px */
+  border-radius: 50%;
+  background: var(--ctl-solid);
+  border: 2px solid var(--ctl-line);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.45);
+}
+.cfg-range::-moz-range-thumb {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--ctl-solid);
+  border: 2px solid var(--ctl-line);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.45);
+}
+body.light-mode .cfg-range::-webkit-slider-runnable-track {
+  background-color: var(--ctl-light-line);
+  background-image: repeating-linear-gradient(to right, rgba(15,23,42,0.32) 0 1.5px, transparent 1.5px 25%);
+}
+body.light-mode .cfg-range::-moz-range-track {
+  background-color: var(--ctl-light-line);
+  background-image: repeating-linear-gradient(to right, rgba(15,23,42,0.32) 0 1.5px, transparent 1.5px 25%);
+}
+body.light-mode .cfg-range::-webkit-slider-thumb { background: #ffffff; border-color: var(--ctl-light-line); box-shadow: 0 1px 4px rgba(15,23,42,0.28); }
+body.light-mode .cfg-range::-moz-range-thumb { background: #ffffff; border-color: var(--ctl-light-line); box-shadow: 0 1px 4px rgba(15,23,42,0.28); }
+.cfg-range:focus-visible { outline: 2px solid var(--ic-hash); outline-offset: 3px; border-radius: 8px; }
 
 /* ── ⚙️ NÚT CHỌN CỠ CHỮ NỘI DUNG (“Aa”) ─────────────────────────────────────────
    ⟳ Từ lượt “cho thêm 1 nút cài đặt và bỏ tất cả các nút vào đó”, **KHÔNG còn `.fs-btn` nào
    ngoài tấm cài đặt**: “Aa” và “Nền” đều là hàng trong `#cfg` (xem markup khối `#cfg`).
    `flex: 0 0 auto` vẫn giữ đúng **38px** ở mọi khổ (tấm cài đặt cũng là flex).
    Bề mặt/viền COPY của `.sort-btn` (cùng họ control với ô lọc) — không tự nghĩ bộ màu mới.
-   Ba chấm dưới “Aa” là chỉ mức ĐANG dùng (1=Nhỏ · 2=Chuẩn · 3=Lớn), do 3 rule
-   `body[data-fs="…"]` bên dưới bật sáng — KHÔNG vẽ chấm bằng JS, để F5 xong vẫn đúng ngay
-   cả trước khi script chính chạy. Chấm KHÔNG thay cho nhãn chữ: hàng trong tấm còn có
-   `<i class="cfg-val" id="cfgFsVal">` in thẳng “Nhỏ/Chuẩn/Lớn” ngay sau nhãn.
+   ⟳ 2026-10-03ag: **HAI NÚT `.fs-btn` NÀY ĐÃ BỊ XOÁ** khỏi tấm Cài đặt (thay bằng thanh kéo
+   `.cfg-range`) ⇒ các rule `.fs-btn` dưới đây là MÃ CHẾT, giữ lại chỉ để đối chiếu. Nhãn giá
+   trị đang dùng vẫn là `<i class="cfg-val" id="cfgFsVal">` (JS ghi). ⛔ Đừng dựng lại nút
+   “Aa” mà không xoá thanh kéo — sẽ có hai control cho cùng một việc.
    ⚠️ Cỡ chữ “Aa” (`15px`) CỐ ĐỊNH — nó là nhãn của control, không phải nội dung, nên KHÔNG
    ăn theo `--fs-card`/`--fs-tb`; nếu cho nó co giãn thì bấm tới mức “Lớn” nút sẽ tự to ra. */
 .fs-btn {
@@ -2629,11 +2741,8 @@ body.light-mode .fs-btn { background: var(--ctl-light-bg); border-color: var(--c
    XẾP (nơi 2 tab cao 44px) — đừng sửa base, chỉ đè trong tấm. */
 .cfg .fs-btn { height: 40px; }
 .fs-btn-aa { font-size: 15px; font-weight: 600; line-height: 1; letter-spacing: 0.2px; }
-.fs-btn-dots { display: flex; gap: 2px; }
-.fs-btn-dots i { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: 0.35; }
-body[data-fs="nho"] .fs-btn-dots i:nth-child(1),
-body[data-fs="chuan"] .fs-btn-dots i:nth-child(2),
-body[data-fs="to"] .fs-btn-dots i:nth-child(3) { opacity: 1; }
+/* ⟳ 2026-10-03ag: `.fs-btn-dots` + 3 rule `body[data-fs]` bật chấm đã XOÁ cùng lượt đổi sang
+   thanh kéo — xem chú thích “THANH KÉO (slider)” ở khối `[data-surface]` phía trên. */
 
 .nhom-sel-name {
   font-weight: 500;
@@ -4763,18 +4872,20 @@ body.force-desktop .table-view { display: block; }
     // Đặt ở đây (chạy trước khi vẽ) nên không bao giờ thấy “thoáng ẩn thẻ rồi mới hiện bảng”.
     if (localStorage.getItem('qlno_view') === 'desktop') document.body.classList.add('force-desktop');
     // CỠ CHỮ NỘI DUNG đã chọn: ghi `data-fs` NGAY ĐÂY để trang không nháy cỡ khi tải.
-    // Ba khoá hợp lệ phải khớp `FS_LEVELS` trong JS và 2 khối `body[data-fs="…"]` trong CSS.
+    // NĂM khoá hợp lệ phải khớp `FS_LEVELS` trong JS và 4 khối `body[data-fs="…"]` trong CSS.
+    // ⟳ 2026-10-03ag: 3 → 5 mức. Khoá CŨ trong máy người dùng (`nho`/`chuan`/`to`) VẪN HỢP LỆ
+    // ⇒ KHÔNG cần migrate: chỉ người chưa từng chọn gì mới rơi vào mức “Chuẩn” như cũ.
     var __fs = localStorage.getItem('qlno_fs');
-    if (__fs === 'nho' || __fs === 'chuan' || __fs === 'to') document.body.setAttribute('data-fs', __fs);
+    if (__fs === 'ratnho' || __fs === 'nho' || __fs === 'chuan' || __fs === 'to' || __fs === 'ratto') document.body.setAttribute('data-fs', __fs);
     // MỨC NỀN đã chọn — MỖI THEME MỘT BỘ: ghi CẢ HAI attribute NGAY ĐÂY để không nháy nền khi
     // tải, và để chấm chỉ mức đúng ngay từ lần vẽ đầu (CSS đọc chấm theo attribute CỦA THEME
     // đang xem). Không có khoá nào trong máy ⇒ ghi `chuan` = mặc định (token gốc, không rule riêng).
     // Khoá hợp lệ phải khớp `SURFACE_LEVELS` trong JS và các khối `body…[data-surface…]` trong CSS.
     var __sf = localStorage.getItem('qlno_surface');
-    if (__sf !== 'sang' && __sf !== 'chuan' && __sf !== 'diu') __sf = 'chuan';
+    if (__sf !== 'ratsang' && __sf !== 'sang' && __sf !== 'chuan' && __sf !== 'diu' && __sf !== 'ratdiu') __sf = 'chuan';
     document.body.setAttribute('data-surface', __sf);
     var __sfd = localStorage.getItem('qlno_surface_dark');
-    if (__sfd !== 'sang' && __sfd !== 'chuan' && __sfd !== 'diu') __sfd = 'chuan';
+    if (__sfd !== 'ratsang' && __sfd !== 'sang' && __sfd !== 'chuan' && __sfd !== 'diu' && __sfd !== 'ratdiu') __sfd = 'chuan';
     document.body.setAttribute('data-surface-dark', __sfd);
   } catch (e) {}
 })();
@@ -5345,9 +5456,9 @@ body.force-desktop .table-view { display: block; }
                 <th onclick="sortBy('ten_khach_hang')">Tên KH <span class="sa" data-col="ten_khach_hang">↕</span></th>
                 <th onclick="sortBy('dia_chi')">Địa chỉ <span class="sa" data-col="dia_chi">↕</span></th>
                 <th onclick="sortBy('ma_sogcs')">Mã Số GCS <span class="sa" data-col="ma_sogcs">↕</span></th>
-                <th onclick="sortBy('danh_so')">Danh Số <span class="sa" data-col="danh_so">↕</span></th>
+                <th onclick="sortBy('danh_so')">Danh số <span class="sa" data-col="danh_so">↕</span></th>
                 <th onclick="sortBy('thang_no')">Tháng <span class="sa" data-col="thang_no">↕</span></th>
-                <th onclick="sortBy('tien_no')">Tiền Nợ <span class="sa" data-col="tien_no">↕</span></th>
+                <th onclick="sortBy('tien_no')">Tiền nợ <span class="sa" data-col="tien_no">↕</span></th>
                 <th onclick="sortBy('dien_thoai')">SĐT <span class="sa" data-col="dien_thoai">↕</span></th>
                 <th onclick="sortBy('so_tbi')">Số TBi <span class="sa" data-col="so_tbi">↕</span></th>
                 <th onclick="sortBy('ghi_chu')">Ghi Chú <span class="sa" data-col="ghi_chu">↕</span></th>
@@ -5408,9 +5519,9 @@ body.force-desktop .table-view { display: block; }
                 <th onclick="sortBy('ten_khach_hang')">Tên KH <span class="sa" data-col="ten_khach_hang">↕</span></th>
                 <th onclick="sortBy('dia_chi')">Địa chỉ <span class="sa" data-col="dia_chi">↕</span></th>
                 <th onclick="sortBy('ma_sogcs')">Mã Số GCS <span class="sa" data-col="ma_sogcs">↕</span></th>
-                <th onclick="sortBy('danh_so')">Danh Số <span class="sa" data-col="danh_so">↕</span></th>
+                <th onclick="sortBy('danh_so')">Danh số <span class="sa" data-col="danh_so">↕</span></th>
                 <th onclick="sortBy('thang_no')">Tháng <span class="sa" data-col="thang_no">↕</span></th>
-                <th onclick="sortBy('tien_no')">Tiền Nợ <span class="sa" data-col="tien_no">↕</span></th>
+                <th onclick="sortBy('tien_no')">Tiền nợ <span class="sa" data-col="tien_no">↕</span></th>
                 <th onclick="sortBy('dien_thoai')">SĐT <span class="sa" data-col="dien_thoai">↕</span></th>
                 <th onclick="sortBy('so_tbi')">Số TBi <span class="sa" data-col="so_tbi">↕</span></th>
                 <th onclick="sortBy('ghi_chu')">Ghi Chú <span class="sa" data-col="ghi_chu">↕</span></th>
@@ -5491,31 +5602,32 @@ body.force-desktop .table-view { display: block; }
     </button>
   </div>
 
-  <!-- 2. CỠ CHỮ NỘI DUNG (nút “Aa” cũ). Lịch sử: cuối hàng sắp xếp → `.count-btns` (lượt
-       “dời xuống kế nút dạng bảng”) → nay hàng trong tấm. `data-tip`/`aria-label` do
-       `applyFontSize()` cập nhật theo mức đang dùng; nhãn chữ `#cfgFsVal` in mức ra màn hình
-       (chấm 3px nay chỉ là phụ), xem chú thích `.cfg-val`. -->
+  <!-- 2. CỠ CHỮ NỘI DUNG — ⟳ 2026-10-03ag: NÚT “Aa” → **THANH KÉO 5 MỨC** (yêu cầu “làm dạng
+       thanh kéo, có 5 mức, thêm rất nhỏ/rất lớn”). Lịch sử: cuối hàng sắp xếp → `.count-btns`
+       → hàng trong tấm (nút bấm xoay vòng) → nay thanh kéo.
+       ⚠️ Nhãn `#cfgFsVal` vẫn do `applyFontSize()` ghi (nguồn `lv.ten`) — đó là thứ trả lời
+       “đang ở mức nào” bằng CHỮ; thanh kéo tự cho thấy mức bằng vị trí con trượt.
+       ⚠️ `oninput` (không phải `onchange`): kéo là thấy cỡ đổi NGAY, không phải nhả tay.
+       `aria-label`/`aria-valuetext` cũng do `applyFontSize()` ghi lại theo mức. -->
   <div class="cfg-row">
     <span class="cfg-lb">Cỡ chữ<i class="cfg-val" id="cfgFsVal">Chuẩn</i></span>
-    <button class="fs-btn" id="fsBtn" type="button" onclick="cycleFontSize()" data-tip="Cỡ chữ: Chuẩn" aria-label="Cỡ chữ: Chuẩn">
-      <span class="fs-btn-aa" aria-hidden="true">Aa</span>
-      <span class="fs-btn-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-    </button>
+    <input class="cfg-range" id="fsRange" type="range" min="0" max="4" step="1" value="2"
+           oninput="setFontSize(this.value)" aria-label="Cỡ chữ" aria-valuetext="Chuẩn">
   </div>
 
-  <!-- 3. MỨC NỀN (nút “Nền” cũ) — ĐỔI THEO THEME ĐANG XEM: chế độ sáng ghi `data-surface`
-       (token `--light-surface`/`--light-card`), chế độ tối ghi `data-surface-dark` (`--dk-card` —
-       nay cả BẢNG dùng chung token này — và `--dk-sum`); hai bộ mức lưu RIÊNG ở localStorage (`qlno_surface` /
-       `qlno_surface_dark`) nên quay lại theme cũ vẫn đúng mức cũ.
-       ⚠️ Nhãn TĨNH dưới đây để dạng TRUNG TÍNH (“Nền: …”) — nhãn riêng theme chỉ có sau khi
-       script chính chạy, và “Nền sáng: …” sẽ SAI khi trang vừa mở ở chế độ tối (xem
-       `applySurface`). -->
+  <!-- 3. MỨC NỀN — ⟳ 2026-10-03ag: NÚT “Nền” → **THANH KÉO 5 MỨC** (yêu cầu “làm dạng thanh
+       kéo, có 5 mức, thêm rất dịu/rất sáng”). ĐỔI THEO THEME ĐANG XEM: chế độ sáng ghi
+       `data-surface` (token `--light-surface`/`--light-card`), chế độ tối ghi `data-surface-dark`
+       (`--dk-card` — nay cả BẢNG dùng chung token này — và `--dk-sum`); hai bộ mức lưu RIÊNG ở
+       localStorage (`qlno_surface` / `qlno_surface_dark`) nên quay lại theme cũ vẫn đúng mức cũ.
+       ⚠️ THỨ TỰ 5 MỨC ĐI TỪ SÁNG → DỊU ở CẢ HAI THEME: “Rất sáng” (trái) … “Rất dịu” (phải).
+       Ở dark “sáng hơn” = nền NHẠT hơn — vẫn đúng một chiều với con trượt, không đảo ngược.
+       ⚠️ Nhãn TĨNH dưới đây để dạng TRUNG TÍNH (“Chuẩn”) — nhãn riêng theme chỉ có sau khi
+       script chính chạy (xem `applySurface`). -->
   <div class="cfg-row">
     <span class="cfg-lb">Mức nền<i class="cfg-val" id="cfgSfVal">Chuẩn</i></span>
-    <button class="fs-btn" id="sfBtn" type="button" onclick="cycleSurface()" data-tip="Nền: Chuẩn" aria-label="Nền: Chuẩn — nhấn để đổi">
-      <svg class="sf-btn-ico" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 3.5v17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-      <span class="sf-btn-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-    </button>
+    <input class="cfg-range" id="sfRange" type="range" min="0" max="4" step="1" value="2"
+           oninput="setSurface(this.value)" aria-label="Mức nền" aria-valuetext="Chuẩn">
   </div>
 
   <!-- 4. DẠNG XEM (thẻ ↔ bảng 14 cột) — nút cũ ở hàng “Tổng …”. Vẫn `display: none` từ 640px
@@ -6246,48 +6358,57 @@ function applyViewBtnState() {
   btn.setAttribute('aria-pressed', on ? 'true' : 'false');
 }
 
-// ─── CỠ CHỮ NỘI DUNG: 3 MỨC, LƯU Ở localStorage ─────────────────────────────
+// ─── CỠ CHỮ NỘI DUNG: 5 MỨC, LƯU Ở localStorage ─────────────────────────────
 // Nguồn cỡ chữ là các token `--fs-card*` / `--fs-tb*` (xem `:root`); ở đây chỉ đặt
 // `data-fs` trên <body> rồi CSS tự lo. Thêm/bớt mức thì sửa ĐÚNG 3 chỗ cho khớp nhau:
-//   1. mảng `FS_LEVELS` (đây),  2. khối `body[data-fs="…"]` trong CSS,
+//   1. mảng `FS_LEVELS` (đây),  2. các khối `body[data-fs="…"]` trong CSS,
 //   3. câu `if (__fs === …)` trong script khôi phục ngay sau <body> (chống nháy cỡ).
+// ⟳ 2026-10-03ag: 3 → 5 mức (thêm “Rất nhỏ” / “Rất lớn”). Thứ tự mảng = thứ tự TRÊN THANH KÉO
+// (trái → phải) và = chỉ số `value` của `#fsRange` ⇒ ⛔ ĐỪNG sắp xếp lại mảng.
+// ⚠️ TÊN mức phải khớp nhau ở CẢ 3 chỗ; riêng CSS không có rule cho “Chuẩn” (chỉ số 2).
 const FS_LEVELS = [
-  { key: 'nho',   ten: 'Nhỏ' },
-  { key: 'chuan', ten: 'Chuẩn' },
-  { key: 'to',    ten: 'Lớn' }
+  { key: 'ratnho', ten: 'Rất nhỏ' },
+  { key: 'nho',    ten: 'Nhỏ' },
+  { key: 'chuan',  ten: 'Chuẩn' },
+  { key: 'to',     ten: 'Lớn' },
+  { key: 'ratto',  ten: 'Rất lớn' }
 ];
 function fsIndexOf(key) {
   const i = FS_LEVELS.findIndex(l => l.key === key);
-  return i < 0 ? 1 : i;                    // mức mặc định = “Chuẩn” (chỉ số 1)
+  return i < 0 ? 2 : i;                    // mức mặc định = “Chuẩn” (chỉ số 2)
 }
 function applyFontSize() {
-  const lv = FS_LEVELS[fsIndexOf(document.body.getAttribute('data-fs'))];
+  const idx = fsIndexOf(document.body.getAttribute('data-fs'));
+  const lv = FS_LEVELS[idx];
   if (document.body.getAttribute('data-fs') !== lv.key) document.body.setAttribute('data-fs', lv.key);
-  const btn = document.getElementById('fsBtn');
-  if (btn) {
-    const nhan = 'Cỡ chữ: ' + lv.ten;
-    // `data-tip` (nhãn nổi) và `aria-label` (trình đọc màn hình) PHẢI đổi cùng nhau,
-    // đúng luật đã ghi ở `applyViewBtnState()`. Điền thêm `title` là có 2 hộp nổi chồng nhau.
-    btn.setAttribute('data-tip', nhan);
-    btn.setAttribute('aria-label', nhan + ' — nhấn để đổi');
-  }
-  // Nhãn CHỮ của hàng “Cỡ chữ” trong tấm cài đặt (cùng nguồn `lv.ten` với `data-tip`).
-  // ⚠️ Đặt NGOÀI `if (btn)` — nhãn chữ phải đúng kể cả khi nút icon vắng mặt.
+  // Nhãn CHỮ của hàng “Cỡ chữ” trong tấm cài đặt — nguồn DUY NHẤT của tên mức.
   const val = document.getElementById('cfgFsVal');
   if (val) val.textContent = lv.ten;
-  // Cỡ chữ đổi ⇒ đo lại hàng “Tổng …”: bậc “Lớn” là bậc rộng nhất nên đây chính là lúc hệ số
-  // thu `--count-fit` cần được tính lại (xem `fitCountRow()`).
+  // ⟳ 2026-10-03ag: nút “Aa” nay là THANH KÉO `#fsRange` ⇒ đồng bộ VỊ TRÍ con trượt theo mức
+  // đang dùng (đặt `value` = chỉ số mức). Đặt cả khi script khôi phục đã ghi attribute — vì
+  // markup chỉ có `value="2"` tĩnh.
+  const rng = document.getElementById('fsRange');
+  if (rng) {
+    if (+rng.value !== idx) rng.value = String(idx);
+    rng.setAttribute('aria-valuetext', lv.ten);
+    rng.setAttribute('aria-label', 'Cỡ chữ: ' + lv.ten);
+  }
+  // Cỡ chữ đổi ⇒ đo lại hàng “Tổng …”: bậc “Rất lớn” là bậc rộng nhất nên đây chính là lúc hệ
+  // số thu `--count-fit` cần được tính lại (xem `fitCountRow()`).
   fitCountRow();
 }
-function cycleFontSize() {
-  const next = FS_LEVELS[(fsIndexOf(document.body.getAttribute('data-fs')) + 1) % FS_LEVELS.length];
-  document.body.setAttribute('data-fs', next.key);
-  try { localStorage.setItem('qlno_fs', next.key); } catch (e) {}
+// Đặt cỡ chữ theo CHỈ SỐ mức (0..4) — dùng cho `oninput` của thanh kéo và cho phím ←/→.
+// ⚠️ Khác `setSurface` (truyền CHUỖI key): ở đây truyền số vì `value` của input range là số.
+function setFontSize(i) {
+  const lv = FS_LEVELS[i | 0];
+  if (!lv) return;
+  document.body.setAttribute('data-fs', lv.key);
+  try { localStorage.setItem('qlno_fs', lv.key); } catch (e) {}
   applyFontSize();
 }
 applyFontSize();
 
-// ─── MỨC NỀN: 3 MỨC — MỖI THEME MỘT BỘ RIÊNG, LƯU Ở localStorage ──────────────
+// ─── MỨC NỀN: 5 MỨC — MỖI THEME MỘT BỘ RIÊNG, LƯU Ở localStorage ──────────────
 // Nút “Nền” xoay vòng mức của ĐÚNG theme đang xem; hai bộ ĐỘC LẬP nhau:
 //    chế độ SÁNG → attr `data-surface`      · khoá lưu `qlno_surface`      (token `--light-surface`)
 //    chế độ TỐI  → attr `data-surface-dark` · khoá lưu `qlno_surface_dark` (token `--dk-card` —
@@ -6296,47 +6417,52 @@ applyFontSize();
 //   1. mảng `SURFACE_LEVELS` (đây),  2. các khối `body…[data-surface…]` (CSS),
 //   3. hai câu `if (__sf…)` trong script khôi phục ngay sau <body> (chống nháy nền).
 // ⚠️ Nhãn nút đọc theo THEME đang xem nên `toggleTheme()` PHẢI gọi lại `applySurface()`.
-// Tên mức dùng CHUNG cho cả hai theme: “Sáng” = bề mặt sáng nhất, “Dịu” = dịu nhất.
+// Tên mức dùng CHUNG cho cả hai theme: “Rất sáng” = bề mặt sáng nhất, “Rất dịu” = dịu nhất.
+// ⟳ 2026-10-03ag: 3 → 5 mức (thêm “Rất sáng” / “Rất dịu”). Thứ tự mảng = thứ tự TRÊN THANH KÉO
+// (trái = sáng nhất → phải = dịu nhất) và = chỉ số `value` của `#sfRange` ⇒ ⛔ ĐỪNG sắp lại.
+// ⚠️ Điều này đúng cho CẢ hai theme: ở dark “sáng hơn” = nền NHẠT hơn (xem chú thích CSS).
 const SURFACE_LEVELS = [
-  { key: 'sang',  ten: 'Sáng' },
-  { key: 'chuan', ten: 'Chuẩn' },
-  { key: 'diu',   ten: 'Dịu' }
+  { key: 'ratsang', ten: 'Rất sáng' },
+  { key: 'sang',    ten: 'Sáng' },
+  { key: 'chuan',   ten: 'Chuẩn' },
+  { key: 'diu',     ten: 'Dịu' },
+  { key: 'ratdiu',  ten: 'Rất dịu' }
 ];
 function sfIsLight() { return document.body.classList.contains('light-mode'); }
 function sfAttr()  { return sfIsLight() ? 'data-surface' : 'data-surface-dark'; }
 function sfStore() { return sfIsLight() ? 'qlno_surface' : 'qlno_surface_dark'; }
 function sfIndexOf(key) {
   const i = SURFACE_LEVELS.findIndex(l => l.key === key);
-  return i < 0 ? 1 : i;                    // mức mặc định = “Chuẩn” (token gốc — không có rule riêng)
+  return i < 0 ? 2 : i;                    // mức mặc định = “Chuẩn” (token gốc — không có rule riêng)
 }
 function applySurface() {
   const attr = sfAttr();
-  const lv = SURFACE_LEVELS[sfIndexOf(document.body.getAttribute(attr))];
+  const idx = sfIndexOf(document.body.getAttribute(attr));
+  const lv = SURFACE_LEVELS[idx];
   if (document.body.getAttribute(attr) !== lv.key) document.body.setAttribute(attr, lv.key);
-  const btn = document.getElementById('sfBtn');
-  if (btn) {
-    const nhan = 'Nền: ' + lv.ten;   // mức CỦA THEME ĐANG XEM, không phải mức của theme kia
-    // `data-tip` (nhãn nổi) và `aria-label` (trình đọc màn hình) PHẢI đổi cùng nhau — đúng luật
-    // đã ghi ở `applyFontSize()`. Điền thêm `title` là có HAI hộp nổi chồng nhau.
-    btn.setAttribute('data-tip', nhan);
-    btn.setAttribute('aria-label', nhan + ' — nhấn để đổi');
-  }
-  // Nhãn CHỮ của hàng “Mức nền” (cùng nguồn `lv.ten`, và cũng là mức của THEME ĐANG XEM ⇒
-  // `toggleTheme()` phải gọi lại hàm này, xem chú thích ở đó).
+  // Nhãn CHỮ của hàng “Mức nền” (mức của THEME ĐANG XEM ⇒ `toggleTheme()` phải gọi lại hàm
+  // này, xem chú thích ở đó).
   const val = document.getElementById('cfgSfVal');
   if (val) val.textContent = lv.ten;
+  // ⟳ 2026-10-03ag: nút “Nền” nay là THANH KÉO `#sfRange` ⇒ đồng bộ VỊ TRÍ con trượt theo mức
+  // của theme đang xem (đổi theme là con trượt nhảy về mức riêng của theme đó — đúng ý đồ).
+  const rng = document.getElementById('sfRange');
+  if (rng) {
+    if (+rng.value !== idx) rng.value = String(idx);
+    rng.setAttribute('aria-valuetext', lv.ten);
+    rng.setAttribute('aria-label', 'Mức nền: ' + lv.ten);
+  }
 }
-function cycleSurface() {
-  // ➕ MỨC “NỀN” CŨNG LÀ ĐỔI DIỆN MẠO TOÀN CỤC — phải mở CÙNG cửa sổ gạt như đổi theme.
-  // ⚠️ Nếu không: nền trang + các bề mặt chạy theo token `--theme-anim-dur` (**0,45s**) còn thẻ card
-  // và các control chỉ nhận nhịp chung KHI CÓ lớp gạt ⇒ chúng sẽ đổi màu ở 0,15s giữa một khung
-  // hình đang mờ dần 0,45s — đúng kiểu “lệch nhịp” mà lượt này đang dẹp, chỉ khác là do bấm nút Nền.
-  // ⛔ Gọi TRƯỚC khi ghi attribute (trình duyệt chọn transition theo style SAU khi đổi).
-  startThemeAnim();
-  const attr = sfAttr();
-  const next = SURFACE_LEVELS[(sfIndexOf(document.body.getAttribute(attr)) + 1) % SURFACE_LEVELS.length];
-  document.body.setAttribute(attr, next.key);          // chỉ ghi attribute của theme đang xem
-  try { localStorage.setItem(sfStore(), next.key); } catch (e) {}
+// Đặt mức nền theo CHUỖI key — dùng cho `oninput` của thanh kéo (khi kéo, giá trị đổi liên tục).
+// ⚠️ KHÁC `setFontSize` (nhận chỉ số): ở đây nhận thẳng `key` để gọi được từ mọi ngữ cảnh
+// (kể cả khi cần đặt một mức cụ thể theo tên). Thanh kéo gọi qua bảng ánh xạ chỉ số → key.
+// ⚠️ KHÁC `cycleSurface` (đã xoá): hàm này KHÔNG mở cửa sổ gạt `theme-anim` — kéo thanh trượt
+// là thao tác LIÊN TỤC, mỗi bước mà mở cửa sổ gạt 0,45s thì thanh kéo bị “dính” và giật.
+function setSurface(i) {
+  const lv = SURFACE_LEVELS[i | 0];
+  if (!lv) return;
+  document.body.setAttribute(sfAttr(), lv.key);        // chỉ ghi attribute của theme đang xem
+  try { localStorage.setItem(sfStore(), lv.key); } catch (e) {}
   applySurface();
 }
 applySurface();
