@@ -41,7 +41,8 @@
      Hàng “Tổng …” nay là `position: sticky` (yêu cầu “tôi muốn hàng này đứng yên khi cuộn
      trang”) nên nó **buộc phải có nền ĐỤC đúng màu nền trang**: trong suốt thì thẻ sẽ chui
      QUA chữ khi cuộn. Vì nền hàng = nền trang nên khi KHÔNG ghim nó trông y như cũ.
-     Tối = `--navy` (`#111318`); sáng override ở `body.light-mode` = `#f8fafc`.
+     Tối = `--navy` (`#111318`); sáng override ở `body.light-mode` = `#ffffff` (⛔ 2026-10-03g
+     đổi từ `#f8fafc` → TRẮNG theo yêu cầu “nền sau thẻ màu trắng” — xem khối `body.light-mode`).
      ⛔ Đổi nền trang thì sửa ở ĐÚNG HAI chỗ này (token + override sáng), đừng khai lại
      màu nền vào `.count-info` — lệch một nấc là hàng ghim hiện ra như một dải khác màu. */
   --page-bg: var(--navy);
@@ -61,8 +62,9 @@
      ĐO LẠI khi đổi màu (ĐO LIVE, không phải số của bản header trắng đầu tiên):
        · tối  `#e2e8f0` trên `#1a1d24` = **13,68:1** ✓ · phụ đề `#94a3b8` = **6,58:1** ✓
        · sáng `#000000` trên `#f1f5f9` = **19,17:1** ✓ · phụ đề `#475569` = **6,92:1** ✓
-     ⟳ Ở chế độ SÁNG `--hdr-text` nay là `#000000` (yêu cầu “cho chữ Quản Lý Nợ màu đậm hơn”) —
-     bản đầu `#111827` (17,9:1 đo trên nền TRẮNG, khi header sáng còn `#ffffff`). */
+     ⟳ Ở chế độ SÁNG `--hdr-text` từng là `#000000` (yêu cầu “cho chữ Quản Lý Nợ màu đậm hơn”).
+     ⚠️ **2026-10-03e ĐẢO LẠI:** nền header LIGHT nay là NAVY `#12233f` ⇒ chữ light phải SÁNG
+     (`#e2e8f0`) — chữ đen sẽ VÔ HÌNH. Hai dòng số đo `sáng #000000 …` ở trên là LỊCH SỬ. */
   /* **NỀN HEADER = NỀN CỦA CÁC CONTROL, NHƯNG Ở DẠNG ĐỤC** (yêu cầu người dùng: “cho màu nền
      bảng header giống màu nền các tab bên dưới”, rồi “dark mode bảng header bị trong suốt”).
      `#242a34` CHÍNH LÀ kết quả ghép của khai báo control `.sort-btn` / `.filter-select` /
@@ -97,7 +99,17 @@
      ⚠️ Đây là màu TÍNH SẴN: đổi `--navy` hoặc đổi độ đậm bề mặt control thì PHẢI tính lại
      `--ctl-solid` theo công thức trên (không có cách nào để CSS tự ghép hộ). */
   --ctl-solid: #242a34;
-  --hdr-bg: var(--ctl-solid);
+  /* ⟳ 2026-10-03e: NỀN HEADER = XANH NAVY GẦN ĐEN `#12233f` (yêu cầu “cho màu nền xanh đậm”
+     ⇒ người dùng chọn sắc “navy gần đen” + “cả hai theme”).
+     ⛔ ĐÂY LÀ LỆCH TOKEN CÓ CHỦ Ý: trước đây `--hdr-bg: var(--ctl-solid)` để header = tab = thẻ
+     (không thể lệch màu). Nay header tách hẳn khỏi `--ctl-solid` ⇒ ⛔ ĐỪNG “sửa lại cho khớp”
+     và ⛔ TUYỆT ĐỐI không đổi `--ctl-solid` (tab + thẻ đang dùng chung nó).
+     Chữ/phụ đề/viền của dark vốn đã là màu SÁNG nên hợp nền navy — không phải sửa.
+     ⟳ 2026-10-03h: SÁNG LÊN MỘT NẤC `#12233f` → **`#12233f`** (yêu cầu “màu hơi tối”). Chữ
+     `#e2e8f0` trên `#12233f` vẫn ~11,9:1 ✓. ⛔ Vẫn LỆCH TOKEN — đừng trả về `--ctl-solid`.
+     ⟳ 2026-10-03r: NGƯỜI DÙNG CHỌN “NAVY THÉP” `#12233f` → **`#1e3a5f`** (so 6 sắc ở
+     `.freebuff/hdr-pick.svg`). Xanh rõ hơn nhưng vẫn TỐI ⇒ chữ/phụ đề sáng giữ nguyên. */
+  --hdr-bg: #1e3a5f;
   --hdr-text: #e2e8f0;
   --hdr-sub: #94a3b8;
   /* ➕ CỠ CHỮ HAI DÒNG ĐỒNG HỒ Ở HEADER — token, KHÔNG nằm trong markup.
@@ -115,8 +127,37 @@
      `x` của khối đồng hồ + bề rộng `.header-sub` (tên tệp, có `ellipsis`). */
   --hdr-time-fs: 20px;
   --hdr-date-fs: 14px;   /* ⟳ 12px trước lượt “cho chữ ngày tháng to hơn” */
-  --hdr-line: var(--border);
+  /* ⟳ 2026-10-03i: VẠCH ĐÁY HEADER nay ngả XANH (`rgba(96,150,230,…)`) thay vì xám `--border`
+     — một dấu nhấn mảnh để mép dưới header navy không “cụt” phẳng vào nền bên dưới.
+     ⚠️ Vẫn 1px (đổi MÀU, không đổi bề dày) — dày lên là hộp nội dung cao thêm 1px. */
+  --hdr-line: rgba(96,150,230,0.35);
   --hdr-shadow: 0 3px 10px rgba(0,0,0,0.35);
+  /* ⟳ 2026-10-03k: LỚP INSET TẠO CHIỀU SÂU CHO HEADER NAVY (yêu cầu “bớt phẳng một màu”).
+     ⛔ KHÔNG dùng `gradient` cho `background` (ghi chú ở `.header`: gradient không composite
+     được ⇒ mỗi frame phải raster lại cả dải header và transition đổi theme không chạy).
+     Thay bằng 3 lớp INSET (vẽ trong hộp, KHÔNG vào layout):
+       · `inset 0 1px 0` sáng mảnh ở ĐỈNH (giả lập ánh sáng từ trên)
+       · `inset 0 -1px 0` vạch sáng mảnh SÁT ĐÁY (ngay trên vạch màu `--hdr-line`)
+       · `inset 0 -12px 16px -12px` bóng tối mờ bên trong đáy ⇒ cảm giác “khối”
+     Dùng CHUNG cho cả 2 theme vì nền header TỐI ở cả hai. ⛔ Đừng ghi số vào `.header`; sửa Ở ĐÂY.
+     ⟳ 2026-10-03l: TĂNG MẠNH HƠN (yêu cầu “tăng chiều sâu mạnh hơn nữa”). Đã so sánh 4 mức
+     alpha bằng overlay chụp ảnh (mức 0 = bản 03k; 1 nhẹ; 2 VỪA; 3 mạnh) ⇒ CHỌT **mức 2**:
+     đỉnh `0 2px 0 rgba(255,255,255,0.22)` · vạch đáy `0 -1px 0 rgba(255,255,255,0.18)` ·
+     bóng trong đáy `0 -14px 18px -12px rgba(0,0,0,0.62)`. Mức 3 bị loại vì bóng trong đáy
+     quá đậm, trông “nhựa”. Muốn đậm hơn nữa thì lấy mức 3: đỉnh 0.30 · vạch 0.24 · bóng 0.78. */
+  --hdr-inset: inset 0 2px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(255,255,255,0.18), inset 0 -14px 18px -12px rgba(0,0,0,0.62);
+  /* ── THANG CHIỀU SÂU DÙNG CHUNG (elevation) — 5 nấc, CÙNG hình học, chỉ đổi ĐỘ ĐẬM theo theme.
+     ⛔ KHÔNG alias kiểu `--elev-2: 0 4px 12px var(--elev-c)` ở `:root`: `var()` trong một custom
+     property được thay NGAY tại nơi khai (`:root`) ⇒ `body.light-mode` ghi `--elev-c` lên `<body>`
+     sẽ KHÔNG theo được (đúng bẫy `--dk-table: var(--dk-card)` đã ghi trong file). ⇒ MỖI NẤC ghi
+     ĐỦ rgba, và `body.light-mode` khai LẠI ĐỦ 5 nấc.
+     Dùng: `--elev-1` thẻ/khối sát nền · `--elev-2` HEADER + nhãn nổi · `--elev-3` thanh dính + dropdown
+     · `--elev-4` tấm trượt dưới (`#cfg`) · `--elev-5` hộp thoại giữa màn hình. */
+  --elev-1: 0 1px 3px rgba(0,0,0,0.35);
+  --elev-2: 0 4px 12px rgba(0,0,0,0.35);
+  --elev-3: 0 8px 20px rgba(0,0,0,0.35);
+  --elev-4: 0 -8px 28px rgba(0,0,0,0.40);
+  --elev-5: 0 16px 48px rgba(0,0,0,0.45);
   /* ── LOGO NGÔI SAO 4 CÁNH — 2 MÀU TRẮNG/ĐEN, ĐẢO CỰC THEO THEME.
      `--logo-outer` = ngôi sao LỚN (nền) · `--logo-inner` = ngôi sao NHỎ (lõi) lồng bên trong.
      🔁 Ở chế độ TỐI (khối này): sao TRẮNG + lõi ĐEN. Ở chế độ SÁNG: đảo lại (xem `body.light-mode`).
@@ -531,7 +572,8 @@ body.light-mode {
        · TÊN (`.cell-tenkh`)      `#1d4ed8` → **`#1e40af`**  (4,98 trên dải “Dịu”) — trùng tông
          `.count-kh-hd` của light mode nên vẫn đúng hệ màu app.
        · TIỀN `.high`              `#b91c1c` → **`#991b1b`**  (4,75 — đây là chỗ SÁT SÀN NHẤT) —
-         trùng tông `.count-tien` của light mode.
+         trước đây trùng tông `.count-tien` của light mode; ⚠️ từ 2026-10-03 light đã SÁNG HƠN
+         (`#b91c1c`) nên hai chỗ KHÔNG còn trùng — dải tối (đo trên nền dải) vẫn giữ `#991b1b`.
        · TIỀN `.low` (nợ < 2 triệu) `#047857` → **`#064e3b`** (5,55) — ⚠️ xanh `#047857` vốn ĐÃ
          dưới AA trên dải từ trước (3,91), nay buộc phải hạ; đây là chỗ chỉ đạt AA nhờ đổi màu.
        · `.mil-digit`              `#b91c1c` → **`#991b1b`** (cùng tông với `.high` — sửa lẻ là
@@ -609,7 +651,16 @@ body.light-mode {
        · vạch “≥2 HĐ”: **3,20 → 3,10** ⇒ đã bù bằng `--multi-hd: #0e9352` = **3,49** (xem chú thích
          của token đó — đây là lý do token đó vừa đổi, không phải tự dưng đổi màu xanh).
        · mức “Sáng”/“Dịu” KHÔNG bị ảnh hưởng (nền thẻ của chúng không đổi). */
-  --light-card: var(--ctl-light-bg);
+  /* ⟳ 2026-10-03q: TÁCH THẺ KHỎI CONTROL (yêu cầu “hạ cả thang nền thẻ ở light mode xuống xám hơn
+     một nấc ở cả ba mức, giữ thứ tự đậm nhạt”). Trước đây thẻ = ĐÚNG nền control
+     (`var(--ctl-light-bg)` = `#eff1f5`) nên KHÔNG thể hạ mà không đổi luôn tab/ô lọc/nút sắp xếp.
+     Nay thẻ có giá trị RIÊNG: **`#e7e9ed`** (mức “Chuẩn”; Sáng/Dịu xem 2 rule theo mức).
+     ⛔ ĐỪNG trả về `var(--ctl-light-bg)` — làm thế là cả thanh control xám theo.
+     ⚠️ `--light-card` VẪN DÙNG CHUNG với BẢNG CHÍNH (`body.light-mode .table-wrap`) ⇒ bảng chính
+     cũng xám theo; muốn CHỈ thẻ đổi thì phải tách bảng sang token riêng (hỏi trước).
+     ⚠️ HỆ QUẢ ĐÃ BÙ: `.kh-name` light `#2563eb` → **`#1d4ed8`** (chữ trên nền mới vẫn > AA) và
+     `--multi-hd` mức “Dịu” `#059669` → **`#047857`** (vạch “≥2 HĐ” trên nền mới vẫn > 3:1). */
+  --light-card: #e7e9ed;
 
    /* Vạch "KH có ≥ 2 hoá đơn" trên thẻ: nền thẻ light NAY LÀ `#f1f5f9` (token
       `--light-surface`) — KHÔNG còn trắng — nên phải dùng tông ĐẬM hơn bản dark
@@ -781,7 +832,11 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue-dark); }
      phải raster lại cả dải header (lý do `transition` bên dưới chỉ cho shadow/border). */
   background: var(--hdr-bg);
   border-bottom: 1px solid var(--hdr-line);
-  box-shadow: var(--hdr-shadow);
+  /* ⟳ 2026-10-03k: thêm lớp `--hdr-inset` (vạch sáng đỉnh/đáy + bóng trong) để header navy có
+     chiều sâu. Vẫn KHÔNG gradient (xem chú thích `:root`).
+     ⟳ 2026-10-03o: bóng đổ nay lấy từ THANG CHUNG `--elev-2` (thay `--hdr-shadow`) — header vào
+     cùng ngôn ngữ nổi khối với toolbar/tấm nổi. `--hdr-shadow` từ đây KHÔNG còn ai dùng. */
+  box-shadow: var(--elev-2), var(--hdr-inset);
   height: calc(var(--header-h) + env(safe-area-inset-top, 0px));
   /* ⟳ LỀ PHẢI `0 → 8px` (yêu cầu “tôi muốn đồng hồ và ngày tháng xích vô 1 tí”).
      Trước đây khối đồng hồ kết thúc ở `x = 403,6` — NGOÀI đường thẳng hàng của cả app:
@@ -828,7 +883,9 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue-dark); }
    ⚠️ Đổi `font-weight` KHÔNG theo theme ⇒ chế độ tối cũng đậm hơn (màu tối `#e2e8f0` **13,68:1**
    KHÔNG đổi) — đúng ý đồ: nhãn tiêu đề phải trông như nhau ở cả hai chế độ.
    ⛔ Đừng nâng lên 700: đồng hồ (số liệu, 20px) đang 700 và là chữ đậm nhất header — 600 là nấc
-   vừa đủ để “đậm hơn” mà không tranh chấp thứ bậc. */
+   vừa đủ để “đậm hơn” mà không tranh chấp thứ bậc.
+   ⚠️ 2026-10-03e: nền header light đổi sang navy `#12233f` ⇒ `--hdr-text` light nay `#e2e8f0`
+   (màu/độ đậm `600` vẫn giữ; chỉ đổi màu theo yêu cầu “nền xanh đậm”). */
 .header-title { font-size: 18px; font-weight: 600; letter-spacing: 0.3px; color: var(--hdr-text); }
 .header-sub { font-size: 13px; color: var(--hdr-sub); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; font-weight: 400; }
 
@@ -841,7 +898,14 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue-dark); }
    `cursor`/`:active`; mọi số đo (padding, min-width, font-size) giữ NGUYÊN để header không
    xê dịch một px nào. */
 .clock-box {
+  /* ⟳ 2026-10-03p: BỎ “VIÊN THUỐC” MỜ + VÒNG INSET quanh khối đồng hồ (yêu cầu “bỏ luôn
+     ‘viên thuốc’ mờ quanh khối đồng hồ cho đồng bộ với logo vừa làm sạch”).
+     Bản 2026-10-03i từng thêm `background: rgba(255,255,255,0.07)` + vòng
+     `inset 0 0 0 1px rgba(255,255,255,0.12)` — nay gỡ để header chỉ còn nền navy phẳng, đồng bộ
+     với logo đã bỏ đĩa nền ở mục 2026-10-03m. Đồng hồ vẫn đọc tốt nhờ chữ sáng `--hdr-text`.
+     ⚠️ Vẫn KHÔNG dùng `border`/`padding` ở đây — đó là METRIC, đổi là đẩy `x` khối/chiều cao header. */
   background: transparent;
+  box-shadow: none;
   color: var(--hdr-text);   /* theo theme — trước là `#ffffff` cố định */
   border: none;
   padding: 6px 10px;
@@ -901,6 +965,13 @@ body.light-mode .kh-danhso .ic { color: var(--ic-blue-dark); }
   display: flex; align-items: center; justify-content: center;
   position: relative;
   padding: 6px;
+  /* ⟳ 2026-10-03m: BỎ ĐĨA NỀN + VÒNG MỜ QUANH LOGO (yêu cầu “bỏ viền mờ xung quanh”).
+     Bản 2026-10-03i từng thêm `background: rgba(255,255,255,0.05)` + vòng
+     `inset 0 0 0 1px rgba(255,255,255,0.10)` cho logo; người dùng thấy vòng mờ đó vướng⇒ gỡ.
+     Logo nay trở lại trong suốt, CHỈ còn vòng của chính ngôi sao SVG.
+     ⚠️ `:hover`/`:active` bên dưới vẫn giữ nền xám khi bấm/rê — đó là PHẢN HỒI, không phải đĩa
+     trang trí, nên vẫn tốt (nút trông vẫn là nút).
+     ℹ️ Khối đồng hồ (`.clock-box`) vẫn giữ “viên thuốc” mờ của nó — yêu cầu chỉ nói về logo. */
   background: transparent;
   box-shadow: none;
   overflow: hidden;
@@ -1067,7 +1138,17 @@ body.light-mode {
        "NGUYÊN NHÂN GỐC").
      ⚠️ Nền tối hơn kéo theo `.page-btn`: nền cũ `#e2e5ea` + viền `#d1d5db` = ĐÚNG BẰNG
      màu nền trang mới ⇒ viền nút phân trang biến mất. Đã sửa ở rule `body.light-mode .page-btn`. */
-  --page-bg: #f8fafc;
+  /* ⟳ 2026-10-03g: NỀN TRANG LIGHT = TRẮNG `#ffffff` (yêu cầu “cho nền sau thẻ ở light mode
+     màu trắng”). Trước là `#f8fafc` (nấc cuối của thang lịch sử ở trên).
+     ⚠️ Lần ĐẦU TIÊN vượt qua `#f8fafc` về phía trắng — HỆ QUẢ: thẻ `--light-card #eff1f5`
+     vs nền trang nay **1,13:1** (trước 1,05:1) ⇒ thẻ vẫn đọc ra vì TỐI hơn nền, và viền
+     `--light-edge` + bóng 2 lớp vẫn gánh việc tách thẻ (đúng như ghi chú ở trên: “nền KHÔNG
+     còn gánh độ tách thẻ”).
+     ⚠️ `.toolbar` cũng là `#ffffff` ⇒ nền trang nay TRÙNG nền toolbar (mất ranh giới nhẹ ở
+     mép trên cùng) — chấp nhận theo yêu cầu; muốn tách lại thì đậm viền/bóng toolbar.
+     ⚠️ Chữ ngồi TRỰC TIẾP trên nền trang (`.count-kh-hd`, `.count-tien`, `.page-info`) NAY
+     SÁNG TƯƠNG PHẢN HƠN (nền trắng dễ đọc hơn `#f8fafc`) ⇒ không có rủi ro AA nào. */
+  --page-bg: #ffffff;
   background: var(--page-bg);
   color: #000000;
 }
@@ -1096,25 +1177,39 @@ body.light-mode {
      ĐO LIVE: chữ `#000000` **19,17 → 18,57:1** ✓ · phụ đề `#475569` **6,92 → 6,70:1** ✓ ·
      header vs toolbar trắng **1,13:1** · logo sao đen vs nền header **16,19 → 15,69** ✓ ·
      nền header và nền control đều ra `rgb(239,241,245)` (đo bằng cùng phép ghép ⇒ `sameAsControl`). */
-  --hdr-bg: var(--ctl-light-bg);
-  /* ⟳ `#111827` → **`#000000`** (yêu cầu “cho chữ Quản Lý Nợ màu đậm hơn”). Dùng CHUNG cho tiêu
-     đề + đồng hồ (cả hai đọc `var(--hdr-text)`) — cố ý, để hai dòng chữ “chính” của header
-     không lệch tông nhau. Đo: `#000000` trên `#f1f5f9` = **19,17:1** ✓ (bản cũ 16,19). */
-  --hdr-text: #000000;
-  --hdr-sub: #475569;
-  --hdr-line: #cbd5e1;
-  --hdr-shadow: 0 3px 10px rgba(15,23,42,0.12);
-  /* Logo header: ĐẢO CỰC so với chế độ tối — sao ĐEN + lõi TRẮNG (xem khối chú thích ở `:root`).
-     Kết quả: vẫn đúng 2 màu trắng/đen, và ngôi sao LỚN luôn tương phản với nền header đang vẽ.
-     Đo: sao đen `#111827` trên header `#f1f5f9` **16,19:1** · lõi trắng ↔ sao đen **17,74:1**
-     (ngưỡng 3:1) · lõi trắng chỉ **1,10:1** với nền header — cố ý, lõi đọc như “lỗ khoét”. */
-  --logo-outer: #111827;
-  --logo-inner: #ffffff;
+  /* ⟳ 2026-10-03e: nền header LIGHT = navy `#12233f` (người dùng chọn “cả hai theme”). Tách khỏi
+     `--ctl-light-bg` (tab/thẻ vẫn dùng token đó) — ⛔ đừng “sửa lại cho khớp control”.
+     ⟳ 2026-10-03h: SÁNG LÊN MỘT NẤC `#12233f` → **`#12233f`** (yêu cầu “màu hơi tối”).
+     ⟳ 2026-10-03r: “navy thép” `#12233f` → **`#1e3a5f`** (ĐỒNG BỘ với chế độ tối). */
+  --hdr-bg: #1e3a5f;
+  /* ⟳ 2026-10-03e: chữ header LIGHT nay là màu SÁNG `#e2e8f0` (nền đã thành navy `#12233f`) —
+     BẮT BUỘC, chữ `#000000` cũ sẽ VÔ HÌNH trên nền navy. Dùng CHUNG cho tiêu đề + đồng hồ.
+     ĐO LIVE trên `#12233f`: chữ `#e2e8f0` **~13,9:1** ✓ · phụ đề `#a8b6cc` **~7,4:1** ✓. */
+  --hdr-text: #e2e8f0;
+  --hdr-sub: #a8b6cc;
+  /* ⟳ 2026-10-03i: vạch đáy ngả xanh — ĐM hơn một chút ở light vì header navy nằm ngay trên
+     toolbar TRẮNG (cần ranh giới rõ hơn dark). Vẫn 1px. */
+  --hdr-line: rgba(96,150,230,0.45);
+  --hdr-shadow: 0 3px 10px rgba(0,0,0,0.28);
+  /* ⟳ 2026-10-03o: THANG CHIỀU SÂU ở light — CÙNG hình học với `:root`, chỉ nhạt hơn (bóng đen
+     trên nền sáng nặng hơn hẳn). `--elev-1: none` là CỐ Ý: thẻ light KHÔNG có bóng (khe giữa các
+     thẻ phải TRẮNG — xem mục 2026-10-03j). `--hdr-shadow` ở trên nay không còn ai dùng. */
+  --elev-1: none;
+  --elev-2: 0 4px 12px rgba(15,23,42,0.14);
+  --elev-3: 0 8px 20px rgba(15,23,42,0.16);
+  --elev-4: 0 -8px 28px rgba(15,23,42,0.20);
+  --elev-5: 0 16px 48px rgba(15,23,42,0.26);
+  /* ⟳ 2026-10-03e: NỀN HEADER LIGHT NAY LÀ NAVY `#12233f` ⇒ LOGO phải ĐẢO LẠI.
+     Logo light nay GIỐNG HẲN chế độ tối (sao TRẮNG + lõi ĐEN) vì nền header cả hai theme đều TỐI.
+     ⛔ ĐỪNG trả về sao ĐEN `#111827` — trên nền navy nó VÔ HÌNH (đúng bẫy “đảo cực theo theme
+     nhưng quên đổi nền” đã ghi ở `:root`). */
+  --logo-outer: #ffffff;
+  --logo-inner: #111827;
 }
 body.light-mode .header {
   background: var(--hdr-bg);
   border-bottom-color: var(--hdr-line);
-  box-shadow: var(--hdr-shadow);
+  box-shadow: var(--elev-2), var(--hdr-inset);
 }
 /* ⛔ ĐỪNG thêm lại `body.light-mode .header-title/.header-sub/.clock-box { color:#ffffff }`:
    cả 3 đã dùng `--hdr-text`/`--hdr-sub` (và `.clock-box` không cần override nền/border vì
@@ -1186,7 +1281,7 @@ body.light-mode .nhom-dropdown { background: #ffffff !important; border-color: #
 body.light-mode .nhom-option { color: #000000 !important; border-bottom: 1px solid #94a3b8 !important; background: #ffffff !important; }
 body.light-mode .nhom-option:hover { background: rgba(100,116,139,0.12) !important; }   /* ⟳ xám trung tính */
 body.light-mode .toolbar { background: #ffffff; border-bottom-color: #e2e8f0; }
-body.light-mode .toolbar.stuck { box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+body.light-mode .toolbar.stuck { box-shadow: var(--elev-3); }   /* ⟳ 2026-10-03o: vào THANG CHUNG */
 /* Bề mặt nút sắp xếp = ĐÚNG bề mặt 2 ô lọc ở light mode (`--ctl-light-bg` +
    `--ctl-light-line`) — cùng cặp TOKEN với `body.light-mode .filter-select`.
    ⟳ Viền nay là xám trung tính `#64748b` = **4,76:1** trên toolbar trắng (bản cũ
@@ -1260,8 +1355,15 @@ body.light-mode #sortTienNo.active { background: #536274; border-color: var(--ic
    `--light-surface` → **`--light-card`** (= `var(--ctl-light-bg)` = `#eff1f5`, đúng nền
    `.sort-btn` / `.filter-select` / ô tìm kiếm). Bảng chính + bảng Tổng hợp VẪN dùng
    `--light-surface` ⇒ giữ nguyên phân tầng. Xem khối chú thích của `--light-card` trong `:root`. */
-body.light-mode .kh-card { background: var(--light-card); border: 1px solid var(--light-edge); box-shadow: 0 1px 3px rgba(15,23,42,0.12), 0 4px 12px rgba(15,23,42,0.08); }
-body.light-mode .kh-name { color: #2563eb; }
+/* ⟳ 2026-10-03j: BỎ BÓNG ĐỔ CỦA THẺ (yêu cầu “khoảng hở giữa 2 thẻ ở light mode màu vẫn xám”).
+   NGUYÊN NHÂN ĐÃ ĐO: bóng LỚP 2 `0 4px 12px rgba(15,23,42,0.08)` tràn ~16px xuống dưới ⇒ phủ KÍN
+   khe `gap: 6px` của `.card-list` nên khe ĐỌC RA XÁM, dù NỀN TRANG đã TRẮNG (`body` = `#ffffff`).
+   Bỏ bóng ⇒ khe trở lại TRẮNG.
+   ⚠️ Độ tách thẻ nay CHỈ do viền `--light-edge` (`#374151`, ~9,85:1 trên nền trắng) — quá đủ.
+   ⛔ ĐỪNG thêm lại bóng có `offset`/`blur` lớn (>2px): khe 6px sẽ lại bị phủ xám. Muốn chút chiều
+   sâu thì dùng `0 1px 1px rgba(15,23,42,0.06)` (gần như không thấy trong khe). */
+body.light-mode .kh-card { background: var(--light-card); border: 1px solid var(--light-edge); box-shadow: none; }
+body.light-mode .kh-name { color: #1d4ed8; }   /* ⟳ 2026-10-03q: #2563eb → #1d4ed8 (nền thẻ hạ một nấc ⇒ giữ chữ trên AA) */
 /* viên Mã KH / Danh Số / SĐT: chỉ đổi màu — cỡ chữ, padding, border-width,
    border-radius lấy nguyên từ rule nền (dòng bên dưới, dành cho dark mode) */
 body.light-mode .kh-ma { color: var(--vien-fg) !important; background: var(--vien-bg); }
@@ -1278,7 +1380,12 @@ body.light-mode .kh-addr-line { color: #334155; }
 /* ⟳ Nền hàng “Tổng …” = ĐÚNG nền thẻ card (yêu cầu “màu nền giống màu nền thẻ card”). Dùng
    CHUNG token `--light-card` với `body.light-mode .kh-card` ở dòng ~1146 ⇒ không thể lệch màu,
    và tự theo cả 3 mức “Nền” (`[data-surface="sang"|"diu"]` ghi đè `--light-card`). */
-body.light-mode .count-info { color: #334155; border-top-color: #e2e8f0; background: var(--light-card); }
+/* ⟳ 2026-10-03: nền hàng nay TRẮNG `#ffffff` (yêu cầu: “cho nền light mode màu trắng”).
+   ⚠️ TỰ Ý LỆCH TOKEN — đối xứng với dark (`#000` ở rule `.count-info` gốc): trước đây LIGHT
+   lấy theo THẺ (`--light-card`); nay hàng là MỘT giá trị trắng cố định cho CẢ BA mức “Nền”
+   ⇒ ⛔ đừng “sửa lại” cho về `--light-card`, và đừng đổi `--light-card` (nó vẫn là nền thẻ).
+   Viền `border-top-color` giữ `#e2e8f0` (phân tách hàng với nội dung trên). */
+body.light-mode .count-info { color: #334155; border-top-color: #e2e8f0; background: #ffffff; }
 /* Nút phân trang: nền TRẮNG như thẻ + viền `--light-edge` (đậm hơn mức `#6b7280` cũ) —
    **9.85:1** so với nền trang. Bản cũ (`#e2e5ea` + `#d1d5db`) từng trùng đúng màu nền trang
    nên viền vô hình. */
@@ -1471,16 +1578,22 @@ body.light-mode .summary-table .tien-no-cell { color: #7c2d12; background: #d2da
 body.light-mode .summary-table .sa-sum { color: #334155; }
 body.light-mode .summary-table th.sorted .sa-sum { color: #1e3a8a; }
 body.light-mode .tien-no { color: #166534 !important; }
-/* ⟳ 2026-09-28f: BA màu TIỀN trên dải hạ theo lượt “dải đậm hơn lần nữa” — số đo trên dải
-   “Dịu” `#b9c5d4` (L 0,550): `#991b1b` **4,75** ✓ (bản cũ `#b91c1c` chỉ còn **4,10 ✗**) ·
-   `#064e3b` **5,55** ✓ (bản cũ `#047857` vốn đã **3,91 ✗** từ trước, nay mới đạt AA) ·
-   `.mid` `#166534` **5,32** ✓ giữ nguyên (bảng không dùng `.mid`, chỉ modal — modal có
-   rule riêng ở `.i-tien`). ⚠️ Ba rule `.high`/`.low`/`.mil-digit` phải sửa CÙNG NHAU với
-   `.cell-tenkh` — sửa lẻ là đúng ô đó tụt dưới AA mà không có gì báo. */
-body.light-mode .tien-no.high { color: #991b1b !important; }   /* red-800: trên dải mới #b9c5d4 = 4,75 ✓ (bản #b91c1c chỉ 4,10) */
-body.light-mode .tien-no.low { color: #064e3b !important; }
-body.light-mode .tien-no.mid { color: #166534 !important; }
-body.light-mode .tien-no .mil-digit { color: #991b1b !important; }   /* cùng lý do trên — sửa LẺ rule này là số tiền hai tông */
+/* ⟳ 2026-10-03b: BA MÀU TIỀN TRÊN DẢI (light) SÁNG HƠN MỘT NẤC, CÙNG TÔNG (yêu cầu “cho số
+   tiền có màu sáng hơn ở light mode” — ảnh: số tiền trong dải “tên + tiền”). Mỗi màu nhích
+   ĐÚNG MỘT nấc trong họ màu cũ (giữ hue), ⛔ đừng đổi sang tông khác:
+   `.high` `#991b1b` → **`#b91c1c`** · `.low` `#064e3b` → **`#047857`** · `.mid` `#166534` → **`#15803d`**.
+   `.mil-digit` `#991b1b` → **`#b91c1c`** — PHẢI sửa CÙNG `.high` (lệch là số tiền hai tông).
+   ⚠️ **ĐÁNH ĐỔI CỦA “SÁNG HƠN” — tương phản TỤT vì nền dải không sáng như hàng trắng**
+   (ĐO LIVE trên 3 mức dải — Sáng `#c9d6e5` · Chuẩn `#bfcede` · Dịu `#b9c5d4`):
+     `.high`/`.mil-digit` #b91c1c: **4,39 · 4,04 · 3,70**  (trước #991b1b: 5,63 · 5,18 · 4,75)
+     `.low`  #047857: **3,72 · 3,42 · 3,13** · `.mid` #15803d: **3,40 · 3,13 · 2,87**
+   ⇒ mức “Dịu” nay DƯỚI AA 4,5 cho chữ tiền (giống hệ quả lượt `.count-tien` 2026-10-03). Người
+   dùng đã chọn “sáng hơn” nên giữ; ⛔ muốn về AA thì trả lại `#991b1b` / `#064e3b`.
+   (Lịch sử: 2026-09-28f từng HẠ 3 màu này xuống đúng để đạt AA trên dải — lượt này đảo lại.) */
+body.light-mode .tien-no.high { color: #b91c1c !important; }
+body.light-mode .tien-no.low { color: #047857 !important; }
+body.light-mode .tien-no.mid { color: #15803d !important; }
+body.light-mode .tien-no .mil-digit { color: #b91c1c !important; }   /* cùng `.high` — sửa LẺ rule này là số tiền hai tông */
 body.light-mode .kh-tien { color: #b91c1c; }
 body.light-mode .kh-tien.high { color: #b91c1c; }   /* thẻ card: 6,6:1 trên nền thẻ (trước #dc2626 = 4,83:1) */
 body.light-mode .kh-tien.low { color: #047857; }
@@ -1489,10 +1602,19 @@ body.light-mode .kh-tien .mil-digit { color: #c2410c; }
    `#2563eb` chỉ đạt **3.51:1** và `#dc2626` chỉ **3.28:1** ⇒ dưới ngưỡng 4.5:1 cho chữ 17px.
    Hạ xuống token blue-800 / red-800: **5.92:1** và **5.64:1**. */
 body.light-mode .count-kh-hd { color: #1e40af; }
-body.light-mode .count-tien { color: #991b1b; }
-/* Số tổng đổi màu theo quy mô: <100tr xanh · 100tr–1tỷ vàng · ≥1tỷ đỏ (mặc định) */
-body.light-mode .count-tien.low { color: #065f46; }   /* 5.22:1 trên nền trang (cũ 3.77) */
-body.light-mode .count-tien.mid { color: #92400e; }   /* 4.81:1 trên nền trang (cũ 3.41) */
+/* ⟳ 2026-10-03: BA MÀU SỐ TỔNG (light) SÁNG HƠN MỘT NẤC, CÙNG TÔNG (yêu cầu “cho số tiền tổng ở
+   light mode có màu sáng hơn” ⇒ người dùng chọn “cam sáng hơn cùng tông” + “cả ba quy mô”).
+   Mỗi màu nhích đúng MỘT nấc trong họ màu cũ (giữ nguyên hue), ⛔ đừng đổi sang tông khác:
+   `.high` `#991b1b` → **`#b91c1c`** (đỏ) · `.mid` `#92400e` → **`#b45309`** (cam) ·
+   `.low` `#065f46` → **`#047857`** (xanh emerald).
+   ⚠️ Đo TRÊN NỀN HÀNG TRẮNG `#ffffff` (hàng nay trắng — xem `body.light-mode .count-info`):
+   `.high` **6,5:1** · `.mid` **5,1:1** · `.low` **5,6:1** — cả ba vẫn trên AA 4,5 ⇒ sáng hơn
+   nhưng KHÔNG tụt chuẩn. (Giá trị cũ tính trên nền trang `#f8fafc` là 5,64 / 4,81 / 5,22.)
+   ℹ️ Từ 2026-10-03b, `.tien-no.high`/`.mil-digit` của BẢNG cũng sáng lên `#b91c1c` ⇒ hai chỗ
+   TRÙNG tông trở lại (trước đó lệch vì bảng hạ riêng ở 2026-09-28f). */
+body.light-mode .count-tien { color: #b91c1c; }   /* = mức `.high` (đỏ), cũng là nền cho mọi mức chưa ghi đè */
+body.light-mode .count-tien.low { color: #047857; }   /* xanh emerald-700 (cũ #065f46) — 5,6:1 trên nền trắng */
+body.light-mode .count-tien.mid { color: #b45309; }   /* cam amber-700 (cũ #92400e) — 5,1:1 trên nền trắng */
 
 #fileInput { display: none; }
 
@@ -1632,11 +1754,11 @@ body.light-mode.force-desktop .view-btn { background: #bfdbfe; border-color: #25
   border: 1px solid var(--border);
   border-bottom: none;
   border-radius: 16px 16px 0 0;
-  box-shadow: 0 -8px 28px rgba(0,0,0,0.55);
+  box-shadow: var(--elev-4);   /* ⟳ 2026-10-03o: vào THANG CHUNG */
   padding: 0 0 8px;
 }
 .cfg.on { display: block; }
-body.light-mode .cfg { background: #ffffff; border-color: var(--light-edge); box-shadow: 0 -8px 28px rgba(15,23,42,0.22); }
+body.light-mode .cfg { background: #ffffff; border-color: var(--light-edge); box-shadow: var(--elev-4); }   /* ⟳ 2026-10-03o: vào THANG CHUNG */
 .cfg-hd { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; background: var(--navy-mid); border-bottom: 1px solid var(--border); }
 body.light-mode .cfg-hd { background: #ffffff; }
 .cfg-title { font-size: var(--fs-cfg-title); font-weight: 600; color: var(--text); }
@@ -1742,7 +1864,7 @@ body.light-mode .cfg-row, body.light-mode .cfg-hd { border-bottom-color: #cbd5e1
   opacity: 0;
   transform: translateY(-3px);
   transition: opacity 0.12s ease, transform 0.12s ease;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+  box-shadow: var(--elev-2);   /* ⟳ 2026-10-03o: vào THANG CHUNG (nhãn nổi = cấp header) */
 }
 .ui-tip.show { opacity: 1; transform: translateY(0); }
 /* Hai nút icon-only: nay nhấn giữ là **XEM NHÃN NỔI** nên phải chặn menu “gọi/copy” và
@@ -1896,7 +2018,7 @@ body.light-mode .cfg-row, body.light-mode .cfg-hd { border-bottom-color: #cbd5e1
      `body.theme-anim`. */
   transition: background-color var(--theme-anim-dur) var(--theme-anim-ease), border-color var(--theme-anim-dur) var(--theme-anim-ease), box-shadow var(--theme-anim-dur) var(--theme-anim-ease);
 }
-.toolbar.stuck { border-bottom-color: var(--border); box-shadow: 0 8px 16px rgba(0,0,0,0.3); }
+.toolbar.stuck { border-bottom-color: var(--border); box-shadow: var(--elev-3); }   /* ⟳ 2026-10-03o: vào THANG CHUNG */
 
 .search-box { position: relative; }
 .search-box input {
@@ -2316,8 +2438,14 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
 /* ⟳ 2026-09-28f: `--row1-bg` của cả ba mức đã HẠ MỘT NẤC MẠNH (xem chú thích ở rule
    `body.light-mode` phía trên) — hai rule này phải đi CÙNG NHAU với mức “Chuẩn”, thiếu một mức
    là bấm nút “Nền” thấy dải đậm nhạt khác thường. */
-body.light-mode[data-surface="sang"] { --light-surface: #ffffff; --light-card: #ffffff; --danhso-bg: #e8f1fd; --row1-bg: #c9d6e5; }
-body.light-mode[data-surface="diu"]  { --light-surface: #e3e9f0; --light-card: #e3e9f0; --multi-hd: #059669; --danhso-bg: #c7dbf5; --row1-bg: #b9c5d4; }
+/* ⟳ 2026-10-03n: NỀN THẺ mức “Sáng” BỚT TRẮNG (yêu cầu “nền thẻ ở light mode chế độ sáng
+   đừng cho màu sáng quá”). `--light-card` `#ffffff` → **`#f2f5f9`**.
+   ⚠️ **GIỚI HẠN CỦA NẤC NÀY:** thẻ mức “Chuẩn” = `--ctl-light-bg` `#eff1f5` ⇒ “Sáng” chỉ có thể
+   tối hơn TRẮNG một chút rồi thôi, tối nữa là TRÙNG “Chuẩn” (nút “Nền” mất tác dụng ở thẻ).
+   Nếu muốn thẻ XÁM RÕ hơn nữa thì phải hạ CẢ THANG light (gồm “Chuẩn” — tức tách khỏi control).
+   ℹ️ Vẫn giữ `--light-surface: #ffffff` (bảng) — yêu cầu chỉ nói về THẺ. */
+body.light-mode[data-surface="sang"] { --light-surface: #ffffff; --light-card: #eaedf1; --danhso-bg: #e8f1fd; --row1-bg: #c9d6e5; }   /* ⟳ 2026-10-03q: thẻ #f2f5f9 → #eaedf1 */
+body.light-mode[data-surface="diu"]  { --light-surface: #e3e9f0; --light-card: #dbe1e8; --multi-hd: #047857; --danhso-bg: #c7dbf5; --row1-bg: #b9c5d4; }   /* ⟳ 2026-10-03q: thẻ #e3e9f0 → #dbe1e8; vạch #059669 → #047857 (bù AA trên nền mới) */
 body.light-mode[data-surface="diu"] .kh-name { color: #1d4ed8; }
 /* ⚠️ Hai mức dưới đây cũng bị lượt “nền thẻ = nền tab” DỊCH LÊN (xem ⟳ ngay trên): mức “Chuẩn”
    lấy đúng màu control `--ctl-solid` nên hai mức này phải đi theo, nếu không “Sáng” chỉ còn
@@ -2501,7 +2629,9 @@ body.light-mode .nhom-sel-name {
      và ⛔ đừng đổi `--dk-card` cho việc khác (sẽ không còn liên quan gì đến hàng này).
      Chữ trên nền đen chỉ TĂNG tương phản so với `--dk-card` cũ (mọi màu chữ hàng đều sáng:
      nhãn `--text-dim`, số xanh/đỏ/vàng, icon `--ic-green`) ⇒ không phải đo lại tương phản.
-     Riêng LIGHT vẫn nền thẻ (`--light-card`) ở rule `body.light-mode .count-info` — KHÔNG đụng. */
+     ⟳ 2026-10-03: LIGHT nay cũng TÁCH khỏi thẻ — nền hàng **TRẮNG `#ffffff`** (yêu cầu
+     “cho nền light mode màu trắng”), đối xứng với dark `#000`; xem chú thích ở rule
+     `body.light-mode .count-info` (dòng ~1281). ⛔ KHÔNG trả light về `--light-card`. */
   background: #000000;
   /* ⟳ 2026-09-27i: vệt tô `box-shadow` (3px) đã GỠ cùng lượt với việc bỏ GHIM — nó chỉ tồn
      tại để bịt khe 3px giữa thanh công cụ và hàng KHI HÀNG ĐANG GHIM; hàng cuộn theo trang
@@ -2789,7 +2919,7 @@ body.light-mode .nhom-sel-name {
      ⟳ Số cũ (Chuẩn 1,25 · Sáng 1,35–1,48 · Dịu 1,18) chỉ còn để đối chiếu.
      Viền + bóng đổ là thứ tách thẻ khỏi nền trang ⇒ ⛔ đừng gỡ chúng, và đừng hạ “Dịu” nữa. */
   border: 1px solid rgba(255,255,255,0.34);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.45);
+  box-shadow: var(--elev-1);   /* ⟳ 2026-10-03o: vào THANG CHUNG (light = `none`, xem `body.light-mode`) */
   border-radius: 10px;
   /* `overflow: hidden` là thứ làm MỌI thứ vẽ tràn trong thẻ bị CẮT theo đúng đường bo
      cong của viền thẻ — không có nó thì vạch `multi-hd` (và mọi nền/vạch khác) sẽ thò
@@ -2802,8 +2932,9 @@ body.light-mode .nhom-sel-name {
   transition: border-color 0.15s ease, background-color 0.15s ease;
   -webkit-user-select: none;
   user-select: none;
-  /* Chặn menu "gọi/copy" của iOS khi NHẤN GIỮ — thao tác nhấn giữ nay là ĐÁNH DẤU,
-     không được để hệ điều hành chen một menu khác vào giữa. */
+  /* Chặn menu "gọi/copy" của iOS khi NHẤN GIỮ — giữ lại để hệ điều hành không chen menu
+     vào giữa thao tác (thao tác đánh dấu nay là NHẤN 2 LẦN, xem mục “NHẤN 2 LẦN” cạnh
+     `toggleMark()`; long-press không còn là thao tác đánh dấu từ 2026-10-03). */
   -webkit-touch-callout: none;
 }
 .kh-card:active { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.16); }
@@ -2854,7 +2985,7 @@ body.light-mode .nhom-sel-name {
    bị pha với nền TRANG chứ không phải nền thẻ, nên ở light mode thẻ "Chú ý" thành xám
    #eaeaea lẫn vào nền trang (1.03:1), còn ở dark thành #18181b tối hơn cả thẻ thường.
    Đo được ở light: tên 4.31 và tiền đỏ 4.02 (dưới 4.5), viền 2.65 (dưới 3). */
-.kh-card.highlighted { background: #2e2412; border: 2px solid #fbbf24; box-shadow: 0 1px 3px rgba(0,0,0,0.45); }
+.kh-card.highlighted { background: #2e2412; border: 2px solid #fbbf24; box-shadow: var(--elev-1); }
 body.light-mode .kh-card.highlighted { background: #fef3c7; border: 2px solid #b45309; box-shadow: 0 1px 3px rgba(146,64,14,0.25); }
 /* Trên nền vàng/xanh (đậm hơn trắng) chữ đỏ #dc2626 tụt xuống 4.34:1 → dùng #b91c1c;
    tên KH #2563eb tụt xuống 4.64 ở nền vàng / 4.09 ở nền xanh → dùng #1d4ed8. */
@@ -2868,7 +2999,7 @@ body.light-mode .kh-card.highlighted .kh-tien .mil-digit,
 body.light-mode .kh-card.highlighted-purple .kh-tien,
 body.light-mode .kh-card.highlighted-purple .kh-tien.high,
 body.light-mode .kh-card.highlighted-purple .kh-tien .mil-digit { color: #b91c1c !important; }
-.kh-card.highlighted-purple { background: #17233f; border-color: #00e5ff; border-width: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.45); }
+.kh-card.highlighted-purple { background: #17233f; border-color: #00e5ff; border-width: 2px; box-shadow: var(--elev-1); }
 body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color: #1d4ed8; border-width: 2px; box-shadow: 0 0 0 2.5px rgba(29,78,216,0.20); }
 
 
@@ -3133,15 +3264,16 @@ tbody tr { border-bottom: 1px solid var(--tb-line); transition: background 0.12s
 tbody tr:hover { background: rgba(59,130,246,0.40); }
 tbody tr:active { background: rgba(59,130,246,0.50); }
 
-/* ── HÀNG BẢNG ĐƯỢC ĐÁNH DẤU (nhấn giữ 1,2 giây) ─────────────────────────────────
+/* ── HÀNG BẢNG ĐƯỢC ĐÁNH DẤU (nhấn 2 lần — đổi từ nhấn-giữ 2026-10-03) ───────────
    Dùng ĐÚNG bảng màu của thẻ card (`.kh-card.highlighted` / `.highlighted-purple`) để
    hai nơi đọc như MỘT trạng thái:
      cam  : nền #2e2412 + vạch #fbbf24 (dark) · #fef3c7 + #b45309 (light)
      xanh : nền #17233f + vạch #00e5ff (dark) · #e8f0ff + #1d4ed8 (light)
    ⚠️ KHÔNG dùng `border` trên `tr`: `border-collapse: collapse` vẽ viền trái lệch và làm
    hàng cao thêm ⇒ dùng NỀN + `box-shadow: inset` trên Ô ĐẦU (không đổi kích thước).
-   `user-select: none` là BẮT BUỘC, không phải trang trí: giữ chuột/chạm 1,2 giây mà còn
-   bôi được chữ thì vừa hiện vệt chọn chữ vừa bị hệ điều hành phát `pointercancel`.
+   `user-select: none` vẫn GIỮ: nhấn 2 lần mà còn bôi được chữ thì cú nhấn thứ nhất đã
+   bắt đầu chọn văn bản, gây nháy vệt xanh và có thể trượt mất cặp `dblclick`. (Thời nhấn-giữ
+   nó là BẮT BUỘC để không bị `pointercancel`; nay vẫn hữu ích nên đừng gỡ.)
    `-webkit-touch-callout: none` chặn menu "gọi/copy" của iOS chen vào giữa thao tác. */
 .table-view tbody tr { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 /* Nhưng ô GHI CHÚ trong hàng phải bôi đen được: `user-select` **KẾ THỪA**, nên `none` ở hàng
@@ -4073,9 +4205,9 @@ body.force-desktop .table-view { display: block; }
      ở rule nền (~1486) và `body.light-mode .table-view tr:hover` (`#e8eefc`) — luật này có độ
      cụ thể cao hơn nên nếu không `!important` sẽ **thấy như chưa sửa gì**.
      ⚠️ `:not(.highlighted):not(.highlighted-purple)` là BẮT BUỘC, không phải viết cho gọn:
-     hàng đang được đánh dấu phải giữ nền cam/tím **trong lúc ngón tay còn đè** (nhấn giữ 1,2s
-     ⇒ lúc đó hàng vừa `:active` vừa `.highlighted`; thiếu `:not()` là mất phản hồi đúng lúc
-     người dùng cần thấy nhất).
+     hàng đang được đánh dấu phải giữ nền cam/tím **trong lúc vừa nhấn** (nhấn 2 lần ⇒ cú
+     nhấn thứ hai rơi vào lúc hàng vừa `:active` vừa `.highlighted`; thiếu `:not()` là hàng
+     chớp về nền `:active` đúng lúc người dùng cần thấy phản hồi nhất).
      ℹ️ (Lịch sử) Hàng CHẴN từng giữ sọc nhờ rule sọc được nâng `!important` + bỏ
      `:not(:hover):not(:active)` — nay sọc không còn nên phần đó không cần nữa. */
   tbody tr:not(.highlighted):not(.highlighted-purple):hover,
@@ -4815,7 +4947,7 @@ body.force-desktop .table-view { display: block; }
           <div class="filter-select" id="filterNhomBtn" onclick="toggleNhomDropdown()" style="display:flex;align-items:center;gap:4px;cursor:pointer;position:relative">
             <span id="filterNhomLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</span>
           </div>
-          <div class="nhom-dropdown" id="nhomDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
+          <div class="nhom-dropdown" id="nhomDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:var(--elev-3)">
             <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-people"/></svg></span> DS nhóm</div>
           </div>
           <input type="hidden" id="filterNhom" value="">
@@ -4824,7 +4956,7 @@ body.force-desktop .table-view { display: block; }
           <div class="filter-select" id="filterLoaiBtn" onclick="toggleLoaiDropdown()" style="display:flex;align-items:center;gap:4px;cursor:pointer;position:relative">
             <span id="filterLoaiLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-receipt"/></svg></span> Chi tiết nợ</span>
           </div>
-          <div class="nhom-dropdown" id="loaiDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
+          <div class="nhom-dropdown" id="loaiDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:var(--elev-3)">
             <!-- ⚠️ 8 hàng của danh sách "Chi tiết nợ": MỖI hàng có ĐÚNG MỘT dấu hiệu ở đầu,
                  đúng khuôn của danh sách nhóm `#nhomDropdown` (yêu cầu người dùng: “cho hàng
                  này cũng có icon chấm trong như tên nhóm”):
@@ -5315,7 +5447,11 @@ body.force-desktop .table-view { display: block; }
 <script>
 let allData = [], filtered = [], summaryData = [], oldSummaryData = [];
 let nvScope = '';
-let sortCol = 'tien_no', sortDir = -1;
+/* ⟳ 2026-10-03f: MẶC ĐỊNH KHÔNG SẮP XẾP (yêu cầu “bỏ mặc định chọn”). Trước đây là
+   `'tien_no'` ⇒ mở app là nút “Tiền Nợ” đã SÁNG (active) sẵn (đúng ảnh người dùng gửi).
+   Nay `null` ⇒ KHÔNG nút nào active, danh sách giữ ĐÚNG THỨ TỰ trong tệp cho tới khi người
+   dùng bấm. `sortBy()` vẫn đặt `sortCol` như cũ khi bấm. ⛔ ĐỪNG trả về 'tien_no'. */
+let sortCol = null, sortDir = -1;
 let currentPage = 1;
 const PAGE_SIZE = 50;
 const SAVE_KEY = 'qlno_data_v1';
@@ -5391,7 +5527,7 @@ function showClock() {
     overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
     overlay.onclick = function(e) { if (e.target === overlay) overlay.style.display = 'none'; };
     const box = document.createElement('div');
-    box.style.cssText = 'background:var(--navy-mid,#1a1f2e);border-radius:20px;padding:32px 40px;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,0.5);min-width:240px';
+    box.style.cssText = 'background:var(--navy-mid,#1a1f2e);border-radius:20px;padding:32px 40px;text-align:center;box-shadow:var(--elev-5);min-width:240px';
     box.innerHTML = '<div id="clockDigital" style="font-size:48px;font-weight:200;color:#60a5fa;font-family:Inter,sans-serif;letter-spacing:2px"></div><div id="clockDate" style="font-size:12px;color:#94a3b8;margin-top:8px;font-weight:400"></div>';
     overlay.appendChild(box);
     document.body.appendChild(overlay);
@@ -5798,7 +5934,7 @@ function processFile(file) {
   // Reset all state carried over from a previous file
   nvScope = '';
   currentPage = 1;
-  sortCol = 'tien_no'; sortDir = -1;
+  sortCol = null; sortDir = -1;   // ⟳ 2026-10-03f: nạp tệp cũng KHÔNG chọn sẵn (đồng bộ mặc định)
   document.getElementById('searchInput').value = '';
   document.querySelector('.stats-row').classList.remove('collapsed');
   document.getElementById('nvScope').classList.remove('collapsed');
@@ -6800,6 +6936,11 @@ function applyFilters() {
   // Sort bởi 1 comparator dùng chung: sort trước (chọn bản ghi nền cho thẻ) rồi
   // sort LẠI sau khi gộp theo KH để KH nhiều hoá đơn được xếp theo tiền TỔNG.
   function rowCompare(a, b) {
+    /* ⟳ 2026-10-03f: không sắp xếp mặc định — `sortCol` nay là `null` ⇒ giữ THỨ TỰ GỐC của tệp.
+       Không có nhánh này thì `a[null]` = undefined và comparator rơi xuống nhánh
+       localeCompare("undefined","undefined") = 0 (cũng ra “không đổi thứ tự” nhưng dựa vào may
+       mắn) ⇒ trả 0 TƯỜNG MINH. */
+    if (!sortCol) return 0;
     let av = a[sortCol], bv = b[sortCol];
     if (sortCol==='stt'||sortCol==='so_tbi') { const an=parseFloat(av)||0, bn=parseFloat(bv)||0; return (an-bn)*sortDir; }
     if (sortCol==='danh_so') { const as=String(av).toUpperCase(), bs=String(bv).toUpperCase(); return (as > bs ? 1 : as < bs ? -1 : 0) * sortDir; }
@@ -6940,12 +7081,12 @@ function renderCards(q='') {
     /* KH có **từ 2 hoá đơn trở lên** → thêm vạch XANH LÁ mỏng ở mép trên thẻ, ngay trên
        tên + số tiền (yêu cầu người dùng). Đếm trên TOÀN BỘ dữ liệu ⇒ không đổi theo bộ lọc. */
     const hdCount = _hdCountMap.get(r.ma_khach_hang || r.ten_khach_hang) || 0;
-    /* Thẻ phản ứng NHẤN GIỮ 1,2 GIÂY → đánh dấu cam (yêu cầu người dùng: “đổi từ nhấn 2 lần
-       sang nhấn giữ 1,2 giây”). KHÔNG có handler nào ở đây: thao tác này do lớp UỶ NHIỆM
-       gắn ở `document` lo (xem mục “NHẤN GIỮ 1,2 GIÂY” cạnh `toggleMark()`), nên thẻ dựng
-       lại bao nhiêu lần cũng không mất. `data-ma` là thứ duy nhất lớp đó cần.
-       ⚠️ Đừng gắn lại `ondblclick` — nhấn 2 lần KHÔNG còn là thao tác đánh dấu. */
-    return `<div class="kh-card${hdCount >= 2 ? ' multi-hd' : ''}" data-ma="${esc(r.ma_khach_hang)}">
+    /* Thẻ phản ứng NHẤN 2 LẦN → đánh dấu cam (yêu cầu người dùng: “đổi chế độ nhấn giữ sang
+       nhấn 2 lần để đánh dấu”). Handler gắn TRỰC TIẾP ở đây (`ondblclick`) — mẫu này được
+       DỰNG LẠI mỗi lần render nên handler luôn theo bản mới; ⛔ đừng uỷ nhiệm lại ở document.
+       ⚠️ Ô ghi chú bên dưới có `ondblclick="event.stopPropagation()"` ⇒ nhấn 2 lần trong ô
+       ghi chú KHÔNG đánh dấu thẻ. */
+    return `<div class="kh-card${hdCount >= 2 ? ' multi-hd' : ''}" data-ma="${esc(r.ma_khach_hang)}" ondblclick="toggleOrange(event, this)">
       <div class="kh-card-top">
         <div class="kh-name" onclick="showDetail(${start+i})" style="cursor:pointer">${hi(r.ten_khach_hang,q)||'—'}</div>
         <div class="kh-tien-col">
@@ -6990,7 +7131,7 @@ function renderTable(q='') {
     const bc = getBadge(r.ma_nhom);
     const oldKind = _oldKindMap.get(r.ma_khach_hang || r.ten_khach_hang);
     const omShow = !!oldKind;
-    /* Hàng được ĐÁNH DẤU (nhấn giữ 1,2 giây) — cùng trạng thái với thẻ card.
+    /* Hàng được ĐÁNH DẤU (nhấn 2 lần — thao tác đổi từ nhấn-giữ 2026-10-03) — cùng trạng thái với thẻ card.
        Đặt lớp ngay trong MẪU HÀNG chứ không dựa vào `restoreHighlights()`: hàm đó chạy
        SAU khi render, nên nếu chỉ dựa vào nó thì mỗi lần phân trang/sắp xếp hàng sẽ nháy
        mất màu rồi mới có lại. */
@@ -7003,7 +7144,7 @@ function renderTable(q='') {
     // Ghi Chú · ABC · Nhóm · Nợ cũ.
     // Đổi thứ tự ở đây mà quên thead là mọi ô lệch một cột (chữ nằm dưới tiêu đề khác).
     // (Bảng 2 DÒNG trên điện thoại không dùng thứ tự này — nó đặt ô theo `nth-child` ở CSS.)
-    return `<tr data-ma="${esc(maKH)}" class="${isMarked ? 'highlighted' : (isPurple ? 'highlighted-purple' : '')}">
+    return `<tr data-ma="${esc(maKH)}" class="${isMarked ? 'highlighted' : (isPurple ? 'highlighted-purple' : '')}" ondblclick="toggleOrange(event, this)">
       <td style="color:var(--text-dim);font-size:12px;white-space:nowrap">${r.stt ? hi(r.stt,q) : (start+i+1)}</td>
       <td><span class="ma-kh" onclick="copyMaKH(event, this)" style="cursor:pointer" title="Chạm để copy mã KH">${hi(r.ma_khach_hang,q)}</span></td>
       <!-- HAI nhánh tên trong CÙNG một ô: span.ten-full cho BẢNG MÁY TÍNH (≥640px), span.ten-ngan
@@ -7165,13 +7306,11 @@ function saoLuuDuLieu() {
   }
 }
 
-/* Chạm vào MÃ KH ở dạng bảng ⇒ COPY mã (y hệt ô mã KH trên thẻ card .kh-ma).
-   ⛔ Chỉ stopPropagation trên 'click', CỐ Ý KHÔNG đụng 'pointerdown': nhấn giữ 1,2 giây
-   trên hàng là ĐÁNH DẤU (uỷ nhiệm ở document, nghe pha bubble) — pointerdown từ ô mã vẫn
-   phải tới được document thì nhấn giữ TRÊN Ô MÃ mới đánh dấu được hàng như mọi chỗ khác.
-   Tap nhanh vẫn copy bình thường: pointerup đến sớm hủy timer nhấn-giữ (_lpCancel), click
-   sau đó chạy copyMaKH; còn nếu nhấn giữ đủ 1,2s thì cờ _lpFired chặn đúng cú click đó ở
-   pha capture ⇒ KHÔNG copy lúc đánh dấu. Hai thao tác không cắn nhau.
+/* Chạm MỘT lần vào MÃ KH ở dạng bảng ⇒ COPY mã (y hệt ô mã KH trên thẻ card .kh-ma).
+   ⛔ Chỉ stopPropagation trên 'click'. Thao tác đánh dấu nay là NHẤN 2 LẦN (`ondblclick`)
+   gắn trực tiếp trên hàng/thẻ — xem mục “NHẤN 2 LẦN” cạnh `toggleMark()`.
+   ⚠️ Nhấn 2 lần TRÊN Ô MÃ vẫn sẽ đánh dấu hàng (dblclick nổi từ ô mã lên hàng) và copy
+   thêm một lần — chấp nhận được, giống thời kỳ trước khi có nhấn-giữ.
    Copy giá trị từ el.textContent (span chứa cả mark tìm kiếm, textContent vẫn là mã đầy đủ)
    thay vì nhúng mã vào thuộc tính onclick — không lo dấu nháy trong dữ liệu phá chuỗi.
    ✓ xanh 1,2 giây do copyToClip tự làm (đúng như ô mã KH trên thẻ card). */
@@ -7226,60 +7365,24 @@ function savePurpleIds(ids) {
 function getHighlightedIds() {
   return [...new Set([...getOrangeIds(), ...getPurpleIds()])];
 }
-/* ===== ĐÁNH DẤU: NHẤN GIỮ 1,2 GIÂY (thẻ card ⇄ hàng bảng) =====================
+/* ===== ĐÁNH DẤU: NHẤN 2 LẦN (thẻ card ⇄ hàng bảng) =============================
+   ⟳ 2026-10-03: ĐỔI TỪ “NHẤN GIỮ 1,2 GIÂY” SANG “NHẤN 2 LẦN” (yêu cầu người dùng:
+   “đổi chế độ nhấn giữ sang nhấn 2 lần để đánh dấu”).
    MỘT thao tác, HAI nơi nhận: thẻ card (`.kh-card`) và hàng bảng dạng máy tính
    (`.table-view tbody tr`) — cùng ghi vào `qlno_highlighted` nên “Chú ý” ở tab lọc vẫn
    đếm chung một danh sách.
 
-   Vì sao UỶ NHIỆM ở `document` mà KHÔNG gắn handler vào từng thẻ/từng hàng: cả thẻ và
-   hàng đều được DỰNG LẠI mỗi lần render (đổi tab, tìm kiếm, phân trang, sắp xếp) ⇒
-   handler gắn trực tiếp sẽ biến mất sau mỗi lần vẽ lại. Uỷ nhiệm chỉ đăng ký ĐÚNG MỘT LẦN.
+   ⛔ ĐÃ GỠ HẲN lớp uỷ nhiệm nhấn-giữ trước đây: các listener `pointerdown`/`pointermove`/
+   `pointerup`/`pointercancel` + listener chặn `click` ở pha capture, cùng các biến
+   `LP_MS`/`LP_SLOP`/`_lpTimer`/`_lpEl`/`_lpX`/`_lpY`/`_lpFired`/`_lpCancel`.
+   Nay thao tác đánh dấu là `ondblclick="toggleOrange(event, this)"` gắn TRỰC TIẾP trong
+   MẪU của thẻ card (`.kh-card`) và hàng bảng (`.table-view tbody tr`) — hai mẫu đó được
+   DỰNG LẠI mỗi lần render nên handler tự theo bản mới; ⛔ KHÔNG cần uỷ nhiệm lại ở document.
 
-   Vì sao `pointerdown` nghe ở pha BUBBLE (không phải capture): ô ghi chú (`.kh-ghichu-input`
-   và `.ghi-chu-table`) tự gọi `event.stopPropagation()` trên `onpointerdown` ⇒ sự kiện
-   KHÔNG tới được `document`, nên NHẤN GIỮ TRONG Ô GHI CHÚ không đánh dấu thẻ/hàng.
-   Nếu nghe ở pha capture thì lớp chặn đó vô hiệu.
-
-   ⚠️ 3 bẫy đã tính sẵn:
-   1. `pointerdown` KHÔNG phải là “nhấn”: cuộn trang/kéo cũng sinh pointerdown. Huỷ khi
-      pointer đi quá `LP_SLOP` px, và huỷ khi trình duyệt phát `pointercancel` (nó làm
-      vậy đúng lúc nhận ra đây là thao tác cuộn).
-   2. Nhấn giữ xong rồi NHẢ tay sẽ sinh thêm một `click` (mở modal / copy mã / gọi điện).
-      Cờ `_lpFired` chặn đúng cú click đó Ở PHA CAPTURE — pha sớm nhất, trước cả
-      `onclick` inline của app.
-   3. `pointerup`/`pointercancel`/`pointermove` nghe ở pha CAPTURE để việc HUỶ luôn chạy,
-      kể cả khi phần tử bên trong đang chặn sự kiện. */
-const LP_MS  = 1200;   // 1,2 giây — đúng con số người dùng yêu cầu
-const LP_SLOP = 10;    // px: quá ngưỡng này coi là cuộn/kéo ⇒ huỷ
-let _lpTimer = null, _lpEl = null, _lpX = 0, _lpY = 0, _lpFired = false;
-function _lpCancel() { if (_lpTimer) clearTimeout(_lpTimer); _lpTimer = null; _lpEl = null; }
-
-document.addEventListener('pointerdown', e => {
-  _lpFired = false;                       // mỗi lần nhấn MỚI đều xoá cờ chặn click
-  if (e.button > 0) return;               // chỉ chuột trái / ngón tay / bút
-  const el = e.target && e.target.closest ? e.target.closest('.kh-card, .table-view tbody tr') : null;
-  if (!el || !el.dataset.ma) return;
-  _lpCancel();
-  _lpEl = el; _lpX = e.clientX; _lpY = e.clientY;
-  _lpTimer = setTimeout(() => {
-    _lpTimer = null;
-    _lpFired = true;                      // chặn cú `click` sắp tới
-    toggleMark(_lpEl);
-    _lpEl = null;
-    if (navigator.vibrate) { try { navigator.vibrate(25); } catch (err) {} }
-  }, LP_MS);
-});
-document.addEventListener('pointermove', e => {
-  if (_lpEl && (Math.abs(e.clientX - _lpX) > LP_SLOP || Math.abs(e.clientY - _lpY) > LP_SLOP)) _lpCancel();
-}, true);
-document.addEventListener('pointerup', _lpCancel, true);
-document.addEventListener('pointercancel', _lpCancel, true);
-document.addEventListener('click', e => {
-  if (!_lpFired) return;
-  _lpFired = false;
-  e.preventDefault();
-  e.stopPropagation();
-}, true);
+   ⚠️ Ô ghi chú (`.kh-ghichu-input` / `.ghi-chu-table`) vẫn giữ `ondblclick="event.stopPropagation()"`
+   ⇒ NHẤN 2 LẦN TRONG Ô GHI CHÚ không đánh dấu thẻ/hàng (đúng ý).
+   ⛔ Muốn QUAY LẠI nhấn-giữ: phải DỰNG LẠI ĐỦ cả lớp uỷ nhiệm (không chỉ đổi tên hàm) —
+   xem lịch sử ở run doc (`2026-10-03c`). */
 
 /* Bật/tắt dấu CAM cho một thẻ card HOẶC một hàng bảng. */
 function toggleMark(el) {
@@ -7303,8 +7406,10 @@ function toggleMark(el) {
     x.classList.remove('highlighted-purple');
   });
 }
-/* Tên cũ giữ lại làm VỎ (phòng khi còn chỗ nào gọi `toggleOrange`) — nhấn 2 lần KHÔNG còn
-   là thao tác đánh dấu, nên chỉ có `toggleMark()` mới nên được gọi từ thao tác mới. */
+/* Handler đánh dấu — nay là thao tác CHÍNH THỨC của NHẤN 2 LẦN (`ondblclick` gắn trong mẫu
+   thẻ card + hàng bảng). Tên `toggleOrange` giữ nguyên (lịch sử) nhưng VAI TRÒ đã khác:
+   trước đây nó là vỏ bọc của thao tác nhấn-giữ cũ, nay nó LÀ thao tác nhấn-2-lần.
+   `e.stopPropagation()` để cú dblclick không lọt lên các lớp khác. */
 function toggleOrange(e, el) { if (e && e.stopPropagation) e.stopPropagation(); toggleMark(el); }
 
 /* Màu xanh dương (nhấn giữ 1 giây) đã GỠ KHỎI THAO TÁC từ trước, nhưng vẫn được GIỮ LẠI
