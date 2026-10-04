@@ -8070,12 +8070,29 @@ if (toolbarEl && headerEl) {
   sentinel.style.height = '0';
   sentinel.style.visibility = 'hidden';
   toolbarEl.parentNode.insertBefore(sentinel, toolbarEl);
-  // ⟳ 2026-10-03y: TỰ ẨN/HIỆN thanh công cụ theo HƯỚNG CUỘN (yêu cầu người dùng: “khi vuốt lên
-  // thì các tab cuộn theo, khi vuốt xuống thì các tab hiển thị”). Vuốt LÊN = cuộn XUỐNG (y tăng)
-  // ⇒ ẩn; vuốt XUỐNG = cuộn LÊN (y giảm) ⇒ hiện. Dùng ngưỡng delta 4px để không rung khi cuộn
-  // chậm/momentum. Khi ở sát đỉnh (y ≤ headerH) luôn hiện. Class `auto-hidden` chỉ áp dụng khi
-  // thanh đã `stuck` (position:fixed) — lúc chưa ghim thì không có gì để ẩn.
+  // ⟳ 2026-10-04b: ĐỔI TỰ ẨN/HIỆN thanh công cụ từ theo HƯỚNG CUỘN sang theo TỐC ĐỘ CUỘN
+  // (yêu cầu người dùng: “khi cuộn xuống thì khi cuộn chậm các tab ở trên không hiện ra, chỉ
+  // khi cuộn nhanh mới hiện”; chốt qua hỏi đáp: CHỈ thanh công cụ · cuộn LÊN cũng theo tốc độ ·
+  // ngưỡng ~800 px/s · CHỈ điện thoại như trước).
+  // CÁCH TÍNH: tốc độ mỗi sự kiện = |Δy| / Δt · 1000 (px/giây) — tính lại từng lần cuộn nên
+  // KHÔNG cần bộ đệm thời gian:
+  // ⚠️ PHẢI KẸP `Δt ≤ 100ms` (đo live 2026-10-04b): trình duyệt chỉ bắn `scroll` khi có chuyển
+  // động, nên nếu người dùng ĐỨNG YÊN một lúc rồi mới VUỐT MẠNH thì `Δt` gộp cả quãng rảnh ⇒
+  // `dy/dt` bị chia nhỏ, cú flick bị xếp là “chậm” rồi ẨN thanh — đúng ngược ý muốn. Kẹp về
+  // 100ms (lớn hơn một frame ~16ms nhiều lần) để tốc độ phản ánh CÚ VUỐT chứ không phải thời gian
+  // chờ; và kẹp sàn 1ms để không chia cho 0.
+  //   · cuộn CHẬM (đọc bài) → ẩn thanh cho khỏi che nội dung;
+  //   · cuộn NHANH (vuốt/flick ≥ 800 px/s) → hiện thanh để kịp chạm vào controls;
+  //   · KHÔNG cuộn nữa (Δy = 0) → GIỮ NGUYÊN trạng thái cuối ⇒ không nhấp nháy khi dừng tay.
+  // ⚠️ Vì sao KHÔNG dùng bộ đệm “dừng cuộn thì ẩn”: người dùng chỉ nói tốc độ lúc ĐANG cuộn,
+  // thêm hẹn giờ ẩn là tự ý thêm hành vi thứ ba ⇒ sau một cú flick nhanh thanh sẽ tự biến mất
+  // sau ~250ms, đúng kiểu “nháy” mà mắt rất dễ thấy.
+  // ⚠️ Sát đỉnh (y ≤ headerH) LUÔN hiện — nếu không, vừa cuộn chậm lên tới đỉnh là thanh kẹt
+  // ẩn dù chưa hề ghim (thanh là bề mặt điều khiển chính của app).
+  // Class `auto-hidden` chỉ áp dụng khi thanh đã `stuck` (position:fixed) — lúc chưa ghim thì
+  // không có gì để ẩn.
   let lastScrollY = window.scrollY || window.pageYOffset || 0;
+  let lastScrollAt = performance.now();
   function updateToolbar() {
     const y = window.scrollY || window.pageYOffset || 0;
     const sentinelTop = sentinel.getBoundingClientRect().top;
@@ -8103,10 +8120,16 @@ if (toolbarEl && headerEl) {
         // Gỡ luôn nếu vừa thu nhỏ → mở rộng cửa sổ lúc thanh đang ẩn (resize cũng gọi hàm này).
         toolbarEl.classList.remove('auto-hidden');
       } else {
-        const delta = y - lastScrollY;
-        if (y <= headerH + 2)       toolbarEl.classList.remove('auto-hidden');
-        else if (delta > 4)         toolbarEl.classList.add('auto-hidden');
-        else if (delta < -4)        toolbarEl.classList.remove('auto-hidden');
+        const now = performance.now();
+        const dy = y - lastScrollY;
+        // Kẹp `Δt` (xem chú thích “PHẢI KẸP”) — nếu để nguyên, cú flick sau khi đứng yên bị tính sai.
+        const dt = Math.max(1, Math.min(now - lastScrollAt, 100));
+        const speed = Math.abs(dy) / dt * 1000;   // px/giây
+        if (y <= headerH + 2)       toolbarEl.classList.remove('auto-hidden'); // sát đỉnh → luôn hiện
+        else if (speed >= 800)     toolbarEl.classList.remove('auto-hidden'); // cuộn NHANH → hiện
+        else if (dy !== 0)         toolbarEl.classList.add('auto-hidden');    // cuộn CHẬM → ẩn
+        // dy === 0 → giữ nguyên (không có gì đổi để phân loại)
+        lastScrollAt = now;
       }
     } else {
       sentinel.style.height = '0';
