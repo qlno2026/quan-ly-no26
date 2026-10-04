@@ -24,7 +24,7 @@
      ⛔ Đừng gộp favicon với `.theme-logo`: sửa logo trong trang KHÔNG làm favicon đổi theo,
      phải sửa cả chuỗi SVG ở đây. -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cstyle%3Epath%7Bfill:%23111827%7D@media (prefers-color-scheme:dark)%7Bpath%7Bfill:%23ffffff%7D%7D%3C/style%3E%3Cpath d='M22 2 C24 14 30 20 42 22 C30 24 24 30 22 42 C20 30 14 24 2 22 C14 20 20 14 22 2 Z'/%3E%3C/svg%3E">
-<title>Quanlythughibr</title>
+<title>TongHopNo BR</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap');
 
@@ -5082,7 +5082,7 @@ body.force-desktop .table-view { display: block; }
     </button>
     <div class="title-wrap">
 
-      <div class="header-title">Quanlythughibr</div>
+      <div class="header-title">TongHopNo BR</div>
       <div class="header-sub" id="fileLabel">Chưa có dữ liệu</div>
     </div>
   </div>
@@ -7549,7 +7549,7 @@ function saoLuuDuLieu() {
   const hai = (x) => String(x).padStart(2, '0');
   const tem = `${d.getFullYear()}-${hai(d.getMonth() + 1)}-${hai(d.getDate())}_${hai(d.getHours())}${hai(d.getMinutes())}`;
   const goi = {
-    ungDung: 'Quanlythughibr',
+    ungDung: 'TongHopNo BR',
     phienBan: 1,
     thoiDiem: d.toISOString(),
     soKH: new Set(allData.map(r => r.ma_khach_hang || r.ten_khach_hang)).size,
@@ -8070,29 +8070,22 @@ if (toolbarEl && headerEl) {
   sentinel.style.height = '0';
   sentinel.style.visibility = 'hidden';
   toolbarEl.parentNode.insertBefore(sentinel, toolbarEl);
-  // ⟳ 2026-10-04b: ĐỔI TỰ ẨN/HIỆN thanh công cụ từ theo HƯỚNG CUỘN sang theo TỐC ĐỘ CUỘN
-  // (yêu cầu người dùng: “khi cuộn xuống thì khi cuộn chậm các tab ở trên không hiện ra, chỉ
-  // khi cuộn nhanh mới hiện”; chốt qua hỏi đáp: CHỈ thanh công cụ · cuộn LÊN cũng theo tốc độ ·
-  // ngưỡng ~800 px/s · CHỈ điện thoại như trước).
-  // CÁCH TÍNH: tốc độ mỗi sự kiện = |Δy| / Δt · 1000 (px/giây) — tính lại từng lần cuộn nên
-  // KHÔNG cần bộ đệm thời gian:
-  // ⚠️ PHẢI KẸP `Δt ≤ 100ms` (đo live 2026-10-04b): trình duyệt chỉ bắn `scroll` khi có chuyển
-  // động, nên nếu người dùng ĐỨNG YÊN một lúc rồi mới VUỐT MẠNH thì `Δt` gộp cả quãng rảnh ⇒
-  // `dy/dt` bị chia nhỏ, cú flick bị xếp là “chậm” rồi ẨN thanh — đúng ngược ý muốn. Kẹp về
-  // 100ms (lớn hơn một frame ~16ms nhiều lần) để tốc độ phản ánh CÚ VUỐT chứ không phải thời gian
-  // chờ; và kẹp sàn 1ms để không chia cho 0.
-  //   · cuộn CHẬM (đọc bài) → ẩn thanh cho khỏi che nội dung;
-  //   · cuộn NHANH (vuốt/flick ≥ 800 px/s) → hiện thanh để kịp chạm vào controls;
-  //   · KHÔNG cuộn nữa (Δy = 0) → GIỮ NGUYÊN trạng thái cuối ⇒ không nhấp nháy khi dừng tay.
-  // ⚠️ Vì sao KHÔNG dùng bộ đệm “dừng cuộn thì ẩn”: người dùng chỉ nói tốc độ lúc ĐANG cuộn,
-  // thêm hẹn giờ ẩn là tự ý thêm hành vi thứ ba ⇒ sau một cú flick nhanh thanh sẽ tự biến mất
-  // sau ~250ms, đúng kiểu “nháy” mà mắt rất dễ thấy.
-  // ⚠️ Sát đỉnh (y ≤ headerH) LUÔN hiện — nếu không, vừa cuộn chậm lên tới đỉnh là thanh kẹt
-  // ẩn dù chưa hề ghim (thanh là bề mặt điều khiển chính của app).
-  // Class `auto-hidden` chỉ áp dụng khi thanh đã `stuck` (position:fixed) — lúc chưa ghim thì
-  // không có gì để ẩn.
+  // ⟳ 2026-10-04g (yêu cầu người dùng: “tôi muốn khi vuốt lên thì hiện các tab”):
+  //   TỰ ẨN/HIỆN thanh công cụ QUAY LẠI theo HƯỚNG CUỘN — BỎ hẳn ngưỡng TỐC ĐỘ 800 px/s
+  //   (của 04b–04e):
+  //     · CUỘN LÊN (y giảm)   → LUÔN HIỆN (chậm hay nhanh đều hiện — 04e chỉ hiện khi nhanh)
+  //     · CUỘN XUỐNG (y tăng) → LUÔN ẨN  (giữ nguyên 04e)
+  //     · sát đỉnh (y ≤ headerH+2) → LUÔN hiện (giữ nguyên)
+  //     · KHÔNG cuộn (Δy = 0) → GIỮ NGUYÊN trạng thái cuối ⇒ không nhấp nháy khi dừng tay.
+  //   ⚠️ CHỈ điện thoại (`innerWidth < 640` = media `≤639.98px`); desktop LUÔN hiện (2026-10-03ac).
+  //   ⚠️ Vì sao XOÁ `speed`/`Δt`/`lastScrollAt`: luật 04e (“lên nhanh hiện, lên chậm ẩn”) bị thay
+  //     bằng “lên là hiện” ⇒ không còn chỗ nào dùng tốc độ ⇒ đừng phục hồi (lịch sử: 03y theo HƯỚNG
+  //     → 04b theo TỐC ĐỘ → 04d/04e đảo chiều từng lượt → 04g về đúng 03y, bỏ phân tốc độ).
+  //   ⚠️ BẪY ĐO ĐÃ GẶP (04e): `preview_scroll` có quán tính smooth ⇒ đo bằng listener ghi TỪNG sự
+  //     kiện `scroll` + `window.scrollTo()` không quán tính, đọc sau khi trang đứng yên.
+  //   Class `auto-hidden` chỉ áp dụng khi thanh đã `stuck` (position:fixed) — lúc chưa ghim thì
+  //   không có gì để ẩn.
   let lastScrollY = window.scrollY || window.pageYOffset || 0;
-  let lastScrollAt = performance.now();
   function updateToolbar() {
     const y = window.scrollY || window.pageYOffset || 0;
     const sentinelTop = sentinel.getBoundingClientRect().top;
@@ -8120,18 +8113,13 @@ if (toolbarEl && headerEl) {
         // Gỡ luôn nếu vừa thu nhỏ → mở rộng cửa sổ lúc thanh đang ẩn (resize cũng gọi hàm này).
         toolbarEl.classList.remove('auto-hidden');
       } else {
-        const now = performance.now();
         const dy = y - lastScrollY;
-        // Kẹp `Δt` (xem chú thích “PHẢI KẸP”) — nếu để nguyên, cú flick sau khi đứng yên bị tính sai.
-        const dt = Math.max(1, Math.min(now - lastScrollAt, 100));
-        const speed = Math.abs(dy) / dt * 1000;   // px/giây
-        // ⟳ 2026-10-04e (yêu cầu người dùng): CUỘN XUỐNG → luôn ẩn (bất kể nhanh/chậm)
-        //                          · CUỘN LÊN → CHẬM thì ẩn, NHANH thì hiện.
-        if (y <= headerH + 2)       toolbarEl.classList.remove('auto-hidden'); // sát đỉnh → luôn hiện
-        else if (dy > 0)           toolbarEl.classList.add('auto-hidden');    // cuộn XUỐNG → luôn ẩn
-        else if (dy < 0)           (speed >= 800 ? toolbarEl.classList.remove('auto-hidden') : toolbarEl.classList.add('auto-hidden')); // cuộn LÊN: NHANH hiện, CHẬM ẩn
+        // ⟳ 2026-10-04g: CUỘN LÊN → LUÔN HIỆN · CUỘN XUỐNG → LUÔN ẨN · sát đỉnh → LUÔN hiện
+        //   (bỏ phân tốc độ của 04e — xem chú thích phía trên hàm).
+        if (y <= headerH + 2)  toolbarEl.classList.remove('auto-hidden'); // sát đỉnh → luôn hiện
+        else if (dy > 0)       toolbarEl.classList.add('auto-hidden');    // cuộn XUỐNG → luôn ẩn
+        else if (dy < 0)       toolbarEl.classList.remove('auto-hidden'); // cuộn LÊN → luôn hiện
         // dy === 0 → giữ nguyên (không có gì đổi để phân loại)
-        lastScrollAt = now;
       }
     } else {
       sentinel.style.height = '0';
