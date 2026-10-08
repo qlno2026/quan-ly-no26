@@ -7096,11 +7096,18 @@ function clearSearch() {
 }
 function handleFilter() { currentPage=1; applyFilters(); }
 
-// True when the period label is the current invoice '1-8/2026' (tolerant of spaces/leading zeros).
+/* 🔑 KỲ HOÁ ĐƠN HIỆN TẠI — MỐC DUY NHẤT để phân biệt “Nợ cũ / nhiều kỳ”.
+   Định nghĩa (yêu cầu người dùng 2026-10-08): khách hàng có **≥ 1 hoá đơn ở kỳ KHÁC mốc này**
+   → vào tab “Nợ cũ, nhiều kỳ”. Có hoá đơn ĐÚNG mốc hay không ĐỀU TÍNH (không loại ai);
+   có CẢ HAI (kỳ mốc + kỳ cũ) thì gọi là **“nợ nhiều kỳ”**.
+   ⟳ 2026-10-08: đổi mốc `1-8/2026` → **`1-9/2026`**.
+   ⛔ Sang kỳ sau chỉ sửa ĐÚNG 3 số ở đây rồi đo lại — đừng rải hằng số ra chỗ khác. */
+const CURRENT_INVOICE_PERIOD = { start: 1, end: 9, year: 2026 };
+// True when the period label is the current invoice period (tolerant of spaces/leading zeros).
 function isCurrentPeriodLabel(s) {
   const t = String(s || '').trim().replace(/\s+/g, '');
   const m = t.match(/^0?(\d+)-0?(\d+)\/(\d+)$/);
-  return !!(m && +m[1] === 1 && +m[2] === 8 && +m[3] === 2026);
+  return !!(m && +m[1] === CURRENT_INVOICE_PERIOD.start && +m[2] === CURRENT_INVOICE_PERIOD.end && +m[3] === CURRENT_INVOICE_PERIOD.year);
 }
 
 // Chọn "tháng gần nhất" trong danh sách kỳ (vd '1-7/2026, 1-8/2026' → '1-8/2026').
@@ -7129,7 +7136,7 @@ function pickNearestMonth(listStr) {
   return best;
 }
 
-// Kh có nợ cũ (kỳ khác 1-8/2026) → vào tab "Nợ cũ, nhiều kỳ" và có marker
+// Kh có nợ cũ (kỳ khác `CURRENT_INVOICE_PERIOD`) → vào tab "Nợ cũ, nhiều kỳ" và có marker
 // Marker ghi số hoá đơn của kh: "1_HĐ", "2_HĐ", "3_HĐ"…
 let _oldMultiSet = new Set();
 let _oldKindMap = new Map();
@@ -7159,7 +7166,7 @@ function buildOldFlags() {
     // Số hoá đơn của KH — ghi cho **mọi** KH, TRƯỚC `continue` bên dưới (nếu không thì chỉ
     // khách có nợ cũ mới được đếm ⇒ KH nhiều hoá đơn "bình thường" mất vạch xanh).
     _hdCountMap.set(key, rec.count);
-    // Điều kiện 1: kh có nợ cũ ở các tháng khác ngoài 1-8/2026
+    // Điều kiện 1: kh có nợ cũ ở các kỳ khác ngoài `CURRENT_INVOICE_PERIOD`
     if (!rec.hasOld) continue;
     _oldMultiSet.add(key);
     // Trên card/table ghi số hoá đơn của kh: "1_HĐ", "2_HĐ", "3_HĐ"…
@@ -7177,7 +7184,7 @@ function applyFilters() {
     if (nhom && r.ma_nhom !== nhom) return false;
     if (nvScope && r.nhan_vien !== nvScope) return false;
     if (currentTab === 'oldky') {
-      // Điều kiện 1: kh có nợ cũ ở các kỳ khác ngoài 1-8/2026
+      // Điều kiện 1: kh có nợ cũ ở các kỳ khác ngoài `CURRENT_INVOICE_PERIOD`
       if (!_oldMultiSet.has(r.ma_khach_hang || r.ten_khach_hang)) return false;
     }
     if (currentTab === 'marked') {
