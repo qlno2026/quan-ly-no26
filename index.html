@@ -7877,21 +7877,42 @@ function loadGhiChu() {
   let notes = {};
   try { notes = JSON.parse(localStorage.getItem('qlno_notes') || '{}'); } catch(e) {}
   allData.forEach(r => { if (notes[r.ma_khach_hang] !== undefined) r.ghi_chu = notes[r.ma_khach_hang]; });
-  // Sync by phone: if one customer with same phone has ghi chú, apply to all
+  /* Sync by phone: if one customer with same phone has ghi chú, apply to all.
+     ⚡ 2026-10-10 (TỐC ĐỘ NẠP TỆP): bản cũ quét `allData.find(...)` cho TỪNG dòng ⇒ **O(n²)**.
+     Đo trên tệp thật 18.797 dòng: 18.404 dòng có SĐT × quét gần hết mảng = ~**346 TRIỆU** vòng
+     lặp ⇒ **treo main thread hơn 10 giây** ngay khi nạp tệp (nặng nhất khi tệp CHƯA có ghi chú
+     nào: mọi lần quét đều chạy tới cuối mà không thấy gì).
+     Nay dựng TRƯỚC chỉ mục `phone → các CHỈ SỐ (tăng dần)` rồi chỉ duyệt các dòng CÙNG số điện
+     thoại ⇒ **O(n)**. Vẫn trả về dòng ĐẦU TIÊN theo chỉ số như `find` (danh sách giữ đúng thứ
+     tự và `x.ghi_chu` vẫn đọc LIVE) nên kết quả KHÔNG đổi, kể cả hiệu ứng dây chuyền (dòng vừa
+     được gán ghi chú ở lượt trước lại thành nguồn cho dòng sau). */
+  const byPhone = new Map();
+  allData.forEach((x, i) => {
+    const p = x.dien_thoai ? x.dien_thoai.trim() : '';
+    if (!p) return;
+    const list = byPhone.get(p);
+    if (list) list.push(i); else byPhone.set(p, [i]);
+  });
   allData.forEach(r => {
-    if (!r.ghi_chu && r.dien_thoai) {
-      const phone = r.dien_thoai.trim();
-      if (phone) {
-        const match = allData.find(x => x.dien_thoai && x.dien_thoai.trim() === phone && x.ghi_chu && x.ma_khach_hang !== r.ma_khach_hang);
-        if (match) { r.ghi_chu = match.ghi_chu; }
-      }
+    if (r.ghi_chu || !r.dien_thoai) return;
+    const phone = r.dien_thoai.trim();
+    if (!phone) return;
+    const list = byPhone.get(phone);
+    if (!list) return;
+    for (const j of list) {
+      const x = allData[j];
+      if (x.ghi_chu && x.ma_khach_hang !== r.ma_khach_hang) { r.ghi_chu = x.ghi_chu; break; }
     }
   });
-  // Sync desktop table inputs with loaded data
-  allData.forEach(r => {
-    document.querySelectorAll(`.kh-ghichu-input[data-ma="${CSS.escape(r.ma_khach_hang)}"]`).forEach(el => { el.value = r.ghi_chu || ''; });
-    document.querySelectorAll(`.ghi-chu-table[data-ma="${CSS.escape(r.ma_khach_hang)}"]`).forEach(el => { el.value = r.ghi_chu || ''; });
-    document.querySelectorAll(`.ghi-chu-input[data-ma="${CSS.escape(r.ma_khach_hang)}"]`).forEach(el => { el.value = r.ghi_chu || ''; });
+  /* Sync ô ghi chú đang có trên DOM với dữ liệu vừa nạp.
+     ⚡ 2026-10-10 (TỐC ĐỘ NẠP TỆP): bản cũ gọi `querySelectorAll` **3 lần cho MỖI dòng**
+     (3 × 18.797 ≈ 56.000 truy vấn DOM) trong khi cả trang chỉ có ~100 ô ⇒ quét DOM **MỘT LẦN**
+     rồi tra theo `data-ma`. Vẫn chỉ đụng các ô có mã KH tồn tại trong dữ liệu (như bản cũ). */
+  const noteByMa = new Map();
+  allData.forEach(r => { noteByMa.set(r.ma_khach_hang, r.ghi_chu || ''); });
+  document.querySelectorAll('.kh-ghichu-input, .ghi-chu-table, .ghi-chu-input').forEach(el => {
+    const ma = el.getAttribute('data-ma');
+    if (noteByMa.has(ma)) el.value = noteByMa.get(ma);
   });
 }
 
