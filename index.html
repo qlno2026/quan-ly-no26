@@ -6071,6 +6071,8 @@ async function restoreData() {
   fitAllFilterLabels();
   if (!summaryData.length) computeSummaryFromDetail();
   else renderSummary();
+  // Khôi phục “chỗ đang xem” đã lưu (tab, nhóm, tìm kiếm, sắp xếp, số trang, vị trí cuộn).
+  restoreUiState();
 }
 
 const nhomColors = {
@@ -6294,6 +6296,7 @@ function processFile(file) {
       // `initFilters()` vừa chạy lúc `dataView` còn `display:none` nên `fitAllFilterLabels()`
       // không đo được (xem chú thích trong hàm) — đo lại NGAY sau khi view hiện ra.
       fitAllFilterLabels();
+      saveUiState();   // nạp tệp mới ⇒ ghi lại “chỗ đang xem” đã reset (đừng khôi phục trạng thái cũ)
     } catch(err) {
       alert('Lỗi: ' + err.message);
       document.getElementById('loadingState').style.display = 'none';
@@ -6328,6 +6331,7 @@ function switchTab(tab) {
   // (Ẩn vẫn giữ `'none'`: tab Tổng hợp không có cột KH.)
   document.getElementById('countKH').parentElement.style.display = (showDetail || showOld) ? '' : 'none';
   currentPage = 1; applyFilters();
+  saveUiState();   // lưu “chỗ đang xem” (2026-10-12) để mở lại không mất tab
 }
 
 
@@ -7088,13 +7092,14 @@ function handleSearch() {
   document.querySelector('.stats-row').classList.toggle('collapsed', searching);
   document.getElementById('nvScope').classList.toggle('collapsed', searching);
   document.getElementById('searchClear').style.display = document.getElementById('searchInput').value ? 'flex' : 'none';
+  saveUiState();
 }
 function clearSearch() {
   document.getElementById('searchInput').value = '';
   handleSearch();
   document.getElementById('searchInput').focus();
 }
-function handleFilter() { currentPage=1; applyFilters(); }
+function handleFilter() { currentPage=1; applyFilters(); saveUiState(); }
 
 /* 🔑 KỲ HOÁ ĐƠN HIỆN TẠI — MỐC DUY NHẤT để phân biệt “Nợ cũ / nhiều kỳ”.
    Định nghĩa (yêu cầu người dùng 2026-10-08): khách hàng có **≥ 1 hoá đơn ở kỳ KHÁC mốc này**
@@ -7303,6 +7308,7 @@ function sortBy(col) {
   });
   updateSortButtons();
   currentPage=1; applyFilters();
+  saveUiState();
 }
 
 // Sync the two quick sort buttons with the current sort state
@@ -7615,6 +7621,7 @@ function goPage(p) {
   renderCards(q); renderTable(q); renderPagination();
   restoreHighlights();
   window.scrollTo({top:0, behavior:'smooth'});
+  saveUiState();
 }
 
 // Mark handlers with persistence (by customer code)
@@ -8082,6 +8089,68 @@ function initColumnResizers() {
 }
 
 initColumnResizers();
+
+/* ── GIỮ ĐÚNG “CHỖ ĐANG XEM” KHI QUAY LẠI (2026-10-12) ──────────────────────────
+   Yêu cầu người dùng: “không load lại dữ liệu khi thoát ra khi xem trên mobile”.
+   ⚠️ Trên điện thoại KHÔNG thể ngăn trình duyệt nạp lại trang (khi tab bị thu hồi bộ nhớ) —
+   cách duy nhất là LƯU + KHÔI PHỤC đúng trạng thái xem để quay lại thấy Y NHƯ LÚC RỜI ĐI:
+   tab/ô lọc (`loai`), nhóm (`nhom`), phạm vi nhân viên (`nv`), ô tìm kiếm (`q`),
+   sắp xếp (`sortCol`/`sortDir`), số trang (`page`) và vị trí cuộn (`scroll`).
+   ℹ️ `currentTab` SUY RA từ `#filterLoai` — mọi thay đổi tab đều đi qua `selectLoai()` ⇒
+   `switchTab()` ⇒ chỉ cần lưu `loai` là dựng lại được cả TAB lẫn BỘ LỌC (không lưu `tab` riêng).
+   ⛔ ĐỪNG thêm `display:none` cho biến này hay đổi khoá: đổi khoá = mất trạng thái người dùng. */
+const UI_KEY = 'qlno_ui_v1';
+let _uiRestoring = false;      // đang khôi phục ⇒ KHÔNG ghi đè bản lưu (tránh ghi đè bằng giá trị rỗng)
+let _scrollSaveTmr = null;
+function saveUiState() {
+  if (_uiRestoring) return;
+  try {
+    localStorage.setItem(UI_KEY, JSON.stringify({
+      loai: document.getElementById('filterLoai').value,
+      nhom: document.getElementById('filterNhom').value,
+      nv: nvScope,
+      q: document.getElementById('searchInput').value,
+      sortCol: sortCol, sortDir: sortDir,
+      page: currentPage,
+      scroll: Math.round(window.scrollY || window.pageYOffset || 0)
+    }));
+  } catch (e) {}
+}
+function restoreUiState() {
+  let st = null;
+  try { st = JSON.parse(localStorage.getItem(UI_KEY) || 'null'); } catch (e) { st = null; }
+  if (!st || typeof st !== 'object') return;
+  _uiRestoring = true;   // chặn mọi hàm bên dưới (đều gọi saveUiState) ghi đè bản lưu trong lúc khôi phục
+  try {
+    if (typeof st.q === 'string' && st.q) {
+      document.getElementById('searchInput').value = st.q;
+      document.getElementById('searchClear').style.display = 'flex';
+      document.querySelector('.stats-row').classList.add('collapsed');
+    }
+    if (typeof st.nhom === 'string' && st.nhom) selectNhom(st.nhom);   // áp nhãn + màu + lọc luôn
+    if (typeof st.nv === 'string' && st.nv) nvScope = st.nv;           // SAU `selectNhom` (nó xoá `nvScope`)
+    if (st.sortCol) {
+      sortCol = st.sortCol; sortDir = (st.sortDir === 1 ? 1 : -1);
+      updateSortButtons();
+      document.querySelectorAll('.sa').forEach(el => {
+        const c = el.dataset.col;
+        el.textContent = c === sortCol ? (sortDir === 1 ? '↑' : '↓') : '↕';
+        el.closest('th').classList.toggle('sorted', c === sortCol);
+      });
+    }
+    if (typeof st.loai === 'string' && st.loai) selectLoai(st.loai);   // dựng lại ĐÚNG tab + nhãn
+    if (st.page > 0) currentPage = st.page;
+    applyFilters();   // một lượt vẽ DUY NHẤT phản ánh toàn bộ trạng thái vừa khôi phục
+  } finally {
+    _uiRestoring = false;
+  }
+  const y = Math.max(0, st.scroll | 0);
+  if (y) requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo({ top: y, behavior: 'auto' })));
+}
+// Lưu vị trí cuộn (gộp nhịp) + lưu NGAY khi trang bị ẩn/đóng — đúng lúc trình duyệt sắp thu hồi tab.
+window.addEventListener('scroll', () => { clearTimeout(_scrollSaveTmr); _scrollSaveTmr = setTimeout(saveUiState, 250); }, { passive: true });
+window.addEventListener('pagehide', saveUiState);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveUiState(); });
 
 // Restore persisted data if available
 restoreData();
