@@ -3337,7 +3337,7 @@ body.light-mode .kh-ghichu-input::placeholder { color: #64748b; opacity: 1; }
 /* `min-width` phải co được theo cột: ở panel CSS 320px cột giá trị của hàng chỉ còn ~183px,
    để `min-width: 200px` cứng thì ô ghi chú trong modal **thò ra 17px** khỏi hàng.
    `min(200px, 100%)` giữ nguyên 200px ở mọi bề rộng đủ chỗ, chỉ co lại khi cột hẹp hơn. */
-.ghi-chu-input { background: rgba(71,85,105,0.35); border: 1.5px solid #3b82f6; border-radius: 6px; padding: 8px 12px; color: #ffffff; font-size: 20px; font-weight: 400; font-family: 'Inter', sans-serif; width: 100%; min-width: min(200px, 100%); outline: none; resize: vertical; }
+.ghi-chu-input { background: rgba(71,85,105,0.35); border: 1.5px solid #3b82f6; border-radius: 6px; padding: 6px 10px; color: #ffffff; font-size: 17px; font-weight: 400; font-family: 'Inter', sans-serif; width: 100%; min-width: min(200px, 100%); outline: none; resize: vertical; }
 .ghi-chu-input::placeholder { color: #94a3b8; opacity: 1; }
 .ghi-chu-input:not(:placeholder-shown) { color: #ffffff; }
 body.light-mode .ghi-chu-input { color: #1f2937; background: #f1f5f9; border: 1.5px solid #3b82f6; }
@@ -3856,7 +3856,13 @@ function changeBackgroundColor(newColor) {
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 560px;
-  max-height: 85vh;
+  /* ⟳ 2026-10-13k: `85vh` → **`94vh`** (yêu cầu: “cho bảng này cao hơn”). Trần này là thứ CHẶN
+     chiều cao tấm “Chi tiết”: khi nới đệm hàng `.info-row` (12 hàng ⇒ +96px), RUỘT đã cao hơn
+     85vh nên tấm bị cắt ngay tại trần và phải cuộn — nới đệm một mình là vô ích.
+     ⚠️ Tấm thanh toán KHÔNG bị ảnh hưởng: `.modal.pay-modal` có trần riêng (96vh/92vh) và độ ưu
+     tiên cao hơn (0,2,0) so với `.modal` (0,1,0). Đây là hai tấm DUY NHẤT dùng `.modal`.
+     ⛔ ĐỪNG hạ lại mà không đo: chọn 94vh để ruột (586px ở vh 636) VỪA khít, không phải cuộn. */
+  max-height: 94vh;
   overflow-y: auto;
   animation: slideUp 0.28s cubic-bezier(0.34,1.56,0.64,1);
   -webkit-overflow-scrolling: touch;
@@ -3865,7 +3871,7 @@ function changeBackgroundColor(newColor) {
 /* desktop: center modal */
 @media (min-width: 640px) {
   .modal-overlay { align-items: center; padding: 24px; }
-  .modal { border-radius: 16px; max-height: 80vh; }
+  .modal { border-radius: 16px; max-height: 88vh; }   /* ⟳ 2026-10-13k: `80vh` → `88vh` cùng lượt với trần mobile — xem chú thích ở rule `.modal` */
 }
 
 @keyframes slideUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -3899,25 +3905,45 @@ function changeBackgroundColor(newColor) {
   margin-left: 8px;
 }
 
-.modal-body { padding: 4px 12px 16px; }
+.modal-body { padding: 6px 12px 18px; }   /* ⟳ 2026-10-13k: “cho bảng này cao hơn” — nới cả đệm thân tấm */
 
 .info-row {
   display: flex;
   gap: 12px;
-  padding: 2px 0;
+  /* ⟳ 2026-10-13i: `2px` → **`4px`**. Yêu cầu người dùng: “font chữ mỏng hơn và nhỏ hơn nhìn cho
+     thoáng” ⇒ chữ NHỎ đi nhưng hàng KHÔNG được chật theo: nới đệm dọc để hàng một dòng vẫn cao
+     ~31px như cũ (đo: 30px trước) trong khi chữ từ 20px xuống 17px. Nếu giữ `2px` thì tấm chỉ
+     thấp đi và trở nên ĐẶC hơn — ngược hẳn ý “cho thoáng”.
+     ⟳ 2026-10-13k: `4px` → **`8px`** (yêu cầu: “cho bảng này cao hơn”).
+     ⛔ ĐÂY LÀ CÁCH ĐÚNG ĐỂ LÀM TẤM CAO LÊN — nới ĐỆM, ⛔ KHÔNG nâng `min-height`:
+     tấm này LÚC NÀO CŨNG có đủ 12 hàng (xem `showDetailRow`), nên `min-height` lớn hơn chiều cao
+     thật của ruột chỉ đẻ ra một **khoảng trắng ở đáy tấm** — đúng lỗi người dùng đã phàn nàn ở
+     tấm thanh toán (“khoảng cách này xa quá”, xem bài học ở block `.modal.pay-modal`).
+     Đo lại phải theo KHÁCH CÓ ĐỊA CHỈ DÀI (tên/địa chỉ xuống dòng) mới thấy hết mức tăng. */
+  padding: 8px 0;
   border-bottom: 1px solid var(--border);
   align-items: flex-start;
 }
 .info-row:last-child { border-bottom: none; }
-/* Cỡ chữ bảng trong modal: nhãn 18px, giá trị 19px, tên KH 22px.
+/* Cỡ chữ bảng trong modal: nhãn 16px/300, giá trị 17px, tên KH 19px.
+   ⟳ 2026-10-13i (yêu cầu: “font chữ mỏng hơn và nhỏ hơn nhìn cho thoáng”): hạ đúng **3 nấc** so
+   với bản trước — giá trị `20px` → **`17px`**, nhãn `19px/400` → **`16px/300`** (Inter Light đã
+   nạp sẵn ở `@import`), tên KH `23px/600` → **`19px/400`**, mã KH `22px` → **`18px`**, tiền nợ
+   `20px` → **`18px`** (tiền vẫn nhình hơn giá trị thường 1 nấc để không mất thứ tự).
+   ⚠️ SỬA CỠ TRONG MODAL THÌ PHẢI SỬA Ở **3 CHỖ**, lệch một chỗ là mobile/desktop khác cỡ:
+     1. khối nền này (ngoài `@media`), 2. `@media (min-width: 640px)` ngay dưới block `.cell-*`,
+     3. `.ghi-chu-input` (ô “Chú ý”) · `.call-link` (viên SĐT) — hai thứ này TỰ khai cỡ riêng,
+        không theo `.info-value`.
+   ⛔ KHÔNG đụng cỡ chữ của thẻ (`--fs-card*`) hay bảng: modal có palet RIÊNG, và bộ điều khiển
+   “Aa” 5 mức **KHÔNG** chi phối modal (xem chú thích ở khối `.kh-card`).
    ⚠️ Màu/cỡ riêng của từng hàng nay khai theo **LỚP `i-*`** (`i-tenkh`, `i-tien`, `i-stt`…),
    KHÔNG còn theo `:nth-child(N)`. Lý do: `showDetailRow()` dựng 12 hàng từ MỘT MẢNG và thứ tự
    hàng đã bị đổi (yêu cầu người dùng: “tên kh dời lên đầu, stt dời xuống cuối”). Đổi thứ tự
    trong mảng nay **không làm lệch màu/cỡ của hàng nào**; trước đây phải soi lại 9 rule ở theme
    sáng + 14 rule ở theme tối, sai một con số là một hàng khác lặng lẽ đổi màu.
    → Thêm/đổi/bỏ hàng trong `showDetailRow`: chỉ cần giữ ĐÚNG tên lớp `i-*` khai ở đây. */
-.info-label { font-size: 19px; font-weight: 400; font-family: 'Inter', sans-serif; letter-spacing: 0.03em; color: #b0bdd0; min-width: 100px; margin-top: 2px; flex-shrink: 0; }
-.info-value { font-size: 20px; color: var(--text); font-family: 'Inter', sans-serif; flex: 1; min-width: 0; word-break: break-word; font-weight: 400; }
+.info-label { font-size: 16px; font-weight: 300; font-family: 'Inter', sans-serif; letter-spacing: 0.03em; color: #b0bdd0; min-width: 100px; margin-top: 2px; flex-shrink: 0; }
+.info-value { font-size: 17px; line-height: 1.35; color: var(--text); font-family: 'Inter', sans-serif; flex: 1; min-width: 0; word-break: break-word; font-weight: 400; }
 /* ⚠️ `min-width: 0` là BẮT BUỘC, đừng gỡ: mặc định của flex item là `min-width: auto` ⇒ cột
    giá trị không co được dưới **min-content của nó**, nên hàng “Tiền nợ” của KH nhiều kỳ
    (đáy là các dòng phụ, xem `showDetailRow()`) **đẩy cả hàng rộng ra** và số tiền tháng
@@ -3933,26 +3959,26 @@ function changeBackgroundColor(newColor) {
    Trước là 19px — đúng bằng các hàng khác, nhưng là **mã định danh** nên cần đọc được ở cỡ
    điện thoại; 21px nằm dưới Tên KH (22px/600) một bậc nên thứ tự vẫn rõ. Đo: `PB15020051477`
    144.26px (19px) → **159.30px** (21px); cột giá trị ở panel 320px là ~184px ⇒ còn thừa chỗ. */
-.i-makh .info-value, .i-makh .ma-kh { color: #c8d0dc; font-weight: 400; font-size: 22px; }
+.i-makh .info-value, .i-makh .ma-kh { color: #c8d0dc; font-weight: 400; font-size: 18px; }
 /* Tên KH */
-.i-tenkh .info-value { font-size: 23px; font-weight: 600; color: #60a5fa; letter-spacing: 0.02em; }
+.i-tenkh .info-value { font-size: 19px; font-weight: 400; color: #60a5fa; letter-spacing: 0.02em; }
 /* Tháng */
-.i-thang .info-value { font-size: 20px; font-weight: 400; }
-.i-thang .info-value .badge { font-size: 20px; font-weight: 400; }
+.i-thang .info-value { font-size: 17px; font-weight: 400; }
+.i-thang .info-value .badge { font-size: 17px; font-weight: 400; }
 /* Tiền Nợ */
-.i-tien .info-value { color: #ffffff; font-weight: 400; font-size: 20px; }
+.i-tien .info-value { color: #ffffff; font-weight: 400; font-size: 18px; }
 .i-tien .info-value .tien-no.low { color: #86efac; }
 .i-tien .info-value .tien-no.high { color: #ff8888; }
 .i-tien .info-value .tien-no { font-weight: 400; }
 /* Tiền nợ trong modal: rule nền toàn cục là 15px, phải nâng theo cỡ giá trị của modal */
-.modal .info-row .tien-no { font-size: 20px; font-weight: 400; }
+.modal .info-row .tien-no { font-size: 18px; font-weight: 400; }
 /* Mã Số GCS · Danh Số · Số TBI · Chú ý */
-.i-sogcs .info-value { font-size: 20px; font-weight: 400; }
-.i-danhso .info-value { font-size: 20px; font-weight: 400; color: #c8d0dc; }
-.i-tbi .info-value { color: #c8d0dc; font-weight: 400; font-size: 20px; }
-.i-chuy .info-value { font-size: 20px; font-weight: 400; }
+.i-sogcs .info-value { font-size: 17px; font-weight: 400; }
+.i-danhso .info-value { font-size: 17px; font-weight: 400; color: #c8d0dc; }
+.i-tbi .info-value { color: #c8d0dc; font-weight: 400; font-size: 17px; }
+.i-chuy .info-value { font-size: 17px; font-weight: 400; }
 /* Badges inside the modal (Tháng, per-month sub-rows) */
-.modal .info-row .badge { font-size: 20px; font-weight: 400; }
+.modal .info-row .badge { font-size: 17px; font-weight: 400; }
 
 /* Phone call link */
 .call-link {
@@ -3960,9 +3986,9 @@ function changeBackgroundColor(newColor) {
   background: rgba(16,185,129,0.12);
   color: var(--green);
   text-decoration: none;
-  padding: 6px 12px;
+  padding: 4px 10px;
   border-radius: 8px;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 400;
   font-family: 'Inter', sans-serif;
   margin-top: 1px;
@@ -3982,6 +4008,8 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
    — màu lấy NGUYÊN từ ảnh người dùng gửi (xem chú thích ở rule). Người dùng đã CHỐT chữ
    trắng qua hỏi đáp và biết rõ tương phản rất thấp. Ghi lại để lần sau đo thấy số thấp thì
    biết là CỐ Ý, ⛔ đừng “sửa” ngược lên nâu đậm.
+   ⛔ Viên KHÔNG có `text-shadow` (yêu cầu 2026-10-13m: “cho nền cạnh bằng sau chữ điện”) —
+   bóng đổ từng làm nền quanh chữ loang thành vệt nâu; xem chú thích dài ở chính rule đó.
    ⚠️ NỀN TẤM ở theme sáng là **TRẮNG `#ffffff`** (yêu cầu: “ở bảng này light mode cho nền
    trắng”) — ⛔ KHÔNG dùng `#f0f1f4` như tấm “Chi tiết”; kéo theo `.pay-foot` cũng phải
    trắng, nếu không sẽ hở một dải xám ở đáy tấm. */
@@ -4018,12 +4046,36 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
 .pay-hd { padding: 16px 16px 8px; font-size: 18px; font-weight: 700; color: var(--text); font-family: 'Inter', sans-serif; }
 .pay-row { display: flex; align-items: center; gap: 10px; padding: 15px 16px; }
 .pay-row-txt { font-size: 15px; color: var(--text-dim); }
-.pay-cb { width: 20px; height: 20px; accent-color: #2563eb; flex: 0 0 auto; cursor: pointer; margin: 0; }
+/* ⛔ Ô TÍCH TRONG TẤM NÀY **CHỈ ĐỂ HIỂN THỊ** — ⟳ 2026-10-13h (yêu cầu: “dấu tick chọn chỉ là ảnh
+   hiển thị”, người dùng chốt qua hỏi đáp: không bấm được).
+   ⚠️ VÌ SAO BỎ HẲN `<input type="checkbox">` chứ không chỉ thêm `disabled`/bỏ `onchange`:
+   (1) `<input>` KHÔNG có `onchange` vẫn **tự đổi dấu khi bấm** và vẫn **tab vào + Space** được ⇒
+   vẫn là ô tích thật, không phải “ảnh hiển thị”;
+   (2) `disabled` thì trình duyệt tự **rửa màu** (xám nhạt) ⇒ lệch ảnh, và ở nền trắng còn khó thấy;
+   (3) `<span>` không nhận bấm/focus ⇒ đúng nghĩa hình trang trí, khỏi phải chặn sự kiện bằng JS.
+   ⚠️ `accent-color` đã BỎ cùng lúc — nó chỉ có tác dụng với `<input>`.
+   Hình vẽ ra phải giống ảnh: 20×20, bo `4px`; CHƯA tích = nền trắng + viền xám; ĐÃ tích = nền
+   xanh `#2563eb` + dấu tick TRẮNG. Nền tấm LUÔN trắng (rule ngay dưới) nên hai màu này không
+   phụ thuộc theme. ĐO: tick trắng trên `#2563eb` = **5,17:1** ✓ (>3:1 cho đồ hoạ).
+   ⚠️ Viền ô CHƯA tích là `#64748b` (**4,76:1** trên nền trắng ✓) chứ không dùng xám nhạt như ảnh
+   (`#94a3b8` chỉ **2,56:1** ⇒ dưới ngưỡng 3:1 của WCAG 1.4.11 cho biên control). Muốn giống ảnh
+   tuyệt đối thì đổi một chỗ này thành `#94a3b8`, biết là dưới chuẩn. */
+.pay-cb { width: 20px; height: 20px; flex: 0 0 auto; box-sizing: border-box; border: 1.5px solid #64748b; border-radius: 4px; background: #ffffff; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; }
+.pay-cb.on { background: #2563eb; border-color: #2563eb; }
+.pay-cb svg { display: block; }
 /* Ô “Mã khách hàng”: viền + chữ xanh của ảnh (đậm ở theme sáng, sáng ở theme tối — cùng cặp
    màu app đang dùng cho `.i-tenkh .info-value`). ⛔ Bề rộng KHÔNG phụ thuộc theme: viền
    `1.5px` + `padding` giống nhau ở hai theme nên đổi theme không xê dịch gì. */
-.pay-code { margin: 4px 16px; padding: 11px 12px; border: 1.5px solid #60a5fa; border-radius: 9px; display: flex; align-items: center; gap: 8px; }
-body.light-mode .pay-code { border-color: #2563eb; }
+/* ⟳ 2026-10-13l: đệm dọc `11px` → **`6px`** (yêu cầu: “cho chiều cao thấp lại”, ảnh người dùng
+   cắt đúng ô này) — ô cao **67px → 52px**. `11px` là số của lượt “nới ruột” 2026-10-13b (cả tấm
+   được nới ~30% để chữa “khoảng cách này xa quá”); riêng ô này nới ra thì thừa vì bên trong nó
+   chỉ có 2 DÒNG CHỮ (nhãn 12px + giá trị 16px ≈ 37px) ⇒ đệm 22px làm ô trông rỗng.
+   ⛔ ĐỪNG nới lại nếu chưa xem tấm: đệm ở ĐÂY không giống đệm của các hàng khác (`.pay-row` 15px,
+   `.pay-inv` 18px) — ô này là một khối viền nên đệm dọc tính gấp đôi bằng mắt. */
+.pay-code { margin: 4px 16px; padding: 6px 12px; border: 1.5px solid #60a5fa; border-radius: 9px; display: flex; align-items: center; gap: 8px; }
+/* ⟳ 2026-10-13h: tấm này LUÔN TRẮNG ở cả hai theme ⇒ viền/màu xanh phải LUÔN là tông ĐẬM của
+   bản sáng (`#2563eb`), không được để `#60a5fa` “ăn” ở theme tối (trên nền trắng chỉ ~2,4:1). */
+.pay-code { border-color: #2563eb; }
 .pay-code-main { flex: 1; min-width: 0; }
 .pay-code-lb { font-size: 12px; color: var(--text-dim); line-height: 1.3; }
 .pay-code-lb b { color: #dc2626; font-weight: 700; }
@@ -4032,15 +4084,15 @@ body.light-mode .pay-code { border-color: #2563eb; }
    một dữ liệu. Muốn mỏng hơn nữa thì đổi số thành `300` — Inter 300 (“Light”) ĐÃ được nạp
    ở `@import` đầu file nên không phải thêm gì. */
 .pay-code-val { font-size: 16px; font-weight: 400; color: var(--text); letter-spacing: 0.01em; word-break: break-all; }
-.pay-qr { width: 42px; height: 42px; border: 1.5px solid #60a5fa; border-radius: 9px; background: transparent; color: #60a5fa; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; }
-body.light-mode .pay-qr { border-color: #2563eb; color: #2563eb; }
+.pay-qr { width: 38px; height: 38px; border: 1.5px solid #60a5fa; border-radius: 9px; background: transparent; color: #60a5fa; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; }   /* ⟳ 2026-10-13l: `42px` → `38px` cùng lượt với đệm ô mã KH — nút phải thấp hơn đệm mới ăn */
+.pay-qr { border-color: #2563eb; color: #2563eb; }   /* ⟳ 2026-10-13h: luôn tông đậm — nền tấm luôn trắng */
 /* Tên khách hàng: chữ xanh như ảnh NHƯNG có việc thật — chạm là mở tấm “Chi tiết” (xem
    `payOpenDetail()`) ⇒ không phải liên kết chết. */
 /* “Nét tên KH mỏng hơn” (yêu cầu người dùng): `600` → **`400`** — nay tên khách cùng nét với
    mã khách hàng ở ô trên nên hai dòng không còn “nặng nhẹ” lệch nhau. Vẫn giữ màu xanh để
    thấy là chạm được. Muốn mỏng hơn nữa thì đổi thành `300` (Inter 300 đã nạp sẵn). */
 .pay-name { display: inline-block; align-self: flex-start; margin: 15px 16px 0; font-size: 16px; font-weight: 400; color: #60a5fa; cursor: pointer; font-family: 'Inter', sans-serif; }
-body.light-mode .pay-name { color: #2563eb; }
+.pay-name { color: #2563eb; }   /* ⟳ 2026-10-13h: luôn tông đậm (nền tấm luôn trắng) */
 .pay-addr { display: flex; gap: 7px; padding: 13px 16px 0; font-size: 15px; color: var(--text); line-height: 1.4; }
 .pay-addr svg { flex: 0 0 auto; margin-top: 2px; color: #dc2626; }
 .pay-count { padding: 18px 16px 4px; font-size: 16px; font-weight: 600; color: var(--text); }
@@ -4052,15 +4104,58 @@ body.light-mode .pay-name { color: #2563eb; }
    ảnh”). Đo pixel ảnh đó (`System.Drawing`, dòng y giữa viên): viên **R=232 G=168 B=34 =
    `#e8a822`** (cam vàng), **chấm TRẮNG** `#fefeff`, đệm trái ≈ 1,3× đường kính chấm.
    ⚠️ ĐO LẠI TƯƠNG PHẢN: trắng trên `#e8a822` = **2,09:1** — đỡ hơn nền vàng sáng cũ
-   (`#facc15` chỉ 1,53:1) nhưng VẪN dưới chuẩn 4,5 cho chữ 13–14px. `text-shadow` bên dưới chỉ
-   giúp **đọc được**; đây vẫn là lựa chọn của người dùng (họ đã chốt “giữ chữ trắng”),
+   (`#facc15` chỉ 1,53:1) nhưng VẪN dưới chuẩn 4,5 cho chữ 13–14px. ⚠️ LÚC ĐÓ tôi có thêm một
+   `text-shadow` nâu để chữ “đọc được” — **ĐÃ BỎ ở 2026-10-13m** (nó làm nền quanh chữ loang
+   vệt nâu); nay nền PHẲNG. Đây vẫn là lựa chọn của người dùng (họ đã chốt “giữ chữ trắng”),
    ⛔ đừng “sửa” ngược lên nền nâu đậm. Muốn đạt chuẩn trở lại: đổi `color` thành `#78350f`.
    Chấm nay là **TRẮNG** đúng như ảnh (trước là hổ phách đậm). */
-.pay-badge { display: inline-flex; align-items: center; gap: 6px; background: #e8a822; color: #ffffff; font-size: 14px; font-weight: 600; padding: 4px 10px; border-radius: 999px; white-space: nowrap; text-shadow: 0 1px 2px rgba(120,53,15,0.6); }
-.pay-badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #ffffff; flex: 0 0 auto; }
+/* ⟳ 2026-10-13m: **BỎ `text-shadow`** (yêu cầu: “cho nền cạnh bằng sau chữ điện” = làm nền quanh
+   chữ phẳng đều).
+   ĐO TỪ ẢNH — ĐÂY LÀ BẰNG CHỨNG QUYẾT ĐỊNH: ảnh GỐC người dùng gửi (143×42) — ngay DƯỚI chữ,
+   màu viền là **`232,168,34` thuần** (không hề tối đi); ảnh cắt từ app của ta (199×68) — cùng vị
+   trí đó là **`203,138,29` / `210,145,30`**, tức bóng đổ `rgba(120,53,15,0.6)` loang ra thành một
+   **vệt nâu** quanh chữ.
+   ⚠️ BÓNG NÀY TÔI TỰ THÊM ở 2026-10-13g để “còn đọc được” chữ trắng trên nền vàng — nay ⛔ **ĐỪNG
+   THÊM LẠI**: nó KHÔNG cải thiện được tỉ lệ tương phản (trắng/`#e8a822` vẫn đúng **2,09:1**,
+   dưới ngưỡng 4,5:1 — xem `body.light-mode` / khối token) mà chỉ làm **nền không còn phẳng**,
+   đúng thứ người dùng vừa yêu cầu bỏ. Muốn chữ trắng đọc rõ thật thì phải đổi màu chữ
+   (`#78350f` = nâu trên vàng ≈ 5:1), đừng quay lại bóng đổ. */
+/* ⟳ 2026-10-13o: **KÍCH THƯỚC VIÊN THEO ĐÚNG TỈ LỆ ẢNH** (yêu cầu: “cho nền kích thước giống như ảnh”).
+   Đo ảnh gốc người dùng gửi (143×42) bằng `.freebuff/pill-size.ps1`: viên **125×30**, chấm **9**,
+   lề trái **12**, khe chấm↔chữ **9**, lề phải **12**, bề rộng chữ **84** ⇒ các TỈ LỆ (không phụ
+   thuộc ảnh bị thu/phóng) là: chấm/cao **0,30** · lềTrái/cao **0,40** · khe/cao **0,30** ·
+   lềPhải/cao **0,40** · rộngChữ/cao **2,80**.
+   VIÊN CỦA TA TRƯỚC KHI SỬA: **117×25**, chấm 8, khe 6, lề 10 ⇒ chấm/cao 0,32 · lềTrái/cao 0,40 ·
+   khe/cao **0,24** · rộngChữ/cao **3,32** ⇒ ⭐ CHỖ LỆCH THẬT LÀ **CHIỀU CAO**: viên ta thấp/dẹt hơn
+   hẳn (cùng cỡ chữ 14px như ảnh — ảnh rộng chữ 84, ta 83 — nhưng ảnh cao 30, ta 25).
+   SỬA ĐỂ KHỚP CẢ 5 TỈ LỆ (lấy cao viên = rộngChữ/2,80 = 83/2,80 ≈ **30px** rồi suy ra):
+   đệm `4px 10px` → **`6.5px 12px`** (cao = 2×6,5 + dòng chữ 17 = **30**) · `gap` `6px` → **`9px`** ·
+   chấm `8px` → **`9px`** ⇒ viên **125×30**, khớp ảnh. Cỡ chữ GIỮ NGUYÊN 14px (ảnh cũng ~14px).
+   ⛔ Nếu sau này thấy viên to quá thì hạ ĐỒNG THỜI `font-size` theo, đừng chỉ hạ đệm — hạ đệm
+   mà giữ chữ là quay lại đúng cái dẹt vừa chữa. */
+.pay-badge { display: inline-flex; align-items: center; gap: 9px; background: #e8a822; color: #ffffff; font-size: 14px; font-weight: 600; padding: 6.5px 12px; border-radius: 999px; white-space: nowrap; }
+.pay-badge::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: #ffffff; flex: 0 0 auto; }
 .pay-notice { margin-left: auto; font-size: 15px; color: #60a5fa; white-space: nowrap; }
-body.light-mode .pay-notice { color: #2563eb; }
-.pay-inv-amt { text-align: right; font-size: 16px; font-weight: 700; color: var(--text); padding: 12px 16px 16px; border-bottom: 1px solid var(--border); }
+.pay-notice { color: #2563eb; }   /* ⟳ 2026-10-13h: luôn tông đậm (nền tấm luôn trắng) */
+/* ⟳ 2026-10-13p: **HAI HÀNG SỐ TIỀN CANH THẲNG NHAU + SỐ TRÊN MÀU ĐEN** (yêu cầu: “canh chỉnh
+   2 hàng số tiền bằng nhau, và số tiền ở trên màu đen”).
+   ĐO TRÊN ẢNH NGƯỜI DÙNG GỬI (619×227, `.freebuff/pay-rows.ps1`): hai số **ĐÃ cùng cỡ** — đều
+   rộng **178px**, cao mực **17px** (y 126..142 và y 200..216) ⇒ phần còn lệch là **CANH**: hai
+   mép phải **579 vs 601 = lệch 22px** (mép trái cũng lệch đúng 22: 402 vs 424). Ảnh ở tỉ lệ
+   ~1,375× (17px chữ ⇒ 17px mực) ⇒ 22/1,375 = **16px CSS** đúng bằng đệm NGANG của chính
+   `.pay-inv-amt` — tức số tiền bị đẩy vào 2 lần: 16px của `.pay-inv` + 16px của chính nó = 32px,
+   còn `.pay-foot-val` chỉ 16px ⇒ số dưới thò ra xa hơn 16px. ⭐ NGUYÊN NHÂN GỐC LÀ PADDING NGANG,
+   KHÔNG phải cỡ chữ — ⛔ đừng đi sửa `font-size` của hai hàng cho “bằng nhau”.
+   SỬA: `.pay-inv-amt` `padding: 12px 16px 16px` → **`12px 0 16px`** ⇒ mép phải hai số TRÙNG (cùng
+   cách mép tấm **16px**). Giữ NGUYÊN `12px`/`16px` theo chiều dọc (khoảng thở trên/dưới của số).
+   MÀU: hàng trên **`#0f172a`** (màu chữ thường của app, cùng màu dòng “Đợt 1-10/2026”) — hàng
+   “Tổng số tiền” vẫn **`#dc2626`** như trước. Hai hàng vẫn cùng `17px/700` nên “bằng nhau” về
+   CỠ, chỉ khác màu; `.mil-digit` dùng `color: inherit` nên chữ số triệu của hàng trên tự đen.
+   Tương phản: `#0f172a` trên nền tấm trắng = **17,2:1** ✓ · `#dc2626` = **4,83:1** ✓ (≥4,5 chữ 17px).
+   ⚠️ Trước đây (2026-10-13n) tôi đã kéo hàng trên về ĐỎ cho “cùng màu” — người dùng nay chọn
+   ngược lại: chỉ cần cùng CỠ và canh thẳng, màu để hàng trên đen / hàng dưới đỏ. ⛔ ĐỪNG gộp
+   màu hai hàng lại lần nữa. */
+.pay-inv-amt { text-align: right; font-size: 17px; font-weight: 700; color: #0f172a; padding: 12px 0 16px; border-bottom: 1px solid var(--border); }
 .pay-inv:last-child .pay-inv-amt { border-bottom: none; }   /* hoá đơn cuối: không chồng vạch với vạch của khối tổng */
 /* “Tổng số tiền” dính ĐÁY tấm: danh sách dài vẫn thấy tổng khi cuộn (nền phải TRÙNG nền
    `.modal` để không hở dải màu — `.modal` là `#1a1d24`, theme sáng `#f0f1f4`). */
@@ -4068,6 +4163,21 @@ body.light-mode .pay-notice { color: #2563eb; }
 .pay-foot-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .pay-foot-lb { font-size: 16px; font-weight: 600; color: #dc2626; }
 .pay-foot-val { font-size: 17px; font-weight: 700; color: #dc2626; }
+/* ⛔ MỖI SỐ TIỀN TRONG TẤM CHỈ MỘT MÀU — ⟳ 2026-10-13j (yêu cầu: “tôi muốn số tiền chỉ hiển thị
+   1 màu”).
+   NGUYÊN NHÂN GỐC: `fmtHtml()` bọc **chữ số ĐẦU** của mọi số 1.000.000–1.999.999 vào
+   `<span class="mil-digit">`, và `.mil-digit` có màu RIÊNG `#ff8888` (màu của theme TỐI).
+   Tấm này nay LUÔN nền trắng nên màu hồng đó lộ ra thành **“một con số hai màu”**.
+   ĐO TỪ ẢNH NGƯỜI DÙNG GỬI (`.freebuff/pay-amount-colors.ps1`, quét dải ngang): số `1.855.505`
+   của dòng hoá đơn — chữ số `1` = **255,136,136 (#ff8888)**, phần còn lại = **15,23,42**;
+   dòng “Tổng số tiền” — chữ số `1` = **255,136,136**, phần còn lại = **220,38,38**.
+   ⇒ `color: inherit` cho `.mil-digit` TRONG TẤM: chữ số triệu lấy đúng màu của chính số tiền đó.
+   ⛔ KHÔNG sửa `.mil-digit` toàn cục: ngoài tấm, màu chữ số triệu là **chủ ý** và đã đo tương
+   phản theo từng mức nền (xem các khối `[data-surface*]`/`.kh-card`) — tấm này là chỗ DUY NHẤT
+   bị lộ màu của theme tối lên nền trắng.
+   ⚠️ Dùng `inherit` chứ KHÔNG hard-code màu — nhờ vậy mà từ 2026-10-13n (hai hàng số tiền CÙNG
+   màu `#dc2626`) chữ số triệu tự đổi theo mà hai không phải sửa thêm gì. */
+.pay-inv-amt .mil-digit, .pay-foot-val .mil-digit { color: inherit; }   /* ⟳ 2026-10-13p: nhờ vậy chữ số triệu của hàng trên ĐEN, hàng dưới ĐỎ — mỗi số vẫn MỘT màu */
 /* Nút đỏ “Tiếp tục thanh toán” của ảnh (yêu cầu: “thêm dòng đỏ tiếp tục thanh toán như trong ảnh”).
    ⛔ CHỈ ĐỂ HIỂN THỊ — chưa có cổng thanh toán nào, cùng lựa chọn người dùng đã chốt cho nút
    quét mã và “Xem giấy báo”; `title` nói rõ để không ai tưởng bấm là tiền đi.
@@ -4082,17 +4192,25 @@ body.light-mode .pay-notice { color: #2563eb; }
    ⇒ chữ `#e2e8f0` trên nền sáng `#f0f1f4` là GẦN NHƯ VÔ HÌNH (đã thấy đúng như vậy khi đo
    live bản đầu). Đây chính là lý do tấm “Chi tiết” có cả loạt `body.light-mode .i-* .info-value`
    + `body.light-mode .info-row { border-bottom-color: #e2e8f0 }`; làm y hệt ở đây. */
-body.light-mode .pay-hd,
-body.light-mode .pay-code-val,
-body.light-mode .pay-addr,
-body.light-mode .pay-count,
-body.light-mode .pay-dot,
-body.light-mode .pay-inv-amt { color: #0f172a; }
-body.light-mode .pay-inv-amt { border-bottom-color: #e2e8f0; }
-/* NỀN TẤM Ở THEME SÁNG = TRẮNG (yêu cầu: “ở bảng này light mode cho nền trắng”). Hai rule này
-   đi CẶP: tấm và khối đáy (sticky) phải CÙNG màu, lệch một cái là hiện dải màu ngang đáy tấm. */
-body.light-mode .pay-modal { background: #ffffff; }
-body.light-mode .pay-foot { background: #ffffff; border-top-color: #e2e8f0; }
+/* ⛔⛔ TẤM NÀY LUÔN TRẮNG Ở CẢ HAI THEME — ⟳ 2026-10-13h (yêu cầu: “ở dark mode bảng này hiển thị
+   nền trắng như light mode”). Đây là tấm để đưa cho khách xem nên nó KHÔNG theo theme: đổi theme
+   chỉ đổi nền TRANG phía sau (overlay vẫn tối như cũ).
+   ⚠️ VÌ SAO PHẢI KHAI ĐÍCH DANH MÀU CHỮ: `body.light-mode` CHỈ khai lại `--text-dim` — `--text`
+   và `--border` vẫn là màu của theme TỐI (xem block token light: `--text: #e2e8f0`) ⇒ để nguyên
+   `var(--text)` là ở theme tối chữ sáng trên nền trắng = MẤT CHỮ. Toàn bộ chỗ dùng token trong
+   tấm nằm ở 3 rule dưới: `.pay-hd`/`.pay-code-val`/`.pay-addr`/`.pay-count`/`.pay-dot`/
+   `.pay-inv-amt` (`--text` · `--border`) và `.pay-row-txt`/`.pay-code-lb` (`--text-dim`).
+   ⇒ THÊM CHỖ DÙNG TOKEN MỚI TRONG TẤM THÌ PHẢI KHAI MÀU ĐÍCH DANH Ở ĐÂY.
+   ⚠️ `body .modal.pay-modal` (KHÔNG phải `.modal.pay-modal`): phải có độ ưu tiên ≥ `body.light-mode .modal`
+   (`#f0f1f4`, khai ở block modal phía trên) nếu không thì ở theme SÁNG tấm lại thành xám — bài học
+   của chính tấm này hồi 2026-10-13c. Nền tấm và khối đáy (sticky) PHẢI CÙNG màu, lệch một cái là
+   hiện một dải màu ngang đáy tấm. */
+body .modal.pay-modal { background: #ffffff; border-color: #e2e8f0; }
+body .modal.pay-modal > .modal-handle { background: rgba(0,0,0,0.15); }   /* tay nắm: xám đậm, bản tối là trắng mờ ⇒ vô hình trên nền trắng */
+.pay-hd, .pay-code-val, .pay-addr, .pay-count, .pay-dot { color: #0f172a; }   /* ⛔ KHÔNG thêm `.pay-inv-amt` vào đây: từ 2026-10-13p nó ĐEN nhưng khai ĐÍCH DANH trong rule của chính nó (đệm ngang là thứ phân biệt nó với `.pay-foot-val`); thêm vào nhóm này là vô nghĩa mà còn dễ tưởng nhầm là hai hàng cùng màu */
+.pay-row-txt, .pay-code-lb { color: #5b6777; }
+.pay-inv-amt { border-bottom-color: #e2e8f0; }
+.pay-foot { background: #ffffff; border-top-color: #e2e8f0; }
 /* Số tiền chạm được: chỉ gắn cho SỐ TIỀN ở thẻ/bảng, KHÔNG gắn cho `.tien-no` trong tấm
    “Chi tiết” hay bảng tổng (ở đó không có việc gì để mở ⇒ con trỏ bàn tay sẽ nói dối). */
 .pay-tap { cursor: pointer; -webkit-tap-highlight-color: transparent; }
@@ -4246,9 +4364,10 @@ body.force-desktop .table-view { display: block; }
   .cell-addr { font-size: var(--fs-tb-desk); }
   .cell-tenkh { font-size: var(--fs-tb-desk); }
   .cell-ghi { font-size: var(--fs-tb-desk); }
-  /* Desktop: cỡ chữ bảng modal (nhãn 19px, giá trị 20px — bằng mức mobile) */
-  .info-label { font-size: 19px; }
-  .info-value { font-size: 20px; }
+  /* Desktop: cỡ chữ bảng modal (nhãn 16px/300, giá trị 17px — bằng mức mobile; sửa ở đây thì
+     phải sửa cả khối nền, xem chú thích “Cỡ chữ bảng trong modal”) */
+  .info-label { font-size: 16px; }
+  .info-value { font-size: 17px; }
   .cell-abc { font-size: var(--fs-tb-desk); }
   .ghi-chu-table { font-size: 14px; color: #ffffff; border-color: #3b82f6; }
   .ghi-chu-table:not(:placeholder-shown) { color: #ffffff; }
@@ -7954,16 +8073,26 @@ function showDetailRow(r) {
 //  · MỘT số tiền = MỘT DÒNG dữ liệu, nhưng một KHÁCH có thể nợ NHIỀU kỳ (nhiều dòng)
 //    ⇒ tấm này liệt kê TOÀN BỘ dòng của khách đó trong `allData` (giống `showDetailRow`),
 //    mỗi dòng là một “Đợt”. Số ở dòng “Quý khách có N hóa đơn…” = số dòng đó.
-//  · “Tổng số tiền” = tổng các hoá đơn ĐANG TÍCH (bỏ tích là tổng giảm) — đúng như ảnh,
-//    ⛔ KHÔNG phải tổng cố định của cả khách. Mặc định tích HẾT.
+//  · “Tổng số tiền” = tổng TẤT CẢ hoá đơn của khách (mọi đợt đều được tính).
+//  · ⛔ BA Ô TÍCH TRONG TẤM **CHỈ ĐỂ HIỂN THỊ** (người dùng chốt 2026-10-13h: “dấu tick chọn chỉ
+//    là ảnh hiển thị”) — KHÔNG còn là `<input type="checkbox">` ⇒ không bấm/gõ/tab được nữa, tổng
+//    tiền KHÔNG đổi theo ô tích. Cùng lựa chọn với nút đỏ “Tiếp tục thanh toán”, nút quét mã và
+//    “Xem giấy báo” ở tấm này; xem chú thích CSS `.pay-cb` để biết vì sao bỏ hẳn input.
 //  · `.pay-name` (tên khách, chữ xanh như ảnh) chạm được và mở tấm “Chi tiết” đang có.
 // ⛔ KHÔNG có dòng “ID hóa đơn” của ảnh (dữ liệu không có cột đó) và nút quét mã / “Xem giấy
 //    báo” CHỈ ĐỂ HIỂN THỊ — người dùng đã chốt như vậy.
-let _payRecs = [], _paySel = [];
+let _payRecs = [];   // ⛔ KHÔNG còn `_paySel`: ô tích đã thành hình hiển thị (2026-10-13h) nên không còn trạng thái chọn để theo dõi.
 
 // Icon mã QR của ảnh (3 ô định vị + 4 chấm) — vẽ tại chỗ vì sprite `#__icon-sprite` không có
 // icon này; `stroke="currentColor"` để icon tự theo màu xanh của theme.
 const IC_QR = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><rect x="3.2" y="3.2" width="6.6" height="6.6" rx="1.4"/><rect x="14.2" y="3.2" width="6.6" height="6.6" rx="1.4"/><rect x="3.2" y="14.2" width="6.6" height="6.6" rx="1.4"/><path d="M14.2 14.2h2.6v2.6h-2.6zM18.9 14.2h1.9v1.9M14.2 18.9v1.9h2.6M19.6 19.6h1.2v1.2"/></svg>';
+
+// Dấu tick trắng cho ô tích ở tấm thanh toán (2026-10-13h) — sprite `#__icon-sprite` KHÔNG có
+// icon này nên vẽ tại chỗ, cùng cách với `IC_QR` ngay trên. `stroke="currentColor"` để màu tick
+// theo màu chữ của ô (`.pay-cb { color:#fff }`) thay vì nhét màu trắng vào SVG.
+// ⚠️ Tick 14px trong ô 20px (viền 1,5px ⇒ lòng 17px) — đổi cỡ ô thì nhích số này theo, 15px là
+// tick chạm viền.
+const IC_CHECK = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.8 12.9 9.4 17.5 19.4 6.9"/></svg>';
 
 function openPayPanel(el) {
   const host = el && el.closest ? el.closest('[data-ma]') : null;
@@ -7971,7 +8100,6 @@ function openPayPanel(el) {
   if (!ma) return;
   _payRecs = allData.filter(x => (x.ma_khach_hang || '') === ma);
   if (!_payRecs.length) return;
-  _paySel = _payRecs.map(() => true);   // mở ra là tích HẾT (như ảnh)
   renderPay();
   const ov = document.getElementById('payModal');
   if (ov) ov.classList.add('open');
@@ -7987,7 +8115,7 @@ function renderPay() {
     <div class="pay-inv">
       <div class="pay-dot">Đợt ${esc(x.thang_no) || '—'}</div>
       <div class="pay-inv-l2">
-        <input type="checkbox" class="pay-cb"${_paySel[i] ? ' checked' : ''} onchange="payToggle(${i}, this)" aria-label="Chọn hoá đơn đợt ${esc(x.thang_no) || ''}">
+        <span class="pay-cb on" aria-hidden="true">${IC_CHECK}</span>
         <span class="pay-badge">HĐ tiền điện</span>
         <span class="pay-notice" title="Chưa có dữ liệu giấy báo">Xem giấy báo</span>
       </div>
@@ -7995,8 +8123,8 @@ function renderPay() {
     </div>`).join('');
   body.innerHTML = `
     <div class="pay-row">
-      <input type="checkbox" class="pay-cb" id="payLinked" aria-label="Chọn từ danh sách đã liên kết">
-      <label class="pay-row-txt" for="payLinked">Chọn từ danh sách đã liên kết</label>
+      <span class="pay-cb" aria-hidden="true"></span>
+      <span class="pay-row-txt">Chọn từ danh sách đã liên kết</span>
     </div>
     <div class="pay-code">
       <div class="pay-code-main">
@@ -8009,8 +8137,8 @@ function renderPay() {
     ${r.dia_chi ? `<div class="pay-addr"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-pin"/></svg><span>${esc(r.dia_chi)}</span></div>` : ''}
     <div class="pay-count">Quý khách có <b>${n}</b> hóa đơn cần thanh toán</div>
     <div class="pay-row">
-      <input type="checkbox" class="pay-cb" id="payAll" checked onchange="payToggleAll(this.checked)" aria-label="Chọn tất cả">
-      <label class="pay-row-txt" for="payAll">Chọn tất cả (${n})</label>
+      <span class="pay-cb on" aria-hidden="true">${IC_CHECK}</span>
+      <span class="pay-row-txt">Chọn tất cả (${n})</span>
     </div>
     ${inv}
     <div class="pay-foot">
@@ -8020,24 +8148,13 @@ function renderPay() {
   payUpdateTotal();
 }
 
-// ⚠️ Đọc trạng thái từ CHÍNH ô tích (`this`) chứ KHÔNG đảo `_paySel[i]`: nếu một lần render nào
-// đó lệch với mảng thì cách đảo sẽ tách rời ô tích và con số tổng.
-function payToggle(i, cb) {
-  _paySel[i] = !!(cb && cb.checked);
-  const all = document.getElementById('payAll');
-  if (all) all.checked = _paySel.every(Boolean);
-  payUpdateTotal();
-}
-
-function payToggleAll(on) {
-  _paySel = _paySel.map(() => !!on);
-  document.querySelectorAll('.pay-inv .pay-cb').forEach(cb => { cb.checked = !!on; });
-  payUpdateTotal();
-}
-
+// ⛔ `payToggle()` / `payToggleAll()` ĐÃ XOÁ (2026-10-13h) cùng với `_paySel` — ô tích nay là hình
+// hiển thị nên không còn gì để bật/tắt. Đừng “khôi phục lại cho đủ bộ”: một hàm bật/tắt ô tích
+// không tồn tại nữa là ĐÚNG thiết kế, để lại chỉ gây hiểu nhầm là tấm này còn chọn được.
+// Tổng = tổng TẤT CẢ hoá đơn của khách. Vẫn là một HÀM (không phải hằng số) vì số này còn đổi
+// khi người dùng sửa dữ liệu hoặc khi khách có thêm đợt — chỉ là nó không còn phụ thuộc ô tích.
 function payUpdateTotal() {
-  let t = 0;
-  _payRecs.forEach((x, i) => { if (_paySel[i]) t += x.tien_no || 0; });
+  const t = _payRecs.reduce((s, x) => s + (x.tien_no || 0), 0);
   const el = document.getElementById('payTotal');
   if (el) el.innerHTML = fmtHtml(t) + ' VNĐ';
 }
