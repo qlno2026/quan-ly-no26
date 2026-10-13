@@ -3971,6 +3971,132 @@ function changeBackgroundColor(newColor) {
 mark { background: rgba(251,191,36,0.3); color: #fde68a; border-radius: 2px; padding: 0 1px; }
 body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
 
+/* ══ TẤM “THANH TOÁN CHO ĐIỂM DÙNG ĐIỆN” (`#payModal`) — CHẠM VÀO SỐ TIỀN LÀ MỞ ══
+   Yêu cầu người dùng: “tôi muốn khi chạm vào số tiền thì hiện bảng giao diện như ảnh”.
+   Tấm này DÙNG LẠI `.modal-overlay` + `.modal` (nên cùng kiểu trượt lên ở điện thoại, cùng
+   bo góc, cùng nền theo theme với tấm “Chi tiết”) — ở đây chỉ khai RUỘT riêng.
+   ⛔ Hai thứ trong ảnh KHÔNG có dữ liệu nên CHỈ ĐỂ HIỂN THỊ (người dùng đã chốt):
+      nút quét mã trong ô “Mã khách hàng” và link “Xem giấy báo”.
+   ⛔ KHÔNG có dòng “ID hóa đơn” của ảnh: dữ liệu không có cột đó (người dùng đã chốt bỏ).
+   ⚠️ Viên “HĐ tiền điện” (`.pay-badge`) là **NỀN CAM VÀNG `#e8a822` + CHỮ TRẮNG + CHẤM TRẮNG**
+   — màu lấy NGUYÊN từ ảnh người dùng gửi (xem chú thích ở rule). Người dùng đã CHỐT chữ
+   trắng qua hỏi đáp và biết rõ tương phản rất thấp. Ghi lại để lần sau đo thấy số thấp thì
+   biết là CỐ Ý, ⛔ đừng “sửa” ngược lên nâu đậm.
+   ⚠️ NỀN TẤM ở theme sáng là **TRẮNG `#ffffff`** (yêu cầu: “ở bảng này light mode cho nền
+   trắng”) — ⛔ KHÔNG dùng `#f0f1f4` như tấm “Chi tiết”; kéo theo `.pay-foot` cũng phải
+   trắng, nếu không sẽ hở một dải xám ở đáy tấm. */
+/* ℹ️ CHIỀU CAO TẤM — ba nấc, đúng ba lần người dùng yêu cầu:
+   “cho bảng cao hơn” (nâng TRẦN 85vh → 92vh) → “cho kích cỡ bảng này cao hơn nữa” (thêm **SÀN**
+   `min-height: 88vh`) → **“khoảng cách này xa quá”** (ảnh: khoảng trống to giữa danh sách và
+   khối “Tổng số tiền”) ⇒ nay **HẠ SÀN xuống 68vh** và **NỚI RUỘT** (chữ + đệm to hơn ~30%) để
+   tấm vẫn cao mà khoảng trống gần như hết.
+   ⚠️ BÀI HỌC, ĐỪNG LẶP LẠI: (a) nâng TRẦN **không** làm tấm cao lên khi nội dung ngắn;
+   (b) nâng SÀN mà không nới ruột thì chỉ **đổi chỗ** khoảng trống — sàn cao + ruột ngắn = hở
+   một khoảng trắng to giữa danh sách và khối đáy. Muốn tấm “cao” thật thì phải **NỚI RUỘT**,
+   sàn chỉ nên nhích hơn chiều cao ruột một chút.
+   ⚠️ Kèm theo phải cho tấm thành CỘT FLEX: `.pay-body` `flex: 1 0 auto` để phần ruột GIÃN ra
+   chiếm chỗ trống ⇒ khối đáy (sticky) mới nằm ĐÚNG ĐÁY tấm. Nếu để `block` mà chỉ thêm
+   `min-height`, khối đáy sẽ nằm NGAY SAU nội dung, chừa một khoảng trống trắng ở dưới cùng.
+   ⚠️ `flex: 1 0 auto` (KHÔNG co) chứ không phải `1 1 auto`: danh sách dài thì ruột giữ nguyên
+   chiều cao thật và cả tấm tự cuộn (`.modal` đã có `overflow-y: auto`).
+   ⚠️ Viết `.modal.pay-modal` (HAI lớp) mới THẮNG `.modal` chắc chắn: hai selector cùng độ ưu
+   tiên (0,1,0) nên `.pay-modal` đơn thuần chỉ ăn được NHỜ THỨ TỰ khai trong file. */
+.modal.pay-modal { display: flex; flex-direction: column; min-height: 68vh; max-height: 96vh; }
+.modal.pay-modal > .modal-handle,
+.modal.pay-modal > .pay-hd { flex: 0 0 auto; }   /* tay nắm + tiêu đề KHÔNG bị bóp khi ruột giãn */
+/* ⚠️ `.pay-foot` nằm TRONG `.pay-body` (do `renderPay` dựng cả ruột lẫn khối đáy vào `#payBody`),
+   nên CHỈ giãn `.pay-body` là CHƯA ĐỦ: khối đáy vẫn đứng ngay sau danh sách và chừa một khoảng
+   trắng ở dưới (đã chụp được đúng lỗi này). Phải cho `.pay-body` thành CỘT FLEX rồi đẩy khối đáy
+   xuống bằng `margin-top: auto` ⇒ hết chỗ trống sai chỗ, khối đáy nằm đúng đáy tấm.
+   `align-items: stretch` giữ nguyên bề rộng các hàng như cũ; riêng `.pay-name` phải `flex-start`
+   để vùng chạm chỉ còn đúng chữ (trước đây nó là `inline-block` co theo chữ). */
+.pay-body { flex: 1 0 auto; display: flex; flex-direction: column; align-items: stretch; }
+@media (min-width: 640px) { .modal.pay-modal { min-height: 62vh; max-height: 92vh; } }
+/* ⚠️ TỪ ĐÂY LÀ KHỐI “NỚI RUỘT”: chữ lớn hơn 1px và đệm cao hơn hẳn Ở MỌI HÀNG — đây mới là
+   thứ làm tấm trông cao/to thật (xem bài học ở khối chiều cao ngay trên). Sửa đệm ở một hàng
+   mà quên hàng khác là tấm lại lệch khoảng trống. */
+.pay-hd { padding: 16px 16px 8px; font-size: 18px; font-weight: 700; color: var(--text); font-family: 'Inter', sans-serif; }
+.pay-row { display: flex; align-items: center; gap: 10px; padding: 15px 16px; }
+.pay-row-txt { font-size: 15px; color: var(--text-dim); }
+.pay-cb { width: 20px; height: 20px; accent-color: #2563eb; flex: 0 0 auto; cursor: pointer; margin: 0; }
+/* Ô “Mã khách hàng”: viền + chữ xanh của ảnh (đậm ở theme sáng, sáng ở theme tối — cùng cặp
+   màu app đang dùng cho `.i-tenkh .info-value`). ⛔ Bề rộng KHÔNG phụ thuộc theme: viền
+   `1.5px` + `padding` giống nhau ở hai theme nên đổi theme không xê dịch gì. */
+.pay-code { margin: 4px 16px; padding: 11px 12px; border: 1.5px solid #60a5fa; border-radius: 9px; display: flex; align-items: center; gap: 8px; }
+body.light-mode .pay-code { border-color: #2563eb; }
+.pay-code-main { flex: 1; min-width: 0; }
+.pay-code-lb { font-size: 12px; color: var(--text-dim); line-height: 1.3; }
+.pay-code-lb b { color: #dc2626; font-weight: 700; }
+/* “Mã KH nét chữ mỏng” (yêu cầu người dùng): `700` → **`400`** — đúng cỡ chữ của hàng “Mã KH”
+   trong tấm “Chi tiết” (`.i-makh .info-value` cũng `400`) nên hai tấm không lệch nhau ở cùng
+   một dữ liệu. Muốn mỏng hơn nữa thì đổi số thành `300` — Inter 300 (“Light”) ĐÃ được nạp
+   ở `@import` đầu file nên không phải thêm gì. */
+.pay-code-val { font-size: 16px; font-weight: 400; color: var(--text); letter-spacing: 0.01em; word-break: break-all; }
+.pay-qr { width: 42px; height: 42px; border: 1.5px solid #60a5fa; border-radius: 9px; background: transparent; color: #60a5fa; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; }
+body.light-mode .pay-qr { border-color: #2563eb; color: #2563eb; }
+/* Tên khách hàng: chữ xanh như ảnh NHƯNG có việc thật — chạm là mở tấm “Chi tiết” (xem
+   `payOpenDetail()`) ⇒ không phải liên kết chết. */
+/* “Nét tên KH mỏng hơn” (yêu cầu người dùng): `600` → **`400`** — nay tên khách cùng nét với
+   mã khách hàng ở ô trên nên hai dòng không còn “nặng nhẹ” lệch nhau. Vẫn giữ màu xanh để
+   thấy là chạm được. Muốn mỏng hơn nữa thì đổi thành `300` (Inter 300 đã nạp sẵn). */
+.pay-name { display: inline-block; align-self: flex-start; margin: 15px 16px 0; font-size: 16px; font-weight: 400; color: #60a5fa; cursor: pointer; font-family: 'Inter', sans-serif; }
+body.light-mode .pay-name { color: #2563eb; }
+.pay-addr { display: flex; gap: 7px; padding: 13px 16px 0; font-size: 15px; color: var(--text); line-height: 1.4; }
+.pay-addr svg { flex: 0 0 auto; margin-top: 2px; color: #dc2626; }
+.pay-count { padding: 18px 16px 4px; font-size: 16px; font-weight: 600; color: var(--text); }
+.pay-count b { color: #dc2626; }
+.pay-inv { padding: 18px 16px 0; }
+.pay-dot { font-size: 16px; font-weight: 700; color: var(--text); }
+.pay-inv-l2 { display: flex; align-items: center; gap: 10px; padding-top: 10px; }
+/* Viên “HĐ tiền điện” — ⟳ 2026-10-13g: LẤY MÀU TỪ CHÍNH ẢNH NGƯỜI DÙNG GỬI (“chỉnh như trong
+   ảnh”). Đo pixel ảnh đó (`System.Drawing`, dòng y giữa viên): viên **R=232 G=168 B=34 =
+   `#e8a822`** (cam vàng), **chấm TRẮNG** `#fefeff`, đệm trái ≈ 1,3× đường kính chấm.
+   ⚠️ ĐO LẠI TƯƠNG PHẢN: trắng trên `#e8a822` = **2,09:1** — đỡ hơn nền vàng sáng cũ
+   (`#facc15` chỉ 1,53:1) nhưng VẪN dưới chuẩn 4,5 cho chữ 13–14px. `text-shadow` bên dưới chỉ
+   giúp **đọc được**; đây vẫn là lựa chọn của người dùng (họ đã chốt “giữ chữ trắng”),
+   ⛔ đừng “sửa” ngược lên nền nâu đậm. Muốn đạt chuẩn trở lại: đổi `color` thành `#78350f`.
+   Chấm nay là **TRẮNG** đúng như ảnh (trước là hổ phách đậm). */
+.pay-badge { display: inline-flex; align-items: center; gap: 6px; background: #e8a822; color: #ffffff; font-size: 14px; font-weight: 600; padding: 4px 10px; border-radius: 999px; white-space: nowrap; text-shadow: 0 1px 2px rgba(120,53,15,0.6); }
+.pay-badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #ffffff; flex: 0 0 auto; }
+.pay-notice { margin-left: auto; font-size: 15px; color: #60a5fa; white-space: nowrap; }
+body.light-mode .pay-notice { color: #2563eb; }
+.pay-inv-amt { text-align: right; font-size: 16px; font-weight: 700; color: var(--text); padding: 12px 16px 16px; border-bottom: 1px solid var(--border); }
+.pay-inv:last-child .pay-inv-amt { border-bottom: none; }   /* hoá đơn cuối: không chồng vạch với vạch của khối tổng */
+/* “Tổng số tiền” dính ĐÁY tấm: danh sách dài vẫn thấy tổng khi cuộn (nền phải TRÙNG nền
+   `.modal` để không hở dải màu — `.modal` là `#1a1d24`, theme sáng `#f0f1f4`). */
+.pay-foot { position: sticky; bottom: 0; margin-top: auto; padding: 15px 16px 17px; border-top: 1px solid var(--border); background: #1a1d24; }
+.pay-foot-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pay-foot-lb { font-size: 16px; font-weight: 600; color: #dc2626; }
+.pay-foot-val { font-size: 17px; font-weight: 700; color: #dc2626; }
+/* Nút đỏ “Tiếp tục thanh toán” của ảnh (yêu cầu: “thêm dòng đỏ tiếp tục thanh toán như trong ảnh”).
+   ⛔ CHỈ ĐỂ HIỂN THỊ — chưa có cổng thanh toán nào, cùng lựa chọn người dùng đã chốt cho nút
+   quét mã và “Xem giấy báo”; `title` nói rõ để không ai tưởng bấm là tiền đi.
+   ĐO: chữ trắng trên `#d32f2f` = **4,98:1** ✓ (trên ngưỡng 4,5 cho chữ đậm 16px).
+   ⚠️ `#d32f2f` GIỮ NGUYÊN ở hai theme (giống viên hổ phách `.pay-badge`): nền đỏ + chữ trắng
+   đọc được trên cả nền sáng và tối nên không cần bản riêng cho theme sáng. */
+.pay-go { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 12px; padding: 14px; border: none; border-radius: 10px; background: #d32f2f; color: #ffffff; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; }
+.pay-go:active { background: #b3261e; }
+.pay-go-ico { flex: 0 0 auto; }
+/* ⚠️ LIGHT MODE PHẢI KHAI LẠI TỪNG CHỖ DÙNG `--text`/`--border`: trong `body.light-mode` app
+   CHỈ khai lại `--text-dim` (xem block token light) ⇒ hai token kia vẫn là màu của theme TỐI
+   ⇒ chữ `#e2e8f0` trên nền sáng `#f0f1f4` là GẦN NHƯ VÔ HÌNH (đã thấy đúng như vậy khi đo
+   live bản đầu). Đây chính là lý do tấm “Chi tiết” có cả loạt `body.light-mode .i-* .info-value`
+   + `body.light-mode .info-row { border-bottom-color: #e2e8f0 }`; làm y hệt ở đây. */
+body.light-mode .pay-hd,
+body.light-mode .pay-code-val,
+body.light-mode .pay-addr,
+body.light-mode .pay-count,
+body.light-mode .pay-dot,
+body.light-mode .pay-inv-amt { color: #0f172a; }
+body.light-mode .pay-inv-amt { border-bottom-color: #e2e8f0; }
+/* NỀN TẤM Ở THEME SÁNG = TRẮNG (yêu cầu: “ở bảng này light mode cho nền trắng”). Hai rule này
+   đi CẶP: tấm và khối đáy (sticky) phải CÙNG màu, lệch một cái là hiện dải màu ngang đáy tấm. */
+body.light-mode .pay-modal { background: #ffffff; }
+body.light-mode .pay-foot { background: #ffffff; border-top-color: #e2e8f0; }
+/* Số tiền chạm được: chỉ gắn cho SỐ TIỀN ở thẻ/bảng, KHÔNG gắn cho `.tien-no` trong tấm
+   “Chi tiết” hay bảng tổng (ở đó không có việc gì để mở ⇒ con trỏ bàn tay sẽ nói dối). */
+.pay-tap { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
 /* ── RESPONSIVE ─────────────────────────── */
 /* Mobile: cards */
 .card-view { display: block; }
@@ -5581,6 +5707,18 @@ body.force-desktop .table-view { display: block; }
       <button class="modal-close" onclick="closeModalDirect()">✕</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- 💳 TẤM “THANH TOÁN CHO ĐIỂM DÙNG ĐIỆN” (`#payModal`) — mở bằng cách CHẠM VÀO SỐ TIỀN.
+     Ruột do `renderPay()` dựng lại mỗi lần mở (số hoá đơn + tổng tiền theo khách đang chạm).
+     Dùng lại `.modal-overlay`/`.modal` nên có sẵn cả hiệu ứng trượt lên ở điện thoại; phần
+     khai báo riêng nằm ở block CSS `./* ══ TẤM “THANH TOÁN… */` ở trên. -->
+<div class="modal-overlay" id="payModal" onclick="closePay(event)">
+  <div class="modal pay-modal" role="dialog" aria-modal="true" aria-labelledby="payTitle">
+    <div class="modal-handle"></div>
+    <div class="pay-hd" id="payTitle">Thanh toán cho điểm dùng điện</div>
+    <div class="pay-body" id="payBody"></div>
   </div>
 </div>
 
@@ -7380,7 +7518,13 @@ function renderCards(q='') {
       <div class="kh-card-top">
         <div class="kh-name" onclick="showDetail(${start+i})" style="cursor:pointer">${hi(r.ten_khach_hang,q)||'—'}</div>
         <div class="kh-tien-col">
-          <div class="kh-tien${r.tien_no >= 2000000 ? ' high' : ' low'}">${fmtHtml(r.tien_no)}</div>
+          <!-- ⚠️ LỚP pay-tap + onclick = CHẠM VÀO SỐ TIỀN LÀ MỞ TẤM “Thanh toán cho điểm dùng điện”
+               (yêu cầu người dùng). event.stopPropagation() để cú chạm không lọt lên thẻ card
+               (ondblclick đánh dấu cam — xem chốt chặn trong toggleOrange). Mã khách KHÔNG nhúng
+               vào chuỗi ở đây: openPayPanel(this) tự đọc closest('[data-ma]').
+               ⛔ KHÔNG viết dấu backtick trong chú thích NÀY — nó nằm TRONG một template literal,
+               backtick sẽ đóng chuỗi sớm và cả script không parse được (đã sập đúng một lần). -->
+          <div class="kh-tien pay-tap${r.tien_no >= 2000000 ? ' high' : ' low'}" onclick="event.stopPropagation();openPayPanel(this)">${fmtHtml(r.tien_no)}</div>
           ${r.thang_no ? `<div class="kh-thang${r.thang_no.split(",").length >= 4 ? " multi-month" : ""}">${hi(shortMonths(r.thang_no),q)}${omShow ? ' (' + oldKind + ')' : ''}</div>` : (omShow ? `<div class="kh-thang">(${oldKind})</div>` : '')}
         </div>
       </div>
@@ -7448,7 +7592,10 @@ function renderTable(q='') {
       <td class="cell-dim">${hi(r.ma_sogcs,q)||'—'}</td>
       <td class="cell-dim">${hi(r.danh_so,q)||'—'}</td>
       <td><span class="badge badge-blue">${hi(shortMonths(r.thang_no),q)||'—'}</span></td>
-      <td><span class="tien-no${r.tien_no >= 2000000 ? ' high' : ' low'}">${fmtHtml(r.tien_no)}</span></td>
+      <!-- Số tiền của BẢNG (máy tính) cũng chạm được — cùng việc với kh-tien trên thẻ card;
+           ⛔ KHÔNG gắn pay-tap cho tien-no ở tấm “Chi tiết” hay bảng tổng (không có gì để mở).
+           ⛔ Chú thích này nằm TRONG một template literal ⇒ KHÔNG dùng dấu backtick ở đây. -->
+      <td><span class="tien-no pay-tap${r.tien_no >= 2000000 ? ' high' : ' low'}" onclick="event.stopPropagation();openPayPanel(this)">${fmtHtml(r.tien_no)}</span></td>
       <td><span class="phone">${r.dien_thoai&&r.dien_thoai!='0' ? hi(r.dien_thoai,q) : '<span style="color:var(--text-dim)">—</span>'}</span></td>
       <td class="cell-dim">${hi(r.so_tbi,q)||'—'}</td>
       <td class="cell-ghi"><input type="text" class="ghi-chu-table" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" placeholder="—" oninput="saveGhiChu(this)" onclick="event.stopPropagation()" onpointerdown="event.stopPropagation()" onpointerup="event.stopPropagation()" ondblclick="event.stopPropagation()"></td>
@@ -7701,7 +7848,14 @@ function toggleMark(el) {
    thẻ card + hàng bảng). Tên `toggleOrange` giữ nguyên (lịch sử) nhưng VAI TRÒ đã khác:
    trước đây nó là vỏ bọc của thao tác nhấn-giữ cũ, nay nó LÀ thao tác nhấn-2-lần.
    `e.stopPropagation()` để cú dblclick không lọt lên các lớp khác. */
-function toggleOrange(e, el) { if (e && e.stopPropagation) e.stopPropagation(); toggleMark(el); }
+function toggleOrange(e, el) {
+  if (e && e.stopPropagation) e.stopPropagation();
+  /* ⛔ Nhấn 2 lần NGAY TRÊN SỐ TIỀN (`.pay-tap`) thì KHÔNG đánh dấu: cú chạm đầu đã mở tấm
+     “Thanh toán…”, cú thứ hai rơi vào tấm đó (đóng tấm) ⇒ chạy tiếp ở đây nữa là người dùng
+     vừa mất tấm vừa thấy thẻ đổi màu mà không hiểu vì sao. */
+  if (e && e.target && e.target.closest && e.target.closest('.pay-tap')) return;
+  toggleMark(el);
+}
 
 /* Màu xanh dương (nhấn giữ 1 giây) đã GỠ KHỎI THAO TÁC từ trước, nhưng vẫn được GIỮ LẠI
    Ở ĐƯỜNG HIỂN THỊ để những thẻ ĐÃ TÔ TỪ TRƯỚC không bị mất màu: getPurpleIds() +
@@ -7790,6 +7944,122 @@ function showDetailRow(r) {
 
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+
+// ══ TẤM “THANH TOÁN CHO ĐIỂM DÙNG ĐIỆN” ═════════════════════════════════════════════
+// Yêu cầu người dùng: “tôi muốn khi chạm vào số tiền thì hiện bảng giao diện như ảnh”.
+//  · MỞ TỪ SỐ TIỀN: `.kh-tien` trên thẻ (điện thoại) và ô “Tiền Nợ” của bảng (máy tính) —
+//    cả hai gọi `openPayPanel(this)`; mã khách lấy từ `closest('[data-ma]')` chứ KHÔNG nhúng
+//    mã vào chuỗi `onclick` (mã có dấu nháy là vỡ handler).
+//  · MỘT số tiền = MỘT DÒNG dữ liệu, nhưng một KHÁCH có thể nợ NHIỀU kỳ (nhiều dòng)
+//    ⇒ tấm này liệt kê TOÀN BỘ dòng của khách đó trong `allData` (giống `showDetailRow`),
+//    mỗi dòng là một “Đợt”. Số ở dòng “Quý khách có N hóa đơn…” = số dòng đó.
+//  · “Tổng số tiền” = tổng các hoá đơn ĐANG TÍCH (bỏ tích là tổng giảm) — đúng như ảnh,
+//    ⛔ KHÔNG phải tổng cố định của cả khách. Mặc định tích HẾT.
+//  · `.pay-name` (tên khách, chữ xanh như ảnh) chạm được và mở tấm “Chi tiết” đang có.
+// ⛔ KHÔNG có dòng “ID hóa đơn” của ảnh (dữ liệu không có cột đó) và nút quét mã / “Xem giấy
+//    báo” CHỈ ĐỂ HIỂN THỊ — người dùng đã chốt như vậy.
+let _payRecs = [], _paySel = [];
+
+// Icon mã QR của ảnh (3 ô định vị + 4 chấm) — vẽ tại chỗ vì sprite `#__icon-sprite` không có
+// icon này; `stroke="currentColor"` để icon tự theo màu xanh của theme.
+const IC_QR = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><rect x="3.2" y="3.2" width="6.6" height="6.6" rx="1.4"/><rect x="14.2" y="3.2" width="6.6" height="6.6" rx="1.4"/><rect x="3.2" y="14.2" width="6.6" height="6.6" rx="1.4"/><path d="M14.2 14.2h2.6v2.6h-2.6zM18.9 14.2h1.9v1.9M14.2 18.9v1.9h2.6M19.6 19.6h1.2v1.2"/></svg>';
+
+function openPayPanel(el) {
+  const host = el && el.closest ? el.closest('[data-ma]') : null;
+  const ma = host ? String(host.dataset.ma || '') : '';
+  if (!ma) return;
+  _payRecs = allData.filter(x => (x.ma_khach_hang || '') === ma);
+  if (!_payRecs.length) return;
+  _paySel = _payRecs.map(() => true);   // mở ra là tích HẾT (như ảnh)
+  renderPay();
+  const ov = document.getElementById('payModal');
+  if (ov) ov.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function renderPay() {
+  const r = _payRecs[0];
+  const n = _payRecs.length;
+  const body = document.getElementById('payBody');
+  if (!body) return;
+  const inv = _payRecs.map((x, i) => `
+    <div class="pay-inv">
+      <div class="pay-dot">Đợt ${esc(x.thang_no) || '—'}</div>
+      <div class="pay-inv-l2">
+        <input type="checkbox" class="pay-cb"${_paySel[i] ? ' checked' : ''} onchange="payToggle(${i}, this)" aria-label="Chọn hoá đơn đợt ${esc(x.thang_no) || ''}">
+        <span class="pay-badge">HĐ tiền điện</span>
+        <span class="pay-notice" title="Chưa có dữ liệu giấy báo">Xem giấy báo</span>
+      </div>
+      <div class="pay-inv-amt">${fmtHtml(x.tien_no)} VNĐ</div>
+    </div>`).join('');
+  body.innerHTML = `
+    <div class="pay-row">
+      <input type="checkbox" class="pay-cb" id="payLinked" aria-label="Chọn từ danh sách đã liên kết">
+      <label class="pay-row-txt" for="payLinked">Chọn từ danh sách đã liên kết</label>
+    </div>
+    <div class="pay-code">
+      <div class="pay-code-main">
+        <div class="pay-code-lb">Mã khách hàng <b>*</b></div>
+        <div class="pay-code-val">${esc(r.ma_khach_hang) || '—'}</div>
+      </div>
+      <button class="pay-qr" type="button" title="Chưa có chức năng quét mã" aria-label="Quét mã">${IC_QR}</button>
+    </div>
+    <span class="pay-name" onclick="payOpenDetail()" title="Xem chi tiết khách hàng">${esc(r.ten_khach_hang) || '—'}</span>
+    ${r.dia_chi ? `<div class="pay-addr"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-pin"/></svg><span>${esc(r.dia_chi)}</span></div>` : ''}
+    <div class="pay-count">Quý khách có <b>${n}</b> hóa đơn cần thanh toán</div>
+    <div class="pay-row">
+      <input type="checkbox" class="pay-cb" id="payAll" checked onchange="payToggleAll(this.checked)" aria-label="Chọn tất cả">
+      <label class="pay-row-txt" for="payAll">Chọn tất cả (${n})</label>
+    </div>
+    ${inv}
+    <div class="pay-foot">
+      <div class="pay-foot-row"><span class="pay-foot-lb">Tổng số tiền:</span><span class="pay-foot-val" id="payTotal"></span></div>
+      <button class="pay-go" type="button" title="Chưa có chức năng thanh toán"><svg class="pay-go-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2.4" y="5.4" width="19.2" height="13.2" rx="2.4"/><path d="M2.4 10.2h19.2"/></svg>Tiếp tục thanh toán</button>
+    </div>`;
+  payUpdateTotal();
+}
+
+// ⚠️ Đọc trạng thái từ CHÍNH ô tích (`this`) chứ KHÔNG đảo `_paySel[i]`: nếu một lần render nào
+// đó lệch với mảng thì cách đảo sẽ tách rời ô tích và con số tổng.
+function payToggle(i, cb) {
+  _paySel[i] = !!(cb && cb.checked);
+  const all = document.getElementById('payAll');
+  if (all) all.checked = _paySel.every(Boolean);
+  payUpdateTotal();
+}
+
+function payToggleAll(on) {
+  _paySel = _paySel.map(() => !!on);
+  document.querySelectorAll('.pay-inv .pay-cb').forEach(cb => { cb.checked = !!on; });
+  payUpdateTotal();
+}
+
+function payUpdateTotal() {
+  let t = 0;
+  _payRecs.forEach((x, i) => { if (_paySel[i]) t += x.tien_no || 0; });
+  const el = document.getElementById('payTotal');
+  if (el) el.innerHTML = fmtHtml(t) + ' VNĐ';
+}
+
+// Tên khách (chữ xanh) → đóng tấm này rồi mở tấm “Chi tiết” đang có. Phải ĐÓNG TRƯỚC khi mở:
+// hai tấm cùng giành `body.overflow` (xem chú thích ở `closePayDirect`).
+function payOpenDetail() {
+  const r = _payRecs[0];
+  if (!r) return;
+  closePayDirect();
+  showDetailRow(r);
+}
+
+function closePay(e) { if (e.target === document.getElementById('payModal')) closePayDirect(); }
+function closePayDirect() {
+  const ov = document.getElementById('payModal');
+  if (ov) ov.classList.remove('open');
+  // ⛔ CHỈ trả cuộn lại khi tấm “Chi tiết” CŨNG đang đóng: từ tấm chi tiết bấm tên khách ở tấm
+  // này (hoặc ngược lại, hai tấm từng mở chồng) mà trả cuộn sớm là trang nền cuộn được trong
+  // lúc vẫn còn một tấm đang mở.
+  const det = document.getElementById('modal');
+  if (!det || !det.classList.contains('open')) document.body.style.overflow = '';
 }
 
 // Save/load ghi chú
@@ -7988,7 +8258,8 @@ function clearNvScope() {
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-document.addEventListener('keydown', e => { if (e.key==='Escape') closeModalDirect(); });
+// Esc đóng lần lượt: tấm “Thanh toán…” (nếu đang mở) rồi tới tấm “Chi tiết”.
+document.addEventListener('keydown', e => { if (e.key==='Escape') { closePayDirect(); closeModalDirect(); } });
 
 // ── COLUMN RESIZE (desktop) ────────────────
 // ⚠️ v1 → v2 khi ĐỔI THỨ TỰ CỘT. Bản đồ độ rộng lưu theo **chỉ số cột**, nên bản lưu từ v1
