@@ -2266,6 +2266,24 @@ body.light-mode .search-clear { background: rgba(0,0,0,0.1); color: #000000; }
 body.light-mode .search-clear:hover { background: rgba(239,68,68,0.2); color: #dc2626; }
 body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
 
+/* ══ “ĐÃ COPY” (`.toast`) — phản hồi cho NHẤN GIỮ thẻ/hàng (copy CÂU NHẮC NỢ 1 dòng
+   `Tiền điện {kỳ} của Quý KH {tên}, mã KH {mã} là {số tiền} đ` — xem `lpCopyText()`).
+   Dùng MỘT hộp duy nhất (`#toast`), JS dựng khi cần — xem `showToast()`.
+   ⚠️ `z-index: 4000` phải CAO HƠN `.modal-overlay` (300) để hộp này còn thấy khi tấm “Chi tiết”
+   đang mở, nhưng THẤP hơn lớp chờ 9999 lúc nạp tệp.
+   ⚠️ Nền vẫn là viên TỐI ở cả hai theme (chữ trắng 17,2:1 ✓) — cố ý: hộp này nổi trên nền thẻ
+   sáng hay tối đều đọc được, và ⛔ đừng đổi sang token `--text`/`--navy-mid` (light mode vẫn
+   giữ giá trị theme tối, xem chú thích ngay trên). */
+/* ⚠️ `width: max-content` là BẮT BUỘC, không phải trang trí: một phần tử `position: fixed`
+   chỉ có `left: 50%` sẽ co theo BỀ RỘNG CÒN LẠI bên phải (50% khung nhìn) ⇒ chuỗi copy dài
+   bị bẻ thành 4–5 dòng và hộp lệch hẳn sang trái (đã đo thật: 217px rộng, 114px cao ở khung
+   435px). `max-content` + `max-width` cho hộp rộng theo chữ rồi mới cắt ở trần, và `translate(-50%)`
+   vẫn giữ nó ở giữa. */
+/* ⚠️ `white-space: pre-line` để hộp này HIỆN ĐÚNG 3 DÒNG như nội dung sẽ dán (mặc định `normal`
+   gộp mọi `\n` thành dấu cách ⇒ người dùng không biết mình vừa copy cái gì). */
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 12px); width: max-content; max-width: min(92vw, 560px); padding: 10px 16px; border-radius: 10px; background: #0f172a; color: #ffffff; font-size: 14px; line-height: 1.35; white-space: pre-line; box-shadow: var(--elev-3); opacity: 0; pointer-events: none; transition: opacity 0.18s ease, transform 0.18s ease; z-index: 4000; }
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+
 .filter-row { display: flex; gap: 2px; }
 /* Chấm màu nhóm trong ô lọc (thay emoji) */
 .nhom-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; vertical-align: middle; }
@@ -7447,6 +7465,7 @@ function buildOldFlags() {
     _oldKindMap.set(key, rec.count + '_HĐ');
   }
 }
+
 function applyFilters() {
   const q = normVn(document.getElementById('searchInput').value);
   const nhom = document.getElementById('filterNhom').value;
@@ -7891,6 +7910,179 @@ function copyToClip(text, el) {
     }
   }).catch(() => {});
 }
+
+/* ══ NHẤN GIỮ (≥550ms) TRÊN THẺ CARD / HÀNG BẢNG = COPY CÂU TIN NHẮN NHẮC NỢ ══════════════════
+   Ba lần yêu cầu, bản CHỐT là bản mới nhất (2026-10-14c): “đổi nội dung copy ví dụ là, Tiền điện
+   T9/2026 của Quý KH Ngô Hồng Hà, mã KH PB15020002311 là 889.110 đ” ⇒ MỘT CÂU DUY NHẤT:
+     `Tiền điện {kỳ} của Quý KH {tên}, mã KH {mã} là {số tiền} đ`
+   ⛔ Hai định dạng trước đã bị THAY THẾ, đừng khôi phục: “Tên, Mã KH, Tiền nợ” (2026-10-14a, ngăn
+   bằng dấu phẩy) và 3 dòng “Tên: / Mã KH: / Tiền điện:” (2026-10-14b).
+   ⚠️ Đây là lần thứ HAI “nhấn giữ” xuất hiện ở file này: bản 2026-10-03 đã GỠ HẲN lớp nhấn-giữ
+   cũ và chuyển ĐÁNH DẤU sang NHẤN 2 LẦN. Nay nhấn-giữ mang việc KHÁC (copy) ⇒ ⛔ KHÔNG đụng
+   `ondblclick="toggleOrange(...)"`: nhấn 2 lần = đánh dấu cam (y như trước), nhấn GIỮ = copy.
+   Ba chốt chống “dội”: (1) nhả tay/di chuyển quá 10px là huỷ (để còn CUỘN được trên điện thoại);
+   (2) chặn DUY NHẤT cú `click` sinh ra ngay sau khi đã copy (nếu không, nhấn giữ trên tên khách
+   vừa copy vừa mở tấm “Chi tiết”); (3) chặn `contextmenu` khi đang giữ (Android hay bật menu
+   “sao chép/chia sẻ” giữa chừng).
+   ⚠️ Vùng loại trừ bên dưới là BẮT BUỘC: số tiền (`.pay-tap`) mở tấm thanh toán, viên mã KH
+   (`.kh-ma`/`.ma-kh`) chạm 1 lần đã copy mã, ô ghi chú là ô nhập, SĐT là link gọi — giữ trên
+   những chỗ đó mà vẫn copy cả dòng là hành vi hai-nơi-một-cú-chạm, đã từng gây lỗi khó hiểu.
+   ⛔ ĐỪNG bỏ `:not(input)` kiểu kiểm tra này rồi “để trình duyệt tự xử”.
+   ⚠️ Thẻ/hàng đã có `user-select: none` + `-webkit-touch-callout: none` từ trước nên giữ vẫn
+   không bôi đen chữ. */
+const LP_COPY_MS = 550;      // thời gian giữ để copy
+const LP_SLOP = 10;          // xê dịch tối đa (px) còn coi là ĐANG GIỮ
+let _lpTimer = null, _lpEl = null, _lpX = 0, _lpY = 0, _lpFired = false;
+function lpStop() { if (_lpTimer) { clearTimeout(_lpTimer); _lpTimer = null; } }
+// Vùng nhận nhấn-giữ: thẻ card (`.kh-card`) và hàng bảng (`.table-view tbody tr`) — hai nơi đều
+// có `data-ma`. Trả về `null` nếu cú nhấn rơi vào chỗ có thao tác riêng.
+function lpTarget(e) {
+  const t = e && e.target;
+  if (!t || !t.closest) return null;
+  if (t.closest('input, textarea, select, a, .pay-tap, .ma-kh, .kh-ma, .kh-phone, .th-resizer')) return null;
+  return t.closest('.kh-card[data-ma], .table-view tbody tr[data-ma]');
+}
+/* “T9/2026” — NHÃN KỲ cho câu tin nhắn. Người dùng viết kỳ theo THÁNG CUỐI của kỳ (“T9/2026” =
+   kỳ `1-9/2026`) nên phải cắt lấy số thứ HAI khi nhãn có dạng “A-B/YYYY”; nhãn “B/YYYY” thì lấy
+   chính nó. Kỳ nhiều mốc (chuỗi có dấu phẩy) ⇒ `pickNearestMonth()` chọn mốc gần nhất TRƯỚC rồi
+   mới cắt — ⛔ đừng cắt thẳng chuỗi nhiều mốc (ra “T8/2025” của khách năm ngoái).
+   Không nhận ra dạng nào thì trả về NGUYÊN chuỗi (vẫn còn hơn mất kỳ trong câu). */
+function lpPeriodLabel(thang) {
+  const s = String(thang || '').trim();
+  if (!s) return '';
+  const near = pickNearestMonth(s);
+  const m = String(near).match(/(\d{1,2})(?:\s*-\s*(\d{1,2}))?\s*\/\s*(\d{4})/);
+  if (!m) return near;
+  return 'T' + (m[2] || m[1]) + '/' + m[3];
+}
+/* Chuỗi copy: MỘT CÂU TIN NHẮN theo đúng ví dụ người dùng chốt (2026-10-14c):
+   “Tiền điện T9/2026 của Quý KH Ngô Hồng Hà, mã KH PB15020002311 là 889.110 đ”
+   ⇒ khuôn: `Tiền điện {KỲ} của Quý KH {tên}, mã KH {mã} là {số tiền} đ`
+   ⭐ **{KỲ} ĐỔI THEO SỐ HOÁ ĐƠN (yêu cầu 2026-10-14e): “nếu có nhiều kỳ thì chỉ hiển thị số HĐ và
+   tiền tổng”** ⇒ 1 hoá đơn: `{KỲ}` = `T{m}/{yyyy}` (như ví dụ) · **≥ 2 hoá đơn: `{KỲ}` = `n tháng`**
+   và câu KHÔNG nêu tên kỳ nào (khách nhiều kỳ không nên bị gán vào một kỳ), tiền là TỔNG mọi hoá đơn.
+   ⟳ **CHỮ ĐÃ ĐỔI `n HĐ` → `n tháng` (2026-10-14f, yêu cầu: “chỗ 2 HĐ đổi thành 2 tháng”, ví dụ
+   `PB15020069149`)** — ⛔ đừng trả lại “HĐ” cho “khớp nhãn trên thẻ”: câu này đi cho KHÁCH đọc,
+   nhãn `(n_HĐ)` trên thẻ là chữ nội bộ (khác mục đích, đừng gộp lại cho “nhất quán”).
+   Đo: `PB15020069149` ⇒ “*Tiền điện **2 tháng** của Quý KH Phún Tố Nga ( Mỹ Cảnh 1), mã KH
+   PB15020069149 là 30.637 đ*” · `PB15020005360` (3 hoá đơn) ⇒ “*Tiền điện **3 tháng** … 24.641.821 đ*”.
+   ⚠️ Số hoá đơn lấy từ `_hdCountMap` (đếm trên **TOÀN BỘ `allData`**, y như vạch `multi-hd` và
+   nhãn `(n_HĐ)` trên thẻ) — ⛔ ĐỪNG đếm trên tập đang lọc: vừa gõ tìm kiếm là KH 3 hoá đơn bị
+   đếm thành 1 và câu đổi sang dạng có kỳ.
+   ⚠️ Có hậu tố ` đ` (người dùng viết vậy). Nhãn giữ nguyên chữ “Tiền điện” và “Quý KH”.
+   ⛔ ĐỪNG quay lại định dạng 3 dòng “Tên: / Mã KH: / Tiền điện:” (2026-10-14b) — yêu cầu này THAY THẾ.
+   Đọc ĐÚNG thứ đang hiển thị trên phần tử (thẻ đã gộp nhiều hoá đơn thì số là TỔNG của khách),
+   thiếu thì lấy từ bản ghi đang hiển thị trong `filtered`; kỳ lấy từ `thang_no` của bản ghi đó
+   (giống kỳ đang in trên thẻ/hàng), thiếu bản ghi thì đọc `.kh-thang` trên thẻ và cắt bỏ phần
+   hậu tố trong ngoặc như `(1_HĐ)` / `(Nợ cũ)`. */
+function lpCopyText(el) {
+  const ma = (el.dataset && el.dataset.ma) || '';
+  let ten = '', tien = '', kyRaw = '';
+  if (el.classList.contains('kh-card')) {
+    const nEl = el.querySelector('.kh-name'), tEl = el.querySelector('.kh-tien');
+    const kEl = el.querySelector('.kh-thang');
+    if (nEl) ten = nEl.textContent.trim();
+    if (tEl) tien = tEl.textContent.trim();
+    if (kEl) kyRaw = kEl.textContent.replace(/\([^)]*\)/g, '').trim();
+  } else {
+    const nEl = el.querySelector('.cell-tenkh'), tEl = el.querySelector('.tien-no');
+    // `title` = tên GỐC (ô tên có nhánh chữ viết tắt cho bảng điện thoại — đừng lấy nhánh đó)
+    if (nEl) ten = (nEl.getAttribute('title') || nEl.textContent).trim();
+    if (tEl) tien = tEl.textContent.trim();
+  }
+  if (ma) {
+    const rec = filtered.find(x => (x.ma_khach_hang || '') === ma);
+    if (rec) {
+      if (!ten) ten = rec.ten_khach_hang || '';
+      if (!tien) tien = fmt(rec.tien_no);
+      if (rec.thang_no) kyRaw = rec.thang_no;
+    }
+  }
+  const ky = lpPeriodLabel(kyRaw);
+  /* Số hoá đơn của KH: ưu tiên `_hdCountMap` (đếm trên toàn bộ dữ liệu, dựng trong `buildOldFlags`),
+     không có thì đếm tại chỗ theo mã KH. `|| 1` để dữ liệu thiếu cũng ra dạng 1 hoá đơn (còn kỳ). */
+  const nHd = ma ? (_hdCountMap.get(ma) || allData.filter(x => (x.ma_khach_hang || '') === ma).length || 1) : 1;
+  const slot = nHd >= 2 ? (nHd + ' tháng') : ky;   // ≥ 2 hoá đơn ⇒ thay kỳ bằng SỐ THÁNG (kèm tiền TỔNG)
+  const ai = ten || ma;   // không có tên thì gọi bằng mã KH, câu vẫn đủ nghĩa
+  return 'Tiền điện' + (slot ? ' ' + slot : '') + ' của Quý KH ' + ai +
+         (ma ? ', mã KH ' + ma : '') + ' là ' + (tien || fmt(0)) + ' đ';
+}
+// Hộp “Đã copy …” — MỘT hộp dùng chung, tự dựng khi cần; hẹn giờ cũ bị huỷ nên hai lần copy
+// liên tiếp không làm hộp tắt sớm.
+let _toastTimer = null;
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.className = 'toast';
+    t.setAttribute('role', 'status');
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.classList.add('on');
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { t.classList.remove('on'); _toastTimer = null; }, 2000);
+}
+/* Đường dự phòng khi Clipboard API không dùng được. Vì sao CẦN: `navigator.clipboard.writeText`
+   chỉ chạy khi tài liệu **đang được focus** và origin là "secure context" — mở file trực tiếp
+   (`file://`) hoặc app bị mất focus là nó `reject` (đã gặp thật trên preview: NotAllowedError
+   khi webview không focus, dù `navigator.clipboard` vẫn tồn tại). `execCommand('copy')` cũ
+   nhưng KHÔNG đòi focus ⇒ có nó thì thao tác vẫn ra clipboard thay vì báo lỗi.
+   ⛔ ĐỪNG gỡ "cách cũ" này chỉ vì nó deprecated: nó là đường duy nhất còn chạy được khi
+   Clipboard API bị từ chối. Ô tạm đặt `position: fixed` ở ngoài khung nhìn để không nhảy
+   trang, và luôn `remove()` — không để lại rác trong DOM. */
+function lpCopyFallback(txt) {
+  const ta = document.createElement('textarea');
+  ta.value = txt;
+  ta.setAttribute('readonly', '');
+  ta.style.cssText = 'position:fixed;top:-1000px;left:-1000px;opacity:0';
+  document.body.appendChild(ta);
+  let ok = false;
+  try { ta.select(); ok = document.execCommand('copy'); } catch (e) { ok = false; }
+  ta.remove();
+  return ok;
+}
+function lpCopy(el) {
+  const txt = lpCopyText(el);
+  const done = ok => showToast((ok ? '✓ Đã copy: ' : '⚠ Không copy được: ') + txt);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(() => done(true)).catch(() => done(lpCopyFallback(txt)));
+  } else {
+    done(lpCopyFallback(txt));   // ⛔ Đừng im lặng: người dùng cần biết là dán ra sẽ không có gì.
+  }
+}
+// Toàn bộ cử chỉ gắn ở DOCUMENT pha CAPTURE (khớp mẫu uỷ nhiệm cũ đã gỡ 2026-10-03): thẻ và
+// hàng được DỰNG LẠI mỗi lần render nên gắn trực tiếp là mất sau lần lọc kế tiếp.
+document.addEventListener('pointerdown', e => {
+  _lpEl = null; lpStop(); _lpFired = false;
+  if (e.button != null && e.button !== 0) return;   // chỉ chuột trái / chạm
+  const el = lpTarget(e);
+  if (!el) return;
+  _lpEl = el; _lpX = e.clientX; _lpY = e.clientY;
+  _lpTimer = setTimeout(() => {
+    _lpTimer = null;
+    _lpFired = true;
+    lpCopy(el);
+  }, LP_COPY_MS);
+}, true);
+document.addEventListener('pointermove', e => {
+  if (!_lpTimer || !_lpEl) return;
+  if (Math.abs(e.clientX - _lpX) > LP_SLOP || Math.abs(e.clientY - _lpY) > LP_SLOP) lpStop();
+}, true);
+document.addEventListener('pointerup', e => { lpStop(); }, true);
+document.addEventListener('pointercancel', e => { lpStop(); _lpEl = null; }, true);
+// Cú `click` đầu tiên ngay sau khi copy bị chặn (chỉ MỘT lần) — xem chú thích (2) ở trên.
+document.addEventListener('click', e => {
+  if (!_lpFired) return;
+  _lpFired = false;
+  e.stopPropagation();
+  if (e.preventDefault) e.preventDefault();
+}, true);
+// Menu ngữ cảnh của hệ điều hành: chặn khi ĐANG giữ trên thẻ/hàng (chuột phải không đặt `_lpEl`
+// nên menu chuột phải bình thường vẫn dùng được).
+document.addEventListener('contextmenu', e => { if (_lpEl) e.preventDefault(); }, true);
+
 function goPage(p) {
   const total = Math.ceil(filtered.length/PAGE_SIZE);
   if (p<1||p>total) return;
