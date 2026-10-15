@@ -4019,8 +4019,9 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
    Yêu cầu người dùng: “tôi muốn khi chạm vào số tiền thì hiện bảng giao diện như ảnh”.
    Tấm này DÙNG LẠI `.modal-overlay` + `.modal` (nên cùng kiểu trượt lên ở điện thoại, cùng
    bo góc, cùng nền theo theme với tấm “Chi tiết”) — ở đây chỉ khai RUỘT riêng.
-   ⛔ Hai thứ trong ảnh KHÔNG có dữ liệu nên CHỈ ĐỂ HIỂN THỊ (người dùng đã chốt):
-      nút quét mã trong ô “Mã khách hàng” và link “Xem giấy báo”.
+   ⛔ Link “Xem giấy báo” KHÔNG có dữ liệu nên CHỈ ĐỂ HIỂN THỊ (người dùng đã chốt).
+   ⟳ 2026-10-15: nút mã QR trong ô “Mã khách hàng” NAY CÓ VIỆC THẬT — chạm là chụp tấm này
+      thành ảnh PNG để lưu/chia sẻ (`capturePayShot()`, xem `#shotModal`). Nó KHÔNG quét mã.
    ⛔ KHÔNG có dòng “ID hóa đơn” của ảnh: dữ liệu không có cột đó (người dùng đã chốt bỏ).
    ⚠️ Viên “HĐ tiền điện” (`.pay-badge`) là **NỀN CAM VÀNG `#e8a822` + CHỮ TRẮNG + CHẤM TRẮNG**
    — màu lấy NGUYÊN từ ảnh người dùng gửi (xem chú thích ở rule). Người dùng đã CHỐT chữ
@@ -4103,13 +4104,16 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
    ở `@import` đầu file nên không phải thêm gì. */
 .pay-code-val { font-size: 16px; font-weight: 400; color: var(--text); letter-spacing: 0.01em; word-break: break-all; }
 .pay-qr { width: 38px; height: 38px; border: 1.5px solid #60a5fa; border-radius: 9px; background: transparent; color: #60a5fa; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; padding: 0; }   /* ⟳ 2026-10-13l: `42px` → `38px` cùng lượt với đệm ô mã KH — nút phải thấp hơn đệm mới ăn */
-.pay-qr { border-color: #2563eb; color: #2563eb; }   /* ⟳ 2026-10-13h: luôn tông đậm — nền tấm luôn trắng */
-/* Tên khách hàng: chữ xanh như ảnh NHƯNG có việc thật — chạm là mở tấm “Chi tiết” (xem
-   `payOpenDetail()`) ⇒ không phải liên kết chết. */
+.pay-qr { border-color: #2563eb; color: #2563eb; }   /* ⟳ 2026-10-13h: luôn tông đậm — nền tấm luôn trắng *//* Tên khách hàng: chỉ còn là CHỮ (chữ xanh như ảnh).
+  ⟳ 2026-10-15: ⛔ CHẠM VÀO TÊN KHÔNG MỞ TẤM “CHI TIẾT” NỮA (yêu cầu người dùng: “tôi muốn
+  ẩn chức năng khi chạm vào tên kh vẫn hiển thị bảng modal”) — `onclick` đã gỡ khỏi
+  `.pay-name` và hàm `payOpenDetail()` đã XOÁ. Nhờ vậy tên khách ở tấm này thuần HIỂN THỊ,
+  cùng nhóm với “Xem giấy báo” và nút đỏ; muốn mở “Chi tiết” thì đóng tấm rồi chạm tên kh
+  TRÊN THẺ (đường cũ vẫn còn nguyên). */
 /* “Nét tên KH mỏng hơn” (yêu cầu người dùng): `600` → **`400`** — nay tên khách cùng nét với
    mã khách hàng ở ô trên nên hai dòng không còn “nặng nhẹ” lệch nhau. Vẫn giữ màu xanh để
    thấy là chạm được. Muốn mỏng hơn nữa thì đổi thành `300` (Inter 300 đã nạp sẵn). */
-.pay-name { display: inline-block; align-self: flex-start; margin: 15px 16px 0; font-size: 16px; font-weight: 400; color: #60a5fa; cursor: pointer; font-family: 'Inter', sans-serif; }
+.pay-name { display: inline-block; align-self: flex-start; margin: 15px 16px 0; font-size: 16px; font-weight: 400; color: #60a5fa; font-family: 'Inter', sans-serif; }   /* ⟳ 2026-10-15: bỏ `cursor: pointer` cùng lượt với việc gỡ `onclick` — con trỏ bàn tay sẽ nói dối (tên khách không còn bấm được) */
 .pay-name { color: #2563eb; }   /* ⟳ 2026-10-13h: luôn tông đậm (nền tấm luôn trắng) */
 .pay-addr { display: flex; gap: 7px; padding: 13px 16px 0; font-size: 15px; color: var(--text); line-height: 1.4; }
 .pay-addr svg { flex: 0 0 auto; margin-top: 2px; color: #dc2626; }
@@ -4232,6 +4236,95 @@ body .modal.pay-modal > .modal-handle { background: rgba(0,0,0,0.15); }   /* tay
 /* Số tiền chạm được: chỉ gắn cho SỐ TIỀN ở thẻ/bảng, KHÔNG gắn cho `.tien-no` trong tấm
    “Chi tiết” hay bảng tổng (ở đó không có việc gì để mở ⇒ con trỏ bàn tay sẽ nói dối). */
 .pay-tap { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+/* ══ 📸 “CHỤP MÀN HÌNH” TẤM THANH TOÁN (`#shotModal`) — ⟳ 2026-10-15
+   *Yêu cầu người dùng: “tôi muốn thêm chức năng chụp màn hình hiển thị trên mobile khi chạm vào
+   chỗ qrcode”*. Chạm nút `.pay-qr` (ô “Mã khách hàng”) ⇒ `capturePayShot()` dựng ẢNH PNG của
+   chính tấm đang mở rồi hiện ở đây để NHẤN GIỮ mà lưu/chia sẻ (gửi khách qua Zalo…).
+   ⚠️ `z-index: 320` — PHẢI trên `.modal-overlay` (300) vì lớp này nằm ngay TRÊN tấm thanh toán,
+   và DƯỚI `.toast` (4000) để hộp “Đang tạo ảnh…” vẫn thấy được.
+   ⛔ TRANG NÀY TRẮNG TRƠN, KHÔNG KHUNG TỐI (yêu cầu người dùng 2026-10-15: *“tôi muốn khi chụp
+   màn hình thì hiển thị y như ảnh”* — ảnh người dùng gửi là tấm TRẮNG nằm trên nền TRẮNG).
+   Bản đầu dựng khung tối + thanh tiêu đề “Ảnh chụp tấm thanh toán” + vùng cuộn xám ⇒ nhìn ra
+   ngay là “một cái hộp khác”, không giống tấm thật. ⛔ ĐỪNG dựng lại thanh tiêu đề.
+   ⚠️ Vì nền trắng nên phần TỐI của `.modal-overlay` phải ghi đè đủ 3 thứ: `background`,
+   `backdrop-filter` (làm mờ nền thành xám) và `align-items` (mặc định `flex-end` = dính đáy).
+   ⚠️ Ảnh giữ ĐÚNG bề rộng tấm (không thu nhỏ, không `max-height`): chữ trong ảnh phải to bằng
+   chữ trên màn hình. Ảnh cao hơn màn hình thì TRANG này cuộn (`overflow-y: auto`).
+   ⚠️ Chỉ còn ĐÚNG một nút đóng — vòng tròn mờ ở góc phải trên, nằm ĐÈ LÊN ảnh (`position:
+   absolute`) nên không chen vào bố cục ảnh. */
+.shot-overlay { z-index: 320; align-items: flex-start; justify-content: center; padding: 0; background: #ffffff; backdrop-filter: none; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.shot-panel { position: relative; display: block; width: 100%; max-width: 560px; margin: 0 auto; background: #ffffff; }
+.shot-x { position: absolute; top: 6px; right: 6px; z-index: 1; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: none; border-radius: 50%; background: rgba(15,23,42,0.08); color: #64748b; font-size: 14px; line-height: 1; cursor: pointer; }
+.shot-img { display: block; width: 100%; height: auto; background: #ffffff; }
+.shot-tip { padding: 10px 14px 18px; font-size: 12px; color: #94a3b8; text-align: center; }
+
+/* ══ 🔑 “KỲ HOÁ ĐƠN HIỆN TẠI” — dòng nhắc ở tab “Nợ cũ, nhiều kỳ” + ô chọn trong Cài đặt
+   (⟳ 2026-10-15, cùng lượt với `refreshCurrentPeriod()`).
+   ⚠️ Dòng nhắc nằm TRONG `#oldView`, TRƯỚC `.card-view`: tab này không có tiêu đề nào khác nên
+   đây là chỗ duy nhất nói được mốc đang dùng. Chiều cao của nó (đo được ~32px) làm danh sách
+   thẻ đẩy xuống — cố ý, không phải lỗi khoảng trống. */
+.old-ky-note { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px; line-height: 1.35; color: var(--text-dim); border-bottom: 1px solid var(--border); }
+.old-ky-txt { flex: 1 1 auto; min-width: 0; }
+.old-ky-note b { color: #60a5fa; font-weight: 700; }
+/* Nút mở bảng thống kê: viền xanh nhạt đúng bộ với các pill khác của app — `#60a5fa` ở theme tối
+   và `#2563eb` ở theme sáng (cùng cặp màu của `.pay-notice`), không dùng một biến vì app chỉ
+   khai lại `--text-dim` trong `body.light-mode`. */
+.old-ky-btn { flex: 0 0 auto; padding: 5px 10px; border-radius: 8px; border: 1px solid #60a5fa; background: transparent; color: #60a5fa; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; }
+body.light-mode .old-ky-note { color: #5b6777; border-bottom-color: #e2e8f0; }
+body.light-mode .old-ky-note b { color: #2563eb; }
+body.light-mode .old-ky-btn { border-color: #2563eb; color: #2563eb; }
+/* ── Tấm “Nợ cũ theo từng kỳ” ── 4 cột trong bề rộng điện thoại (~407px ruột):
+   “Kỳ” trái, ba cột số phải.
+   ⛔⛔ BẪY ĐÃ GẶP THẬT (2026-10-15d) — PHẢI KHAI MÀU ĐÍCH DANH CHO `body.light-mode`:
+   `--text` trong theme sáng VẪN LÀ MÀU CỦA THEME TỐI (`#e2e8f0` — xem ghi chú ở khối `.pay-*`),
+   nên dùng `color: var(--text)` là bản sáng ra **CHỮ TRẮNG MỜ TRÊN NỀN SÁNG**: lần đầu ảnh
+   chụp cho thấy tiêu đề và MỌI số trong bảng gần như vô hình. Mọi chỗ dùng `--text`/`--border`
+   dưới đây đều có bản `body.light-mode` đi kèm — thêm ô mới thì phải thêm cả bản sáng.
+   ⛔ BỀ RỘNG: số tiền dài nhất (“15.352.122.472”) không được CẮT — lần đầu để 13px và tiêu đề
+   “TỔNG TIỀN” to nên cột cuối tràn khỏi bảng, số bị cụt đuôi (“2.106.547....”). Nay hạ cỡ chữ
+   bảng xuống **12px** (tiêu đề 11px, nhãn ngắn “KH”/“HĐ” như hàng “Tổng …” của app) + đệm ngang
+   4px ⇒ tổng bề rộng vừa trong ruột 407px. ⚠️ Đo lại bằng `scrollWidth > clientWidth` sau mỗi
+   lần đổi cỡ chữ — số Việt Nam có dấu chấm phân cách nên rất dễ vượt. */
+.ky-hd { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 16px 16px 8px; }
+.ky-title { font-size: 18px; font-weight: 700; color: var(--text); }
+.ky-x { background: rgba(255,255,255,0.08); border: none; color: var(--text-dim); font-size: 14px; line-height: 1; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+body.light-mode .ky-x { background: rgba(15,23,42,0.06); color: #64748b; }
+.ky-sub { padding: 0 16px 10px; font-size: 13px; line-height: 1.4; color: var(--text-dim); }
+.ky-sub b { color: var(--text); }
+.ky-body { padding: 0 16px 18px; }
+.ky-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+/* ⛔⛔ CỠ CHỮ PHẢI ĐẶT TRỰC TIẾP LÊN Ô, ⛔ KHÔNG đặt lên `<table>` (bẫy đã gặp thật 2026-10-15d):
+   app có `tbody td { font-size: var(--fs-tb) }` (15px) — rule đó đặt giá trị **trực tiếp trên ô** nên
+   THẮNG cả `inherit` từ `<table>`; đặt 12px ở `.ky-table` là chữ vẫn 15px, cột tiền tràn ra ngoài
+   và số bị cắt cụt (“11.078.308....”). `.ky-table td` = (0,1,1) > `tbody td` = (0,0,2) nên đặt ở đây mới ăn. */
+.ky-table th, .ky-table td { padding: 8px 4px; font-size: 12px; text-align: right; white-space: nowrap; overflow: hidden; }
+.ky-table th:first-child, .ky-table td:first-child { text-align: left; }
+/* Bề rộng cột theo TỈ LỆ, không theo nội dung: cột “Kỳ” rộng nhất, ba cột số chia phần còn lại;
+   như vậy số dài ngắn gì cũng không đẩy cột ra ngoài — chỉ cần đủ chỗ cho số dài nhất (đã đo). */
+.ky-table th:nth-child(1) { width: 34%; }
+.ky-table th:nth-child(2) { width: 18%; }
+.ky-table th:nth-child(3) { width: 22%; }
+.ky-table th:nth-child(4) { width: 26%; }
+.ky-table thead th { font-size: 11px; font-weight: 600; letter-spacing: 0.01em; color: var(--text-dim); border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+.ky-table tbody td { border-top: 1px solid var(--border); color: var(--text); font-variant-numeric: tabular-nums; }
+.ky-table td:nth-child(4) { font-weight: 700; }
+.ky-cur td { background: rgba(37,99,235,0.12); }
+.ky-tag { font-size: 11px; color: #60a5fa; }
+body.light-mode .ky-title { color: #0f172a; }
+body.light-mode .ky-sub { color: #5b6777; }
+body.light-mode .ky-sub b { color: #0f172a; }
+body.light-mode .ky-table thead th { color: #5b6777; border-bottom-color: #e2e8f0; }
+body.light-mode .ky-table tbody td { color: #0f172a; border-top-color: #e2e8f0; }
+body.light-mode .ky-cur td { background: rgba(37,99,235,0.10); }
+body.light-mode .ky-tag { color: #2563eb; }
+body.light-mode .ky-foot, body.light-mode .ky-empty { color: #5b6777; }
+.ky-foot { margin-top: 10px; font-size: 12px; color: var(--text-dim); }
+.ky-empty { padding: 10px 0 4px; font-size: 14px; color: var(--text-dim); }
+/* Ô chọn kỳ: dạng <select> gốc của hệ điều hành (không tự vẽ lại mũi tên) — cùng bề rộng với
+   các khối khác trong tấm cài đặt (`width: 100%` của `.cfg-row-col`). */
+.cfg-select { width: 100%; box-sizing: border-box; padding: 9px 10px; border-radius: 9px; border: 1px solid var(--border); background: var(--navy-mid); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; }
+body.light-mode .cfg-select { background: #ffffff; color: #0f172a; border-color: #d1d5db; }
 
 /* ── RESPONSIVE ─────────────────────────── */
 /* Mobile: cards */
@@ -5769,6 +5862,15 @@ body.force-desktop .table-view { display: block; }
 
     <!-- OLD DEBT VIEW (Nợ cũ) -->
     <div id="oldView" style="display:none">
+    <!-- Dòng nhắc MỐC của tab này — ⟳ 2026-10-15: mốc nay TỰ ĐỔI theo từng tháng nạp vào nên
+         phải nói ra đang tính theo kỳ nào, nếu không người dùng không thể biết vì sao danh sách
+         khác tháng trước. Chữ do `syncPeriodControl()` ghi vào `#oldPeriodNoteTxt` (⛔ không ghi
+         vào `#oldPeriodNote`: đây là khối FLEX còn chứa cả nút bên phải), nút mở tấm thống kê
+         gọi `openKyPanel()`. -->
+    <div class="old-ky-note" id="oldPeriodNote">
+      <span class="old-ky-txt" id="oldPeriodNoteTxt"></span>
+      <button class="old-ky-btn" type="button" onclick="openKyPanel()" aria-label="Thống kê nợ cũ theo từng kỳ">Thống kê theo kỳ</button>
+    </div>
     <div class="card-view">
       <div class="card-list" id="oldCardList"></div>
       <div id="emptyStateOld" class="empty-state" style="display:none">
@@ -5859,6 +5961,39 @@ body.force-desktop .table-view { display: block; }
   </div>
 </div>
 
+<!-- 📊 TẤM “NỢ CŨ THEO TỪNG KỲ” (`#kyModal`) — mở bằng nút “Thống kê theo kỳ” ở đầu tab
+     “Nợ cũ, nhiều kỳ” (`openKyPanel()`). Ô SỐ liệu DỰNG LẠI mỗi lần mở (như tấm thanh toán),
+     nên đổi mốc kỳ rồi mở lại là số tự đúng — ⛔ đừng đổ số vào markup tĩnh.
+     ⚠️ Dùng lại `.modal-overlay`/`.modal` như hai tấm kia (cùng kiểu trượt lên ở điện thoại,
+     cùng nền theo theme); ⛔ khác tấm ảnh chụp: tấm NÀY phải theo theme, không được ghim nền trắng. -->
+<div class="modal-overlay ky-overlay" id="kyModal" onclick="closeKy(event)">
+  <div class="modal ky-modal" role="dialog" aria-modal="true" aria-label="Nợ cũ theo từng kỳ">
+    <div class="modal-handle"></div>
+    <div class="ky-hd">
+      <span class="ky-title">Nợ cũ theo từng kỳ</span>
+      <button class="ky-x" type="button" onclick="closeKyDirect()" aria-label="Đóng">✕</button>
+    </div>
+    <div class="ky-sub" id="kySub"></div>
+    <div class="ky-body" id="kyBody"></div>
+  </div>
+</div>
+
+<!-- 📸 TẤM “ẢNH CHỤP MÀN HÌNH” (`#shotModal`) — mở bằng cách CHẠM NÚT MÃ QR ở ô “Mã khách hàng”
+     của tấm thanh toán (xem `capturePayShot()`). Nằm NGOÀI `#payModal` và TRÊN nó (`z-index: 320`)
+     ⇒ đóng ảnh là quay lại ĐÚNG tấm thanh toán đang mở (tấm đó KHÔNG bị đóng theo).
+     ⛔ Không có nút “Lưu”/“Chia sẻ” ở đây: trên điện thoại, NHẤN GIỮ ảnh là đã ra menu lưu/chia
+     sẻ của hệ điều hành (đúng yêu cầu “hiển thị trên mobile”). Thêm nút nữa là phải tự dựng
+     blob + `navigator.share` và lại lệch hành vi giữa các máy — hỏi trước khi làm.
+     ⛔ KHÔNG có thanh tiêu đề / khung tối: trang này TRẮNG và chỉ có ẢNH — xem chú thích khối
+     CSS `.shot-overlay` (yêu cầu “hiển thị y như ảnh”). -->
+<div class="modal-overlay shot-overlay" id="shotModal" onclick="closeShot(event)">
+  <div class="shot-panel" role="dialog" aria-modal="true" aria-label="Ảnh chụp tấm thanh toán">
+    <button class="shot-x" type="button" onclick="closeShotDirect()" aria-label="Đóng ảnh">✕</button>
+    <img class="shot-img" id="shotImg" alt="Ảnh chụp tấm thanh toán">
+    <div class="shot-tip">Nhấn giữ ảnh để lưu hoặc chia sẻ</div>
+  </div>
+</div>
+
 <!-- ══════════════════════════════════════════════════════════════════════════════════════
      ⚙️ TẤM CÀI ĐẶT (`#cfg`) — MỘT CHỖ CHỨA MỌI NÚT ĐIỀU KHIỂN
      Yêu cầu người dùng: “cho thêm 1 nút cài đặt và bỏ tất cả các nút vào đó” (chốt lại:
@@ -5941,6 +6076,20 @@ body.force-desktop .table-view { display: block; }
        2 tab `#sortDanhSo` / `#sortTienNo` nay nằm lại ở HÀNG SẮP XẾP trong `.toolbar` — đúng
        chỗ cũ của chúng. ⛔ Đừng dựng lại hàng này ở đây: 2 nút trùng id thì
        `updateSortButtons()` chỉ cập nhật bản ĐẦU TIÊN, bản trong tấm đứng im với mũi tên cũ. -->
+
+  <!-- 4b. KỲ HOÁ ĐƠN HIỆN TẠI — ⟳ 2026-10-15 (yêu cầu: “dữ liệu tự ghi nhớ mỗi tháng khi đưa dữ
+       liệu vô … ở tab Nợ cũ / nhiều kỳ”). Trước đây mốc này là HẰNG SỐ trong code
+       (`CURRENT_INVOICE_PERIOD`, phải sửa tay 3 số mỗi tháng — xem lịch sử ở run.md); nay
+       `refreshCurrentPeriod()` TỰ tính từ dữ liệu và hàng này là chỗ DUY NHẤT nói ra + sửa được.
+       ⚠️ Nhãn giá trị `#cfgPeriodVal` do `syncPeriodControl()` ghi (đừng để lại chuỗi tĩnh).
+       ⚠️ `#periodSel` dựng lại `innerHTML` mỗi lần gọi ⇒ ⛔ KHÔNG gắn `onchange` bằng thuộc tính
+       trên từng `<option>` (mất khi dựng lại) — `onchange` đặt ở chính thẻ `<select>`.
+       ⚠️ Nhãn option ghi kèm số hoá đơn của kỳ + ngày đã nạp (sổ `qlno_months_v1`) — đó là phần
+       “nhớ mỗi tháng” nhìn thấy được. -->
+  <div class="cfg-row cfg-row-col">
+    <span class="cfg-lb">Kỳ hoá đơn<i class="cfg-val" id="cfgPeriodVal">—</i></span>
+    <select class="cfg-select" id="periodSel" onchange="setCurrentPeriod(this.value)" aria-label="Kỳ hoá đơn hiện tại"></select>
+  </div>
 
   <!-- 5. TÁC VỤ BẢNG — cụm `#pageActions` cũ (Xuất file · In bảng · Sao lưu). Vẫn đúng 3 id
        cũ nên `exportExcel()` / `inBang()` / `saoLuuDuLieu()` và chỗ bật/tắt `#exportBtn`
@@ -6306,6 +6455,10 @@ async function clearSavedData() {
   try { await dbClear(); } catch(e) {}
   allData = []; filtered = [];
   nvScope = ''; currentPage = 1;
+  /* 🔑 Xoá dữ liệu ⇒ không còn kỳ nào: mốc về rỗng (tab “Nợ cũ, nhiều kỳ” cũng trống).
+     Sổ nhớ các tháng (`qlno_months_v1`) GIỮ LẠI — đó là lịch sử những tháng đã nạp, không phải
+     dữ liệu hoá đơn, nên xoá tệp không làm mất. */
+  refreshCurrentPeriod();
   document.getElementById('fileLabel').textContent = 'Chưa có dữ liệu';
   document.getElementById('dataView').style.display = 'none';
   document.getElementById('welcomeState').style.display = 'block';
@@ -6349,6 +6502,7 @@ async function restoreData() {
   document.getElementById('exportBtn').style.display = 'flex';
   document.getElementById('viewBtn').style.display = 'inline-flex';
   applyViewBtnState();
+  refreshCurrentPeriod();   // 🔑 mốc phải có TRƯỚC khi lọc: nó quyết định khách nào là “nợ cũ”
   loadGhiChu(); initFilters(); updateStats(); applyFilters();
   // ⚠️ BẮT BUỘC: nhãn các ô lọc phải được ĐO LẠI sau khi `dataView` hiện ra — y như
   // `processFile()` làm. `initFilters()` chạy khi view vừa mới `block` nhưng nhãn còn
@@ -6537,6 +6691,14 @@ function processFile(file) {
           abc: String(r[cABC]||'').trim(),
         };
       }).filter(r => r.ma_khach_hang || r.ten_khach_hang);
+
+      /* 🔑 SANG THÁNG MỚI = NẠP TỆP MỚI ⇒ MỐC PHẢI ĐI THEO: xoá lựa chọn tay (nếu có) rồi để
+         `refreshCurrentPeriod()` tự chọn kỳ của tháng này; đồng thời GHI NHỚ tháng vừa nạp vào
+         sổ `qlno_months_v1`. ⚠️ Phải chạy TRƯỚC mọi `applyFilters()` bên dưới (mốc là thứ
+         quyết định khách nào vào tab “Nợ cũ, nhiều kỳ”). */
+      try { localStorage.removeItem(OLD_PERIOD_KEY); } catch (e) {}
+      refreshCurrentPeriod();
+      rememberMonth(currentPeriodAuto);
 
       document.getElementById('fileLabel').textContent = file.name;
 
@@ -7389,17 +7551,230 @@ function clearSearch() {
 function handleFilter() { currentPage=1; applyFilters(); saveUiState(); }
 
 /* 🔑 KỲ HOÁ ĐƠN HIỆN TẠI — MỐC DUY NHẤT để phân biệt “Nợ cũ / nhiều kỳ”.
-   Định nghĩa (yêu cầu người dùng 2026-10-08): khách hàng có **≥ 1 hoá đơn ở kỳ KHÁC mốc này**
-   → vào tab “Nợ cũ, nhiều kỳ”. Có hoá đơn ĐÚNG mốc hay không ĐỀU TÍNH (không loại ai);
-   có CẢ HAI (kỳ mốc + kỳ cũ) thì gọi là **“nợ nhiều kỳ”**.
-   ⟳ 2026-10-08: đổi mốc `1-8/2026` → **`1-9/2026`**.
-   ⛔ Sang kỳ sau chỉ sửa ĐÚNG 3 số ở đây rồi đo lại — đừng rải hằng số ra chỗ khác. */
-const CURRENT_INVOICE_PERIOD = { start: 1, end: 9, year: 2026 };
-// True when the period label is the current invoice period (tolerant of spaces/leading zeros).
+   Định nghĩa (yêu cầu người dùng 2026-10-08, nhắc lại 2026-10-15): khách hàng có **≥ 1 hoá đơn
+   ở kỳ KHÁC mốc này** → vào tab “Nợ cũ, nhiều kỳ”. Có hoá đơn ĐÚNG mốc hay không ĐỀU TÍNH
+   (không loại ai); có CẢ HAI (kỳ mốc + kỳ cũ) thì gọi là **“nợ nhiều kỳ”**.
+   ⟳ 2026-10-15: **MỐC KHÔNG CÒN LÀ HẰNG SỐ CỨNG** — *yêu cầu người dùng: “dữ liệu tự ghi nhớ
+   mỗi tháng khi đưa dữ liệu vô (ví dụ mỗi tháng đưa vô 1-9/2026, 1-10/2026, 1-11/2026…) ở tab
+   Nợ cũ / nhiều kỳ”*. Nay mỗi lần nạp tệp, app **nhớ kỳ của tháng đó** (`qlno_months_v1`) và
+   **tự chọn kỳ hiện tại** = kỳ có NHIỀU HOÁ ĐƠN NHẤT trong dữ liệu (đồng hạng ⇒ kỳ mới hơn).
+   ⛔ Vì sao KHÔNG lấy “kỳ mới nhất trong tệp”: tệp 12-10 có **10 HĐ của 1-10/2026** (khách
+   được lập sớm) trong khi **9.143 HĐ là của 1-9/2026** — lấy “mới nhất” là 9.143 hoá đơn
+   đang phải thu của tháng 9 bị đẩy hết sang “nợ cũ”. Kỳ nhiều hoá đơn nhất mới đúng là tháng
+   đang lập hoá đơn. (Đo lại mỗi lần đổi cách chọn: xem mục “🔑 KỲ HIỆN TẠI” ở run.md.)
+   ⚠️ Người dùng CHỌN TAY được (hàng “Kỳ hoá đơn” trong Cài đặt) — lựa chọn đó chỉ dùng khi
+   kỳ ấy CÒN trong dữ liệu, và bị **XOÁ khi nạp tệp mới** (nạp tệp = sang tháng mới ⇒ mốc phải
+   tự đi theo, giữ lựa chọn cũ là mốc sai mà không ai biết). */
+const OLD_PERIOD_KEY = 'qlno_cur_period';   // kỳ do NGƯỜI DÙNG chọn tay ('' = tự động)
+const MONTHS_KEY = 'qlno_months_v1';        // sổ nhớ các tháng đã nạp: khoá kỳ → 'dd/mm'
+let currentPeriod = '';        // kỳ ĐANG dùng (nhãn như '1-9/2026')
+let currentPeriodAuto = '';    // app tự tính ra (để hiện trong Cài đặt)
+let currentPeriodManual = false;   // true khi mốc đến từ lựa chọn tay
+
+// Nhãn kỳ → khoá so sánh 'y-end-start' ('1-9/2026' → '2026-9-1'); '' nếu không đọc được.
+// Dùng CHUNG `periodEndKey` ở dưới (đã khoan nhận cả 'A-B/YYYY' lẫn 'A/YYYY').
+function periodKeyOf(s) {
+  const p = periodEndKey(s);
+  return p ? (p.y + '-' + p.end + '-' + p.start) : '';
+}
+// Các kỳ của MỘT bản ghi — `thang_no` có thể là danh sách ('1-7/2026, 1-8/2026') nên phải tách.
+function periodLabelsOf(row) {
+  return String((row && row.thang_no) || '').split(',').map(s => s.trim()).filter(Boolean);
+}
+// Bảng kỳ của cả dữ liệu: khoá → { label, n } (n = số HOÁ ĐƠN có kỳ đó).
+function periodIndex(rows) {
+  const m = new Map();
+  (rows || []).forEach(r => {
+    new Set(periodLabelsOf(r).map(periodKeyOf)).forEach(k => {
+      if (!k) return;
+      if (!m.has(k)) m.set(k, { label: '', n: 0 });
+      m.get(k).n++;
+    });
+  });
+  (rows || []).forEach(r => periodLabelsOf(r).forEach(l => {
+    const k = periodKeyOf(l);
+    if (k && m.has(k) && !m.get(k).label) m.get(k).label = l;   // giữ ĐÚNG chữ trong tệp để hiện
+  }));
+  return m;
+}
+// Kỳ hiện tại TỰ ĐỘNG = kỳ có nhiều hoá đơn nhất; đồng hạng thì lấy kỳ MỚI HƠN.
+function detectPeriod(rows) {
+  const m = periodIndex(rows);
+  let best = '', bestN = -1;
+  for (const v of m.values()) {
+    const lab = v.label || '';
+    if (!lab) continue;
+    if (v.n > bestN) { best = lab; bestN = v.n; continue; }
+    if (v.n === bestN && best && isMoreRecentPeriod(lab, best)) best = lab;
+  }
+  return best;
+}
+function readMonths() {
+  try { return JSON.parse(localStorage.getItem(MONTHS_KEY) || '{}') || {}; } catch (e) { return {}; }
+}
+// Nhớ “tháng này đã nạp” (ngày nạp) — chính là phần GHI NHỚ MỖI THÁNG người dùng yêu cầu.
+function rememberMonth(period) {
+  const k = periodKeyOf(period);
+  if (!k) return;
+  const m = readMonths();
+  const d = new Date();
+  m[k] = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+  try { localStorage.setItem(MONTHS_KEY, JSON.stringify(m)); } catch (e) {}
+}
+// Tính lại mốc từ dữ liệu hiện có + lựa chọn tay (nếu còn hợp lệ), rồi cập nhật giao diện phụ.
+function refreshCurrentPeriod() {
+  currentPeriodAuto = detectPeriod(allData);
+  let manual = '';
+  try { manual = localStorage.getItem(OLD_PERIOD_KEY) || ''; } catch (e) { manual = ''; }
+  const ok = !!(manual && periodIndex(allData).get(periodKeyOf(manual)));
+  currentPeriodManual = ok;
+  currentPeriod = ok ? manual : currentPeriodAuto;
+  syncPeriodControl();
+}
+// Đổi mốc bằng tay: `''` = trả về tự động.
+function setCurrentPeriod(v) {
+  try { if (v) localStorage.setItem(OLD_PERIOD_KEY, v); else localStorage.removeItem(OLD_PERIOD_KEY); } catch (e) {}
+  refreshCurrentPeriod();
+  applyFilters();
+}
+// Hàng “Kỳ hoá đơn” trong Cài đặt + dòng nhắc ở đầu tab “Nợ cũ, nhiều kỳ”.
+function syncPeriodControl() {
+  const note = document.getElementById('oldPeriodNoteTxt');
+  if (note) {
+    note.innerHTML = currentPeriod
+      ? ('Kỳ hiện tại: <b>' + esc(currentPeriod) + '</b> — nợ cũ là hoá đơn ở kỳ KHÁC kỳ này')
+      : 'Chưa đọc được kỳ nào trong tệp';
+  }
+  const sel = document.getElementById('periodSel');
+  if (sel) {
+    const idx = periodIndex(allData);
+    const months = readMonths();
+    const keys = [...idx.keys()].sort((a, b) => isMoreRecentPeriod(idx.get(a).label, idx.get(b).label) ? -1 : 1);
+    const opts = ['<option value="">Tự động' + (currentPeriodAuto ? ' — ' + esc(currentPeriodAuto) : '') + '</option>'];
+    keys.forEach(k => {
+      const v = idx.get(k);
+      const mk = months[k];
+      opts.push('<option value="' + esc(v.label) + '">' + esc(v.label) +
+        ' · ' + v.n.toLocaleString('vi-VN') + ' HĐ' + (mk ? ' · đã nạp ' + esc(mk) : '') + '</option>');
+    });
+    sel.innerHTML = opts.join('');
+    sel.value = currentPeriodManual ? currentPeriod : '';
+  }
+  const val = document.getElementById('cfgPeriodVal');
+  if (val) {
+    val.textContent = currentPeriod ? (currentPeriod + (currentPeriodManual ? ' · bạn chọn' : ' · tự động')) : '—';
+  }
+}
+/* 📊 NỢ CŨ THEO TỪNG KỲ — dựng số liệu cho tấm `#kyModal` (⟳ 2026-10-15).
+   Tham số `rows` = **tập dòng đang hiển thị** (`_dispRows`, xem `applyFilters`); thiếu thì dùng
+   toàn bộ `allData`.
+   ⛔ VÌ SAO PHẢI THEO TẬP ĐANG XEM (bẫy đã gặp thật 2026-10-15d): nút “Thống kê theo kỳ” nằm
+   trong `#oldView` — khối DÙNG CHUNG cho **3 tab** (Nợ ≥3Tr · Nợ 1Tr đến 3Tr · Nợ cũ, nhiều kỳ)
+   và mỗi tab có tập khách khác nhau, lại thêm bộ lọc nhóm/NV/tìm kiếm. Đo được: đứng ở tab
+   “Nợ ≥3Tr” thì hàng “Tổng…” ghi **748 khách · 1.307 hoá đơn · 8.794.764.818 đ** trong khi tấm
+   (tính trên toàn tệp) ghi **556 · 1.013 · 4.273.814.194** ⇒ hai số mâu thuẫn nhau ngay trên
+   cùng màn hình. Nay tấm lấy ĐÚNG tập dòng mà hàng “Tổng…” đang đếm (`dispRows`) nên hai chỗ
+   luôn trùng khít, và `st.scoped` cho biết tấm đang bị giới hạn theo danh sách (để ghi ra).
+   Trả về: từng kỳ một dòng `{ label, kh, hd, tien, cur }` + 3 số tổng của phần NỢ CŨ
+   + 3 số tổng của cả tập đang xem (`scopeKh/scopeHd/scopeTien`) để đối chiếu hàng “Tổng …”.
+   ⚠️ Một dòng HOÁ ĐƠN có thể ghi NHIỀU kỳ (`thang_no` = ‘1-7/2026, 1-8/2026’) ⇒ hoá đơn đó
+   được tính cho TỪNG kỳ nó ghi (đúng như luật “nợ cũ” của `buildOldFlags`), nên cộng dồn cột
+   “Hoá đơn” của các kỳ có thể lớn hơn tổng số dòng dữ liệu — `multiRows` đếm số dòng như vậy và
+   tấm chỉ ghi chú khi `multiRows > 0` (tệp hiện tại: **0 dòng**).
+   ⚠️ Cột “Khách” là SỐ KHÁCH RIÊNG của từng kỳ (một khách nợ 3 kỳ được đếm ở cả 3) ⇒ **KHÔNG
+   cộng dồn các dòng để ra số khách nợ cũ**; số đúng nằm ở `oldKh` (khách có ≥1 kỳ khác mốc) —
+   đó cũng chính là con số trên hàng “Tổng …” của tab “Nợ cũ, nhiều kỳ”. */
+function periodStats(rows) {
+  const curKey = periodKeyOf(currentPeriod);
+  const src = rows || allData || [];
+  const scoped = !!rows && rows !== allData;
+  const per = new Map();
+  let multiRows = 0;
+  const oldKh = new Set();
+  let oldHd = 0, oldTien = 0;
+  src.forEach(r => {
+    const labels = periodLabelsOf(r);
+    const keys = [...new Set(labels.map(periodKeyOf))].filter(Boolean);
+    if (keys.length > 1) multiRows++;
+    keys.forEach(k => {
+      if (!per.has(k)) per.set(k, { label: '', kh: new Set(), hd: 0, tien: 0 });
+      const rec = per.get(k);
+      if (!rec.label) rec.label = labels.find(l => periodKeyOf(l) === k) || k;
+      rec.hd++;
+      rec.tien += r.tien_no || 0;
+      const ck = r.ma_khach_hang || r.ten_khach_hang || '';
+      if (ck) rec.kh.add(ck);
+    });
+    // “Nợ cũ” = dòng có BẤT KỲ kỳ nào khác mốc (kể cả dòng có cả kỳ mốc lẫn kỳ cũ ⇒ “nợ nhiều kỳ”)
+    const isOld = curKey ? keys.some(k => k !== curKey) : false;
+    if (!isOld) return;
+    oldHd++;
+    oldTien += r.tien_no || 0;
+    const ck = r.ma_khach_hang || r.ten_khach_hang || '';
+    if (ck) oldKh.add(ck);
+  });
+  const out = [...per.entries()].map(([key, v]) => ({ key: key, label: v.label, kh: v.kh.size, hd: v.hd, tien: v.tien, cur: !!curKey && key === curKey }))
+    .sort((a, b) => isMoreRecentPeriod(a.label, b.label) ? -1 : 1);
+  /* Tổng của CẢ tập đang xem — tính y hệt hàng “Tổng …” (`applyFilters`: KH riêng theo mã/tên,
+     HĐ = số dòng, tiền = tổng `tien_no`) để hai chỗ đối chiếu được với nhau. */
+  const scopeKh = new Set(src.map(r => r.ma_khach_hang || r.ten_khach_hang).filter(Boolean)).size;
+  const scopeHd = src.length;
+  const scopeTien = src.reduce((s, r) => s + (r.tien_no || 0), 0);
+  return { rows: out, multiRows: multiRows, oldKh: oldKh.size, oldHd: oldHd, oldTien: oldTien, curKey: curKey,
+    scoped: scoped, scopeKh: scopeKh, scopeHd: scopeHd, scopeTien: scopeTien, scopeRows: src.length };
+}
+
+const fmtVnd = n => (n || 0).toLocaleString('vi-VN');
+
+// Mở tấm “Nợ cũ theo từng kỳ” (nút ở đầu tab “Nợ cũ, nhiều kỳ”).
+function openKyPanel() {
+  const ov = document.getElementById('kyModal');
+  const body = document.getElementById('kyBody');
+  const sub = document.getElementById('kySub');
+  if (!ov || !body) return;
+  const st = periodStats(_dispRows);
+  if (sub) {
+    // ⚠️ Hiện NHÃN kỳ (`currentPeriod` — đúng chữ trong tệp, vd ‘1-9/2026’), ⛔ ĐỪNG hiện khoá
+    // chuẩn hoá (`st.curKey` = ‘2026-9-1’): đã lỡ in ra đúng một lần và người dùng sẽ không đọc ra.
+    // “nợ cũ” ở đây luôn tính trên TẬP ĐANG XEM (xem chú thích đầu `periodStats`).
+    sub.innerHTML = currentPeriod
+      ? ('Mốc so sánh: <b>' + esc(currentPeriod) + '</b> · nợ cũ: <b>' + fmtVnd(st.oldKh) + '</b> khách · <b>' +
+         fmtVnd(st.oldHd) + '</b> hoá đơn · <b>' + fmtVnd(st.oldTien) + '</b> đ')
+      : 'Chưa đọc được kỳ nào trong tệp';
+  }
+  body.innerHTML = !st.rows.length
+    ? '<div class="ky-empty">Không có kỳ nào để thống kê</div>'
+    : ('<table class="ky-table"><thead><tr><th>Kỳ</th><th>KH</th><th>HĐ</th><th>Tổng tiền</th></tr></thead><tbody>' +
+       st.rows.map(r => '<tr' + (r.cur ? ' class="ky-cur"' : '') + '><td>' + esc(r.label) +
+         (r.cur ? ' <span class="ky-tag">kỳ hiện tại</span>' : '') + '</td><td>' + fmtVnd(r.kh) + '</td><td>' +
+         fmtVnd(r.hd) + '</td><td>' + fmtVnd(r.tien) + '</td></tr>').join('') +
+       '</tbody></table>' +
+       /* Dòng đối chiếu: cộng cả bảng phải ra ĐÚNG hàng “Tổng HĐ / KH / Nợ” ở đầu tab (cùng
+          nguồn `_dispRows`). Chỉ ghi khi tấm đang bị giới hạn theo danh sách (tab khoảng nợ
+          hoặc có bộ lọc) — khi tấm dùng toàn tệp thì hàng “Tổng …” không so được trực tiếp. */
+       (st.scoped ? '<div class="ky-foot">Cộng cả bảng = danh sách đang xem: ' + fmtVnd(st.scopeKh) +
+         ' khách · ' + fmtVnd(st.scopeHd) + ' hoá đơn · ' + fmtVnd(st.scopeTien) + ' đ</div>' : '') +
+       (st.multiRows ? '<div class="ky-foot">' + fmtVnd(st.multiRows) + ' hoá đơn ghi NHIỀU kỳ được tính cho từng kỳ nó ghi</div>' : ''));
+  ov.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeKy(e) { if (e.target === document.getElementById('kyModal')) closeKyDirect(); }
+function closeKyDirect() {
+  const ov = document.getElementById('kyModal');
+  if (ov) ov.classList.remove('open');
+  // Chỉ trả cuộn khi KHÔNG còn tấm nào khác đang mở (xem chú thích ở `closePayDirect`).
+  const other = ['payModal', 'modal'].some(id => { const el = document.getElementById(id); return el && el.classList.contains('open'); });
+  if (!other) document.body.style.overflow = '';
+}
+
+// True when the period label is the current invoice period.
+// ⚠️ Khi CHƯA đọc được kỳ nào (`currentPeriod === ''`) thì coi MỌI nhãn là “kỳ hiện tại” ⇒ tab
+// “Nợ cũ, nhiều kỳ” trống. Cố ý: tệp không có cột kỳ mà lại coi mọi dòng là “nợ cũ” thì cả
+// danh sách đổ vào tab đó — sai rõ ràng hơn là trống.
 function isCurrentPeriodLabel(s) {
-  const t = String(s || '').trim().replace(/\s+/g, '');
-  const m = t.match(/^0?(\d+)-0?(\d+)\/(\d+)$/);
-  return !!(m && +m[1] === CURRENT_INVOICE_PERIOD.start && +m[2] === CURRENT_INVOICE_PERIOD.end && +m[3] === CURRENT_INVOICE_PERIOD.year);
+  if (!currentPeriod) return true;
+  const k = periodKeyOf(s);
+  return !!k && k === periodKeyOf(currentPeriod);
 }
 
 // Chọn "tháng gần nhất" trong danh sách kỳ (vd '1-7/2026, 1-8/2026' → '1-8/2026').
@@ -7428,7 +7803,8 @@ function pickNearestMonth(listStr) {
   return best;
 }
 
-// Kh có nợ cũ (kỳ khác `CURRENT_INVOICE_PERIOD`) → vào tab "Nợ cũ, nhiều kỳ" và có marker
+// Kh có nợ cũ (kỳ khác `currentPeriod` — mốc nay TỰ TÍNH, xem `refreshCurrentPeriod`) → vào tab
+// "Nợ cũ, nhiều kỳ" và có marker
 // Marker ghi số hoá đơn của kh: "1_HĐ", "2_HĐ", "3_HĐ"…
 let _oldMultiSet = new Set();
 let _oldKindMap = new Map();
@@ -7437,6 +7813,11 @@ let _oldKindMap = new Map();
    ⚠️ Đựng dùng `r._count` (con số đó sinh ra trong vòng gộp theo KH và chỉ đếm các hoá đơn
    **đang qua bộ lọc** ⇒ vừa gõ tìm kiếm là KH có 3 hoá đơn tụt xuống 1 và vạch xanh biến mất). */
 let _hdCountMap = new Map();
+/* Tập dòng ĐANG HIỂN THỊ (sau lọc nhóm/NV/tìm kiếm + luật riêng của tab), gán trong
+   `applyFilters()` đúng bằng biến `dispRows` mà hàng “Tổng HĐ / KH / Nợ …” đang đếm.
+   Tấm “Nợ cũ theo từng kỳ” đọc biến này để số của nó KHÔNG mâu thuẫn với hàng “Tổng …”
+   (xem chú thích đầu `periodStats`). ⛔ Đừng đổi công thức ở một trong hai chỗ. */
+let _dispRows = null;
 function buildOldFlags() {
   const per = new Map();
   allData.forEach(x => {
@@ -7458,7 +7839,7 @@ function buildOldFlags() {
     // Số hoá đơn của KH — ghi cho **mọi** KH, TRƯỚC `continue` bên dưới (nếu không thì chỉ
     // khách có nợ cũ mới được đếm ⇒ KH nhiều hoá đơn "bình thường" mất vạch xanh).
     _hdCountMap.set(key, rec.count);
-    // Điều kiện 1: kh có nợ cũ ở các kỳ khác ngoài `CURRENT_INVOICE_PERIOD`
+    // Điều kiện 1: kh có nợ cũ ở các kỳ khác ngoài mốc `currentPeriod`
     if (!rec.hasOld) continue;
     _oldMultiSet.add(key);
     // Trên card/table ghi số hoá đơn của kh: "1_HĐ", "2_HĐ", "3_HĐ"…
@@ -7477,7 +7858,7 @@ function applyFilters() {
     if (nhom && r.ma_nhom !== nhom) return false;
     if (nvScope && r.nhan_vien !== nvScope) return false;
     if (currentTab === 'oldky') {
-      // Điều kiện 1: kh có nợ cũ ở các kỳ khác ngoài `CURRENT_INVOICE_PERIOD`
+      // Điều kiện 1: kh có nợ cũ ở các kỳ khác ngoài mốc `currentPeriod`
       if (!_oldMultiSet.has(r.ma_khach_hang || r.ten_khach_hang)) return false;
     }
     if (currentTab === 'marked') {
@@ -7567,6 +7948,7 @@ function applyFilters() {
   // Display: KH (unique customers) / HĐ (original invoices) - Tổng tiền
   // (riêng các tab khoảng nợ: thống kê chỉ tính các hoá đơn gốc của KH đủ điều kiện)
   const dispRows = ((is1TrTab || isOld3TrTab) && keepSet) ? rawRows.filter(r => keepSet.has(r.ma_khach_hang || r.ten_khach_hang)) : rawRows;
+  _dispRows = dispRows;   // tấm “Nợ cũ theo từng kỳ” đọc biến này (xem `periodStats`)
   document.getElementById('countKH').textContent = new Set(dispRows.map(r => r.ma_khach_hang || r.ten_khach_hang)).size.toLocaleString('vi-VN');
   document.getElementById('countHoaDon').textContent = dispRows.length.toLocaleString('vi-VN');
   const tongTien = dispRows.reduce((sum, r) => sum + (r.tien_no || 0), 0);
@@ -8268,11 +8650,15 @@ function showDetailRow(r) {
 //  · “Tổng số tiền” = tổng TẤT CẢ hoá đơn của khách (mọi đợt đều được tính).
 //  · ⛔ BA Ô TÍCH TRONG TẤM **CHỈ ĐỂ HIỂN THỊ** (người dùng chốt 2026-10-13h: “dấu tick chọn chỉ
 //    là ảnh hiển thị”) — KHÔNG còn là `<input type="checkbox">` ⇒ không bấm/gõ/tab được nữa, tổng
-//    tiền KHÔNG đổi theo ô tích. Cùng lựa chọn với nút đỏ “Tiếp tục thanh toán”, nút quét mã và
-//    “Xem giấy báo” ở tấm này; xem chú thích CSS `.pay-cb` để biết vì sao bỏ hẳn input.
-//  · `.pay-name` (tên khách, chữ xanh như ảnh) chạm được và mở tấm “Chi tiết” đang có.
-// ⛔ KHÔNG có dòng “ID hóa đơn” của ảnh (dữ liệu không có cột đó) và nút quét mã / “Xem giấy
-//    báo” CHỈ ĐỂ HIỂN THỊ — người dùng đã chốt như vậy.
+//    tiền KHÔNG đổi theo ô tích. Cùng lựa chọn với nút đỏ “Tiếp tục thanh toán” và “Xem giấy báo”
+//    ở tấm này; xem chú thích CSS `.pay-cb` để biết vì sao bỏ hẳn input.
+//  · ⟳ 2026-10-15: `.pay-name` (tên khách, chữ xanh như ảnh) **KHÔNG BẤM ĐƯỢC NỮA** — yêu cầu
+//    người dùng: “ẩn chức năng khi chạm vào tên kh mở bảng modal”. Gỡ `onclick` + xoá
+//    `payOpenDetail()`; ⛔ đừng gắn lại, muốn mở “Chi tiết” thì đóng tấm rồi chạm tên TRÊN THẺ.
+//  · ⟳ 2026-10-15: nút mã QR ở ô “Mã khách hàng” NAY CHẠM ĐƯỢC — chụp tấm thành ảnh để lưu/chia sẻ
+//    (`capturePayShot()` + `#shotModal`). Trước đây nó chỉ để hiển thị.
+// ⛔ KHÔNG có dòng “ID hóa đơn” của ảnh (dữ liệu không có cột đó) và “Xem giấy báo” CHỈ ĐỂ HIỂN THỊ
+//    — người dùng đã chốt như vậy.
 let _payRecs = [];   // ⛔ KHÔNG còn `_paySel`: ô tích đã thành hình hiển thị (2026-10-13h) nên không còn trạng thái chọn để theo dõi.
 
 // Icon mã QR của ảnh (3 ô định vị + 4 chấm) — vẽ tại chỗ vì sprite `#__icon-sprite` không có
@@ -8292,6 +8678,7 @@ function openPayPanel(el) {
   if (!ma) return;
   _payRecs = allData.filter(x => (x.ma_khach_hang || '') === ma);
   if (!_payRecs.length) return;
+  shotFontCss();   // 🔤 gọi SẴN font cho ảnh chụp (xem `shotFontCss`) — tới lúc chạm nút QR là đã có cache
   renderPay();
   const ov = document.getElementById('payModal');
   if (ov) ov.classList.add('open');
@@ -8323,9 +8710,9 @@ function renderPay() {
         <div class="pay-code-lb">Mã khách hàng <b>*</b></div>
         <div class="pay-code-val">${esc(r.ma_khach_hang) || '—'}</div>
       </div>
-      <button class="pay-qr" type="button" title="Chưa có chức năng quét mã" aria-label="Quét mã">${IC_QR}</button>
+      <button class="pay-qr" type="button" title="Chụp tấm này thành ảnh" aria-label="Chụp màn hình" onclick="capturePayShot()">${IC_QR}</button>
     </div>
-    <span class="pay-name" onclick="payOpenDetail()" title="Xem chi tiết khách hàng">${esc(r.ten_khach_hang) || '—'}</span>
+    <span class="pay-name">${esc(r.ten_khach_hang) || '—'}</span>
     ${r.dia_chi ? `<div class="pay-addr"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-pin"/></svg><span>${esc(r.dia_chi)}</span></div>` : ''}
     <div class="pay-count">Quý khách có <b>${n}</b> hóa đơn cần thanh toán</div>
     <div class="pay-row">
@@ -8351,14 +8738,10 @@ function payUpdateTotal() {
   if (el) el.innerHTML = fmtHtml(t) + ' VNĐ';
 }
 
-// Tên khách (chữ xanh) → đóng tấm này rồi mở tấm “Chi tiết” đang có. Phải ĐÓNG TRƯỚC khi mở:
-// hai tấm cùng giành `body.overflow` (xem chú thích ở `closePayDirect`).
-function payOpenDetail() {
-  const r = _payRecs[0];
-  if (!r) return;
-  closePayDirect();
-  showDetailRow(r);
-}
+// ⛔ `payOpenDetail()` ĐÃ XOÁ (2026-10-15) cùng `onclick` của `.pay-name`: chạm tên khách trong
+// tấm thanh toán KHÔNG còn mở tấm “Chi tiết” (yêu cầu người dùng). Đừng “khôi phục lại cho đủ
+// bộ”: hàm này không còn chỗ gọi nào, dựng lại chỉ gây hiểu nhầm là tên khách vẫn bấm được.
+// Đường hợp lệ duy nhất để xem chi tiết là chạm tên khách TRÊN THẺ (xem `renderCards`).
 
 function closePay(e) { if (e.target === document.getElementById('payModal')) closePayDirect(); }
 function closePayDirect() {
@@ -8369,6 +8752,280 @@ function closePayDirect() {
   // lúc vẫn còn một tấm đang mở.
   const det = document.getElementById('modal');
   if (!det || !det.classList.contains('open')) document.body.style.overflow = '';
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════════════
+   📸 CHỤP TẤM “THANH TOÁN…” THÀNH ẢNH (`capturePayShot`) — ⟳ 2026-10-15
+   *Yêu cầu người dùng: “tôi muốn thêm chức năng chụp màn hình hiển thị trên mobile khi chạm vào
+   chỗ qrcode”*. Chạm nút mã QR (`.pay-qr`) ⇒ dựng ẢNH PNG của chính tấm đang mở ⇒ hiện ở
+   `#shotModal` để NHẤN GIỮ mà lưu/chia sẻ (trên điện thoại không có cách “chụp” nội dung tấm này
+   ra ảnh bằng tay mà không lẫn cả thanh trạng thái, thanh công cụ, header).
+
+   ⚠️ VÌ SAO PHẢI “MỞ TẠM” TẤM TRƯỚC KHI CHỤP: `.modal` bị chặn chiều cao (`max-height: 96vh` +
+   `overflow-y: auto`) nên chụp phần đang thấy là ảnh CỤT với khách nhiều hoá đơn (từ ~4 đợt là
+   tràn). Ta gỡ trần ⇒ đo ⇒ TRẢ LẠI, tất cả trong MỘT lượt JS nên trình duyệt không kịp vẽ lại ⇒
+   không thấy nhấp nháy. `try/finally` là BẮT BUỘC: ném lỗi giữa chừng mà không trả style là tấm
+   treo ở trạng thái mở to.
+
+   ⚠️ KHÔNG có thư viện nào ở đây (html2canvas…) — dự án là MỘT file HTML tĩnh, không build, không
+   mạng. Cách làm là kỹ thuật chuẩn của trình duyệt: NHÂN BẢN tấm + CHÉP computed style vào từng
+   phần tử ⇒ bọc trong `<foreignObject>` của một SVG ⇒ vẽ SVG đó lên canvas ⇒ `toDataURL('image/png')`.
+   ⛔ BẮT BUỘC chép computed style: ảnh SVG là một TÀI LIỆU RIÊNG, nó KHÔNG thấy CSS của trang
+   (kể cả biến `--text`) ⇒ không chép là ra ảnh trắng hoặc đen thui không chữ.
+   ⛔ BẮT BUỘC chép cả sprite `#__icon-sprite` vào bản sao: icon địa chỉ trong tấm là
+   `<use href="#i-pin">`, mà sprite nằm NGOÀI tấm ⇒ trong tài liệu SVG mới nó không tồn tại và
+   icon biến mất IM LẶNG (không có lỗi nào hiện ra).
+   ⚠️ Hạn chế đã biết: SVG trong `<img>` KHÔNG nạp được tài nguyên ngoài ⇒ font Google ‘Inter’
+   (nạp qua `@import` đầu file) KHÔNG vào ảnh ⇒ chữ trong ảnh dùng font hệ thống (Android:
+   Roboto). Nội dung, số tiền, bố cục, màu — đúng hết; chỉ nét chữ khác app một chút. Muốn y hệt
+   thì phải nhúng font base64 vào SVG (~100KB, thêm một bước mạng) — HỎI trước khi làm.
+   ⚠️ TRẦN ĐIỂM ẢNH (12 triệu) là bắt buộc: canvas quá lớn bị webview BỎ QUA (iOS hay gặp), mà
+   tấm 8 hoá đơn ×3 lần là vượt ngưỡng ⇒ tự hạ độ nét thay vì ra ảnh trắng.
+   ⚠️ `onload` KHÔNG đủ để biết ảnh ra hồn: có webview vẽ foreignObject thành TRONG SUỐT mà vẫn
+   báo `onload` ⇒ phải tự kiểm pixel (`shotHasInk`) rồi mới hiện. Đừng “dọn” hàm kiểm này.
+   ══════════════════════════════════════════════════════════════════════════════════════ */
+
+// Thuộc tính chép sang bản sao. CỐ Ý KHÔNG chép `width/height/position/top/right/bottom`:
+//  · bỏ `width/height` ⇒ bố cục tự dàn lại theo font thật của máy, không bị cắt chữ khi font đổi;
+//  · bỏ `position` ⇒ khối đáy `.pay-foot` (`position: sticky`) về dòng chảy bình thường, đúng chỗ
+//    cuối tấm — bản sao không cuộn nên “dính đáy” ở đó là vô nghĩa.
+const SHOT_PROPS = ['display', 'flex-direction', 'flex-wrap', 'flex-grow', 'flex-shrink', 'flex-basis', 'align-items', 'align-self', 'justify-content', 'gap', 'row-gap', 'column-gap', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style', 'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius', 'background-color', 'color', 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-align', 'text-decoration-line', 'text-transform', 'white-space', 'word-break', 'overflow-wrap', 'box-sizing', 'min-width', 'max-width', 'vertical-align', 'opacity', 'text-indent'];
+
+// Đi ĐÔI với bản sao theo đúng cây con (con thứ i ⇄ con thứ i) — vì `cloneNode` giữ nguyên cây nên
+// chỉ số luôn khớp; sprite chép vào CUỐI (sau lượt này) nên không làm lệch chỉ số.
+function shotCopyStyles(src, dst) {
+  const cs = getComputedStyle(src);
+  let css = '';
+  for (const p of SHOT_PROPS) {
+    const v = cs.getPropertyValue(p);
+    // Bỏ giá trị “không có gì”: `auto`/`none`/`normal` chỉ làm chuỗi style dài mà không đổi kết quả.
+    if (v && v !== 'auto' && v !== 'none' && v !== 'normal') css += p + ':' + v + ';';
+  }
+  // ⚠️ HÌNH KHÔNG CHỮ PHẢI CHÉP CẢ `width`/`height` — lỗi THẬT đã gặp (2026-10-15): ô tích RỖNG
+  // `.pay-cb` ăn kích thước từ `width:20px;height:20px` của CSS, mà ảnh là TÀI LIỆU RIÊNG nên
+  // không có hai dòng đó ⇒ nó co về đúng 0 + 2 viền = một **chấm 3px** thay vì ô vuông 20px.
+  // ⛔ ĐỪNG chép `width`/`height` cho MỌI phần tử: bản sao dùng font hệ thống nên chữ có thể
+  // xuống dòng khác đi, chiều cao cứng là CẮT CHỮ. Chỉ chép cho phần tử KHÔNG có chữ nào
+  // (ô tích, nút QR, tay nắm — đều là hình trang trí, kích thước không phụ thuộc font).
+  if (!src.textContent || !src.textContent.trim()) {
+    css += 'width:' + cs.getPropertyValue('width') + ';height:' + cs.getPropertyValue('height') + ';';
+  }
+  dst.setAttribute('style', css);
+  const a = src.children, b = dst.children;
+  for (let i = 0; i < a.length && i < b.length; i++) shotCopyStyles(a[i], b[i]);
+}
+
+// ⛔ BẮT BUỘC GỠ MỌI COMMENT TRƯỚC KHI NỐI CHUỖI SVG — đây là lỗi THẬT đã gặp (2026-10-15):
+// sprite `#__icon-sprite` đầy comment dài kiểu `──────` và `⟳ …`, mà XML **CẤM** dấu `--` bên
+// trong comment ⇒ `new Image()` báo `error` và **không có ảnh**, dù mọi bước trước đó đều “thành
+// công” (`XMLSerializer` KHÔNG báo gì). Triệu chứng duy nhất là `onerror` câm — muốn thấy lý do
+// phải `new DOMParser().parseFromString(str,'image/svg+xml')` rồi đọc `parsererror`.
+// Gỡ comment vừa chữa lỗi vừa làm ảnh nhẹ hẳn (~70KB mỗi lần chụp là comment).
+function shotStripComments(root) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_COMMENT, null);
+  const kill = [];
+  let n;
+  while ((n = walker.nextNode())) kill.push(n);
+  for (const c of kill) if (c.parentNode) c.parentNode.removeChild(c);
+}
+
+// Kiểm ảnh có “mực” thật: thu nhỏ về 40×40 rồi đòi (a) đủ pixel đục và (b) ≥ 4 màu khác nhau.
+// Ảnh trắng trơn (webview không vẽ foreignObject) chỉ có 1 màu ⇒ bị chặn tại đây.
+function shotHasInk(cv) {
+  const s = document.createElement('canvas');
+  s.width = 40; s.height = 40;
+  // `willReadFrequently: true` — canvas này CHỈ để đọc pixel; thiếu cờ này Chrome in cảnh báo
+  // “Multiple readback operations using getImageData…” ra console mỗi lần chọc (console dự án phải sạch).
+  const c = s.getContext('2d', { willReadFrequently: true });
+  c.drawImage(cv, 0, 0, 40, 40);
+  const d = c.getImageData(0, 0, 40, 40).data;
+  const seen = new Set();
+  let ink = 0;
+  for (let i = 0; i < d.length; i += 4) {
+    if (d[i + 3] < 250) continue;
+    ink++;
+    seen.add(d[i] + ',' + d[i + 1] + ',' + d[i + 2]);
+  }
+  return ink > 40 * 40 * 0.5 && seen.size > 3;
+}
+
+/* 🔤 NHÚNG FONT ‘Inter’ VÀO ẢNH — ⟳ 2026-10-15 *(yêu cầu: “tôi muốn khi chụp màn hình thì hiển
+   thị y như ảnh”)*.
+   ⚠️ VÌ SAO PHẢI NHÚNG: ảnh SVG là một TÀI LIỆU RIÊNG — nó không thấy CSS của trang và **không
+   được nạp tài nguyên ngoài** (font Google nạp qua `@import` đầu file) ⇒ trước lượt này chữ
+   trong ảnh rơi về font HỆ THỐNG (Android: Roboto), nhìn là biết khác app.
+   ⚠️ CÁCH LÀM: đọc danh sách `@font-face` mà trang ĐÃ nạp (hoặc tải chính URL CSS đó), lấy các
+   file `.woff2` cần cho TIẾNG VIỆT (`latin` + `vietnamese` — Inter có subset vietnamese riêng nên
+   `latin-ext` không cần) ở 3 mức đậm tấm này dùng (400 · 600 · 700) ⇒ tải nhị phân ⇒ base64 ⇒
+   nhét vào `<style>` của SVG kèm `unicode-range` gốc.
+   ⛔ MẤT MẠNG THÌ ẢNH VẪN PHẢI RA: hàm này **không bao giờ throw** — hỏng ở bất kỳ bước nào thì
+   trả '' (ảnh ra như trước, chỉ khác nét chữ). Kết quả CACHE lại để 5 lần chụp không tải font
+   5 lần, và `openPayPanel()` gọi sẵn để cú chạm đầu không phải chờ mạng.
+   ⛔ ĐỪNG đổi sang `<link>`/`fetch` font trong SVG: SVG trong `<img>` bị cấm nạp tài nguyên
+   ngoài — chỉ base64 mới vào được. */
+let _shotFontCache = null;   // null = chưa thử · '' = đã thử mà không được (thiếu mạng/CORS)
+async function shotFontCss() {
+  if (_shotFontCache !== null) return _shotFontCache;
+  _shotFontCache = '';
+  try {
+    // 1) CSS Google Fonts ĐÃ nạp trong trang (khỏi tải lại) — đọc `cssRules` khi Google cho CORS.
+    let cssText = '', cssUrl = '';
+    for (const sheet of document.styleSheets) {
+      const href = sheet.href || '';
+      if (href.indexOf('fonts.googleapis.com') < 0) continue;
+      cssUrl = cssUrl || href;
+      try { cssText = [...sheet.cssRules].map(r => r.cssText).join('\n'); } catch (e) {}
+      if (cssText) break;
+    }
+    // 2) Không đọc được ⇒ lấy URL từ `@import` đầu file rồi tải chính CSS đó.
+    if (!cssText) {
+      if (!cssUrl) {
+        const m = String(document.head.innerHTML || '').match(/@import\s+url\(['"]?(https:\/\/fonts\.googleapis\.com[^'")]+)/);
+        cssUrl = m ? m[1] : '';
+      }
+      if (!cssUrl) return '';
+      cssText = await (await fetch(cssUrl)).text();
+    }
+    const pick = [];
+    cssText.split('@font-face').slice(1).forEach(b => {
+      const w = (b.match(/font-weight:\s*(\d+)/) || [])[1];
+      const range = (b.match(/unicode-range:\s*([^;}]+)/) || [])[1] || '';
+      const url = (b.match(/url\((https:\/\/[^)]+?\.woff2)\)/) || [])[1];
+      if (!w || !url) return;
+      if (w !== '400' && w !== '600' && w !== '700') return;
+      // Lọc theo `unicode-range`: `latin` có `U+0000-00FF`, `vietnamese` có `U+0102`/`U+1EA0`.
+      // (latin-ext ghi `U+0100-02AF` nên KHÔNG khớp `U+0102` — đúng ý, không cần nhóm đó.)
+      const isLatin = range.indexOf('U+0000-00FF') >= 0;
+      const isViet = range.indexOf('U+0102') >= 0 || range.indexOf('U+1EA0') >= 0;
+      if (!isLatin && !isViet) return;
+      pick.push({ w, range, url });
+    });
+    if (!pick.length) return '';
+    const rules = [];
+    for (const p of pick) {
+      const buf = new Uint8Array(await (await fetch(p.url)).arrayBuffer());
+      rules.push("@font-face{font-family:'Inter';font-style:normal;font-weight:" + p.w +
+        ';src:url(data:font/woff2;base64,' + bytesToBase64(buf) + ") format('woff2');" +
+        (p.range ? 'unicode-range:' + p.range + ';' : '') + '}');
+    }
+    _shotFontCache = rules.join('\n');
+  } catch (e) {
+    _shotFontCache = '';
+  }
+  return _shotFontCache;
+}
+
+async function capturePayShot() {
+  const panel = document.querySelector('#payModal .modal.pay-modal');
+  const ov = document.getElementById('shotModal');
+  const out = document.getElementById('shotImg');
+  if (!panel || !ov || !out) return;
+
+  // ⚠️ `await` này PHẢI nằm TRƯỚC phần mở-tạm tấm bên dưới: mở tạm rồi mới chờ mạng là tấm nằm
+  // phơi ở trạng thái mở-to suốt lúc chờ. Font đã được gọi sẵn từ `openPayPanel` nên gần như
+  // luôn trả về ngay (cache).
+  const fontCss = await shotFontCss();
+
+  // ── Bước 1: dựng chuỗi SVG (có mở-tạm tấm để đo trọn chiều cao) ──
+  const keepPanel = panel.getAttribute('style');
+  const foot = panel.querySelector('.pay-foot');
+  const keepFoot = foot ? foot.getAttribute('style') : null;
+  let w = 0, h = 0, str = '';
+  try {
+    panel.style.maxHeight = 'none';
+    panel.style.minHeight = '0';
+    panel.style.height = 'auto';
+    panel.style.overflow = 'visible';
+    if (foot) foot.style.position = 'static';
+    const r = panel.getBoundingClientRect();
+    w = Math.max(1, Math.round(r.width));
+    h = Math.max(1, Math.round(panel.scrollHeight || r.height));
+
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('width', w);
+    svg.setAttribute('height', h);
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    if (fontCss) { const st = document.createElementNS(NS, 'style'); st.textContent = fontCss; svg.appendChild(st); }
+    const fo = document.createElementNS(NS, 'foreignObject');
+    fo.setAttribute('x', 0);
+    fo.setAttribute('y', 0);
+    fo.setAttribute('width', w);
+    fo.setAttribute('height', h);
+    const clone = panel.cloneNode(true);
+    shotCopyStyles(panel, clone);
+    // Kích thước gốc đặt SAU khi chép style (chép xong là style cũ bị ghi đè — xem `shotCopyStyles`).
+    clone.setAttribute('style', clone.getAttribute('style') +
+      'width:' + w + 'px;height:' + h + 'px;max-height:none;min-height:0;margin:0;overflow:visible;animation:none;');
+    const sprite = document.getElementById('__icon-sprite');
+    if (sprite) clone.appendChild(sprite.cloneNode(true));
+    shotStripComments(clone);   // xem chú thích ở `shotStripComments`: comment có `--` là SVG KHÔNG nạp được
+    fo.appendChild(clone);
+    svg.appendChild(fo);
+    str = new XMLSerializer().serializeToString(svg);
+  } finally {
+    if (keepPanel === null) panel.removeAttribute('style'); else panel.setAttribute('style', keepPanel);
+    if (foot) { if (keepFoot === null) foot.removeAttribute('style'); else foot.setAttribute('style', keepFoot); }
+  }
+  if (!str) { showToast('Không tạo được ảnh chụp'); return; }
+
+  // ── Bước 2: vẽ lên canvas ──
+  // ⚠️ Chặn trường hợp KHÔNG đo được tấm (tấm đang ẩn/không có bố cục ⇒ 0×0): nếu cứ chạy tiếp
+  // thì ảnh ra trắng trơn và người dùng chỉ thấy câu báo chung, trong khi nguyên nhân lại khác hẳn.
+  if (w < 20 || h < 20) { showToast('Không đo được tấm — hãy mở tấm thanh toán rồi chạm lại'); return; }
+
+  let scale = Math.min(3, Math.max(2, window.devicePixelRatio || 1));
+  const maxPx = 12e6;   // xem chú thích “TRẦN ĐIỂM ẢNH” ở đầu khối
+  if (w * h * scale * scale > maxPx) scale = Math.max(1, Math.sqrt(maxPx / (w * h)));
+  const cw = Math.round(w * scale), ch = Math.round(h * scale);
+
+  showToast('Đang tạo ảnh…');
+  shotRender(str, cw, ch, 2, url => {
+    if (!url) { showToast('Máy này không vẽ được ảnh — hãy chụp màn hình bằng cách thường'); return; }
+    out.src = url;
+    ov.classList.add('open');
+  });
+}
+
+// Nạp SVG rồi vẽ lên canvas. `tries` = số lần thử: **THỬ LẠI MỘT LẦN** là có chủ ý — đã gặp thật
+// (2026-10-15, theme tối) một lượt ảnh giải mã ra canvas TRẮNG TRƠN dù mọi bước đều “thành công”,
+// chạm lại với cùng dữ liệu thì ra ảnh bình thường ⇒ lỗi thoáng qua, nên tự thử lại (rẻ: ~100ms)
+// thay vì báo lỗi với người dùng ngay. `naturalWidth === 0` cũng bị coi là hỏng (ảnh giải mã ra
+// kích thước 0 thì `drawImage` không vẽ gì ⇒ canvas chỉ còn nền trắng).
+function shotRender(str, cw, ch, tries, done) {
+  const im = new Image();
+  const fail = () => { if (tries > 1) shotRender(str, cw, ch, tries - 1, done); else done(null); };
+  im.onerror = fail;
+  im.onload = () => {
+    try {
+      if (!im.naturalWidth || !im.naturalHeight) throw new Error('decode rỗng');
+      const cv = document.createElement('canvas');
+      cv.width = cw;
+      cv.height = ch;
+      const ctx = cv.getContext('2d');
+      // Nền trắng: bốn góc bo của tấm là pixel TRONG SUỐT, ảnh gửi khách không nên có góc trong suốt.
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, cw, ch);
+      ctx.drawImage(im, 0, 0, cw, ch);
+      if (!shotHasInk(cv)) throw new Error('ảnh trắng');
+      done(cv.toDataURL('image/png'));
+    } catch (err) {
+      fail();
+    }
+  };
+  im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(str);
+}
+
+// Đóng tấm ảnh. Cố ý KHÔNG trả cuộn cho `body` nếu tấm thanh toán VẪN đang mở — đóng ảnh là quay
+// về tấm đó (cùng lý do đã ghi ở `closePayDirect`).
+function closeShot(e) { if (e.target === document.getElementById('shotModal')) closeShotDirect(); }
+function closeShotDirect() {
+  const ov = document.getElementById('shotModal');
+  if (ov) ov.classList.remove('open');
+  const pay = document.getElementById('payModal');
+  const det = document.getElementById('modal');
+  const still = (pay && pay.classList.contains('open')) || (det && det.classList.contains('open'));
+  if (!still) document.body.style.overflow = '';
 }
 
 // Save/load ghi chú
@@ -8568,7 +9225,7 @@ function clearNvScope() {
 }
 
 // Esc đóng lần lượt: tấm “Thanh toán…” (nếu đang mở) rồi tới tấm “Chi tiết”.
-document.addEventListener('keydown', e => { if (e.key==='Escape') { closePayDirect(); closeModalDirect(); } });
+document.addEventListener('keydown', e => { if (e.key==='Escape') { closeShotDirect(); closeKyDirect(); closePayDirect(); closeModalDirect(); } });
 
 // ── COLUMN RESIZE (desktop) ────────────────
 // ⚠️ v1 → v2 khi ĐỔI THỨ TỰ CỘT. Bản đồ độ rộng lưu theo **chỉ số cột**, nên bản lưu từ v1
