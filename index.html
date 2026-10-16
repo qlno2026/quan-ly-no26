@@ -2283,6 +2283,24 @@ body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
    gộp mọi `\n` thành dấu cách ⇒ người dùng không biết mình vừa copy cái gì). */
 .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 12px); width: max-content; max-width: min(92vw, 560px); padding: 10px 16px; border-radius: 10px; background: #0f172a; color: #ffffff; font-size: 14px; line-height: 1.35; white-space: pre-line; box-shadow: var(--elev-3); opacity: 0; pointer-events: none; transition: opacity 0.18s ease, transform 0.18s ease; z-index: 4000; }
 .toast.on { opacity: 1; transform: translate(-50%, 0); }
+/* ── 🧯 HỘP “TỰ COPY GIÚP” KHI TRÌNH DUYỆT CHẶN CLIPBOARD (⟳ 2026-10-16j) ─────────────────────
+   Vì sao có: nhấn-giữ-để-copy là thao tác người dùng đã yêu cầu và đã báo “không thấy nữa”.
+   Nếu máy chặn CẢ `navigator.clipboard.writeText` LẪN `document.execCommand('copy')` (đã gặp
+   thật: webview không focus ⇒ `NotAllowedError`, hoặc chính sách trình duyệt) thì bản cũ chỉ
+   hiện “⚠ Không copy được: …” và người dùng **KHÔNG có đường nào lấy được câu tin nhắn** —
+   nhìn y như tính năng bị gỡ. Hộp này là bảo hiểm cuối: in nguyên câu trong một ô CHỌN ĐƯỢC
+   (tự bôi đen sẵn) để người dùng nhấn giữ ô chữ → “Sao chép” theo menu của hệ điều hành.
+   ⛔ ĐỪNG gỡ: trên những máy đó đây là đường DUY NHẤT còn lại.
+   `z-index: 4200` — trên mọi tấm của app (thanh toán 300 · ảnh chụp 320); trên cả `.toast`
+   (4000) nhưng hai thứ không đè nhau (hộp ở giữa, chuông ở đáy màn hình). */
+.lpcb-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 4200; }
+.lpcb-overlay.on { display: flex; }
+.lpcb-card { width: min(92vw, 560px); background: #0f172a; color: #ffffff; border-radius: 12px; padding: 14px; box-shadow: var(--elev-3); }
+.lpcb-title { font-size: 14px; line-height: 1.35; margin-bottom: 8px; }
+/* `user-select: text` là BẮT BUỘC (app đặt `user-select: none` cho thẻ/hàng; ô này nằm ngoài
+   các thẻ đó nhưng vẫn phải khai tường minh để không phụ thuộc vào chỗ dán vào). */
+.lpcb-ta { width: 100%; min-height: 84px; box-sizing: border-box; resize: vertical; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: #ffffff; font-size: 15px; line-height: 1.4; padding: 8px; -webkit-user-select: text; user-select: text; }
+.lpcb-btn { margin-top: 10px; width: 100%; padding: 10px; border: 0; border-radius: 8px; background: #2563eb; color: #ffffff; font-size: 15px; font-weight: 600; cursor: pointer; }
 
 .filter-row { display: flex; gap: 2px; }
 /* Chấm màu nhóm trong ô lọc (thay emoji) */
@@ -4022,6 +4040,9 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
    ⛔ Link “Xem giấy báo” KHÔNG có dữ liệu nên CHỈ ĐỂ HIỂN THỊ (người dùng đã chốt).
    ⟳ 2026-10-15: nút mã QR trong ô “Mã khách hàng” NAY CÓ VIỆC THẬT — chạm là chụp tấm này
       thành ảnh PNG để lưu/chia sẻ (`capturePayShot()`, xem `#shotModal`). Nó KHÔNG quét mã.
+   ⟳ 2026-10-16f: chạm nút ⇒ ảnh xong là **LƯU THẲNG XUỐNG MÁY** (`shotSaveToDevice()`) — không
+      hiện ảnh, không mở bảng chia sẻ (yêu cầu: “chụp màn hình luôn, không cần tạo ảnh hay chia
+      sẻ gì cả”); `#shotModal` chỉ còn là **ĐƯỜNG DỰ PHÒNG** cho máy không cho tải tự động.
    ⛔ KHÔNG có dòng “ID hóa đơn” của ảnh: dữ liệu không có cột đó (người dùng đã chốt bỏ).
    ⚠️ Viên “HĐ tiền điện” (`.pay-badge`) là **NỀN CAM VÀNG `#e8a822` + CHỮ TRẮNG + CHẤM TRẮNG**
    — màu lấy NGUYÊN từ ảnh người dùng gửi (xem chú thích ở rule). Người dùng đã CHỐT chữ
@@ -4108,8 +4129,11 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
   ⟳ 2026-10-15: ⛔ CHẠM VÀO TÊN KHÔNG MỞ TẤM “CHI TIẾT” NỮA (yêu cầu người dùng: “tôi muốn
   ẩn chức năng khi chạm vào tên kh vẫn hiển thị bảng modal”) — `onclick` đã gỡ khỏi
   `.pay-name` và hàm `payOpenDetail()` đã XOÁ. Nhờ vậy tên khách ở tấm này thuần HIỂN THỊ,
-  cùng nhóm với “Xem giấy báo” và nút đỏ; muốn mở “Chi tiết” thì đóng tấm rồi chạm tên kh
-  TRÊN THẺ (đường cũ vẫn còn nguyên). */
+  cùng nhóm với “Xem giấy báo” và nút đỏ.
+  ⟳ 2026-10-16: đường dự phòng cũ (“chạm tên kh TRÊN THẺ” để mở “Chi tiết”) cũng đã GỠ theo
+  yêu cầu lần 2 — nay tấm “Chi tiết” (`#modal` + `showDetailRow()`) **không còn đường mở nào**
+  từ giao diện. Muốn dựng lại một đường CHỦ Ý (nút ⓘ trên thẻ, hoặc nhấn 2 lần…) thì hỏi
+  người dùng trước — xem mục 2026-10-16 trong run.md. */
 /* “Nét tên KH mỏng hơn” (yêu cầu người dùng): `600` → **`400`** — nay tên khách cùng nét với
    mã khách hàng ở ô trên nên hai dòng không còn “nặng nhẹ” lệch nhau. Vẫn giữ màu xanh để
    thấy là chạm được. Muốn mỏng hơn nữa thì đổi thành `300` (Inter 300 đã nạp sẵn). */
@@ -4240,7 +4264,11 @@ body .modal.pay-modal > .modal-handle { background: rgba(0,0,0,0.15); }   /* tay
 /* ══ 📸 “CHỤP MÀN HÌNH” TẤM THANH TOÁN (`#shotModal`) — ⟳ 2026-10-15
    *Yêu cầu người dùng: “tôi muốn thêm chức năng chụp màn hình hiển thị trên mobile khi chạm vào
    chỗ qrcode”*. Chạm nút `.pay-qr` (ô “Mã khách hàng”) ⇒ `capturePayShot()` dựng ẢNH PNG của
-   chính tấm đang mở rồi hiện ở đây để NHẤN GIỮ mà lưu/chia sẻ (gửi khách qua Zalo…).
+   chính tấm đang mở, rồi **LƯU THẲNG xuống máy** (⟳ 2026-10-16f: “chụp màn hình luôn, không cần
+   tạo ảnh hay chia sẻ gì cả”) — `#shotModal` này chỉ hiện khi máy KHÔNG cho tải tự động (webview
+   chặn, hết quyền, lỗi khác), lúc đó người dùng NHẤN GIỮ ảnh mà lưu/gửi (Zalo…). ⛔ ĐỪNG bỏ nhánh
+   dự phòng này, và ⛔ đừng mở tấm này ngay sau khi đã kích hoạt tải được ảnh (ảnh đè lên ngay lúc
+   người dùng vừa lưu gây cảm giác “bấm hai lần”).
    ⚠️ `z-index: 320` — PHẢI trên `.modal-overlay` (300) vì lớp này nằm ngay TRÊN tấm thanh toán,
    và DƯỚI `.toast` (4000) để hộp “Đang tạo ảnh…” vẫn thấy được.
    ⛔ TRANG NÀY TRẮNG TRƠN, KHÔNG KHUNG TỐI (yêu cầu người dùng 2026-10-15: *“tôi muốn khi chụp
@@ -4282,15 +4310,32 @@ body.light-mode .old-ky-btn { border-color: #2563eb; color: #2563eb; }
    chụp cho thấy tiêu đề và MỌI số trong bảng gần như vô hình. Mọi chỗ dùng `--text`/`--border`
    dưới đây đều có bản `body.light-mode` đi kèm — thêm ô mới thì phải thêm cả bản sáng.
    ⛔ BỀ RỘNG: số tiền dài nhất (“15.352.122.472”) không được CẮT — lần đầu để 13px và tiêu đề
-   “TỔNG TIỀN” to nên cột cuối tràn khỏi bảng, số bị cụt đuôi (“2.106.547....”). Nay hạ cỡ chữ
-   bảng xuống **12px** (tiêu đề 11px, nhãn ngắn “KH”/“HĐ” như hàng “Tổng …” của app) + đệm ngang
-   4px ⇒ tổng bề rộng vừa trong ruột 407px. ⚠️ Đo lại bằng `scrollWidth > clientWidth` sau mỗi
-   lần đổi cỡ chữ — số Việt Nam có dấu chấm phân cách nên rất dễ vượt. */
+   “TỔNG TIỀN” to nên cột cuối tràn khỏi bảng, số bị cụt đuôi (“2.106.547....”).
+   ⟳ 2026-10-16 (yêu cầu người dùng: “cho bảng này kích cỡ chữ lớn hơn” — ảnh chụp chính tấm
+   này): cỡ chữ bảng **12px → 15px** (tiêu đề cột **11 → 13px**, nhãn kỳ hiện tại **11 → 12px**,
+   tiêu đề tấm **18 → 20px**, dòng mốc so sánh **13 → 15px**, dòng đối chiếu **12 → 14px**) — tức
+   bằng đúng cỡ chữ bảng của app (`--fs-tb` = 15px).
+   ⚠️ BỀ RỘNG ĐO BẰNG **DOM** (không dùng `canvas.measureText`: số canvas ra NHỎ HƠN thực tế
+   ~20–35% nên tính theo nó là CẮT SỐ — đã suýt làm vậy): tốt nhất là dùng một `<span>` tạm
+   `position:fixed;left:-9999px` chép ĐÚNG `font/letter-spacing/font-variant-numeric` của ô rồi
+   đọc `getBoundingClientRect()`. Số đo được ở cỡ 15px: “15.352.122.472” = **118,8px** (số tiền
+   DÀI NHẤT có thể gặp) · “9.143” (KH/HĐ 4 chữ số) = **42,9px** · “TỔNG TIỀN” (13px, 600) =
+   **72,7px** · cả dòng kỳ hiện tại “1-9/2026 kỳ hiện tại” khi ở MỘT dòng = **193px**.
+   ⇒ 193px là thứ không thể nhét vừa ở khung điện thoại (bề rộng ruột bảng chỉ ~330–420px), nên
+   **CỘT KỲ ĐƯỢC PHÉP XUỐNG DÒNG** (`white-space: normal` — ⛔ CHỈ cột 1; ba cột số phải giữ
+   `nowrap`, nhất là cột tiền, CẮT SỐ LÀ LỖI NẶNG NHẤT của tấm này) ⇒ nhãn “kỳ hiện tại” rơi xuống
+   dòng 2 (cột cần ~86px thay vì 193px) và mọi khung từ **360px** trở lên đủ chỗ cho TẤT CẢ các ô.
+   **Bề rộng cột: 34/18/22/26% → 28/16/16/40%** (kiểm ở khung hẹp nhất 360px ⇒ ruột bảng 328px:
+   tiền 131,2−8 = **123,2 ≥ 118,8** ✓ · KH/HĐ 52,5−8 = **44,5 ≥ 42,9** ✓ · kỳ 91,8−8 = **83,8 ≥ 78** ✓).
+   ⛔ **RỘNG ≤ 344px LÀ KHÔNG THỂ ĐỦ** ở cỡ 15px (cần ~258px cho 4 cột + đệm trong khi chỉ có
+   256px ruột) ⇒ có `@media (max-width: 344px)` cho `.ky-body` **cuộn ngang** + `min-width` cho
+   bảng: thà phải vuốt ngang còn hơn CẮT SỐ.
+   ⚠️ Đo lại bằng `scrollWidth > clientWidth` ở 320/360/435/451px sau MỖI lần đổi cỡ chữ. */
 .ky-hd { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 16px 16px 8px; }
-.ky-title { font-size: 18px; font-weight: 700; color: var(--text); }
+.ky-title { font-size: 20px; font-weight: 700; color: var(--text); }   /* ⟳ 2026-10-16: 18 → 20px (yêu cầu “kích cỡ chữ lớn hơn”) */
 .ky-x { background: rgba(255,255,255,0.08); border: none; color: var(--text-dim); font-size: 14px; line-height: 1; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
 body.light-mode .ky-x { background: rgba(15,23,42,0.06); color: #64748b; }
-.ky-sub { padding: 0 16px 10px; font-size: 13px; line-height: 1.4; color: var(--text-dim); }
+.ky-sub { padding: 0 16px 10px; font-size: 15px; line-height: 1.4; color: var(--text-dim); }   /* ⟳ 2026-10-16: 13 → 15px */
 .ky-sub b { color: var(--text); }
 .ky-body { padding: 0 16px 18px; }
 .ky-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -4298,19 +4343,38 @@ body.light-mode .ky-x { background: rgba(15,23,42,0.06); color: #64748b; }
    app có `tbody td { font-size: var(--fs-tb) }` (15px) — rule đó đặt giá trị **trực tiếp trên ô** nên
    THẮNG cả `inherit` từ `<table>`; đặt 12px ở `.ky-table` là chữ vẫn 15px, cột tiền tràn ra ngoài
    và số bị cắt cụt (“11.078.308....”). `.ky-table td` = (0,1,1) > `tbody td` = (0,0,2) nên đặt ở đây mới ăn. */
-.ky-table th, .ky-table td { padding: 8px 4px; font-size: 12px; text-align: right; white-space: nowrap; overflow: hidden; }
+.ky-table th, .ky-table td { padding: 8px 4px; font-size: 15px; text-align: right; white-space: nowrap; overflow: hidden; }   /* ⟳ 2026-10-16: 12 → 15px (= cỡ bảng của app). ⛔ ĐỔI CỠ LÀ PHẢI ĐO LẠI CỘT (xem khối chú thích ngay trên) */
 .ky-table th:first-child, .ky-table td:first-child { text-align: left; }
+/* ⟳ 2026-10-16: CỘT “Kỳ” ĐƯỢC XUỐNG DÒNG (chỉ cột này). Ở cỡ 15px, “1-9/2026” + nhãn
+   “ kỳ hiện tại” cần **~126px**; ở khung 320px cột này chỉ còn ~78px nên nếu giữ `nowrap` thì
+   nhãn bị cắt mất đuôi. Cho xuống dòng thì hàng kỳ hiện tại cao thêm 1 dòng, còn mọi hàng khác
+   vẫn MỘT dòng như cũ. ⛔ KHÔNG áp dụng cho cột tiền/KH/HĐ — CẮT SỐ là lỗi nặng nhất của tấm này. */
+.ky-table td:first-child { white-space: normal; }
 /* Bề rộng cột theo TỈ LỆ, không theo nội dung: cột “Kỳ” rộng nhất, ba cột số chia phần còn lại;
-   như vậy số dài ngắn gì cũng không đẩy cột ra ngoài — chỉ cần đủ chỗ cho số dài nhất (đã đo). */
-.ky-table th:nth-child(1) { width: 34%; }
-.ky-table th:nth-child(2) { width: 18%; }
-.ky-table th:nth-child(3) { width: 22%; }
-.ky-table th:nth-child(4) { width: 26%; }
-.ky-table thead th { font-size: 11px; font-weight: 600; letter-spacing: 0.01em; color: var(--text-dim); border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+   như vậy số dài ngắn gì cũng không đẩy cột ra ngoài — chỉ cần đủ chỗ cho số dài nhất (đã đo).
+   ⟳ 2026-10-16: 34/18/22/26% → **28/16/16/40%** cùng lượt với cỡ chữ 12 → 15px. Cột TIỀN nhận
+   40% (đo được 123,2px ở khung 360px, cần 118,8px cho số dài nhất) vì đó là cột chứa số dài nhất
+   và ⛔ TUYỆT ĐỐI không được cắt; KH/HĐ 16% vì số 4 chữ số “9.143” cần 42,9px. */
+.ky-table th:nth-child(1) { width: 28%; }
+.ky-table th:nth-child(2) { width: 16%; }
+.ky-table th:nth-child(3) { width: 16%; }
+.ky-table th:nth-child(4) { width: 40%; }
+.ky-table thead th { font-size: 13px; font-weight: 600; letter-spacing: 0.01em; color: var(--text-dim); border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }   /* ⟳ 2026-10-16: 11 → 13px */
 .ky-table tbody td { border-top: 1px solid var(--border); color: var(--text); font-variant-numeric: tabular-nums; }
 .ky-table td:nth-child(4) { font-weight: 700; }
+/* ⛔ KHUNG ≤ 344px KHÔNG ĐỦ CHỖ ở cỡ 15px (cần ~258px cho 4 cột + đệm, ruột bảng chỉ ~256px):
+   thà cho CUỘN NGANG còn hơn để cột tiền bị CẮT (“15.352.122.47…”). min-width 344px = 40% × 344
+   − 8 = **129,6px** cho cột tiền (> 118,8px cần thiết) và 16% × 344 − 8 = **47px** cho KH/HĐ. */
+@media (max-width: 344px) {
+  .ky-body { overflow-x: auto; }
+  .ky-table { min-width: 344px; }
+}
 .ky-cur td { background: rgba(37,99,235,0.12); }
-.ky-tag { font-size: 11px; color: #60a5fa; }
+.ky-tag { font-size: 12px; color: #60a5fa; white-space: nowrap; }   /* ⟳ 2026-10-16: 11 → 12px (nhỏ hơn cỡ ô để nhãn không lấn số)
+   ⛔ `white-space: nowrap` Ở ĐÂY LÀ BẮT BUỘC: cột Kỳ được phép xuống dòng (cỡ 15px làm dòng
+   “1-9/2026 kỳ hiện tại” dài 193px, không khung điện thoại nào đủ chỗ) — nếu nhãn cũng xuống dòng
+   tự do thì nó bị BẺ GIỮA CỤM (“1-9/2026 kỳ” / “hiện tại”, đã thấy trên ảnh chụp 435px). Với
+   `nowrap`, cả cụm “kỳ hiện tại” rơi nguyên xuống dòng 2. */
 body.light-mode .ky-title { color: #0f172a; }
 body.light-mode .ky-sub { color: #5b6777; }
 body.light-mode .ky-sub b { color: #0f172a; }
@@ -4319,8 +4383,8 @@ body.light-mode .ky-table tbody td { color: #0f172a; border-top-color: #e2e8f0; 
 body.light-mode .ky-cur td { background: rgba(37,99,235,0.10); }
 body.light-mode .ky-tag { color: #2563eb; }
 body.light-mode .ky-foot, body.light-mode .ky-empty { color: #5b6777; }
-.ky-foot { margin-top: 10px; font-size: 12px; color: var(--text-dim); }
-.ky-empty { padding: 10px 0 4px; font-size: 14px; color: var(--text-dim); }
+.ky-foot { margin-top: 10px; font-size: 14px; color: var(--text-dim); }   /* ⟳ 2026-10-16: 12 → 14px */
+.ky-empty { padding: 10px 0 4px; font-size: 15px; color: var(--text-dim); }   /* ⟳ 2026-10-16: 14 → 15px */
 /* Ô chọn kỳ: dạng <select> gốc của hệ điều hành (không tự vẽ lại mũi tên) — cùng bề rộng với
    các khối khác trong tấm cài đặt (`width: 100%` của `.cfg-row-col`). */
 .cfg-select { width: 100%; box-sizing: border-box; padding: 9px 10px; border-radius: 9px; border: 1px solid var(--border); background: var(--navy-mid); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; }
@@ -4845,8 +4909,10 @@ body.force-desktop .table-view { display: block; }
      ⚠️ `z-index: -1` phải đi KÈM `isolation: isolate` ở `tr`: `tr` không tự tạo stacking
      context nên `z-index: -1` sẽ tụt xuống **dưới cả nền bảng** ⇒ dải vô hình. `isolation`
      tạo context mà KHÔNG đụng `position`/`z-index` của hàng (an toàn hơn `position: relative`).
-     ⚠️ `pointer-events: none`: dải nằm đè vùng bấm của ô TÊN mà ô đó có `onclick="showDetail()"`
-     — không tắt thì cú chạm vào tên rơi vào dải và **không mở được modal**.
+     ⚠️ `pointer-events: none`: dải nằm đè cả TRACK HÀNG 1, mà hàng có `ondblclick="toggleOrange()"`)
+     — không tắt thì cú nhấn 2 lần rơi vào dải và **không đánh dấu được thẻ/hàng**.
+     ℹ️ 2026-10-16: lý do cũ (ô TÊN có `onclick="showDetail()"`) nay KHÔNG còn — tên khách đã
+     thôi bấm được (cả thẻ lẫn bảng), nhưng `pointer-events: none` VẪN PHẢI GIỮ vì lý do vừa nêu.
      ⛔ `:not(.highlighted):not(.highlighted-purple)`: hàng ĐƯỢC ĐÁNH DẤU đã có nền cam/tím,
      dải đè lên là mất dấu.
      ⚠️ Bề rộng dải lấy từ token `--row-pad-l` / `--row-pad-r` (CÙNG token với `padding` của
@@ -6590,12 +6656,27 @@ function shortMonths(thang) {
 }
 // Lowercase without Vietnamese diacritics, for tolerant searching
 function normVn(s) { return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+/* ⚡ ĐỆM REGEXP TÔ SÁNG (⟳ 2026-10-16h — tối ưu độ trễ gõ ô tìm kiếm).
+   `hi()` được gọi **~12 lần cho MỖI thẻ/hàng** (mỗi trường một lần) mà mỗi lần lại `esc(q)` +
+   escape ký tự đặc biệt + `new RegExp` cho **CÙNG một `q`** ⇒ một phím gõ ≈ **1.200 lượt dựng
+   RegExp** (50 thẻ + 50 hàng bảng). Nay chỉ dựng lại khi `q` đổi.
+   ⚠️ An toàn khi dùng lại một RegExp có cờ `g`: `String.prototype.replace` với regex toàn cục
+   LUÔN bắt đầu từ `lastIndex = 0` nên không bị “nhảy vị trí” giữa các lần gọi.
+   ⛔ ĐỪNG gộp đệm này với `q` ĐÃ `normVn` — `hi()` tô sáng theo **chuỗi nguyên văn người dùng
+   gõ** (giữ dấu), khác `q` đã bỏ dấu dùng để LỌC (xem `applyFilters`). */
+let _hiQ = null, _hiRe = null;
+function hiRegexp(q) {
+  if (_hiQ === q && _hiRe) return _hiRe;
+  const escRe = esc(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  _hiQ = q;
+  _hiRe = new RegExp(escRe, 'gi');
+  return _hiRe;
+}
 function hi(text, q) {
   if (text == null || text === '') return '';
   const t = esc(text);
   if (!q) return t;
-  const escRe = esc(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return t.replace(new RegExp(escRe, 'gi'), m => `<mark>${m}</mark>`);
+  return t.replace(hiRegexp(q), m => `<mark>${m}</mark>`);
 }
 
 function handleFileUpload(inp) {
@@ -6796,6 +6877,7 @@ function toggleViewMode() {
   // Cụm tác vụ nằm trong hàng phân trang của **dạng xem** đang bật (thẻ ↔ bảng) ⇒ đổi dạng xem
   // là đổi hàng phân trang, phải chuyển cụm theo (xem `chuyenCumTacVu`).
   chuyenCumTacVu();
+  renderTableIfVisible();   // ⛔ ĐỪNG BỎ: bảng có thể đã bị bỏ vẽ lúc còn ẩn — xem `tableViewHidden`
   // ⚠️ BẮT BUỘC: ô ghi chú trên thẻ được đo bằng `getBoundingClientRect` (xem `fitGhiChuInputs`).
   // Khi thẻ còn `display:none` thì MỌI số đo bằng 0 ⇒ hàm sẽ đặt bừa bề rộng **125px** (cờ mặc
   // định trước khi JS chạy) thay vì bề rộng canh theo viên SĐT (~121px). Nên khi QUAY VỀ dạng thẻ
@@ -7533,19 +7615,59 @@ function updateStats() {
   scope.style.display = 'none';
 }
 
-function handleSearch() {
+/* ⏱ GÕ NHANH THÌ CHỈ VẼ **MỘT LẦN** (⟳ 2026-10-16h — tối ưu độ trễ gõ ô tìm kiếm).
+   Vì sao cần: mỗi ký tự trước đây đều chạy TRỌN `applyFilters()` (lọc 10.156 dòng + gộp theo KH +
+   vẽ 50 thẻ + 50 hàng bảng) — đo được **76–119ms/ký tự**, gõ 10 ký tự là ~1 giây công việc nặng.
+   Nay ký tự sau **hoãn** ký tự trước: chỉ lượt CUỐI của một đợt gõ mới vẽ.
+   ⚠️ Phần NHẸ làm NGAY ở mọi phím (thu gọn hàng thống kê, hiện/ẩn nút xoá, về trang 1) — người
+   dùng vẫn thấy phản hồi tức thì; chỉ phần NẶNG (lọc + vẽ) mới chờ nhịp hoãn.
+   ⚠️ Thứ tự trong bản cũ là `applyFilters()` RỒI mới thu gọn thống kê; nay đảo lại (thu gọn
+   trước) là CỐ Ý: nhờ vậy lượt vẽ nhìn thấy đúng bố cục cuối cùng, không phải vẽ xong mới co hàng.
+   ⚠️ `clearSearch()` truyền `true` để XOÁ LÀ THẤY NGAY (⛔ đừng để nút xoá chờ hết nhịp hoãn).
+   ⛔ ĐỪNG nâng `SEARCH_DEBOUNCE_MS` lên vài trăm ms: mỗi ký tự trên điện thoại gõ chậm cũng phải
+   hiện kết quả, để quá lâu là cảm giác “gõ không ăn”. */
+/* ⚠️ NHỊP **ĐẦU TIÊN CỦA ĐỢT GÕ VẪN VẼ NGAY** (⟳ 2026-10-16h, vá sau khi ĐO per-ký-tự).
+   Lý do: nếu hoãn CẢ ký tự đầu thì người **GÕ CHẬM** (mỗi phím cách nhau > 120ms — đúng kiểu bàn
+   phím điện thoại) bị cộng thêm trọn nhịp hoãn vào MỖI phím. Đo thật: hoãn-cả-đầu ⇒ trễ
+   198–222ms một phím (trung vị **211ms**), trong khi bản CŨ (vẽ ngay, đồng bộ) chỉ ~134ms ⇒
+   tệ hơn cho người gõ chậm dù mỗi lượt vẽ đã rẻ hơn. Nay chỉ **các phím nối tiếp nhanh** mới
+   hoãn: nhịp đầu vẽ ngay, các phím trong cùng một đợt dồn về MỘT lượt vẽ ở cuối đợt.
+   ⇒ Gõ chậm: mỗi phím một lượt vẽ NGAY như bản cũ (nhưng rẻ hơn 25–45%); gõ nhanh: 10 phím =
+   **2 lượt vẽ** (đầu + cuối) thay vì 10. ⛔ ĐỪNG bỏ nhánh nhịp-đầu: bỏ là lỗi trễ nói trên quay lại. */
+const SEARCH_DEBOUNCE_MS = 120;
+let _searchTimer = null, _searchLeading = false, _searchLastValue = null;
+function handleSearch(immediate) {
   currentPage = 1;
-  applyFilters();
+  const val = document.getElementById('searchInput').value;
   // Collapse the stats section when searching to free up space for results
-  const searching = document.getElementById('searchInput').value.trim().length > 0;
+  const searching = val.trim().length > 0;
   document.querySelector('.stats-row').classList.toggle('collapsed', searching);
   document.getElementById('nvScope').classList.toggle('collapsed', searching);
-  document.getElementById('searchClear').style.display = document.getElementById('searchInput').value ? 'flex' : 'none';
+  document.getElementById('searchClear').style.display = val ? 'flex' : 'none';
+  if (_searchTimer) { clearTimeout(_searchTimer); _searchTimer = null; }
+  if (immediate === true || !_searchLeading) {   // nhịp ĐẦU của đợt gõ ⇒ vẽ ngay
+    _searchLeading = true;
+    runSearch();
+  }
+  if (immediate === true) { _searchLeading = false; return; }   // đường “chạy ngay” không hẹn giờ
+  _searchTimer = setTimeout(() => {
+    _searchTimer = null;
+    _searchLeading = false;
+    // ⚠️ Hết đợt mà ô tìm kiếm KHÔNG đổi từ lượt vẽ trước (ca gõ đúng một phím) ⇒ đừng vẽ lại:
+    // bản thân nhịp đầu đã vẽ đúng trạng thái cuối rồi. Thiếu chốt này là mỗi phím lẻ tốn 2 lượt.
+    if (_searchLastValue !== document.getElementById('searchInput').value) runSearch();
+  }, SEARCH_DEBOUNCE_MS);
+}
+// Phần NẶNG (lọc + vẽ + lưu trạng thái) — tách ra để đường “chạy ngay” và đường “hoãn” dùng
+// CHUNG một mã, ⛔ đừng chép lại hai bản (sửa một bản là hai đường lệch nhau).
+function runSearch() {
+  _searchLastValue = document.getElementById('searchInput').value;   // xem chốt ở nhịp cuối
+  applyFilters();
   saveUiState();
 }
 function clearSearch() {
   document.getElementById('searchInput').value = '';
-  handleSearch();
+  handleSearch(true);   // xem chú thích ở `handleSearch`: xoá phải thấy kết quả NGAY
   document.getElementById('searchInput').focus();
 }
 function handleFilter() { currentPage=1; applyFilters(); saveUiState(); }
@@ -7818,7 +7940,64 @@ let _hdCountMap = new Map();
    Tấm “Nợ cũ theo từng kỳ” đọc biến này để số của nó KHÔNG mâu thuẫn với hàng “Tổng …”
    (xem chú thích đầu `periodStats`). ⛔ Đừng đổi công thức ở một trong hai chỗ. */
 let _dispRows = null;
+/* ══ 🎨 NỀN HEADER ĐỔI MÀU THEO TỔNG NỢ CỦA NHÓM ĐANG XEM (⟳ 2026-10-16d) ═══════════════════
+   Yêu cầu người dùng: “tôi muốn bảng này đổi màu theo số tiền tổng nợ của từng nhóm nhưng trộn
+   thêm màu đen” (ảnh kèm = thanh tiêu đề trên cùng; hỏi lại người dùng chọn **“Thanh tiêu đề
+   trên cùng”** + **“Trộn đều 40% đen vào màu hiện có”**).
+   · Số để chọn màu = **ĐÚNG con số đang in ở hàng “Tổng nợ …”** (`dispRows`) ⇒ chọn nhóm khác là
+     header đổi màu theo nhóm đó, gõ tìm kiếm cũng đổi theo. ⛔ Đừng tự đếm lại bằng công thức
+     khác — hai chỗ lệch nhau là màu nói một đằng, số nói một nẻo.
+   · BA MỨC = **ĐÚNG BA MỨC MÀU CỦA CON SỐ** (⟳ 2026-10-16g — yêu cầu người dùng: “tôi muốn màu
+     bảng nền như màu số tổng nợ từng nhóm”): nền header dùng chính ngưỡng của `.count-tien`
+     (`debtTier()`: < 100 triệu = `low` xanh · ≥ 100 triệu = `mid` vàng · ≥ 1 tỉ = `high` đỏ) ⇒
+     số đỏ thì nền đỏ, số vàng thì nền vàng, số xanh thì nền xanh — ⛔ ĐỪNG để hai chỗ dùng hai
+     thang ngưỡng khác nhau (bản cũ chia 5 mức theo tỉ lệ với nhóm lớn nhất ⇒ 7/8 nhóm ra mức
+     thấp nên nền XANH trong khi chính con số của nhóm đó lại ĐỎ — đúng cái người dùng thấy sai).
+   · `HEADER_DEBT_BLACK = 0.40`: trộn ĐỀU 40% ĐEN vào màu của mức (đúng yêu cầu người dùng).
+   ⛔ **MÀU MỖI MỨC LÀ BẢN ĐẬM CÙNG TÔNG VỚI MÀU CON SỐ** (`.count-tien.low` `#86efac` xanh ·
+     `.mid` `#fde68a` vàng · `.high` `#ff8888` đỏ) — ⛔ ĐỪNG “cho tươi” bằng chính tông sáng đó:
+     chữ header là chữ SÁNG (`--hdr-text` `#e2e8f0` · `--hdr-sub` `#94a3b8`) mà dòng tên tệp chỉ
+     13px/14px ⇒ cần **4,5:1**. Đo thật trên nền ĐÃ trộn 40% đen (từng mức, để transition 0,45s
+     chạy xong rồi mới đọc): tên tệp/ngày **4,64–6,18:1** ✓ (mức dễ vỡ nhất là ĐỎ `rgb(111,17,17)`
+     = 4,64 · vàng `#92400e` trộn 40% = `rgb(88,38,8)` ⇒ **4,83:1** ✓) · tiêu đề/đồng hồ
+     **9,66–12,85:1** ✓ · theme **sáng** cùng màu nền ⇒ tên tệp **5,80:1** ✓.
+     Đổi sang tông sáng như `#86efac`/`#fde68a`/`#ff8888` thì tụt còn **3,1–3,9:1** ✗ — đó chính
+     là lý do phải dùng bản đậm rồi mới trộn đen. ⛔ Đừng hạ `HEADER_DEBT_BLACK` xuống dưới 0,40
+     nếu không kiểm lại tương phản (giảm đen = nền sáng lên = tương phản tụt).
+   ⚠️ Ghi bằng INLINE `--hdr-bg` trên `.header`: inline thắng cả `:root` lẫn
+     `body.light-mode .header` ⇒ header GIỐNG NHAU ở hai theme, và `removeProperty` là tự về
+     token cũ `#1e3a5f` khi chưa có dữ liệu. ⛔ Đừng sửa `:root`/`body.light-mode` thay cho việc này. */
+// Ngưỡng màu của CON SỐ ở hàng “Tổng nợ …” — MỘT nguồn sự thật duy nhất, dùng cho CẢ lớp
+// `.count-tien` (màu chữ) LẪN nền header (`updateHeaderDebtColor`) ⇒ hai chỗ không thể lệch nhau.
+function debtTier(total) { return total >= 1000000000 ? 'high' : (total >= 100000000 ? 'mid' : 'low'); }
+const HEADER_DEBT_BLACK = 0.40;
+// Bản ĐẬM cùng tông với `#86efac` (low) / `#fde68a` (mid) / `#ff8888` (high) của `.count-tien`.
+const HEADER_DEBT_COLORS = { low: '#166534', mid: '#92400e', high: '#b91c1c' };
+// `ratio` = lượng đen trộn vào (0,40 = 40%): nhân từng kênh với `1 - ratio` rồi làm tròn.
+function mixBlack(hex, ratio) {
+  const n = parseInt(hex.slice(1), 16);
+  const f = 1 - ratio;
+  return 'rgb(' + Math.round(((n >> 16) & 255) * f) + ',' + Math.round(((n >> 8) & 255) * f) + ',' + Math.round((n & 255) * f) + ')';
+}
+// `total` = tổng nợ đang hiển thị (truyền từ `applyFilters` để chỉ có MỘT công thức tính).
+function updateHeaderDebtColor(total) {
+  const hd = document.querySelector('.header');
+  if (!hd) return;
+  // Chưa có dữ liệu (`0`) ⇒ trả về token cũ `#1e3a5f` của theme, không đoán màu.
+  if (!(total > 0)) { hd.style.removeProperty('--hdr-bg'); return; }
+  hd.style.setProperty('--hdr-bg', mixBlack(HEADER_DEBT_COLORS[debtTier(total)], HEADER_DEBT_BLACK));
+}
+/* ⚡ CHỈ DỰNG LẠI KHI ĐẦU VÀO ĐỔI (⟳ 2026-10-16h — tối ưu độ trễ gõ ô tìm kiếm).
+   Hàm này quét TOÀN BỘ `allData` (**10.156 dòng**, `split(',')` từng chuỗi kỳ) và đo được
+   **7–40ms MỖI LẦN GÕ PHÍM**, trong khi đầu vào của nó chỉ là `allData` + `currentPeriod`
+   (qua `isCurrentPeriodLabel`) — gõ ký tự KHÔNG làm hai thứ đó đổi.
+   ⚠️ Khoá đệm là **CHÍNH ĐỐI TƯỢNG `allData`** (không phải độ dài): cả 3 đường nạp dữ liệu
+   (xoá dữ liệu / khôi phục bản lưu / nạp tệp Excel) đều **gán mảng MỚI** vào `allData` ⇒ tự
+   dựng lại. ⛔ ĐỪNG đổi khoá sang “số dòng”: nạp tệp khác nội dung mà cùng số dòng là đệm cũ
+   nằm lại (vạch xanh `multi-hd` + cột “Nợ cũ” + `_hdCountMap` sẽ nói sai). */
+let _oldFlagsSrc = null, _oldFlagsPeriod = null;
 function buildOldFlags() {
+  if (_oldFlagsSrc === allData && _oldFlagsPeriod === currentPeriod) return;   // ⚡ đệm — xem chú thích trên
   const per = new Map();
   allData.forEach(x => {
     const key = x.ma_khach_hang || x.ten_khach_hang || '';
@@ -7845,6 +8024,30 @@ function buildOldFlags() {
     // Trên card/table ghi số hoá đơn của kh: "1_HĐ", "2_HĐ", "3_HĐ"…
     _oldKindMap.set(key, rec.count + '_HĐ');
   }
+  // Ghi mốc đệm SAU khi dựng xong (đặt TRƯỚC là lần sau đọc phải kết quả rỗng).
+  _oldFlagsSrc = allData;
+  _oldFlagsPeriod = currentPeriod;
+}
+
+/* ⚡ ĐỆM “ĐỒNG CỎ” CHO Ô TÌM KIẾM (⟳ 2026-10-16h — đo được là chỗ tốn nhất khi gõ).
+   Vì sao cần: mỗi ký tự gõ vào, bộ lọc nối **12 trường** của TỪNG dòng rồi `normVn`
+   (NFD normalize + regex) trên chuỗi đó ⇒ **10.156 lượt normalize MỖI PHÍM** (đo được ~40–60ms).
+   Chuỗi ấy KHÔNG đổi giữa các lần gõ (dữ liệu chỉ đổi khi nạp tệp / khôi phục) ⇒ tính MỘT lần.
+   ⚠️ Trường DUY NHẤT người dùng sửa được trong chuỗi này là `ghi_chu` (ô ghi chú) ⇒ đệm ghi kèm
+   giá trị `ghi_chu` lúc dựng và **tự tính lại khi nó khác đi** — nhờ vậy cả 3 đường sửa ghi chú
+   (`saveGhiChu`, `loadGhiChu`, đường gộp trùng) đều đúng mà ⛔ không phải nhớ gọi hàm xoá đệm
+   ở từng đường (quên một đường là tìm kiếm “mất” ghi chú mới gõ).
+   ⚠️ Khoá đệm là CHÍNH ĐỐI TƯỢNG DÒNG (WeakMap) ⇒ nạp tệp mới = đối tượng mới = tự tính lại.
+   ⛔ ĐỪNG đổi thứ tự/khối trường nối ở đây: chuỗi này CHÍNH LÀ “đồng cỏ” mà kết quả tìm kiếm
+   dựa vào — đổi thứ tự là đổi kết quả tìm kiếm so với bản cũ. */
+const _hayCache = new WeakMap();
+function searchHay(r) {
+  const g = r.ghi_chu || '';
+  const c = _hayCache.get(r);
+  if (c !== undefined && c.g === g) return c.h;
+  const h = normVn(r.stt + r.ma_khach_hang + r.ten_khach_hang + r.dia_chi + r.ma_sogcs + r.danh_so + r.dien_thoai + r.thang_no + r.so_tbi + r.ghi_chu + r.nhan_vien + r.abc);
+  _hayCache.set(r, { h: h, g: g });
+  return h;
 }
 
 function applyFilters() {
@@ -7873,8 +8076,9 @@ function applyFilters() {
     }
     if (window._highDebtFilter && r.tien_no < 2000000) return false;
     if (q) {
-      const hay = normVn(r.stt+r.ma_khach_hang+r.ten_khach_hang+r.dia_chi+r.ma_sogcs+r.danh_so+r.dien_thoai+r.thang_no+r.so_tbi+r.ghi_chu+r.nhan_vien+r.abc);
-      if (!hay.includes(q)) return false;
+      // ⚡ đệm “đồng cỏ” — xem khối chú thích ở `searchHay` (giống y bản cũ, chỉ khác là KHÔNG
+      // `normVn` lại 12 trường cho 10.156 dòng ở mỗi phím).
+      if (!searchHay(r).includes(q)) return false;
     }
     return true;
   });
@@ -7956,10 +8160,14 @@ function applyFilters() {
   // ⚠️ Số tổng KHÔNG còn hậu tố `đ` (yêu cầu “bỏ chữ đ sau số tiền”) — đơn vị đã rõ từ nhãn
   // “Tổng nợ:”. Đừng thêm lại `+ 'đ'`: chuỗi này còn đi qua `.count-tien` (đổi màu theo quy mô).
   elTongTien.textContent = tongTien.toLocaleString('vi-VN');
-  elTongTien.className = 'count-tien ' + (tongTien >= 1000000000 ? 'high' : (tongTien >= 100000000 ? 'mid' : 'low'));
+  elTongTien.className = 'count-tien ' + debtTier(tongTien);
   // Số vừa đổi ⇒ bề rộng hàng “Tổng …” đổi theo ⇒ đo lại (dữ liệu lớn hơn là hàng rộng hơn,
   // xem `fitCountRow()`).
   fitCountRow();
+  // 🎨 Nền header ăn theo CHÍNH con số `tongTien` vừa in ra (xem khối chú thích ở
+  // `updateHeaderDebtColor`): truyền số vào thay vì để hàm tự đếm lại — hai công thức là hai
+  // nguồn sự thật và sẽ lệch nhau ở tab khoảng nợ (`keepSet`) hoặc khi đang gõ tìm kiếm.
+  updateHeaderDebtColor(tongTien);
   const q2 = document.getElementById('searchInput').value.trim();
   renderCards(q2);
   renderTable(q2);
@@ -8036,7 +8244,13 @@ function renderCards(q='') {
        ghi chú KHÔNG đánh dấu thẻ. */
     return `<div class="kh-card${hdCount >= 2 ? ' multi-hd' : ''}" data-ma="${esc(r.ma_khach_hang)}" ondblclick="toggleOrange(event, this)">
       <div class="kh-card-top">
-        <div class="kh-name" onclick="showDetail(${start+i})" style="cursor:pointer">${hi(r.ten_khach_hang,q)||'—'}</div>
+        <!-- ⟳ 2026-10-16: TÊN KHÁCH TRÊN THẺ KHÔNG CÒN CHẠM ĐƯỢC (yêu cầu người dùng, lần 2:
+             “xem lại chạm vào tên kh vẫn còn hiển thị bảng” — kèm ảnh chụp tấm “Chi tiết” 12
+             hàng). Đã gỡ onclick + cursor:pointer. ⛔ ĐỪNG gắn lại showDetail() ở đây: đây là
+             đường còn sót lại sau khi gỡ ở tấm “Thanh toán…”, và người dùng đã báo lại 2 lần.
+             ⛔ KHÔNG dùng dấu backtick trong chú thích NÀY: nó nằm TRONG một template literal,
+             backtick sẽ đóng chuỗi sớm và cả script không parse được (đã từng xảy ra). -->
+        <div class="kh-name">${hi(r.ten_khach_hang,q)||'—'}</div>
         <div class="kh-tien-col">
           <!-- ⚠️ LỚP pay-tap + onclick = CHẠM VÀO SỐ TIỀN LÀ MỞ TẤM “Thanh toán cho điểm dùng điện”
                (yêu cầu người dùng). event.stopPropagation() để cú chạm không lọt lên thẻ card
@@ -8068,7 +8282,29 @@ function renderCards(q='') {
 }
 
 // TABLE (desktop)
+/* ⛔ DẠNG BẢNG ĐANG BỊ ẨN THÌ KHÔNG VẼ (⟳ 2026-10-16h — tối ưu độ trễ gõ ô tìm kiếm).
+   Vì sao: trên điện thoại bảng nằm trong `.table-view` mang `display:none` (bố cục thẻ), nhưng
+   `applyFilters` vẫn dựng **50 hàng × 14 ô** cho nó **mỗi phím gõ** ⇒ đo được **5,7ms** (câu ngắn)
+   tới **20,9ms** (câu khớp nhiều ⇒ tô sáng nhiều ô) công vô ích, chưa kể 50 hàng đó còn làm nặng
+   mọi phép tính bố cục sau đó.
+   ⚠️ Bỏ vẽ thì phải VẼ LẠI khi bảng được hiện ra: cờ `_tableDirty` + `renderTableIfVisible()`
+   (gọi ở `toggleViewMode()` và ở `resize`). ⛔ ĐỪNG bỏ 2 chỗ gọi đó — bỏ là người dùng bật
+   “Xem dạng máy tính” sẽ thấy bảng **cũ** (dữ liệu của lần gõ trước).
+   ⚠️ `#tableBody`/`#oldTableBody` CHỈ có `renderTable` ghi vào (tấm “Chi tiết” dựng bảng riêng)
+   ⇒ bỏ vẽ khi ẩn không làm chỗ nào khác đọc phải dữ liệu cũ. */
+let _tableDirty = false;
+function tableViewHidden() {
+  const tv = document.querySelector('.table-view');
+  return !!tv && getComputedStyle(tv).display === 'none';
+}
+// Vẽ bù khi bảng vừa được hiện ra (đổi dạng xem hoặc vượt mốc bề rộng).
+function renderTableIfVisible() {
+  if (!_tableDirty || tableViewHidden()) return;
+  renderTable(document.getElementById('searchInput').value.trim());
+}
+
 function renderTable(q='') {
+  if (tableViewHidden()) { _tableDirty = true; return; }   // xem chú thích ở `renderTableIfVisible`
   const isOld = (currentTab === 'old' || currentTab === 'oldky' || currentTab === '1tr');
   const start = (currentPage-1)*PAGE_SIZE;
   const pageData = filtered.slice(start, start+PAGE_SIZE);
@@ -8107,7 +8343,10 @@ function renderTable(q='') {
            được “bảng máy tính không đổi”. Thuộc tính title giữ tên GỐC cho cả hai.
            ⛔ KHÔNG dùng dấu backtick trong chú thích NÀY: nó nằm TRONG một template literal của
            JS, backtick sẽ đóng chuỗi sớm và làm cả script không parse được (đã từng xảy ra). -->
-      <td class="cell-tenkh" onclick="showDetail(${start+i})" style="cursor:pointer" title="${esc(r.ten_khach_hang||'')}"><span class="ten-full">${hi(r.ten_khach_hang,q)||'—'}</span><span class="ten-ngan">${hi(tenKHNgan(r.ten_khach_hang),q)||'—'}</span></td>
+      <!-- ⟳ 2026-10-16: ô TÊN KH của BẢNG cũng gỡ onclick + cursor:pointer — CÙNG yêu cầu với thẻ
+           card (tên khách KHÔNG còn mở tấm “Chi tiết”; xem chú thích ở kh-name trong renderCards).
+           title vẫn giữ tên GỐC cho cả hai nhánh tên. Không dùng backtick trong chú thích này. -->
+      <td class="cell-tenkh" title="${esc(r.ten_khach_hang||'')}"><span class="ten-full">${hi(r.ten_khach_hang,q)||'—'}</span><span class="ten-ngan">${hi(tenKHNgan(r.ten_khach_hang),q)||'—'}</span></td>
       <td class="cell-addr">${hi(r.dia_chi,q)||'—'}</td>
       <td class="cell-dim">${hi(r.ma_sogcs,q)||'—'}</td>
       <td class="cell-dim">${hi(r.danh_so,q)||'—'}</td>
@@ -8125,6 +8364,7 @@ function renderTable(q='') {
 
     </tr>`;
   }).join('');
+  _tableDirty = false;   // vừa vẽ xong ⇒ không còn gì để vẽ bù (xem `renderTableIfVisible`)
 }
 
 function renderPagination() {
@@ -8314,7 +8554,20 @@ function copyToClip(text, el) {
    không bôi đen chữ. */
 const LP_COPY_MS = 550;      // thời gian giữ để copy
 const LP_SLOP = 10;          // xê dịch tối đa (px) còn coi là ĐANG GIỮ
-let _lpTimer = null, _lpEl = null, _lpX = 0, _lpY = 0, _lpFired = false;
+/* ⛔ CỨU CỬ CHỈ KHI TRÌNH DUYỆT “CƯỚP” NÓ (2026-10-16g) — người dùng báo *“kiểm tra lại chế độ nhấn
+   giữ là copy tin nhắn, tôi thấy không còn chế độ đó”*. Đo lại trên Preview: cử chỉ VẪN CHẠY đủ
+   (nhấn giữ 700ms ⇒ toast “✓ Đã copy: Tiền điện …”, đo 6/6 điểm trong thẻ + hàng bảng) ⇒ khác
+   biệt thật nằm ở MÁY THẬT: Chrome Android khi nhận ra cử chỉ nhấn-giữ của HỆ ĐIỀU HÀNH (bôi đen /
+   menu gọi-copy) thì bắn `pointercancel` **quanh mốc ~500ms** — tức NGAY TRƯỚC mốc 550ms của
+   mình. Bản cũ huỷ thẳng ở `pointercancel` ⇒ trên điện thoại tính năng không bao giờ chạy, còn
+   trên Preview (giữ bằng CHUỘT, không có `pointercancel`) thì vẫn “xanh” ⇒ lỗi chỉ hiện ở máy thật.
+   CÁCH CHỮA: nếu bị huỷ mà (1) ĐÃ giữ được ≥ `LP_CANCEL_GRACE`, (2) cử chỉ còn “đang giữ”
+   (`_lpTimer` ≠ null ⇒ chưa hề đi xa quá `LP_SLOP`, vì đi xa là `lpStop()` xoá timer) ⇒ coi như
+   đã giữ đủ và copy luôn. Cuộn TRANG vẫn an toàn: cuộn là có `pointermove` > 10px ⇒ timer bị xoá
+   từ trước, `lpCancelRescue()` thấy `_lpTimer === null` nên KHÔNG copy. ⛔ Đừng hạ mốc này xuống
+   thấp hơn nữa (chạm-rồi-cuộn sẽ copy oan) và ⛔ đừng bỏ nhánh này (bỏ là quay lại lỗi trên máy thật). */
+const LP_CANCEL_GRACE = 250;
+let _lpTimer = null, _lpEl = null, _lpX = 0, _lpY = 0, _lpFired = false, _lpStart = 0;
 function lpStop() { if (_lpTimer) { clearTimeout(_lpTimer); _lpTimer = null; } }
 // Vùng nhận nhấn-giữ: thẻ card (`.kh-card`) và hàng bảng (`.table-view tbody tr`) — hai nơi đều
 // có `data-ma`. Trả về `null` nếu cú nhấn rơi vào chỗ có thao tác riêng.
@@ -8425,45 +8678,148 @@ function lpCopyFallback(txt) {
   ta.remove();
   return ok;
 }
+/* 🧯 Hộp bảo hiểm cuối khi CẢ HAI đường copy đều bị máy chặn — xem chú thích CSS `.lpcb-*`.
+   Dựng MỘT LẦN rồi dùng lại (nhiều lần copy liên tiếp không tạo thêm nút trong DOM).
+   ⚠️ Ô chữ tự `select()` khi mở VÀ mỗi khi được focus — nhờ vậy kể cả khi nút “Sao chép” của hệ
+   điều hành không hiện (máy tính) thì Ctrl+C vẫn copy được phần đang bôi đen. */
+function lpShowCopyBox(txt) {
+  let ov = document.getElementById('lpCopyBox');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = 'lpCopyBox';
+    ov.className = 'lpcb-overlay';
+    ov.innerHTML = '<div class="lpcb-card">' +
+        '<div class="lpcb-title">Máy không cho copy tự động. Nhấn giữ ô chữ bên dưới rồi chọn ' +
+        '<b>Sao chép</b> (trên máy tính: Ctrl+C):</div>' +
+        '<textarea class="lpcb-ta" readonly rows="3" spellcheck="false"></textarea>' +
+        '<button class="lpcb-btn" type="button">Đóng</button>' +
+      '</div>';
+    ov.addEventListener('click', function (e) { if (e.target === ov) lpCloseCopyBox(); });
+    ov.querySelector('.lpcb-btn').addEventListener('click', lpCloseCopyBox);
+    ov.querySelector('.lpcb-ta').addEventListener('focus', function () { this.select(); });
+    document.body.appendChild(ov);
+  }
+  const ta = ov.querySelector('.lpcb-ta');
+  ta.value = txt;
+  /* ⛔ PHẢI GỠ CỜ CHẶN CLICK TRƯỚC KHI MỞ HỘP: cờ `_lpFired` (đặt ngay sau lượt copy vừa rồi)
+     nuốt **cú `click` ĐẦU TIÊN** — mà cú đầu tiên đó chính là cú người dùng bấm nút “Đóng”/
+     chạm nền ⇒ hộp không tắt ở lần chạm đầu (nhìn như app bị đơ). Đo thật: bấm nút “Đóng”
+     ngay sau khi hộp hiện ⇒ **không tắt** cho tới lần chạm thứ hai. Cờ đó chỉ cần cho các cú
+     chạm LÊN THẺ/HÀNG, mà hộp này đã phủ mờ cả trang rồi nên gỡ là đúng. */
+  _lpFired = false;
+  if (_lpFiredTimer) { clearTimeout(_lpFiredTimer); _lpFiredTimer = null; }
+  ov.classList.add('on');
+  setTimeout(function () { try { ta.focus(); ta.select(); } catch (e) {} }, 30);
+}
+function lpCloseCopyBox() {
+  const ov = document.getElementById('lpCopyBox');
+  if (ov) ov.classList.remove('on');
+}
 function lpCopy(el) {
   const txt = lpCopyText(el);
-  const done = ok => showToast((ok ? '✓ Đã copy: ' : '⚠ Không copy được: ') + txt);
+  const done = ok => {
+    if (ok) { showToast('✓ Đã copy: ' + txt); return; }
+    // ⛔ Cả Clipboard API LẪN `execCommand` đều không chạy ⇒ ĐỪNG chỉ báo lỗi rồi thôi (bản cũ
+    // làm vậy và người dùng báo là “không còn chế độ đó”): mở hộp cho tự copy.
+    lpShowCopyBox(txt);
+  };
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(txt).then(() => done(true)).catch(() => done(lpCopyFallback(txt)));
   } else {
     done(lpCopyFallback(txt));   // ⛔ Đừng im lặng: người dùng cần biết là dán ra sẽ không có gì.
   }
 }
-// Toàn bộ cử chỉ gắn ở DOCUMENT pha CAPTURE (khớp mẫu uỷ nhiệm cũ đã gỡ 2026-10-03): thẻ và
-// hàng được DỰNG LẠI mỗi lần render nên gắn trực tiếp là mất sau lần lọc kế tiếp.
-document.addEventListener('pointerdown', e => {
-  _lpEl = null; lpStop(); _lpFired = false;
-  if (e.button != null && e.button !== 0) return;   // chỉ chuột trái / chạm
-  const el = lpTarget(e);
-  if (!el) return;
-  _lpEl = el; _lpX = e.clientX; _lpY = e.clientY;
+/* ── CỬ CHỈ NHẤN-GIỮ: GẮN Ở DOCUMENT PHA CAPTURE, **HAI ĐƯỜNG** ─────────────────────────────
+   ⛔ **VÌ SAO PHẢI CÓ ĐƯỜNG `touchstart` — ĐÂY LÀ NGUYÊN NHÂN CỦA “TÔI THẤY KHÔNG CÒN CHẾ ĐỘ
+   ĐÓ” (người dùng báo lần 2):** bản gắn-chỉ-`pointerdown` KHÔNG chạy trên máy **không có
+   `PointerEvent`** (iOS 12 trở xuống, vài webview trong app trên máy cũ) — không sự kiện nào tới
+   tay ta ⇒ nhấn giữ **im lặng không copy**, trong khi **mọi thứ khác vẫn chạy bình thường** (tìm
+   kiếm, lọc, tấm thanh toán, nút QR…) nên rất dễ tưỡng là tính năng đã bị gỡ.
+   Nay: máy CÓ `PointerEvent` ⇒ đường pointer · máy KHÔNG có ⇒ đường `touchstart/touchmove/
+   touchend/touchcancel`. ⛔ CHỈ gắn MỘT đường — gắn cả hai là một cú chạm chạy hai timer ⇒ copy
+   hai lần + hai hộp thoại.
+   ⚠️ Gắn ở `document` pha CAPTURE: thẻ và hàng được DỰNG LẠI mỗi lần render nên gắn trực tiếp
+   là mất sau lần lọc kế tiếp. */
+let _lpTrack = '';
+/* Nhịp cứu khi trình duyệt cướp cử chỉ — xem `lpCancelRescue` (đã hạ xuống 250ms). */
+function lpBegin(el, x, y) {
+  _lpEl = el; _lpX = x; _lpY = y; _lpStart = Date.now();
   _lpTimer = setTimeout(() => {
     _lpTimer = null;
-    _lpFired = true;
+    lpMarkFired();
     lpCopy(el);
   }, LP_COPY_MS);
-}, true);
-document.addEventListener('pointermove', e => {
+}
+// Xê dịch quá `LP_SLOP` = người dùng đang CUỘN ⇒ huỷ (điện thoại vẫn cuộn được bình thường).
+function lpMoveTo(x, y) {
   if (!_lpTimer || !_lpEl) return;
-  if (Math.abs(e.clientX - _lpX) > LP_SLOP || Math.abs(e.clientY - _lpY) > LP_SLOP) lpStop();
-}, true);
-document.addEventListener('pointerup', e => { lpStop(); }, true);
-document.addEventListener('pointercancel', e => { lpStop(); _lpEl = null; }, true);
-// Cú `click` đầu tiên ngay sau khi copy bị chặn (chỉ MỘT lần) — xem chú thích (2) ở trên.
-document.addEventListener('click', e => {
-  if (!_lpFired) return;
-  _lpFired = false;
-  e.stopPropagation();
-  if (e.preventDefault) e.preventDefault();
-}, true);
-// Menu ngữ cảnh của hệ điều hành: chặn khi ĐANG giữ trên thẻ/hàng (chuột phải không đặt `_lpEl`
-// nên menu chuột phải bình thường vẫn dùng được).
-document.addEventListener('contextmenu', e => { if (_lpEl) e.preventDefault(); }, true);
+  if (Math.abs(x - _lpX) > LP_SLOP || Math.abs(y - _lpY) > LP_SLOP) lpStop();
+}
+/* ⛔ `_lpFired` PHẢI TỰ GỠ THEO HẸN GIỜ — bản cũ chỉ gỡ khi cú `click` kế tiếp chạy tới, mà trên
+   ĐIỆN THOẠI nhấn giữ thường **KHÔNG sinh ra cú `click` nào** (trình duyệt tự nuốt) ⇒ cờ nằm lại
+   MÃI và **cú chạm kế tiếp của người dùng bị nuốt** (cảm giác “app không ăn chạm nữa”).
+   `LP_FIRED_MS` đủ dài để bắt cú click lúc NHẢ tay sau khi copy, đủ ngắn để không nuốt cú chạm sau. */
+const LP_FIRED_MS = 700;
+let _lpFiredTimer = null;
+function lpMarkFired() {
+  _lpFired = true;
+  if (_lpFiredTimer) clearTimeout(_lpFiredTimer);
+  _lpFiredTimer = setTimeout(() => { _lpFired = false; _lpFiredTimer = null; }, LP_FIRED_MS);
+}
+// Trình duyệt cướp cử chỉ giữa chừng: còn “đang giữ” + đã giữ đủ lâu ⇒ cứu, xem `LP_CANCEL_GRACE`.
+function lpCancelRescue() {
+  if (!_lpTimer || !_lpEl || _lpFired || !_lpStart) return;   // đã nhả / đã đi xa / đã copy rồi
+  if (Date.now() - _lpStart < LP_CANCEL_GRACE) return;        // mới chạm đã bị cướp ⇒ đúng là huỷ
+  lpMarkFired();
+  lpCopy(_lpEl);                                              // `_lpFired` cũng chặn cú `click` kế tiếp
+}
+// Đường CHUỘT / CẢM ỨNG HIỆN ĐẠI.
+function lpAttachPointer() {
+  document.addEventListener('pointerdown', e => {
+    _lpEl = null; lpStop(); _lpFired = false;
+    if (e.button != null && e.button !== 0) return;   // chỉ chuột trái / chạm
+    const el = lpTarget(e);
+    if (el) lpBegin(el, e.clientX, e.clientY);
+  }, true);
+  document.addEventListener('pointermove', e => lpMoveTo(e.clientX, e.clientY), true);
+  document.addEventListener('pointerup', () => lpStop(), true);
+  document.addEventListener('pointercancel', () => { lpCancelRescue(); lpStop(); _lpEl = null; }, true);
+}
+// Đường CẢM ỨNG cho máy KHÔNG có `PointerEvent` (xem khối chú thích ở đầu mục).
+function lpAttachTouch() {
+  document.addEventListener('touchstart', e => {
+    _lpEl = null; lpStop(); _lpFired = false;
+    // Hai ngón trở lên = phóng to / cuộn hai ngón ⇒ ⛔ đừng copy.
+    if (!e.touches || e.touches.length !== 1) return;
+    const el = lpTarget(e);
+    if (el) lpBegin(el, e.touches[0].clientX, e.touches[0].clientY);
+  }, true);
+  document.addEventListener('touchmove', e => {
+    if (!e.touches || !e.touches.length) return;
+    lpMoveTo(e.touches[0].clientX, e.touches[0].clientY);
+  }, true);
+  document.addEventListener('touchend', () => lpStop(), true);
+  // iOS hay bắn `touchcancel` khi hệ điều hành nhận ra cử chỉ nhấn-giữ ⇒ cứu như `pointercancel`.
+  document.addEventListener('touchcancel', () => { lpCancelRescue(); lpStop(); _lpEl = null; }, true);
+}
+// Chọn ĐÚNG MỘT đường rồi gắn các listener CHUNG cho cả hai.
+function lpAttach() {
+  if ('onpointerdown' in window) { _lpTrack = 'pointer'; lpAttachPointer(); }
+  else { _lpTrack = 'touch'; lpAttachTouch(); }
+  lpAttach.attached = true;
+  // Cú `click` đầu tiên ngay sau khi copy bị chặn (chỉ MỘT lần) — xem chú thích (2) ở trên.
+  document.addEventListener('click', e => {
+    if (!_lpFired) return;
+    _lpFired = false;
+    if (_lpFiredTimer) { clearTimeout(_lpFiredTimer); _lpFiredTimer = null; }
+    e.stopPropagation();
+    if (e.preventDefault) e.preventDefault();
+  }, true);
+  // Menu ngữ cảnh của hệ điều hành: chặn khi ĐANG giữ trên thẻ/hàng (chuột phải không đặt `_lpEl`
+  // nên menu chuột phải bình thường vẫn dùng được).
+  document.addEventListener('contextmenu', e => { if (_lpEl) e.preventDefault(); }, true);
+}
+lpAttach();
 
 function goPage(p) {
   const total = Math.ceil(filtered.length/PAGE_SIZE);
@@ -8571,6 +8927,10 @@ function restoreHighlights() {
   });
 }
 
+// ⟳ 2026-10-16: ⚠️ HAI ĐƯỜNG GỌI `showDetail()` ĐÃ BỊ GỠ (tên kh trên thẻ + ô tên trong bảng)
+// theo yêu cầu người dùng ⇒ hàm này hiện **KHÔNG còn ai gọi** và tấm “Chi tiết” (`#modal`) không
+// còn đường mở nào. Giữ lại nguyên vẹn (không xoá) để nếu người dùng muốn một đường CHỦ Ý thì
+// chỉ cần gắn lại 1 handler; ⛔ đừng gắn lại vào tên khách — chính chỗ đó đã bị báo 2 lần.
 function showDetail(idx) {
   const r = filtered[idx];
   if (!r) return;
@@ -8654,9 +9014,12 @@ function showDetailRow(r) {
 //    ở tấm này; xem chú thích CSS `.pay-cb` để biết vì sao bỏ hẳn input.
 //  · ⟳ 2026-10-15: `.pay-name` (tên khách, chữ xanh như ảnh) **KHÔNG BẤM ĐƯỢC NỮA** — yêu cầu
 //    người dùng: “ẩn chức năng khi chạm vào tên kh mở bảng modal”. Gỡ `onclick` + xoá
-//    `payOpenDetail()`; ⛔ đừng gắn lại, muốn mở “Chi tiết” thì đóng tấm rồi chạm tên TRÊN THẺ.
+//    `payOpenDetail()`; ⛔ đừng gắn lại. ⚠️ 2026-10-16: đường dự phòng “chạm tên kh TRÊN THẺ”
+//    cũng đã bị gỡ theo ⇒ tấm “Chi tiết” hiện KHÔNG có đường mở nào (xem chú thích ở `showDetail`).
 //  · ⟳ 2026-10-15: nút mã QR ở ô “Mã khách hàng” NAY CHẠM ĐƯỢC — chụp tấm thành ảnh để lưu/chia sẻ
 //    (`capturePayShot()` + `#shotModal`). Trước đây nó chỉ để hiển thị.
+//    ⟳ 2026-10-16f: chụp xong là **lưu thẳng xuống máy** (`shotSaveToDevice()`) — `#shotModal`
+//    thành đường dự phòng. (Khoảng 2026-10-16c có bản mở bảng chia sẻ; nay đã bỏ theo yêu cầu.)
 // ⛔ KHÔNG có dòng “ID hóa đơn” của ảnh (dữ liệu không có cột đó) và “Xem giấy báo” CHỈ ĐỂ HIỂN THỊ
 //    — người dùng đã chốt như vậy.
 let _payRecs = [];   // ⛔ KHÔNG còn `_paySel`: ô tích đã thành hình hiển thị (2026-10-13h) nên không còn trạng thái chọn để theo dõi.
@@ -8954,6 +9317,24 @@ async function capturePayShot() {
     fo.setAttribute('height', h);
     const clone = panel.cloneNode(true);
     shotCopyStyles(panel, clone);
+    /* ⛔ FIX 2026-10-16e — NÚT ĐỎ “Tiếp tục thanh toán” PHẢI GIÃN HẾT BỀ RỘNG NHƯ BÌNH THƯỜNG
+       (yêu cầu người dùng: “cho bảng tiếp tục thanh toán dài ra như bình thường khi chụp ảnh”).
+       ĐO TRƯỚC KHI SỬA (đếm VỆT ĐỎ LIỀN MẠCH dài nhất trên ảnh — ⛔ không đo bằng “bao lồi” vì
+       chữ đỏ của số tiền ở mép phải làm bao lồi rộng ra và che mất lỗi): ảnh 870px ⇒ vệt đỏ
+       **410px = 47,1%** bề rộng tấm; trên ảnh người dùng gửi (590px) ⇒ **284px = 48,1%** ⇒ nút
+       đang co về ĐÚNG bề rộng chữ.
+       NGUYÊN NHÂN: `width: 100%` của `.pay-go` là rule của STYLESHEET, mà ảnh là **TÀI LIỆU RIÊNG**
+       (không có stylesheet của trang) và `shotCopyStyles` cố ý chỉ chép `width`/`height` cho phần
+       tử KHÔNG có chữ ⇒ nút (có chữ) mất `width: 100%`. `.pay-foot` cũng có thể không được giãn
+       theo bề rộng tấm — đo được viền trên của chân tấm chỉ 802/870px (401 CSS thay vì 434).
+       CÁCH CHỮA: khai bề rộng TƯỜNG MINH (px) cho ĐÚNG hai phần tử đó, ngay sau khi chép style.
+       ⛔ ĐỪNG “chữa” bằng cách chép `width`/`height` cho MỌI phần tử (bẫy CẮT CHỮ đã ghi ở
+       `shotCopyStyles`) và ⛔ ĐỪNG xoá hai dòng dưới: thiếu là nút teo lại về bề rộng chữ. */
+    const liveFootW = Math.round(foot ? foot.getBoundingClientRect().width : w);
+    const cFoot = clone.querySelector('.pay-foot');
+    const cGo = clone.querySelector('.pay-go');
+    if (cFoot) cFoot.setAttribute('style', cFoot.getAttribute('style') + 'width:' + (liveFootW || w) + 'px;box-sizing:border-box;');
+    if (cGo) cGo.setAttribute('style', cGo.getAttribute('style') + 'width:100%;box-sizing:border-box;');
     // Kích thước gốc đặt SAU khi chép style (chép xong là style cũ bị ghi đè — xem `shotCopyStyles`).
     clone.setAttribute('style', clone.getAttribute('style') +
       'width:' + w + 'px;height:' + h + 'px;max-height:none;min-height:0;margin:0;overflow:visible;animation:none;');
@@ -8980,11 +9361,54 @@ async function capturePayShot() {
   const cw = Math.round(w * scale), ch = Math.round(h * scale);
 
   showToast('Đang tạo ảnh…');
-  shotRender(str, cw, ch, 2, url => {
+  shotRender(str, cw, ch, 2, async url => {
     if (!url) { showToast('Máy này không vẽ được ảnh — hãy chụp màn hình bằng cách thường'); return; }
+    // ⟳ 2026-10-16f: ẢNH XONG ⇒ **LƯU THẲNG XUỐNG MÁY** (yêu cầu người dùng: “chạm vô qr code là
+    // chụp màn hình luôn, không cần tạo ảnh hay chia sẻ gì cả”) ⇒ KHÔNG hiện tấm ảnh, KHÔNG mở
+    // bảng chia sẻ. Xem khối chú thích ở `shotSaveToDevice`.
+    const savedName = await shotSaveToDevice(url);
+    if (savedName) { showToast('✓ Đã lưu ảnh ' + savedName + ' — mở Thư viện ảnh / Tải về để dùng'); return; }
+    // ⛔ Máy KHÔNG cho tải tự động (webview chặn, hết quyền, lỗi khác) ⇒ giữ ĐƯỜNG CŨ: hiện ảnh
+    // tràn viền để nhấn giữ mà lưu. ĐỪNG bỏ nhánh này — bỏ là mất hẳn đường lưu ảnh ở đúng những
+    // máy không tải tự động được.
     out.src = url;
     ov.classList.add('open');
   });
+}
+
+// ══ SAU KHI CHỤP: LƯU ẢNH XUỐNG MÁY LUÔN (⟳ 2026-10-16f) ═════════════════════════════════════
+// Yêu cầu người dùng: “tôi muốn chạm vô qr code là chụp màn hình luôn, không cần tạo ảnh hay chia
+// sẻ gì cả” (hỏi lại: người dùng chọn **“Chạm QR = lưu ảnh xuống máy ngay”**) ⇒ chạm nút QR là
+// dựng ảnh rồi LƯU THẲNG xuống máy: KHÔNG hiện tấm ảnh, KHÔNG mở bảng Lưu/Chia sẻ.
+//  ⛔ BẢN `navigator.share` CỦA LƯỢT 2026-10-16c ĐÃ BỊ BỎ theo đúng yêu cầu này — đừng dựng lại;
+//     mô tả + số đo cũ vẫn nằm ở run.md mục 2026-10-16c nếu cần tra lại.
+//  ⚠️ Dùng `Blob` + `URL.createObjectURL` chứ ⛔ ĐỪNG nhét thẳng `data:` vào `href`: Chrome CHẶN
+//     điều hướng tới URL `data:`, còn đường tải của blob thì được hỗ trợ rộng.
+//  ⚠️ PHẢI thu hồi object URL (nếu không là rò bộ nhớ mỗi lần chụp) nhưng ⛔ ĐỪNG thu hồi NGAY lập
+//     tức: thu trước khi trình duyệt kịp đọc blob là **tải hỏng im lặng**. Chờ vài giây rồi thu.
+//  ℹ️ Tên tệp có mã KH + kỳ (`Thanh-toan-{mã}-{kỳ}.png`) để ảnh nằm lẫn trong Thư viện/Tải về vẫn
+//     nhận ra của khách nào, kỳ nào. Kỳ đổi `/` thành `-` vì tên tệp không được chứa `/`.
+//  ℹ️ Trả về TÊN TỆP khi đã kích hoạt tải (để báo cho người dùng), `null` khi hỏng ⇒ nơi gọi rơi về
+//     đường cũ (hiện ảnh để nhấn giữ) nên KHÔNG bao giờ mất hẳn đường lưu ảnh.
+async function shotSaveToDevice(url) {
+  try {
+    const r = _payRecs[0] || {};
+    const ky = String(r.thang_no || '').replace(/[\\/:*?"<>|]+/g, '-');
+    const name = 'Thanh-toan-' + (r.ma_khach_hang || 'KH') + (ky ? '-' + ky : '') + '.png';
+    const blob = await (await fetch(url)).blob();
+    const href = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = href;
+    a.download = name;
+    a.rel = 'noopener';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { try { URL.revokeObjectURL(href); } catch (e) {} a.remove(); }, 10000);
+    return name;
+  } catch (e) {
+    return null;
+  }
 }
 
 // Nạp SVG rồi vẽ lên canvas. `tries` = số lần thử: **THỬ LẠI MỘT LẦN** là có chủ ý — đã gặp thật
@@ -9032,9 +9456,18 @@ function closeShotDirect() {
 let _ghiChuSaveTimer = null;
 // Ô ghi chú trên card: mặc định dài đúng bằng viên SĐT (mép phải thẳng hàng),
 // tự giãn ra khi nội dung dài hơn nhưng không đè lên phần ABC bên phải.
-function fitGhiChuInput(input) {
+/* ⚡ ĐO HẾT RỒI MỚI GHI (⟳ 2026-10-16h — tối ưu độ trễ gõ ô tìm kiếm).
+   Vì sao cần: bản cũ GỌI từng ô một và mỗi ô vừa ĐỌC `getBoundingClientRect`/`clientWidth` vừa
+   GHI `style.width` ⇒ mỗi ô **buộc trình duyệt tính lại bố cục** ngay giữa vòng lặp (layout
+   thrashing). Đo được **40–57ms cho 50 thẻ MỖI LẦN GÕ PHÍM** — nhiều hơn cả phần vẽ thẻ.
+   Nay tách làm hai pha: `measureGhiChuInput()` chỉ ĐỌC (dùng cho cả đường gọi lẻ) → gom kết quả
+   → mới GHI `style.width` một loạt ⇒ trình duyệt chỉ tính lại bố cục MỘT lần.
+   ⚠️ Phép đo của từng ô KHÔNG phụ thuộc bề rộng các ô khác (mỗi ô nằm trong hàng của THẺ riêng)
+   nên gom lại không làm kết quả khác bản cũ. ⛔ ĐỪNG gọi `measureGhiChuInput()` xen kẽ với việc
+   ghi bề rộng (tức là quay lại đúng cái bẫy reflow ở trên). */
+function measureGhiChuInput(input, ctxChung) {
   const row = input.parentElement;
-  if (!row) return;
+  if (!row) return null;
   // Mặc định: ô ghi chú dài đúng bằng viên SĐT — mép phải thẳng hàng với mép phải viên SĐT
   // (ô ghi chú bị thụt vào sau icon bút chì nên bề ngang phải ngắn hơn viên SĐT)
   const card = input.closest('.kh-card');
@@ -9045,10 +9478,19 @@ function fitGhiChuInput(input) {
     const left = input.getBoundingClientRect().left;
     if (pill.width > 0 && pill.right > left) MIN = Math.max(80, Math.round(pill.right - left));
   }
-  const cs = getComputedStyle(input);
-  let ctx = fitGhiChuInput._ctx;
-  if (!ctx) { ctx = fitGhiChuInput._ctx = document.createElement('canvas').getContext('2d'); }
-  ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  // ⚡ ĐỌC KIỂU CHỮ **MỘT LẦN** CHO CẢ LƯỢT (⟳ 2026-10-16h): 50 ô ghi chú dùng CHUNG một kiểu chữ
+  // (cùng lớp CSS, cùng ngữ cảnh thẻ) nên bản cũ đọc `getComputedStyle` 50 lần = **~17ms mỗi phím
+  // gõ** (đo thật, đo cả 50 ô: 43,6ms so với 27ms khi không đọc). Đường gọi LẺ (`fitGhiChuInput`)
+  // truyền `ctxChung = null` ⇒ tự đọc kiểu chữ như cũ.
+  // ⛔ Nếu sau này có chỗ làm kiểu chữ của ô ghi chú KHÁC NHAU giữa các thẻ thì phải bỏ đệm này
+  // (đo lại bề rộng từng ô với đúng kiểu chữ của nó).
+  let ctx = ctxChung;
+  if (!ctx) {
+    const cs = getComputedStyle(input);
+    ctx = measureGhiChuInput._ctx;
+    if (!ctx) { ctx = measureGhiChuInput._ctx = document.createElement('canvas').getContext('2d'); }
+    ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  }
   const textW = input.value ? ctx.measureText(input.value).width : 0;
   const need = Math.ceil(textW) + 16;   // padding 6px x2 + viền 2px + con trỏ nháy
   // Chừa chỗ cho icon ghi chú (`#i-pencil`) và phần ABC (nếu có) ở cuối hàng
@@ -9059,14 +9501,33 @@ function fitGhiChuInput(input) {
     occupied += r.width + 8;
   }
   const maxW = Math.max(MIN, row.clientWidth - occupied);
-  input.style.width = Math.min(maxW, Math.max(MIN, need)) + 'px';
+  return Math.min(maxW, Math.max(MIN, need));
 }
 
+// Gọi LẺ (đang gõ trong ô ghi chú) — đo rồi ghi ngay, chỉ một ô nên không có bẫy reflow.
+function fitGhiChuInput(input) {
+  const w = measureGhiChuInput(input);
+  if (w) input.style.width = w + 'px';
+}
+
+// Gọi HÀNG LOẠT sau khi vẽ danh sách: ĐỌC hết rồi mới GHI (xem chú thích ở `measureGhiChuInput`).
 function fitGhiChuInputs() {
-  document.querySelectorAll('.kh-ghichu-input').forEach(fitGhiChuInput);
+  const inputs = Array.prototype.slice.call(document.querySelectorAll('.kh-ghichu-input'));
+  if (!inputs.length) return;
+  // Chỉ 1 ctx + 1 lần đặt font cho cả lượt (xem chú thích “ĐỌC KIỂU CHỮ MỘT LẦN”).
+  const ctx = document.createElement('canvas').getContext('2d');
+  const cs = getComputedStyle(inputs[0]);
+  ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  const widths = inputs.map(function (el) { return measureGhiChuInput(el, ctx); });
+  for (let i = 0; i < inputs.length; i++) {
+    if (widths[i]) inputs[i].style.width = widths[i] + 'px';
+  }
 }
 
 window.addEventListener('resize', fitGhiChuInputs);
+// Bảng có thể vừa được HIỆN (hoặc vừa bị ẩn) do vượt mốc bề rộng ⇒ vẽ bù nếu đang nợ (xem
+// `renderTableIfVisible` — thiếu dòng này là bảng hiện ra với dữ liệu cũ).
+window.addEventListener('resize', renderTableIfVisible);
 // Hàng “Tổng …” phải đo lại khi bề rộng panel đổi — hẹp ra thì hệ số thu `--count-fit` mới cần
 // bật (xem `fitCountRow()`); nới ra thì nó tự trả về **1**.
 window.addEventListener('resize', fitCountRow);
@@ -9225,7 +9686,7 @@ function clearNvScope() {
 }
 
 // Esc đóng lần lượt: tấm “Thanh toán…” (nếu đang mở) rồi tới tấm “Chi tiết”.
-document.addEventListener('keydown', e => { if (e.key==='Escape') { closeShotDirect(); closeKyDirect(); closePayDirect(); closeModalDirect(); } });
+document.addEventListener('keydown', e => { if (e.key==='Escape') { lpCloseCopyBox(); closeShotDirect(); closeKyDirect(); closePayDirect(); closeModalDirect(); } });
 
 // ── COLUMN RESIZE (desktop) ────────────────
 // ⚠️ v1 → v2 khi ĐỔI THỨ TỰ CỘT. Bản đồ độ rộng lưu theo **chỉ số cột**, nên bản lưu từ v1
