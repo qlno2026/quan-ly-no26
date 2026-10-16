@@ -111,7 +111,12 @@
      `.freebuff/hdr-pick.svg`). Xanh rõ hơn nhưng vẫn TỐI ⇒ chữ/phụ đề sáng giữ nguyên. */
   --hdr-bg: #1e3a5f;
   --hdr-text: #e2e8f0;
-  --hdr-sub: #94a3b8;
+  /* ⟳ 2026-10-16k/l: `#94a3b8` → **`#cbd5e1`** (yêu cầu “bớt màu đen lại” ở nền header đổi-màu-
+     theo-nợ). Vì sao phải sáng theo: nền header nay là màu mức **trộn 10% đen** (xem
+     `HEADER_DEBT_BLACK`) ⇒ nền sáng hơn ⇒ chữ phụ 13px `#94a3b8` tụt còn **3,70–3,92:1 ✗** ở
+     0,25 (còn thấp hơn nữa ở 0,10); `#cbd5e1` giữ **5,06–5,51:1** ✓. Đo trên nền navy cũ
+     `#1e3a5f` (lúc CHƯA có dữ liệu): `#cbd5e1` ưu hơn hắn `#94a3b8` ⇒ không có ca nào xấu đi. */
+  --hdr-sub: #cbd5e1;
   /* ➕ CỠ CHỮ HAI DÒNG ĐỒNG HỒ Ở HEADER — token, KHÔNG nằm trong markup.
      ⟳ Yêu cầu người dùng: “tôi muốn chữ ở ngày tháng to hơn” ⇒ dòng ngày **12px → 14px**.
      ⚠️ Trước lượt này hai cỡ chữ này là **INLINE STYLE trong markup**
@@ -1265,7 +1270,12 @@ body.light-mode {
      BẮT BUỘC, chữ `#000000` cũ sẽ VÔ HÌNH trên nền navy. Dùng CHUNG cho tiêu đề + đồng hồ.
      ĐO LIVE trên `#12233f`: chữ `#e2e8f0` **~13,9:1** ✓ · phụ đề `#a8b6cc` **~7,4:1** ✓. */
   --hdr-text: #e2e8f0;
-  --hdr-sub: #a8b6cc;
+  /* ⟳ 2026-10-16k/l: `#a8b6cc` → **`#cbd5e1`** cho ĐỒNG BỘ với chế độ tối (cùng lý do: nền header
+     đổi-màu-theo-nợ nay trộn **10%** đen). Ở 0,25 thì `#a8b6cc` vẫn đủ (4,60–4,88:1) nhưng sát
+     sàn (ở 0,10 là **3,9–4,1 ✗**) và hai theme sẽ lệch tông nhau trong khi **nền header GIỐNG
+     NHAU** ở cả hai theme (inline `--hdr-bg`) ⇒ để chung một màu. `#cbd5e1` trên navy `#1e3a5f`:
+     đọc tốt hơn bản cũ. */
+  --hdr-sub: #cbd5e1;
   /* ⟳ 2026-10-03i: vạch đáy ngả xanh — ĐM hơn một chút ở light vì header navy nằm ngay trên
      toolbar TRẮNG (cần ranh giới rõ hơn dark). Vẫn 1px. */
   --hdr-line: rgba(96,150,230,0.45);
@@ -7953,27 +7963,35 @@ let _dispRows = null;
      số đỏ thì nền đỏ, số vàng thì nền vàng, số xanh thì nền xanh — ⛔ ĐỪNG để hai chỗ dùng hai
      thang ngưỡng khác nhau (bản cũ chia 5 mức theo tỉ lệ với nhóm lớn nhất ⇒ 7/8 nhóm ra mức
      thấp nên nền XANH trong khi chính con số của nhóm đó lại ĐỎ — đúng cái người dùng thấy sai).
-   · `HEADER_DEBT_BLACK = 0.40`: trộn ĐỀU 40% ĐEN vào màu của mức (đúng yêu cầu người dùng).
+   ⟳ `HEADER_DEBT_BLACK` **0,40 → 0,25 → 0,10** (yêu cầu 2026-10-16k/l: “cho bảng này bớt màu
+     đen lại”, ảnh kèm = nền header hổ phách của nhóm Đào Sơn Hà). ⚠️ **Đo THẲNG trên ảnh người
+     dùng gửi** (lấy mẫu điểm ảnh bằng System.Drawing): nền phẳng ~`rgb(88,38,8)` = ĐÚNG bản trộn
+     **40%**, mà toolbar trong cùng ảnh ra `rgb(36,42,52)` khớp byte app ⇒ ảnh không bị tối màu ⇒
+     xác nhận đúng mốc cũ. Nền phẳng nay (`.header` `backgroundColor`, ĐO LIVE): `low`
+     `rgb(20,91,47)` xanh · `mid` `rgb(131,58,13)` hổ phách · `high` `rgb(167,25,25)` đỏ.
+     ⛔ **VÌ SAO PHẢI ĐỔI CẢ CHỮ PHỤ:** `--hdr-sub` 13px cũ `#94a3b8` chỉ đạt ≥4,5:1 khi nền trộn
+     ≥ ~0,34 ⇒ lúc hạ đen đã đổi `#94a3b8` → `#cbd5e1` (**cả hai theme**, xem chú thích ở token).
+     Đo tương phản trên nền đã trộn — chữ CHÍNH `#e2e8f0`: 0,40 ⇒ 9,66–10,05 ✓ · 0,25 ⇒ 7,69–8,16 ✓ ·
+     **0,10 ⇒ 6,09–6,64** ✓ · 0 ⇒ 5,25–5,75 ✓. Chữ PHỤ `#cbd5e1`: 0,40 ⇒ 8,02–8,34 ✓ ·
+     0,25 ⇒ 6,38–6,78 ✓ · **0,10 ⇒ 5,06–5,51** ✓ · 0 ⇒ 4,36–4,78 (**ca `high` 4,36 ✗**).
+     ⇒ **MỐC SÀN THẬT ≈ 0,05**; chọn **0,10** để còn dư an toàn. ⛔ ĐỪNG hạ xuống 0 mà giữ chữ phụ
+     hiện tại (ca `high` chỉ 4,36:1 ✗) và ⛔ ĐỪNG trả `--hdr-sub` về `#94a3b8`/`#a8b6cc` khi đen còn
+     dưới ~0,34 (3,43–4,47 ✗).
    ⛔ **MÀU MỖI MỨC LÀ BẢN ĐẬM CÙNG TÔNG VỚI MÀU CON SỐ** (`.count-tien.low` `#86efac` xanh ·
      `.mid` `#fde68a` vàng · `.high` `#ff8888` đỏ) — ⛔ ĐỪNG “cho tươi” bằng chính tông sáng đó:
-     chữ header là chữ SÁNG (`--hdr-text` `#e2e8f0` · `--hdr-sub` `#94a3b8`) mà dòng tên tệp chỉ
-     13px/14px ⇒ cần **4,5:1**. Đo thật trên nền ĐÃ trộn 40% đen (từng mức, để transition 0,45s
-     chạy xong rồi mới đọc): tên tệp/ngày **4,64–6,18:1** ✓ (mức dễ vỡ nhất là ĐỎ `rgb(111,17,17)`
-     = 4,64 · vàng `#92400e` trộn 40% = `rgb(88,38,8)` ⇒ **4,83:1** ✓) · tiêu đề/đồng hồ
-     **9,66–12,85:1** ✓ · theme **sáng** cùng màu nền ⇒ tên tệp **5,80:1** ✓.
-     Đổi sang tông sáng như `#86efac`/`#fde68a`/`#ff8888` thì tụt còn **3,1–3,9:1** ✗ — đó chính
-     là lý do phải dùng bản đậm rồi mới trộn đen. ⛔ Đừng hạ `HEADER_DEBT_BLACK` xuống dưới 0,40
-     nếu không kiểm lại tương phản (giảm đen = nền sáng lên = tương phản tụt).
+     chữ header là chữ SÁNG (`--hdr-text` `#e2e8f0` · `--hdr-sub` `#cbd5e1`) mà dòng tên tệp chỉ
+     13px/14px ⇒ cần **4,5:1**. Đổi sang tông sáng như `#86efac`/`#fde68a`/`#ff8888` thì tụt còn
+     **3,1–3,9:1** ✗ — đó chính là lý do phải dùng bản đậm rồi mới trộn đen.
    ⚠️ Ghi bằng INLINE `--hdr-bg` trên `.header`: inline thắng cả `:root` lẫn
      `body.light-mode .header` ⇒ header GIỐNG NHAU ở hai theme, và `removeProperty` là tự về
      token cũ `#1e3a5f` khi chưa có dữ liệu. ⛔ Đừng sửa `:root`/`body.light-mode` thay cho việc này. */
 // Ngưỡng màu của CON SỐ ở hàng “Tổng nợ …” — MỘT nguồn sự thật duy nhất, dùng cho CẢ lớp
 // `.count-tien` (màu chữ) LẪN nền header (`updateHeaderDebtColor`) ⇒ hai chỗ không thể lệch nhau.
 function debtTier(total) { return total >= 1000000000 ? 'high' : (total >= 100000000 ? 'mid' : 'low'); }
-const HEADER_DEBT_BLACK = 0.40;
+const HEADER_DEBT_BLACK = 0.10;
 // Bản ĐẬM cùng tông với `#86efac` (low) / `#fde68a` (mid) / `#ff8888` (high) của `.count-tien`.
 const HEADER_DEBT_COLORS = { low: '#166534', mid: '#92400e', high: '#b91c1c' };
-// `ratio` = lượng đen trộn vào (0,40 = 40%): nhân từng kênh với `1 - ratio` rồi làm tròn.
+// `ratio` = lượng đen trộn vào (0,25 = 25%): nhân từng kênh với `1 - ratio` rồi làm tròn.
 function mixBlack(hex, ratio) {
   const n = parseInt(hex.slice(1), 16);
   const f = 1 - ratio;
