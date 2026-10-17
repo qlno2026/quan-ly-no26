@@ -1963,6 +1963,26 @@ body.light-mode .cfg-row, body.light-mode .cfg-hd { border-bottom-color: #cbd5e1
    ⚠️ Chỉ áp cho cụm `#pageActions` (3 nút chia đều): nút “Chọn tệp Excel khác” nằm MỘT MÌNH
    trong hàng `Dữ liệu` nên giữ hàng ngang (nhãn 126px thừa chỗ, dọc sẽ xấu). */
 .cfg #pageActions .page-act { flex-direction: column; gap: 1px; }
+/* ⟳ 2026-10-17f (yêu cầu “cho viền nổi hơn”, ảnh người dùng gửi là nút “Chọn tệp Excel khác”):
+   nút này nằm MỘT MÌNH và rộng gấp 3 nút kia nên viền 1px trông như sợi chỉ, chìm hẳn vào tấm trắng.
+   Nay cho nó **2px + bóng nhẹ** để “nổi” khỏi tấm.
+   ⚠️ `* { box-sizing: border-box }` (dòng 789) ⇒ viền dày lên chỉ ăn vào LÒNG nút, hộp nút vẫn
+   40px (`.cfg .page-act`), hàng vẫn 90px ⇒ chiều cao tấm Cài đặt **578px KHÔNG đổi**.
+   ⛔ Giữ NGUYÊN `border-color` theo token (`var(--light-edge)` ở light, `var(--border)` ở dark):
+   hợp đồng “MỘT màu cho mọi đường bao ở light mode” (xem chú thích `--light-edge` dòng ~657) —
+   muốn đậm thêm thì đổi token đó, ⛔ đừng khai màu riêng cho nút này.
+   ⛔ Đừng đổi `border-width` cho CẢ `.page-act`: 3 nút `#pageActions` khi ra khỏi tấm nằm CẠNH nút
+   phân trang `.page-btn` (1px) — dày lên là “hai hệ nút” trong cùng một hàng phân trang.
+   ⚠️ Rule này (4 lớp) THẮNG `.page-act:hover` (2 lớp) nên phải khai LẠI hover ngay dưới. */
+.cfg .page-actions > .page-act:only-child {
+  border-width: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.38);
+}
+body.light-mode .cfg .page-actions > .page-act:only-child { box-shadow: 0 1px 3px rgba(15,23,42,0.18); }
+@media (hover: hover) {
+  .cfg .page-actions > .page-act:only-child:hover { border-color: #3b82f6; }
+  body.light-mode .cfg .page-actions > .page-act:only-child:hover { border-color: #2563eb; }
+}
 /* Hàng “Dạng xem” chỉ có nghĩa ở bố cục ĐIỆN THOẠI: từ 640px trở lên `.view-btn` bị ẩn
    (`display: none !important`) và desktop vốn đã là bảng 14 cột ⇒ để nguyên là một hàng TRỐNG
    (có nhãn, không có control). Ẩn CẢ HÀNG theo cùng ngưỡng 640px với `.view-btn`.
