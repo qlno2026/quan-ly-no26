@@ -432,6 +432,19 @@
   --vien-vien: rgba(191,219,254,0.35);
   --vien-sdt-bg: #0f2438;
   --vien-sdt-vien: rgba(191,219,254,0.35);
+  /* ➕ VIÊN “ZALO” (2026-10-17) — viên MỚI, nằm NGAY SAU viên SĐT trên thẻ KH: chạm là mở chat
+     Zalo với ĐÚNG số đó (`https://zalo.me/<số>`, xem `zaloHref()`). Nền dùng CHUNG với viên
+     SĐT/Mã KH (`#0f2438`) nên viên mới chỉ khác 2 thứ: ICON màu XANH ZALO và VIỀN xanh Zalo ⇒
+     phân biệt được với viên SĐT bên cạnh, không sinh thêm “loại viên” mới.
+     ⟳ 2026-10-17g: viên đổi từ ICON sang **CHỮ “Zalo”** (yêu cầu người dùng) · ⟳ 2026-10-17j:
+     TRẢ LẠI **ICON bong bóng chat** + để SÁT viên SĐT (yêu cầu “đổi chữ zalo thành icon tin nhắn
+     và nằm gần sdt”) — xem chú thích đầy đủ ở `.kh-zalo` trong khối CSS.
+     ⛔ ĐỪNG lấy mã thương hiệu `#0068ff` làm màu icon: trên nền viên tối này nó chỉ **3,07:1**
+     (sát ngưỡng 3:1 của đồ hoạ). `#7db2ff` = **7,28:1** ✓ — dư xa ngưỡng. Chế độ SÁNG đổi ở
+     khối `body.light-mode` (xem chú thích ở đó). */
+  --vien-zalo-bg: #0f2438;
+  --vien-zalo-fg: #7db2ff;
+  --vien-zalo-vien: rgba(125,178,255,0.45);
   /* ➕ NỀN VIÊN “DANH SỐ” — TOKEN RIÊNG, ĐI THEO TỪNG MỨC NỀN SÁNG/TỐI.
      Yêu cầu người dùng: “khi ở chế độ dịu màu nền danh số đậm hơn cho dễ nhìn”.
      ⚠️ Viên danh số là viên DUY NHẤT **KHÔNG có viền** (`border: none` ở rule `.kh-danhso`)
@@ -763,6 +776,12 @@ body.light-mode {
   --vien-vien: #93b8e8;
   --vien-sdt-bg: #f0f6ff;
   --vien-sdt-vien: #93b8e8;
+  /* viên “Zalo” (khối chú thích đầy đủ ở `:root`): nền GIỐNG viên SĐT light, ICON đậm hơn mã
+     thương hiệu một nấc để dư ngưỡng AA trên nền sáng: `#0055d4` trên `#f0f6ff` = **5,95:1** ✓
+     (`#0068ff` chỉ **4,80** — vẫn đạt nhưng sát ngưỡng; bản đậm còn dư cho mọi mức “Nền”). */
+  --vien-zalo-bg: #f0f6ff;
+  --vien-zalo-fg: #0055d4;
+  --vien-zalo-vien: #7fb0f0;
   /* Mức “Chuẩn” của nền viên “danh số” ở chế độ sáng (khối chú thích đầy đủ ở `:root`).
      ⚠️ Bản cũ `#e8f1fd` chỉ chênh nền thẻ **1,04** ⇒ viên gần như dính vào thẻ.
      ⟳ 2026-10-03u — ĐẬM HƠN HẲN (yêu cầu “cho màu nền danh số dễ nhìn hơn”): mức “Sáng”
@@ -2308,8 +2327,8 @@ body.light-mode .search-clear { background: rgba(0,0,0,0.1); color: #000000; }
 body.light-mode .search-clear:hover { background: rgba(239,68,68,0.2); color: #dc2626; }
 body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
 
-/* ══ “ĐÃ COPY” (`.toast`) — phản hồi cho NHẤN GIỮ thẻ/hàng (copy CÂU NHẮC NỢ 1 dòng
-   `Tiền điện {kỳ} tên KH: {tên}, mã KH: {mã} là {số tiền} đ` — xem `lpCopyText()`).
+/* ══ “ĐÃ COPY” (`.toast`) — phản hồi cho CHẠM TÊN khách (copy CÂU NHẮC NỢ 1 dòng
+   `Tiền điện {kỳ} KH: {tên}, mã KH: {mã} là {số tiền} đ` — xem `lpCopyText()`).
    ⚠️ KH **≥ 2 hoá đơn** thì `{kỳ}` là **danh sách kỳ** (`T8/2026, T9/2026`, xếp cũ → mới) — ⟳ 2026-10-17d.
    Dùng MỘT hộp duy nhất (`#toast`), JS dựng khi cần — xem `showToast()`.
    ⚠️ `z-index: 4000` phải CAO HƠN `.modal-overlay` (300) để hộp này còn thấy khi tấm “Chi tiết”
@@ -3365,6 +3384,13 @@ body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color:
    (hàng viên SĐT + Mã KH rớt từ 1 xuống 2 dòng). */
 .kh-danhso { font-size: var(--fs-card); font-weight: var(--vien-weight) !important; padding: 0 var(--vien-pad-x); border: none; border-radius: var(--vien-radius); }
 .kh-name { font-size: var(--fs-card-big); font-weight: 500; flex: 1; line-height: 1.3; color: #60a5fa; }
+/* ⟳ 2026-10-17k: 2 ô TÊN KH (`.kh-name` trên thẻ, `.cell-tenkh` trên bảng) ăn cử chỉ NHẤN-GIỮ
+   0,5s ⇒ phải TẮT bôi-đen + bong bóng của HỆ ĐIỀU HÀNH đúng trên 2 ô đó, kẻo cú nhấn-giữ bị
+   iOS/Android “cướp” (đây chính là lý do cử chỉ này từng bị người dùng báo “không thấy” 2 lần):
+   `user-select: none` chặn bôi đen, `-webkit-touch-callout: none` chặn menu nhấn-giữ của iOS.
+   ⚠️ Chỉ khai cho 2 ô TÊN — ⛔ đừng đặt ở `.kh-card`/`tbody`: chặn luôn việc bôi đen nơi khác.
+   ⚠️ `!important` KHÔNG cần: chưa rule nào khác đặt user-select cho 2 ô này. */
+.kh-name, .table-view tbody td.cell-tenkh { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .kh-tien-col { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
 .kh-tien { font-family: 'Inter', sans-serif; font-size: var(--fs-card-big); font-weight: 500; color: #ffa0a0; white-space: nowrap; flex-shrink: 0; }
 .kh-tien.low { color: #86efac; }
@@ -3381,6 +3407,21 @@ body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color:
 .kh-tbi { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: 400; white-space: nowrap; }
 body.light-mode .kh-tbi { color: #334155; }
 .kh-phone { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: var(--vien-weight); text-decoration: none !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid var(--vien-sdt-vien); border-radius: var(--vien-radius); }
+/* ➕ Viên ZALO (2026-10-17): nằm NGAY SAU viên SĐT trên thẻ KH — chạm là mở chat Zalo của đúng số
+   đó. Metric LẤY Y HỆT viên SĐT (cùng `--fs-card`, `--vien-pad-x`, `--vien-weight`, viền 1px,
+   `--vien-radius`) nên hai viên cao BẰNG NHAU (đo: 22,34px) và không lệch hàng; chỉ khác MÀU
+   (token `--vien-zalo-*`, tự đổi theo theme).
+   ⟳ 2026-10-17j (yêu cầu người dùng: “đổi chữ zalo thành icon tin nhắn và nằm gần sdt”, kèm ảnh
+   thẻ đang có viên CHỮ “Zalo”): quay lại viên **ICON bong bóng chat** (`#i-zalo`, ăn
+   `currentColor`) và **BỎ `margin-left: 4px`** ⇒ viên chỉ còn cách viên SĐT đúng `gap: 1px` của
+   `.kh-mid-row` (đo trước: 4,99px → nay **1px**). Lượt g (icon → chữ) nay bị ĐẢO.
+   ⚠️ `margin-left` từng là KHE CHẠM có chủ ý: chạm trượt dính viên SĐT là máy GỌI ĐIỆN ngay.
+   Người dùng đã xem và CHỐT hai viên sát nhau ⇒ GIỮ NGUYÊN `onclick="event.stopPropagation()"`
+   trên viên Zalo (thiếu nó thì cú chạm còn nổi lên thẻ, nhấn-đôi hoá ĐÁNH DẤU CAM).
+   ⚠️ Viên ICON rộng ~29px (viên CHỮ ~67px) ⇒ hàng [SĐT · Zalo · mã KH] lại nằm 1 dòng từ thẻ
+   ≥ ~375px, hết cảnh thẻ cao thêm ~23px ở dải thẻ 346–374px.
+   ⛔ Muốn quay lại viên CHỮ: thay `<svg…>` bằng chữ “Zalo” + trả lại `margin-left: 4px` — nhớ đo lại. */
+.kh-zalo { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: var(--vien-zalo-fg); background: var(--vien-zalo-bg); font-weight: var(--vien-weight); text-decoration: none !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid var(--vien-zalo-vien); border-radius: var(--vien-radius); margin-left: 0; }
 .kh-card-mid .badge { font-size: 12px; font-weight: 500; white-space: nowrap; }
 .kh-sep { font-size: var(--fs-card-sep); color: var(--text-dim); font-weight: 400; margin: 0 1px; }
 .kh-abc { font-size: var(--fs-card); color: #94a3b8; font-weight: 400; white-space: nowrap; border: none; border-radius: 3px; padding: 0px 2px; background: transparent; }
@@ -5464,6 +5505,14 @@ body.force-desktop .table-view { display: block; }
   <!-- ── Đơn sắc cho thẻ khách hàng / modal (màu theo `color` của class cha) ── -->
   <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.8 9.8c0 3.9-3.1 7.6-6.8 11.6C8.3 17.4 5.2 13.7 5.2 9.8a6.8 6.8 0 1 1 13.6 0z"/><circle cx="12" cy="9.7" r="2.6"/></symbol>
   <symbol id="i-call" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+  <!-- ➕ `i-zalo` (2026-10-17) — icon BONG BÓNG CHAT (ô vuông bo góc + đuôi nhọn chĩa xuống
+       dưới-trái), vẽ theo khuôn bộ icon nét của app (`stroke="currentColor"`, `stroke-width: 2.2`,
+       bo nét `round`, viewBox 24) nên tự ăn màu của viên, không cần khai màu riêng.
+       ⚠️ 2026-10-17j: viên Zalo trên thẻ ĐANG dùng LẠI chính symbol này (lượt g trước đó tạm đổi
+       viên sang chữ “Zalo”, nay đã ĐẢO) — xem chú thích `.kh-zalo` ở khối CSS.
+       ⛔ Cũng đừng thay bằng logo Zalo 4 màu: cả bộ icon trong sprite là ĐƠN SẮC theo
+       `currentColor`, một icon nhiều màu sẽ lệch hẳn và không theo theme sáng/tối. -->
+  <symbol id="i-zalo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 15.4a1.8 1.8 0 0 1-1.8 1.8H7.4l-3.6 3.6V5.4a1.8 1.8 0 0 1 1.8-1.8h13a1.8 1.8 0 0 1 1.8 1.8z"/></symbol>
   <symbol id="i-mobile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.2" y="2.2" width="11.6" height="19.6" rx="2.4"/><path d="M11 18.1h2"/></symbol>
   <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.1"/></symbol>
   <!-- 🚫 `i-pencil-bold` — ĐÃ XOÁ ở lượt “cho các icon mang phong cách tối giản”: hàng “ghi chú”
@@ -8276,6 +8325,22 @@ updateSortButtons();
 
 
 // CARDS (mobile)
+/* ➕ Link “Nhắn Zalo” cho số trong ô `dien_thoai` (2026-10-17 — yêu cầu người dùng: “ở sđt có
+   thêm mục tuỳ chọn gửi tin nhắn zalo”).
+   VÌ SAO PHẢI CÓ HÀM RIÊNG (không dùng lại `phone.replace(/[^0-9+]/g,'')` của viên SĐT):
+   Zalo nhận link dạng `https://zalo.me/<số>` và số phải ở dạng NỘI ĐỊA (`0972773839`) trong khi
+   dữ liệu nhập từ Excel có thể là `0972 773 839`, `0972.773.839`, `+84972773839` hay
+   `84972773839` ⇒ phải (1) bỏ MỌI ký tự không phải chữ số, (2) đổi đầu `84` (mã nước VN) về `0`.
+   ⚠️ `tel:` thì ngược lại: nó CẦN giữ dấu `+` của dạng quốc tế — đó là lý do hai chỗ không dùng
+   chung một phép làm sạch.
+   ⛔ KHÔNG “đoán” thêm gì (ví dụ tự thêm `0` cho số 9 chữ số): thà Zalo báo không tìm thấy số, còn
+   hơn mở nhầm cửa sổ chat của người khác. Không ra được số nào thì trả `''` — markup dựa vào đó
+   để KHÔNG vẽ viên Zalo (tránh `href=""` làm tải lại trang). */
+function zaloHref(phone) {
+  let d = String(phone || '').replace(/\D/g, '');
+  if (d.length >= 11 && d.indexOf('84') === 0) d = '0' + d.slice(2);
+  return d ? 'https://zalo.me/' + d : '';
+}
 function renderCards(q='') {
   const isOld = (currentTab === 'old' || currentTab === 'oldky' || currentTab === '1tr');
   const start = (currentPage-1)*PAGE_SIZE;
@@ -8288,6 +8353,8 @@ function renderCards(q='') {
 
   list.innerHTML = pageData.map((r,i) => {
     const phone = r.dien_thoai && r.dien_thoai!='0' ? r.dien_thoai : '';
+    /* Link chat Zalo của số này (rỗng = không vẽ viên Zalo) — xem zaloHref(). */
+    const zHref = zaloHref(phone);
     const oldKind = _oldKindMap.get(r.ma_khach_hang || r.ten_khach_hang);
     const omShow = !!oldKind;
     /* KH có **từ 2 hoá đơn trở lên** → thêm vạch XANH LÁ mỏng ở mép trên thẻ, ngay trên
@@ -8300,13 +8367,15 @@ function renderCards(q='') {
        ghi chú KHÔNG đánh dấu thẻ. */
     return `<div class="kh-card${hdCount >= 2 ? ' multi-hd' : ''}" data-ma="${esc(r.ma_khach_hang)}" ondblclick="toggleOrange(event, this)">
       <div class="kh-card-top">
-        <!-- ⟳ 2026-10-16: TÊN KHÁCH TRÊN THẺ KHÔNG CÒN CHẠM ĐƯỢC (yêu cầu người dùng, lần 2:
-             “xem lại chạm vào tên kh vẫn còn hiển thị bảng” — kèm ảnh chụp tấm “Chi tiết” 12
-             hàng). Đã gỡ onclick + cursor:pointer. ⛔ ĐỪNG gắn lại showDetail() ở đây: đây là
-             đường còn sót lại sau khi gỡ ở tấm “Thanh toán…”, và người dùng đã báo lại 2 lần.
+        <!-- ⟳ 2026-10-17k (yêu cầu: “đổi chạm vô tên kh là copy sang NHẤN GIỮ 0,5 giây là copy tin
+             nhắn”): bỏ đường “chạm 1 lần” của lượt 2026-10-17h — TÊN nay ăn cử chỉ NHẤN-GIỮ
+             500ms (hằng LP_TEN_MS, xem hàm lpTenDown), nên ⛔ đã GỠ thuộc tính onclick ở đây.
+             ⛔ VẪN KHÔNG gắn showDetail(): tấm “Chi tiết” không còn đường mở, và người dùng đã
+             2 lần báo không muốn chạm tên mở bảng (2026-10-16). Chạm NHANH vào tên: KHÔNG copy,
+             cũng KHÔNG mở gì.
              ⛔ KHÔNG dùng dấu backtick trong chú thích NÀY: nó nằm TRONG một template literal,
-             backtick sẽ đóng chuỗi sớm và cả script không parse được (đã từng xảy ra). -->
-        <div class="kh-name">${hi(r.ten_khach_hang,q)||'—'}</div>
+             backtick sẽ đóng chuỗi sớm và cả script không parse được. -->
+        <div class="kh-name" style="cursor:pointer">${hi(r.ten_khach_hang,q)||'—'}</div>
         <div class="kh-tien-col">
           <!-- ⚠️ LỚP pay-tap + onclick = CHẠM VÀO SỐ TIỀN LÀ MỞ TẤM “Thanh toán cho điểm dùng điện”
                (yêu cầu người dùng). event.stopPropagation() để cú chạm không lọt lên thẻ card
@@ -8325,7 +8394,7 @@ function renderCards(q='') {
         ${r.ma_sogcs && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}
         ${r.so_tbi ? `<span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}
         ${r.dia_chi ? `<div class="kh-addr-line" style="flex:0 0 100%;margin-top:5px"><svg class="addr-ico" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><use href="#i-pin"/></svg>${hi(trimDiaChi(r.dia_chi),q)}</div>` : ''}
-        ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}${phone && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="event.stopPropagation();copyToClip('${esc(r.ma_khach_hang)}',this)" style="cursor:pointer"><svg class="ic" width="14" height="14" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-tag"/></svg>${hi(r.ma_khach_hang,q)}</span>` : ''}</span>` : ''}
+        ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}<!-- ➕ Viên ZALO (⟳ 2026-10-17j: TRẢ LẠI ICON bong bóng chat và để SÁT viên SĐT — yêu cầu “đổi chữ zalo thành icon tin nhắn và nằm gần sdt”). Chạm = mở chat Zalo với ĐÚNG số này (zalo.me/<số>), ở TAB MỚI (target=_blank) để không rời app đang xem danh sách nợ. onclick stopPropagation để cú chạm không lọt lên thẻ (nhấn 2 lần = đánh dấu cam). ⛔ KHÔNG đặt thuộc tính title ở đây (và ở viên mã KH): người dùng đã yêu cầu BỎ tooltip “Chạm: …” hiện trên màn hình; chỉ giữ aria-label cho trình đọc màn hình. Không có zHref (số dị dạng) thì không vẽ viên. ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->${zHref ? `<a class="kh-zalo" href="${esc(zHref)}" target="_blank" rel="noopener noreferrer" aria-label="Nhắn tin Zalo ${esc(phone)}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle"><use href="#i-zalo"/></svg></a>` : ''}${phone && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="copyMaKH(event,this);moAppEVNHCMC()" style="cursor:pointer"><svg class="ic" width="14" height="14" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-tag"/></svg>${hi(r.ma_khach_hang,q)}</span>` : ''}</span>` : ''}
       </div>
       <div class="kh-ghichu-row">
         <svg class="ic" width="14" height="14" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><use href="#i-pencil"/></svg>
@@ -8392,17 +8461,20 @@ function renderTable(q='') {
     // (Bảng 2 DÒNG trên điện thoại không dùng thứ tự này — nó đặt ô theo `nth-child` ở CSS.)
     return `<tr data-ma="${esc(maKH)}" class="${isMarked ? 'highlighted' : (isPurple ? 'highlighted-purple' : '')}" ondblclick="toggleOrange(event, this)">
       <td style="color:var(--text-dim);font-size:12px;white-space:nowrap">${r.stt ? hi(r.stt,q) : (start+i+1)}</td>
-      <td><span class="ma-kh" onclick="copyMaKH(event, this)" style="cursor:pointer" title="Chạm để copy mã KH">${hi(r.ma_khach_hang,q)}</span></td>
+      <td><span class="ma-kh" onclick="copyMaKH(event, this);moAppEVNHCMC()" style="cursor:pointer">${hi(r.ma_khach_hang,q)}</span></td>
       <!-- HAI nhánh tên trong CÙNG một ô: span.ten-full cho BẢNG MÁY TÍNH (≥640px), span.ten-ngan
            cho bảng 3 hàng trên điện thoại. Bảng máy tính dùng CHUNG DOM với bảng 3 hàng nên nếu
            viết tắt thẳng vào ô thì bảng máy tính cũng đổi theo — tách nhánh là cách duy nhất giữ
-           được “bảng máy tính không đổi”. Thuộc tính title giữ tên GỐC cho cả hai.
+           được “bảng máy tính không đổi”. Tên GỐC nay ở thuộc tính data-ten (xem chú thích 2026-10-17k ngay dưới).
            ⛔ KHÔNG dùng dấu backtick trong chú thích NÀY: nó nằm TRONG một template literal của
            JS, backtick sẽ đóng chuỗi sớm và làm cả script không parse được (đã từng xảy ra). -->
-      <!-- ⟳ 2026-10-16: ô TÊN KH của BẢNG cũng gỡ onclick + cursor:pointer — CÙNG yêu cầu với thẻ
-           card (tên khách KHÔNG còn mở tấm “Chi tiết”; xem chú thích ở kh-name trong renderCards).
-           title vẫn giữ tên GỐC cho cả hai nhánh tên. Không dùng backtick trong chú thích này. -->
-      <td class="cell-tenkh" title="${esc(r.ten_khach_hang||'')}"><span class="ten-full">${hi(r.ten_khach_hang,q)||'—'}</span><span class="ten-ngan">${hi(tenKHNgan(r.ten_khach_hang),q)||'—'}</span></td>
+      <!-- ⟳ 2026-10-17k: ô TÊN KH của BẢNG nay cũng CHỈ copy khi NHẤN-GIỮ 500ms (cùng cử chỉ với
+           tên trên thẻ — xem lpTenDown() trong khối “NHẤN-GIỮ 0,5 GIÂY TRÊN TÊN KH”).
+           ⛔ ĐÃ BỎ thuộc tính title: trên điện thoại title hiện BONG BÓNG đúng lúc nhấn-giữ nên
+           CƯỚP mất cử chỉ (đây là một lý do cử chỉ này từng bị báo “không thấy”), và nó cũng là
+           một tooltip người dùng không muốn. Tên GỐC nay nằm ở thuộc tính data-ten (lpCopyText đọc).
+           ⛔ KHÔNG mở tấm “Chi tiết”. Không dùng backtick trong chú thích này. -->
+      <td class="cell-tenkh" style="cursor:pointer" data-ten="${esc(r.ten_khach_hang||'')}"><span class="ten-full">${hi(r.ten_khach_hang,q)||'—'}</span><span class="ten-ngan">${hi(tenKHNgan(r.ten_khach_hang),q)||'—'}</span></td>
       <td class="cell-addr">${hi(r.dia_chi,q)||'—'}</td>
       <td class="cell-dim">${hi(r.ma_sogcs,q)||'—'}</td>
       <td class="cell-dim">${hi(r.danh_so,q)||'—'}</td>
@@ -8559,88 +8631,167 @@ function saoLuuDuLieu() {
   }
 }
 
-/* Chạm MỘT lần vào MÃ KH ở dạng bảng ⇒ COPY mã (y hệt ô mã KH trên thẻ card .kh-ma).
+/* Chạm MỘT lần vào MÃ KH (thẻ `.kh-ma` và ô mã ở bảng `.ma-kh`) ⇒ COPY mã rồi MỞ APP EVNHCMC.
    ⛔ Chỉ stopPropagation trên 'click'. Thao tác đánh dấu nay là NHẤN 2 LẦN (`ondblclick`)
    gắn trực tiếp trên hàng/thẻ — xem mục “NHẤN 2 LẦN” cạnh `toggleMark()`.
-   ⚠️ Nhấn 2 lần TRÊN Ô MÃ vẫn sẽ đánh dấu hàng (dblclick nổi từ ô mã lên hàng) và copy
-   thêm một lần — chấp nhận được, giống thời kỳ trước khi có nhấn-giữ.
+   ⚠️ Nhấn 2 lần TRÊN Ô MÃ vẫn sẽ đánh dấu hàng (dblclick nổi từ ô mã lên hàng) — chấp nhận được.
    Copy giá trị từ el.textContent (span chứa cả mark tìm kiếm, textContent vẫn là mã đầy đủ)
    thay vì nhúng mã vào thuộc tính onclick — không lo dấu nháy trong dữ liệu phá chuỗi.
-   ✓ xanh 1,2 giây do copyToClip tự làm (đúng như ô mã KH trên thẻ card). */
+   ⟳ 2026-10-17k — SỬA LỖI “CHẠM MÃ KH MÀ KHÔNG THẤY COPY” (người dùng báo khi mở app bằng link
+   trên Zalo/điện thoại: “kiểm tra lại không thấy chạm vô mã kh là copy”). Ba lỗi của bản cũ:
+     · đường copy cũ (`copyToClip`, ĐÃ XOÁ) chỉ có `navigator.clipboard.writeText(…).catch(()=>{})`.
+       Webview điện thoại rất hay TỪ CHỐI Clipboard API (`NotAllowedError` — chính lỗi đã ghi ở
+       chú thích `lpCopyFallback`) ⇒ `.catch()` NUỐT lỗi IM LẶNG: không copy, cũng không báo gì;
+     · webview cũ không có `navigator.clipboard` thì lời gọi NÉM LỖI NGAY ⇒ `moAppEVNHCMC()` đi
+       kèm trong cùng chuỗi `onclick` cũng không chạy luôn;
+     · `moAppEVNHCMC()` điều hướng đi NGAY (intent:// hoặc trang CSKH) nên cú copy BẤT ĐỒNG BỘ
+       còn bị huỷ giữa đường.
+   Nay đi đúng 3 nấc như `lpCopy()` và BÁO RÕ cho người dùng (xem `showToast`):
+     (1) `lpCopyFallback()` — `execCommand('copy')` chạy **ĐỒNG BỘ**, xong trước khi trang điều hướng;
+     (2) không được ⇒ Clipboard API;
+     (3) vẫn không được ⇒ mở hộp `lpShowCopyBox()` cho tự copy — ⛔ lúc này KHÔNG mở app (kẻo che hộp).
+   ⚠️ Mở app đặt SAU `LP_APP_MS` (800ms) để hộp “✓ Đã copy mã KH …” kịp hiện; 800ms vẫn nằm trong
+   “transient activation” (~5 giây) của Chrome nên `window.open` KHÔNG bị chặn popup (xem moAppEVNHCMC).
+   ⚠️ Dấu ✓ tại chỗ nay chỉ NHÁY NỀN xanh — ⛔ KHÔNG thay `textContent` nữa: bản cũ thay chuỗi nên
+   làm MẤT icon 🏷 của viên mã KH trên thẻ và MẤT cả thẻ `<mark>` tô sáng từ khoá tìm kiếm. */
+const LP_APP_MS = 800;   // hoãn mở app EVNHCMC để người dùng kịp thấy hộp “✓ Đã copy”
 function copyMaKH(e, el) {
   e.stopPropagation();
-  copyToClip(el.textContent, el);
+  const txt = ((el && el.textContent) || '').trim();
+  const nhay = () => {      // nháy nền xanh tại ô vừa chạm — KHÔNG đụng DOM con (icon, <mark>)
+    if (!el) return;
+    if (el._copyTimer) { clearTimeout(el._copyTimer); el._copyTimer = null; }
+    const bgCu = el.style.background;
+    el.style.background = 'rgba(34,197,94,0.3)';
+    el.style.borderRadius = '4px';
+    el._copyTimer = setTimeout(() => { el.style.background = bgCu; el._copyTimer = null; }, 1200);
+  };
+  const xong = () => { nhay(); showToast('✓ Đã copy mã KH: ' + txt); setTimeout(moAppEVNHCMC, LP_APP_MS); };
+  if (lpCopyFallback(txt)) { xong(); return; }                                   // (1) đồng bộ
+  if (navigator.clipboard && navigator.clipboard.writeText) {                    // (2) bất đồng bộ
+    navigator.clipboard.writeText(txt).then(xong).catch(() => lpShowCopyBox(txt));
+    return;
+  }
+  lpShowCopyBox(txt);                                                            // (3)
 }
 
-function copyToClip(text, el) {
-  navigator.clipboard.writeText(text).then(() => {
-    if (el) {
-      /* ⚠️ copy 2 lần liên tiếp trên CÙNG một ô (lần 2 chạy khi ✓ lần 1 còn hiển thị):
-         nếu không phòng thì lần 2 bắt orig = '✓ …' và timer của nó trả lại chuỗi CÓ ✓ mãi mãi
-         (đã gặp thật trên preview: ô kẹt '✓ PB15020078145'). Phòng bằng: (1) huỷ timer cũ,
-         (2) tuột sẵn tiền tố '✓ ' khỏi orig. */
-      if (el._copyTimer) { clearTimeout(el._copyTimer); el._copyTimer = null; }
-      const orig = el.textContent.replace(/^✓\s*/, '');
-      el.style.background = 'rgba(34,197,94,0.3)';
-      el.style.borderRadius = '4px';
-      el.textContent = '✓ ' + orig;
-      el._copyTimer = setTimeout(() => { el.style.background = ''; el.textContent = orig; el._copyTimer = null; }, 1200);
-    }
-  }).catch(() => {});
+/* ➕ CHẠM MÃ KH ⇒ COPY mã RỒI MỞ APP “EVNHCMC” (yêu cầu người dùng 2026-10-17: “khi chọn mã kh tôi
+   muốn là chế độ copy và mở qua ứng dụng evnhcmc trên điện thoại”). Gọi từ HAI chỗ: viên mã KH trên
+   thẻ (`.kh-ma`) và ô mã KH ở bảng (`.ma-kh`) — cả hai đều gọi `copyMaKH(...)` rồi `moAppEVNHCMC()`.
+   ⚠️ App EVNHCMC KHÔNG có deep link tới một mã KH cụ thể, nên KHÔNG thể tự điền sẵn mã vào app —
+   vì vậy vẫn phải COPY mã vào clipboard trước (giữ nguyên hành vi cũ), người dùng dán vào mục
+   “Liên kết điểm dùng điện” của app.
+   · Android: mở thẳng app bằng link `intent://…package=com.evnhcmc.evnmobileapp…`; máy CHƯA cài
+     thì Chrome tự mở `S.browser_fallback_url` (trang CSKH) thay vì báo lỗi.
+   · iPhone: KHÔNG có cách mở app từ trang web (iOS chặn) ⇒ mở web CSKH `https://cskh.evnhcmc.vn/`.
+   · Máy tính (không nhận ra iPhone/Android): KHÔNG mở gì — giữ đúng hành vi “chạm = copy” như cũ,
+     tránh bật tab mới ngoài ý muốn mỗi lần copy mã.
+   ⟳ 2026-10-17k: nay được gọi QUA `setTimeout(…, LP_APP_MS = 800ms)` trong `copyMaKH()` — cố ý
+   hoãn để hộp “✓ Đã copy mã KH …” kịp hiện trước khi rời trang. 800ms vẫn nằm trong cửa sổ
+   “transient activation” (~5 giây) của Chrome nên `window.open` KHÔNG bị chặn popup.
+   ⛔ Đừng hoãn lâu hơn ~2–3 giây: quá cửa sổ đó là trình duyệt chặn. */
+const EVNHCMC_PKG = 'com.evnhcmc.evnmobileapp';
+const EVNHCMC_WEB = 'https://cskh.evnhcmc.vn/';
+function moAppEVNHCMC() {
+  const ua = navigator.userAgent || '';
+  let url = '';
+  if (/Android/i.test(ua)) {
+    url = 'intent://#Intent;package=' + EVNHCMC_PKG +
+          ';action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER' +
+          ';S.browser_fallback_url=' + encodeURIComponent(EVNHCMC_WEB) + ';end';
+  } else if (/iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1)) {
+    url = EVNHCMC_WEB;
+  }
+  if (url) window.open(url, '_blank', 'noopener');
 }
 
-/* ══ NHẤN GIỮ (≥550ms) TRÊN THẺ CARD / HÀNG BẢNG = COPY CÂU TIN NHẮN NHẮC NỢ ══════════════════
-   Ba lần yêu cầu, bản CHỐT là bản mới nhất (2026-10-14c): “đổi nội dung copy ví dụ là, Tiền điện
-   T9/2026 của Quý KH Ngô Hồng Hà, mã KH PB15020002311 là 889.110 đ” ⇒ MỘT CÂU DUY NHẤT:
-     `Tiền điện {kỳ} tên KH: {tên}, mã KH: {mã} là {số tiền} đ`
-   ⟳ 2026-10-17b: người dùng gửi lại mẫu **“Tiền điện T9/2026 của KH: Văn Vũ, mã KH: PB15020002335 là
-   594.676 đ”** ⇒ đổi “của Quý KH {tên}” → “của KH: {tên}” và “, mã KH {mã}” → “, mã KH: {mã}” (dấu
-   hai chấm sau CẢ HAI nhãn). Chỉ đổi NHÃN — kỳ/số tiền/cách đọc từ thẻ giữ nguyên.
-   ⟳ 2026-10-17c: mẫu mới **“Tiền điện T9/2026 tên KH: Văn Vũ, mã KH: PB15020002335 là 594.676 đ”** ⇒
-   bỏ hẳn chữ “của”, còn **“tên KH: {tên}”**; dấu hai chấm vẫn sau HAI nhãn.
-   ⟳ 2026-10-17d: mẫu cho KH **≥ 2 hoá đơn**: **“Tiền điện T8/2026, T9/2026 tên KH: Văn Vũ, mã KH:
-   PB15020002335 là 694.676 đ”** ⇒ `{kỳ}` của nhánh nhiều hoá đơn nay là **DANH SÁCH KỲ** (“,”),
-   ⛔ không còn “n tháng” (2026-10-14f) — xem ghi chú tại `lpCopyText()`.
-   ⛔ Hai định dạng trước đã bị THAY THẾ, đừng khôi phục: “Tên, Mã KH, Tiền nợ” (2026-10-14a, ngăn
-   bằng dấu phẩy) và 3 dòng “Tên: / Mã KH: / Tiền điện:” (2026-10-14b).
-   ⚠️ Đây là lần thứ HAI “nhấn giữ” xuất hiện ở file này: bản 2026-10-03 đã GỠ HẲN lớp nhấn-giữ
-   cũ và chuyển ĐÁNH DẤU sang NHẤN 2 LẦN. Nay nhấn-giữ mang việc KHÁC (copy) ⇒ ⛔ KHÔNG đụng
-   `ondblclick="toggleOrange(...)"`: nhấn 2 lần = đánh dấu cam (y như trước), nhấn GIỮ = copy.
-   Ba chốt chống “dội”: (1) nhả tay/di chuyển quá 10px là huỷ (để còn CUỘN được trên điện thoại);
-   (2) chặn DUY NHẤT cú `click` sinh ra ngay sau khi đã copy (nếu không, nhấn giữ trên tên khách
-   vừa copy vừa mở tấm “Chi tiết”); (3) chặn `contextmenu` khi đang giữ (Android hay bật menu
-   “sao chép/chia sẻ” giữa chừng).
-   ⚠️ Vùng loại trừ bên dưới là BẮT BUỘC: số tiền (`.pay-tap`) mở tấm thanh toán, viên mã KH
-   (`.kh-ma`/`.ma-kh`) chạm 1 lần đã copy mã, ô ghi chú là ô nhập, SĐT là link gọi — giữ trên
-   những chỗ đó mà vẫn copy cả dòng là hành vi hai-nơi-một-cú-chạm, đã từng gây lỗi khó hiểu.
-   ⛔ ĐỪNG bỏ `:not(input)` kiểu kiểm tra này rồi “để trình duyệt tự xử”.
-   ⚠️ Thẻ/hàng đã có `user-select: none` + `-webkit-touch-callout: none` từ trước nên giữ vẫn
-   không bôi đen chữ. */
-const LP_COPY_MS = 550;      // thời gian giữ để copy
-const LP_SLOP = 10;          // xê dịch tối đa (px) còn coi là ĐANG GIỮ
-/* ⛔ CỨU CỬ CHỈ KHI TRÌNH DUYỆT “CƯỚP” NÓ (2026-10-16g) — người dùng báo *“kiểm tra lại chế độ nhấn
-   giữ là copy tin nhắn, tôi thấy không còn chế độ đó”*. Đo lại trên Preview: cử chỉ VẪN CHẠY đủ
-   (nhấn giữ 700ms ⇒ toast “✓ Đã copy: Tiền điện …”, đo 6/6 điểm trong thẻ + hàng bảng) ⇒ khác
-   biệt thật nằm ở MÁY THẬT: Chrome Android khi nhận ra cử chỉ nhấn-giữ của HỆ ĐIỀU HÀNH (bôi đen /
-   menu gọi-copy) thì bắn `pointercancel` **quanh mốc ~500ms** — tức NGAY TRƯỚC mốc 550ms của
-   mình. Bản cũ huỷ thẳng ở `pointercancel` ⇒ trên điện thoại tính năng không bao giờ chạy, còn
-   trên Preview (giữ bằng CHUỘT, không có `pointercancel`) thì vẫn “xanh” ⇒ lỗi chỉ hiện ở máy thật.
-   CÁCH CHỮA: nếu bị huỷ mà (1) ĐÃ giữ được ≥ `LP_CANCEL_GRACE`, (2) cử chỉ còn “đang giữ”
-   (`_lpTimer` ≠ null ⇒ chưa hề đi xa quá `LP_SLOP`, vì đi xa là `lpStop()` xoá timer) ⇒ coi như
-   đã giữ đủ và copy luôn. Cuộn TRANG vẫn an toàn: cuộn là có `pointermove` > 10px ⇒ timer bị xoá
-   từ trước, `lpCancelRescue()` thấy `_lpTimer === null` nên KHÔNG copy. ⛔ Đừng hạ mốc này xuống
-   thấp hơn nữa (chạm-rồi-cuộn sẽ copy oan) và ⛔ đừng bỏ nhánh này (bỏ là quay lại lỗi trên máy thật). */
-const LP_CANCEL_GRACE = 250;
-let _lpTimer = null, _lpEl = null, _lpX = 0, _lpY = 0, _lpFired = false, _lpStart = 0;
-function lpStop() { if (_lpTimer) { clearTimeout(_lpTimer); _lpTimer = null; } }
-// Vùng nhận nhấn-giữ: thẻ card (`.kh-card`) và hàng bảng (`.table-view tbody tr`) — hai nơi đều
-// có `data-ma`. Trả về `null` nếu cú nhấn rơi vào chỗ có thao tác riêng.
-function lpTarget(e) {
-  const t = e && e.target;
-  if (!t || !t.closest) return null;
-  if (t.closest('input, textarea, select, a, .pay-tap, .ma-kh, .kh-ma, .kh-phone, .th-resizer')) return null;
-  return t.closest('.kh-card[data-ma], .table-view tbody tr[data-ma]');
+/* ⛔ 2026-10-17k: `copyToClip()` đã bị XOÁ. Nó chỉ được `copyMaKH()` dùng và có 3 tật:
+   (1) chỉ có Clipboard API, lỗi bị `.catch(()=>{})` nuốt im lặng ⇒ trên điện thoại “chạm mà
+       không copy” (xem chú thích dài ở `copyMaKH`);
+   (2) `el.textContent = '✓ ' + orig` XOÁ SẠCH con của ô ⇒ mất icon 🏷 của viên mã KH, và mất luôn
+       thẻ `<mark>` tô sáng từ khoá tìm kiếm;
+   (3) timer trả lại `orig` là CHUỖI THÔ nên icon đã mất thì không tự mọc lại (chỉ tới lần render sau).
+   Nay việc copy mã KH nằm trọn trong `copyMaKH()` (đồng bộ trước → Clipboard API → hộp tự copy),
+   còn dấu ✓ chỉ là NHÁY NỀN xanh nên không phá DOM. */
+
+/* ══ NHẤN-GIỮ 0,5 GIÂY TRÊN TÊN KH = COPY CÂU TIN NHẮN NHẮC NỢ ═══════════════════════════════
+   ⟳ 2026-10-17k (yêu cầu người dùng: “đổi chạm vô tên kh là copy sang NHẤN GIỮ 0,5 giây là copy
+   tin nhắn”): ĐẢO đường 2026-10-17h. Nay `.kh-name` (thẻ) và `.cell-tenkh` (bảng) CHỈ copy khi
+   NHẤN-GIỮ **`LP_TEN_MS` = 500ms**; chạm nhanh KHÔNG copy (và cũng ⛔ không mở gì — tấm “Chi
+   tiết” đã bị gỡ mọi đường mở, xem chú thích ở `.kh-name` trong `renderCards`).
+   ⚠️ Cử chỉ này TỪNG bị người dùng báo “không thấy” 2 lần (lý do lượt 2026-10-17h phải đổi sang
+   chạm). Nay bù ĐỦ 3 đường hay làm nó bị hệ điều hành “cướp”:
+     (1) CSS tắt bôi-đen/callout ĐÚNG trên 2 ô tên — rule `.kh-name, .cell-tenkh` (xem khối CSS);
+     (2) ⛔ ĐÃ BỎ `title` khỏi ô tên của BẢNG: trên điện thoại title hiện bong bóng ĐÚNG LÚC
+         nhấn-giữ nên cướp cử chỉ (tên GỐC nay ở `data-ten`; `lpCopyText()` đọc lại từ đó);
+     (3) NGHE `contextmenu`: Android bắn sự kiện này ở ~500ms (TRƯỚC `pointerup`) nên chỉ dựa vào
+         timer thì tuỳ máy mà hụt ⇒ `preventDefault()` bong bóng rồi COPY luôn.
+   ⚠️ Nhấn-giữ mà KÉO quá `LP_TEN_SLOP` = 10px (người dùng đang CUỘN danh sách) thì HUỶ; nhả tay
+   sớm (<500ms) cũng huỷ.
+   ⛔ Cú `click` bắn ngay sau khi đã copy bị NUỐT bằng cờ `_lpFired` (pha capture): không nuốt thì
+   nó nổi lên thẻ/hàng và hai cú liên tiếp thành NHẤN 2 LẦN = ĐÁNH DẤU CAM (`toggleOrange`).
+   ⛔ KHÔNG dùng đường copy của mã KH cho TÊN (tên phải copy CẢ CÂU — `lpCopyText()` dựng câu), và
+   ⛔ đừng thay `textContent` của ô tên để báo “✓ …”: ô tên có thể chứa `<mark>` tô sáng từ khoá
+   tìm kiếm ⇒ báo bằng `showToast()` (không đụng DOM tên).
+   CÂU COPY — một câu duy nhất, định dạng CHỐT (2026-10-17c/d/i):
+     `Tiền điện {kỳ} KH: {tên}, mã KH: {mã} là {số tiền} đ`
+   ⟳ 2026-10-17i (yêu cầu: “Tiền điện T8/2025 KH: Lê Thị Võ, mã KH: …”): bỏ chữ “tên” ⇒ **`KH: {tên}`**.
+   ⭐ {kỳ} theo SỐ HOÁ ĐƠN: 1 hoá đơn ⇒ `T{m}/{yyyy}` · ≥2 hoá đơn ⇒ DANH SÁCH KỲ (“, ”, cũ→mới).
+   Xem `lpCopyText()` (dựng câu) và `lpCopy()` (đẩy vào clipboard + `showToast`). */
+const LP_TEN_MS = 500;     // ngưỡng NHẤN-GIỮ của ô tên (yêu cầu người dùng 2026-10-17k)
+const LP_TEN_SLOP = 10;    // kéo quá 10px = người dùng đang CUỘN ⇒ huỷ cử chỉ
+let _lpT = null, _lpEl = null, _lpX = 0, _lpY = 0, _lpFired = false, _lpGuard = null;
+function lpTenTarget(t) { return (t && t.closest) ? t.closest('.kh-name, .cell-tenkh') : null; }
+function lpTenHuy() { if (_lpT) { clearTimeout(_lpT); _lpT = null; } _lpEl = null; }
+function lpTenChay() {
+  const el = _lpEl;
+  if (_lpT) { clearTimeout(_lpT); _lpT = null; }
+  _lpEl = null;                       // ⛔ đặt TRƯỚC khi copy: chặn `contextmenu` copy lần hai
+  if (!el) return;
+  _lpFired = true;                    // nuốt cú `click` bắn theo sau (600ms)
+  if (_lpGuard) clearTimeout(_lpGuard);
+  _lpGuard = setTimeout(() => { _lpFired = false; _lpGuard = null; }, 600);
+  try { if (navigator.vibrate) navigator.vibrate(15); } catch (e) {}   // rung nhẹ cho biết đã ăn
+  const row = el.closest('.kh-card[data-ma], .table-view tbody tr[data-ma]');
+  if (row) lpCopy(row);
 }
+function lpTenDown(e) {
+  if (e.isPrimary === false || (e.pointerType === 'mouse' && e.button !== 0)) return;
+  const el = lpTenTarget(e.target);
+  if (!el) return;
+  _lpEl = el; _lpX = e.clientX; _lpY = e.clientY;
+  if (_lpT) clearTimeout(_lpT);
+  _lpT = setTimeout(lpTenChay, LP_TEN_MS);
+}
+function lpTenMove(e) {
+  if (!_lpEl) return;
+  if (Math.abs(e.clientX - _lpX) > LP_TEN_SLOP || Math.abs(e.clientY - _lpY) > LP_TEN_SLOP) lpTenHuy();
+}
+function lpTenUp() { lpTenHuy(); }
+function lpTenMenu(e) {
+  if (!lpTenTarget(e.target)) return;
+  e.preventDefault();                 // (3) nuốt menu của hệ điều hành
+  if (_lpEl) lpTenChay();             // máy bắn `contextmenu` thay vì để timer kịp nổ
+}
+/* ⛔ Gắn ở `document`, pha CAPTURE: mẫu thẻ/hàng được DỰNG LẠI mỗi lần render nên gắn thẳng vào
+   phần tử là mất sau mỗi lần vẽ lại; capture để chạy trước mọi handler con. `contextmenu` phải
+   `passive:false` (cần `preventDefault()`). ⛔ KHÔNG chặn `pointerdown`/`touchstart` (không
+   `preventDefault()`): chặn là ô ghi chú lẫn cả danh sách hết bấm/cuộn được. */
+document.addEventListener('pointerdown', lpTenDown, { capture: true });
+document.addEventListener('pointermove', lpTenMove, { capture: true });
+document.addEventListener('pointerup', lpTenUp, { capture: true });
+document.addEventListener('pointercancel', lpTenUp, { capture: true });
+document.addEventListener('contextmenu', lpTenMenu, { capture: true, passive: false });
+/* Nuốt cú `click` bắn ngay sau khi cử chỉ đã copy (xem `lpTenChay`) — cũng ở pha capture nên chạy
+   trước `ondblclick` của thẻ/hàng; ⛔ đừng gỡ, gỡ là nhấn-giữ xong dễ bị tính thành 2 lần chạm. */
+document.addEventListener('click', function (e) {
+  if (_lpFired) { e.stopPropagation(); e.preventDefault(); }
+}, { capture: true });
+// ⟳ 2026-10-17k: máy móc NHẤN-GIỮ đã được DỰNG LẠI (ngay phía trên) — bản 2026-10-14c bị gỡ ở
+// lượt 2026-10-17h, nay có lại nhưng GỌN HƠN: chỉ còn `lpTenDown/Move/Up/Menu/Chay`, chạy trên
+// CHÍNH 2 ô TÊN (`.kh-name`/`.cell-tenkh`) chứ ⛔ không phải cả thẻ như bản cũ (bản cũ nhấn-giữ ở
+// đâu trên thẻ cũng copy, dễ đụng lúc định bấm ô ghi chú / nút thanh toán).
+// `lpCopyText()`/`lpCopy()`/`showToast()` giữ nguyên và vẫn là 3 mảnh dùng chung.
 /* “T9/2026” — NHÃN KỲ cho câu tin nhắn. Người dùng viết kỳ theo THÁNG CUỐI của kỳ (“T9/2026” =
    kỳ `1-9/2026`) nên phải cắt lấy số thứ HAI khi nhãn có dạng “A-B/YYYY”; nhãn “B/YYYY” thì lấy
    chính nó. Kỳ nhiều mốc (chuỗi có dấu phẩy) ⇒ `pickNearestMonth()` chọn mốc gần nhất TRƯỚC rồi
@@ -8668,8 +8819,8 @@ function lpPeriodLabel(thang) {
    ⚠️ Số hoá đơn lấy từ `_hdCountMap` (đếm trên **TOÀN BỘ `allData`**, y như vạch `multi-hd` và
    nhãn `(n_HĐ)` trên thẻ) — ⛔ ĐỪNG đếm trên tập đang lọc: vừa gõ tìm kiếm là KH 3 hoá đơn bị
    đếm thành 1 và câu đổi sang dạng có kỳ.
-   ⚠️ Có hậu tố ` đ` (người dùng viết vậy). Nhãn giữ nguyên chữ “Tiền điện”; ⟳ 2026-10-17b: nay là
-   **“tên KH: {tên}, mã KH: {mã}”** (bỏ “Quý” và cả “của” — xem mục “NHẤN GIỮ …” ở trên) — xem `lpCopyText()`.
+   ⚠️ Có hậu tố ` đ` (người dùng viết vậy). Nhãn giữ nguyên chữ “Tiền điện”; ⟳ 2026-10-17b/i: nay là
+   **“KH: {tên}, mã KH: {mã}”** (bỏ “Quý”, “của” và cả chữ “tên” — xem mục “CHẠM TÊN KH = COPY …”) — xem `lpCopyText()`.
    ⛔ ĐỪNG quay lại định dạng 3 dòng “Tên: / Mã KH: / Tiền điện:” (2026-10-14b) — yêu cầu này THAY THẾ.
    Đọc ĐÚNG thứ đang hiển thị trên phần tử (thẻ đã gộp nhiều hoá đơn thì số là TỔNG của khách),
    thiếu thì lấy từ bản ghi đang hiển thị trong `filtered`; kỳ lấy từ `thang_no` của bản ghi đó
@@ -8686,8 +8837,10 @@ function lpCopyText(el) {
     if (kEl) kyRaw = kEl.textContent.replace(/\([^)]*\)/g, '').trim();
   } else {
     const nEl = el.querySelector('.cell-tenkh'), tEl = el.querySelector('.tien-no');
-    // `title` = tên GỐC (ô tên có nhánh chữ viết tắt cho bảng điện thoại — đừng lấy nhánh đó)
-    if (nEl) ten = (nEl.getAttribute('title') || nEl.textContent).trim();
+    /* ⟳ 2026-10-17k: tên GỐC nay ở `data-ten` — ⛔ `title` ĐÃ BỊ BỎ khỏi ô tên của bảng (xem chú
+       thích ô tên trong `renderTable`): trên điện thoại title hiện bong bóng đúng lúc NHẤN-GIỮ và
+       cướp mất cử chỉ copy. */
+    if (nEl) ten = (nEl.getAttribute('data-ten') || nEl.textContent).trim();
     if (tEl) tien = tEl.textContent.trim();
   }
   if (ma) {
@@ -8732,10 +8885,12 @@ function lpCopyText(el) {
   const ai = ten || ma;   // không có tên thì gọi bằng mã KH, câu vẫn đủ nghĩa
   /* ⟳ 2026-10-17b: “của Quý KH {tên}” → “của KH: {tên}”.
      ⟳ 2026-10-17c (mẫu người dùng gửi: “Tiền điện T9/2026 tên KH: Văn Vũ, mã KH: PB15020002335 là
-     594.676 đ”): BỎ HẲN chữ “của” ⇒ **“tên KH: {tên}”**; vế “, mã KH: {mã}” GIỮ NGUYÊN như lượt b.
+     594.676 đ”): BỎ HẲN chữ “của”; vế “, mã KH: {mã}” GIỮ NGUYÊN như lượt b.
+     ⟳ 2026-10-17i (mẫu: “Tiền điện T8/2025 **KH:** Lê Thị Võ, mã KH: PB15020079378 là 4.418.600 đ”):
+     BỎ chữ “tên” ⇒ **“KH: {tên}”** — nhãn ngắn đúng như người dùng viết.
      Dấu hai chấm đặt NGAY SAU nhãn (không cách trước) ⇒ câu vẫn đọc được khi thiếu tên/mã;
-     ⛔ đừng thêm lại “của”, ⛔ cũng đừng viết “KH :”. */
-  return 'Tiền điện' + (slot ? ' ' + slot : '') + ' tên KH: ' + ai +
+     ⛔ đừng thêm lại “của”/“tên”, ⛔ cũng đừng viết “KH :”. */
+  return 'Tiền điện' + (slot ? ' ' + slot : '') + ' KH: ' + ai +
          (ma ? ', mã KH: ' + ma : '') + ' là ' + (tien || fmt(0)) + ' đ';
 }
 // Hộp “Đã copy …” — MỘT hộp dùng chung, tự dựng khi cần; hẹn giờ cũ bị huỷ nên hai lần copy
@@ -8797,13 +8952,6 @@ function lpShowCopyBox(txt) {
   }
   const ta = ov.querySelector('.lpcb-ta');
   ta.value = txt;
-  /* ⛔ PHẢI GỠ CỜ CHẶN CLICK TRƯỚC KHI MỞ HỘP: cờ `_lpFired` (đặt ngay sau lượt copy vừa rồi)
-     nuốt **cú `click` ĐẦU TIÊN** — mà cú đầu tiên đó chính là cú người dùng bấm nút “Đóng”/
-     chạm nền ⇒ hộp không tắt ở lần chạm đầu (nhìn như app bị đơ). Đo thật: bấm nút “Đóng”
-     ngay sau khi hộp hiện ⇒ **không tắt** cho tới lần chạm thứ hai. Cờ đó chỉ cần cho các cú
-     chạm LÊN THẺ/HÀNG, mà hộp này đã phủ mờ cả trang rồi nên gỡ là đúng. */
-  _lpFired = false;
-  if (_lpFiredTimer) { clearTimeout(_lpFiredTimer); _lpFiredTimer = null; }
   ov.classList.add('on');
   setTimeout(function () { try { ta.focus(); ta.select(); } catch (e) {} }, 30);
 }
@@ -8825,97 +8973,9 @@ function lpCopy(el) {
     done(lpCopyFallback(txt));   // ⛔ Đừng im lặng: người dùng cần biết là dán ra sẽ không có gì.
   }
 }
-/* ── CỬ CHỈ NHẤN-GIỮ: GẮN Ở DOCUMENT PHA CAPTURE, **HAI ĐƯỜNG** ─────────────────────────────
-   ⛔ **VÌ SAO PHẢI CÓ ĐƯỜNG `touchstart` — ĐÂY LÀ NGUYÊN NHÂN CỦA “TÔI THẤY KHÔNG CÒN CHẾ ĐỘ
-   ĐÓ” (người dùng báo lần 2):** bản gắn-chỉ-`pointerdown` KHÔNG chạy trên máy **không có
-   `PointerEvent`** (iOS 12 trở xuống, vài webview trong app trên máy cũ) — không sự kiện nào tới
-   tay ta ⇒ nhấn giữ **im lặng không copy**, trong khi **mọi thứ khác vẫn chạy bình thường** (tìm
-   kiếm, lọc, tấm thanh toán, nút QR…) nên rất dễ tưỡng là tính năng đã bị gỡ.
-   Nay: máy CÓ `PointerEvent` ⇒ đường pointer · máy KHÔNG có ⇒ đường `touchstart/touchmove/
-   touchend/touchcancel`. ⛔ CHỈ gắn MỘT đường — gắn cả hai là một cú chạm chạy hai timer ⇒ copy
-   hai lần + hai hộp thoại.
-   ⚠️ Gắn ở `document` pha CAPTURE: thẻ và hàng được DỰNG LẠI mỗi lần render nên gắn trực tiếp
-   là mất sau lần lọc kế tiếp. */
-let _lpTrack = '';
-/* Nhịp cứu khi trình duyệt cướp cử chỉ — xem `lpCancelRescue` (đã hạ xuống 250ms). */
-function lpBegin(el, x, y) {
-  _lpEl = el; _lpX = x; _lpY = y; _lpStart = Date.now();
-  _lpTimer = setTimeout(() => {
-    _lpTimer = null;
-    lpMarkFired();
-    lpCopy(el);
-  }, LP_COPY_MS);
-}
-// Xê dịch quá `LP_SLOP` = người dùng đang CUỘN ⇒ huỷ (điện thoại vẫn cuộn được bình thường).
-function lpMoveTo(x, y) {
-  if (!_lpTimer || !_lpEl) return;
-  if (Math.abs(x - _lpX) > LP_SLOP || Math.abs(y - _lpY) > LP_SLOP) lpStop();
-}
-/* ⛔ `_lpFired` PHẢI TỰ GỠ THEO HẸN GIỜ — bản cũ chỉ gỡ khi cú `click` kế tiếp chạy tới, mà trên
-   ĐIỆN THOẠI nhấn giữ thường **KHÔNG sinh ra cú `click` nào** (trình duyệt tự nuốt) ⇒ cờ nằm lại
-   MÃI và **cú chạm kế tiếp của người dùng bị nuốt** (cảm giác “app không ăn chạm nữa”).
-   `LP_FIRED_MS` đủ dài để bắt cú click lúc NHẢ tay sau khi copy, đủ ngắn để không nuốt cú chạm sau. */
-const LP_FIRED_MS = 700;
-let _lpFiredTimer = null;
-function lpMarkFired() {
-  _lpFired = true;
-  if (_lpFiredTimer) clearTimeout(_lpFiredTimer);
-  _lpFiredTimer = setTimeout(() => { _lpFired = false; _lpFiredTimer = null; }, LP_FIRED_MS);
-}
-// Trình duyệt cướp cử chỉ giữa chừng: còn “đang giữ” + đã giữ đủ lâu ⇒ cứu, xem `LP_CANCEL_GRACE`.
-function lpCancelRescue() {
-  if (!_lpTimer || !_lpEl || _lpFired || !_lpStart) return;   // đã nhả / đã đi xa / đã copy rồi
-  if (Date.now() - _lpStart < LP_CANCEL_GRACE) return;        // mới chạm đã bị cướp ⇒ đúng là huỷ
-  lpMarkFired();
-  lpCopy(_lpEl);                                              // `_lpFired` cũng chặn cú `click` kế tiếp
-}
-// Đường CHUỘT / CẢM ỨNG HIỆN ĐẠI.
-function lpAttachPointer() {
-  document.addEventListener('pointerdown', e => {
-    _lpEl = null; lpStop(); _lpFired = false;
-    if (e.button != null && e.button !== 0) return;   // chỉ chuột trái / chạm
-    const el = lpTarget(e);
-    if (el) lpBegin(el, e.clientX, e.clientY);
-  }, true);
-  document.addEventListener('pointermove', e => lpMoveTo(e.clientX, e.clientY), true);
-  document.addEventListener('pointerup', () => lpStop(), true);
-  document.addEventListener('pointercancel', () => { lpCancelRescue(); lpStop(); _lpEl = null; }, true);
-}
-// Đường CẢM ỨNG cho máy KHÔNG có `PointerEvent` (xem khối chú thích ở đầu mục).
-function lpAttachTouch() {
-  document.addEventListener('touchstart', e => {
-    _lpEl = null; lpStop(); _lpFired = false;
-    // Hai ngón trở lên = phóng to / cuộn hai ngón ⇒ ⛔ đừng copy.
-    if (!e.touches || e.touches.length !== 1) return;
-    const el = lpTarget(e);
-    if (el) lpBegin(el, e.touches[0].clientX, e.touches[0].clientY);
-  }, true);
-  document.addEventListener('touchmove', e => {
-    if (!e.touches || !e.touches.length) return;
-    lpMoveTo(e.touches[0].clientX, e.touches[0].clientY);
-  }, true);
-  document.addEventListener('touchend', () => lpStop(), true);
-  // iOS hay bắn `touchcancel` khi hệ điều hành nhận ra cử chỉ nhấn-giữ ⇒ cứu như `pointercancel`.
-  document.addEventListener('touchcancel', () => { lpCancelRescue(); lpStop(); _lpEl = null; }, true);
-}
-// Chọn ĐÚNG MỘT đường rồi gắn các listener CHUNG cho cả hai.
-function lpAttach() {
-  if ('onpointerdown' in window) { _lpTrack = 'pointer'; lpAttachPointer(); }
-  else { _lpTrack = 'touch'; lpAttachTouch(); }
-  lpAttach.attached = true;
-  // Cú `click` đầu tiên ngay sau khi copy bị chặn (chỉ MỘT lần) — xem chú thích (2) ở trên.
-  document.addEventListener('click', e => {
-    if (!_lpFired) return;
-    _lpFired = false;
-    if (_lpFiredTimer) { clearTimeout(_lpFiredTimer); _lpFiredTimer = null; }
-    e.stopPropagation();
-    if (e.preventDefault) e.preventDefault();
-  }, true);
-  // Menu ngữ cảnh của hệ điều hành: chặn khi ĐANG giữ trên thẻ/hàng (chuột phải không đặt `_lpEl`
-  // nên menu chuột phải bình thường vẫn dùng được).
-  document.addEventListener('contextmenu', e => { if (_lpEl) e.preventDefault(); }, true);
-}
-lpAttach();
+/* ⟳ 2026-10-17k: khối CỬ CHỈ NHẤN-GIỮ nay nằm ở mục “NHẤN-GIỮ 0,5 GIÂY TRÊN TÊN KH” (hàm
+   `lpTenDown/Move/Up/Menu/Chay` + 6 listener ở pha capture, gắn 1 lần lúc nạp script) — chỗ này
+   chỉ nhắc lại để ⛔ KHÔNG dựng thêm bản thứ hai: mọi cử chỉ copy chỉ được có MỘT nguồn. */
 
 function goPage(p) {
   const total = Math.ceil(filtered.length/PAGE_SIZE);
@@ -8955,17 +9015,20 @@ function getHighlightedIds() {
    (`.table-view tbody tr`) — cùng ghi vào `qlno_highlighted` nên “Chú ý” ở tab lọc vẫn
    đếm chung một danh sách.
 
-   ⛔ ĐÃ GỠ HẲN lớp uỷ nhiệm nhấn-giữ trước đây: các listener `pointerdown`/`pointermove`/
-   `pointerup`/`pointercancel` + listener chặn `click` ở pha capture, cùng các biến
-   `LP_MS`/`LP_SLOP`/`_lpTimer`/`_lpEl`/`_lpX`/`_lpY`/`_lpFired`/`_lpCancel`.
+   ⚠️ CÁC LỚP NHẤN-GIỮ TỪNG BỊ GỠ (lượt 2026-10-17h) NAY ĐÃ QUAY LẠI — nhưng CHỈ MỘT lớp, ở mục
+   “NHẤN-GIỮ 0,5 GIÂY TRÊN TÊN KH” (`lpTenDown/Move/Up/Menu/Chay`, `LP_TEN_MS`/`LP_TEN_SLOP`,
+   `_lpT/_lpEl/_lpX/_lpY/_lpFired/_lpGuard`), và nó CHỈ ăn trên 2 ô TÊN (`.kh-name`/`.cell-tenkh`).
+   ⛔ Nó KHÔNG liên quan tới việc ĐÁNH DẤU: đánh dấu vẫn là `ondblclick="toggleOrange(...)"` (dưới
+   đây), ⛔ đừng gộp hai thứ lại.
    Nay thao tác đánh dấu là `ondblclick="toggleOrange(event, this)"` gắn TRỰC TIẾP trong
    MẪU của thẻ card (`.kh-card`) và hàng bảng (`.table-view tbody tr`) — hai mẫu đó được
    DỰNG LẠI mỗi lần render nên handler tự theo bản mới; ⛔ KHÔNG cần uỷ nhiệm lại ở document.
 
    ⚠️ Ô ghi chú (`.kh-ghichu-input` / `.ghi-chu-table`) vẫn giữ `ondblclick="event.stopPropagation()"`
    ⇒ NHẤN 2 LẦN TRONG Ô GHI CHÚ không đánh dấu thẻ/hàng (đúng ý).
-   ⛔ Muốn QUAY LẠI nhấn-giữ: phải DỰNG LẠI ĐỦ cả lớp uỷ nhiệm (không chỉ đổi tên hàm) —
-   xem lịch sử ở run doc (`2026-10-03c`). */
+   ⛔ Muốn QUAY LẠI cách cũ “nhấn-giữ ở ĐÂU TRÊN THẺ cũng copy”: phải dựng lại đủ lớp uỷ nhiệm
+   theo thẻ (không chỉ đổi tên hàm) — xem lịch sử ở run doc (`2026-10-03c`), và nhớ vì sao lượt
+   2026-10-17k CỐ Ý thu hẹp vào 2 ô tên (đụng ô ghi chú / nút thanh toán thì rất dễ copy oan). */
 
 /* Bật/tắt dấu CAM cho một thẻ card HOẶC một hàng bảng. */
 function toggleMark(el) {
