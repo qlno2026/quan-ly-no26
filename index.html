@@ -677,7 +677,12 @@ body.light-mode {
          (ngưỡng 3:1 của WCAG 1.4.11)
      ⛔ Đừng hạ nền thêm nữa mà không đo lại hai chỗ đó; đừng gỡ viền `--light-edge` + bóng
      đổ của thẻ (chúng mới là thứ tách thẻ khỏi nền trang, vì chênh nền chỉ còn 1,05:1). */
-  --light-surface: #f1f5f9;
+  --light-surface: #f7f9fc;   /* ⟳ 2026-10-17a: `#f1f5f9` → **`#f7f9fc`** — mức “Chuẩn” SÁNG LÊN một nấc
+     (yêu cầu người dùng: “màu nền ở mức rất dịu, dịu, chuẩn cho màu sáng hơn”). Nền SÁNG HƠN ⇒ mọi
+     tương phản chữ trên nó CHỈ TĂNG, nên KHÔNG phải đo lại hai ngưỡng sát biên ở chú thích trên.
+     ⚠️ Vì “Chuẩn” sáng lên nên nấc “Chuẩn” nay GẦN mức “Sáng” hơn (thẻ `#eaecf0` so với `#f0f3f6`)
+     — muốn thang đều trở lại thì phải nâng CẢ “Sáng”/“Rất sáng”, ⛔ đừng tự làm: đã có yêu cầu
+     trước đó “nền thẻ ở chế độ sáng đừng cho màu sáng quá” ⇒ HỎI TRƯỚC. */
   /* ➕ NỀN THẺ KHÁCH HÀNG Ở CHẾ ĐỘ SÁNG = ĐÚNG NỀN CÁC TAB/CONTROL — yêu cầu người dùng:
      *“tôi muốn màu nền thẻ card light mode đồng bộ màu với nền các tab”*.
      Đây là bản ĐỐI XỨNG của `--dk-card: var(--ctl-solid)` (chế độ tối — xem mục “🧩 NỀN THẺ =
@@ -704,7 +709,9 @@ body.light-mode {
      cũng xám theo; muốn CHỈ thẻ đổi thì phải tách bảng sang token riêng (hỏi trước).
      ⚠️ HỆ QUẢ ĐÃ BÙ: `.kh-name` light `#2563eb` → **`#1d4ed8`** (chữ trên nền mới vẫn > AA) và
      `--multi-hd` mức “Dịu” `#059669` → **`#047857`** (vạch “≥2 HĐ” trên nền mới vẫn > 3:1). */
-  --light-card: #e7e9ed;
+  --light-card: #eaecf0;   /* ⟳ 2026-10-17a: `#e7e9ed` → **`#eaecf0`** (mức “Chuẩn” sáng hơn một nấc, cùng
+     lượt với `--light-surface` ngay trên). ⚠️ Vẫn KHÔNG trùng `--ctl-light-bg` `#eff1f5` — ⛔ đừng “cho
+     gọn” bằng cách trả về token control, làm thế là thanh control xám theo thẻ (xem chú thích trên). */
 
    /* Vạch "KH có ≥ 2 hoá đơn" trên thẻ: nền thẻ light NAY LÀ `#f1f5f9` (token
       `--light-surface`) — KHÔNG còn trắng — nên phải dùng tông ĐẬM hơn bản dark
@@ -1871,8 +1878,13 @@ body.light-mode.force-desktop .view-btn { background: #bfdbfe; border-color: #25
       header (200); **DƯỚI** `.modal-overlay` (300) để không bao giờ đè modal chi tiết khách
       hàng. Nhãn nổi (`.ui-tip`) đã được nâng lên **261** cùng lượt này (xem chú thích
       `.ui-tip`) nên control trong tấm vẫn đọc được nhãn nổi, mà modal vẫn ở trên cùng.
-   Bố cục: tấm trượt từ ĐÁY (mobile-first), rộng ≤ 460px, cao ≤ 72vh — cố ý chừa 28vh phía
-   trên để khi đổi cỡ chữ / mức nền còn NHÌN THẤY bảng ngay phía sau mà so sánh.
+   Bố cục: tấm trượt từ ĐÁY (mobile-first), rộng ≤ 460px, cao ≤ 92vh.
+   ⟳ 2026-10-17e (yêu cầu: “cho bảng này cao hơn”): `72vh` → **`92vh`**. Vì sao phải nâng: nội
+   dung tấm đo được **578px** ở MỌI mức cỡ chữ, nên trần `72vh` cắt mất ~154px ngay trên khung
+   thử 387×589 (ảnh người dùng gửi có thanh cuộn bên phải = đúng chỗ bị cắt). `92vh` chỉ cần
+   khung cao ≥ 629px là hiện TRỌN tấm (điện thoại & laptop đều vượt mốc này).
+   Vẫn cố ý chừa ≥ 8vh phía trên để khi đổi cỡ chữ / mức nền còn NHÌN THẤY bảng ngay phía sau mà
+   so sánh — ⛔ đừng đẩy lên `100vh`: mất luôn phần bảng phía sau (lý do cũ của mốc 72vh).
    ⚠️ Hai kiểu hàng: `.cfg-row` (nhãn trái + control phải) và `.cfg-row-col` (nhãn trên,
    control dưới — dùng cho 2 tab sắp xếp, cụm Xuất/In/Sao lưu và nút chọn tệp vì chúng cần
    cả bề rộng). ⛔ Đừng gộp hai kiểu làm một: 2 tab sắp xếp cần ≥118px, nhét vào cột phải
@@ -1883,7 +1895,7 @@ body.light-mode.force-desktop .view-btn { background: #bfdbfe; border-color: #25
   position: fixed; z-index: 260;
   left: 50%; bottom: 0; transform: translateX(-50%);
   width: min(460px, 100%);
-  max-height: 72vh; overflow-y: auto;
+  max-height: 92vh; overflow-y: auto;   /* ⟳ 2026-10-17e: 72vh → 92vh (đo: nội dung 578px, xem chú thích ngay trên) */
   display: none;
   background: var(--navy-mid);
   border: 1px solid var(--border);
@@ -2277,7 +2289,8 @@ body.light-mode .search-clear:hover { background: rgba(239,68,68,0.2); color: #d
 body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
 
 /* ══ “ĐÃ COPY” (`.toast`) — phản hồi cho NHẤN GIỮ thẻ/hàng (copy CÂU NHẮC NỢ 1 dòng
-   `Tiền điện {kỳ} của Quý KH {tên}, mã KH {mã} là {số tiền} đ` — xem `lpCopyText()`).
+   `Tiền điện {kỳ} tên KH: {tên}, mã KH: {mã} là {số tiền} đ` — xem `lpCopyText()`).
+   ⚠️ KH **≥ 2 hoá đơn** thì `{kỳ}` là **danh sách kỳ** (`T8/2026, T9/2026`, xếp cũ → mới) — ⟳ 2026-10-17d.
    Dùng MỘT hộp duy nhất (`#toast`), JS dựng khi cần — xem `showToast()`.
    ⚠️ `z-index: 4000` phải CAO HƠN `.modal-overlay` (300) để hộp này còn thấy khi tấm “Chi tiết”
    đang mở, nhưng THẤP hơn lớp chờ 9999 lúc nạp tệp.
@@ -2636,7 +2649,7 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
    Nếu muốn thẻ XÁM RÕ hơn nữa thì phải hạ CẢ THANG light (gồm “Chuẩn” — tức tách khỏi control).
    ℹ️ Vẫn giữ `--light-surface: #ffffff` (bảng) — yêu cầu chỉ nói về THẺ. */
 body.light-mode[data-surface="sang"] { --light-surface: #ffffff; --light-card: #f0f3f6; --row1-bg: #c9d6e5; }   /* ⟳ 2026-10-03q: thẻ #f2f5f9 → #eaedf1 · ⟳ 2026-10-03v: thẻ #eaedf1 → #f0f3f6 · ⟳ 2026-10-03z: BỎ `--danhso-bg` theo mức — light dùng chung alpha với dark */
-body.light-mode[data-surface="diu"]  { --light-surface: #e3e9f0; --light-card: #d5dbe3; --multi-hd: #047857; --row1-bg: #b9c5d4; --text-dim: #4f5b6b; }   /* ⟳ 2026-10-03q: thẻ #e3e9f0 → #dbe1e8; vạch #059669 → #047857 · ⟳ 2026-10-03v: thẻ #dbe1e8 → #d5dbe3 + `--text-dim` #5b6777 → #4f5b6b · ⟳ 2026-10-03z: BỎ `--danhso-bg` theo mức — light dùng chung alpha với dark */
+body.light-mode[data-surface="diu"]  { --light-surface: #edf2f8; --light-card: #dee3ea; /* ⟳ 2026-10-17a: nền `#e3e9f0` → **`#edf2f8`** · thẻ `#d5dbe3` → **`#dee3ea`** — mức “Dịu” SÁNG LÊN một nấc theo yêu cầu “màu nền ở mức rất dịu, dịu, chuẩn cho màu sáng hơn”. Nền sáng hơn ⇒ hai chỗ bù cho nền tối (`--multi-hd`, `--text-dim` của mức này) CHỈ DƯ ngưỡng thêm, ⛔ giữ nguyên đừng gỡ. */ --multi-hd: #047857; --row1-bg: #b9c5d4; --text-dim: #4f5b6b; }   /* ⟳ 2026-10-03q: thẻ #e3e9f0 → #dbe1e8; vạch #059669 → #047857 · ⟳ 2026-10-03v: thẻ #dbe1e8 → #d5dbe3 + `--text-dim` #5b6777 → #4f5b6b · ⟳ 2026-10-03z: BỎ `--danhso-bg` theo mức — light dùng chung alpha với dark */
 body.light-mode[data-surface="diu"] .kh-name { color: #1d4ed8; }
 /* ⟳ 2026-10-03ag: 3 mức → **5 MỨC** (yêu cầu “thêm mức rất dịu, rất sáng”). Hai mức mới là
    hai ĐẦU của thang; “Chuẩn” (giữa) vẫn rơi về token gốc ⇒ hai rule dưới ghi 2 mức còn lại.
@@ -2647,7 +2660,7 @@ body.light-mode[data-surface="diu"] .kh-name { color: #1d4ed8; }
      · vạch “≥2 HĐ” `#047857` chỉ còn **2,88 ✗** ⇒ dùng `#036647` = **3,13 ✓** (ngưỡng 3:1)
    ⚠️ `--text-dim` `#46525f` trên `#c8d0da` = **6,60:1** ✓ (đậm hơn mức “Dịu” — nhất quán). */
 body.light-mode[data-surface="ratsang"] { --light-surface: #ffffff; --light-card: #f8fafc; --row1-bg: #d3deeb; }   /* nửa bước từ “Chuẩn” về “Sáng”: thẻ #f8fafc (vẫn đọc ra khỏi nền trang #f8fafc nhờ viền+bóng) */
-body.light-mode[data-surface="ratdiu"]  { --light-surface: #dae1ea; --light-card: #c8d0da; --multi-hd: #036647; --row1-bg: #adbaca; --text-dim: #46525f; }
+body.light-mode[data-surface="ratdiu"]  { --light-surface: #e6ecf3; --light-card: #d2d9e2; /* ⟳ 2026-10-17a: nền `#dae1ea` → **`#e6ecf3`** · thẻ `#c8d0da` → **`#d2d9e2`** — mức “Rất dịu” SÁNG LÊN một nấc (cùng yêu cầu như mức “Dịu”). ⚠️ Vì nền nay SÁNG HƠN nên hai màu đã bù cho nền tối nhất (`#1e40af` cho `.kh-name`, `#036647` cho vạch “≥2 HĐ”) KHÔNG còn cần thiết nhưng vẫn DƯ ngưỡng ⇒ giữ nguyên cho khỏi lệch giữa các lượt, ⛔ đừng gỡ. */ --multi-hd: #036647; --row1-bg: #adbaca; --text-dim: #46525f; }
 body.light-mode[data-surface="ratdiu"] .kh-name { color: #1e40af; }   /* navy-800 — thay `#1d4ed8` (chỉ 4,28 trên thẻ tối nhất) */
 /* Mức “Rất dịu”: thẻ tối nhất nên SỐ TIỀN trên thẻ cũng phải đậm lại — `.kh-tien` `#b91c1c`
    trên `#c8d0da` chỉ còn **4,16 ✗** ⇒ dùng `#991b1b` = **5,37 ✓** (đúng mức red-800 đã có sẵn
@@ -8559,7 +8572,15 @@ function copyToClip(text, el) {
 /* ══ NHẤN GIỮ (≥550ms) TRÊN THẺ CARD / HÀNG BẢNG = COPY CÂU TIN NHẮN NHẮC NỢ ══════════════════
    Ba lần yêu cầu, bản CHỐT là bản mới nhất (2026-10-14c): “đổi nội dung copy ví dụ là, Tiền điện
    T9/2026 của Quý KH Ngô Hồng Hà, mã KH PB15020002311 là 889.110 đ” ⇒ MỘT CÂU DUY NHẤT:
-     `Tiền điện {kỳ} của Quý KH {tên}, mã KH {mã} là {số tiền} đ`
+     `Tiền điện {kỳ} tên KH: {tên}, mã KH: {mã} là {số tiền} đ`
+   ⟳ 2026-10-17b: người dùng gửi lại mẫu **“Tiền điện T9/2026 của KH: Văn Vũ, mã KH: PB15020002335 là
+   594.676 đ”** ⇒ đổi “của Quý KH {tên}” → “của KH: {tên}” và “, mã KH {mã}” → “, mã KH: {mã}” (dấu
+   hai chấm sau CẢ HAI nhãn). Chỉ đổi NHÃN — kỳ/số tiền/cách đọc từ thẻ giữ nguyên.
+   ⟳ 2026-10-17c: mẫu mới **“Tiền điện T9/2026 tên KH: Văn Vũ, mã KH: PB15020002335 là 594.676 đ”** ⇒
+   bỏ hẳn chữ “của”, còn **“tên KH: {tên}”**; dấu hai chấm vẫn sau HAI nhãn.
+   ⟳ 2026-10-17d: mẫu cho KH **≥ 2 hoá đơn**: **“Tiền điện T8/2026, T9/2026 tên KH: Văn Vũ, mã KH:
+   PB15020002335 là 694.676 đ”** ⇒ `{kỳ}` của nhánh nhiều hoá đơn nay là **DANH SÁCH KỲ** (“,”),
+   ⛔ không còn “n tháng” (2026-10-14f) — xem ghi chú tại `lpCopyText()`.
    ⛔ Hai định dạng trước đã bị THAY THẾ, đừng khôi phục: “Tên, Mã KH, Tiền nợ” (2026-10-14a, ngăn
    bằng dấu phẩy) và 3 dòng “Tên: / Mã KH: / Tiền điện:” (2026-10-14b).
    ⚠️ Đây là lần thứ HAI “nhấn giữ” xuất hiện ở file này: bản 2026-10-03 đã GỠ HẲN lớp nhấn-giữ
@@ -8616,18 +8637,19 @@ function lpPeriodLabel(thang) {
 /* Chuỗi copy: MỘT CÂU TIN NHẮN theo đúng ví dụ người dùng chốt (2026-10-14c):
    “Tiền điện T9/2026 của Quý KH Ngô Hồng Hà, mã KH PB15020002311 là 889.110 đ”
    ⇒ khuôn: `Tiền điện {KỲ} của Quý KH {tên}, mã KH {mã} là {số tiền} đ`
-   ⭐ **{KỲ} ĐỔI THEO SỐ HOÁ ĐƠN (yêu cầu 2026-10-14e): “nếu có nhiều kỳ thì chỉ hiển thị số HĐ và
-   tiền tổng”** ⇒ 1 hoá đơn: `{KỲ}` = `T{m}/{yyyy}` (như ví dụ) · **≥ 2 hoá đơn: `{KỲ}` = `n tháng`**
-   và câu KHÔNG nêu tên kỳ nào (khách nhiều kỳ không nên bị gán vào một kỳ), tiền là TỔNG mọi hoá đơn.
-   ⟳ **CHỮ ĐÃ ĐỔI `n HĐ` → `n tháng` (2026-10-14f, yêu cầu: “chỗ 2 HĐ đổi thành 2 tháng”, ví dụ
-   `PB15020069149`)** — ⛔ đừng trả lại “HĐ” cho “khớp nhãn trên thẻ”: câu này đi cho KHÁCH đọc,
-   nhãn `(n_HĐ)` trên thẻ là chữ nội bộ (khác mục đích, đừng gộp lại cho “nhất quán”).
-   Đo: `PB15020069149` ⇒ “*Tiền điện **2 tháng** của Quý KH Phún Tố Nga ( Mỹ Cảnh 1), mã KH
-   PB15020069149 là 30.637 đ*” · `PB15020005360` (3 hoá đơn) ⇒ “*Tiền điện **3 tháng** … 24.641.821 đ*”.
+   ⭐ **{KỲ} ĐỔI THEO SỐ HOÁ ĐƠN (yêu cầu 2026-10-14e)** ⇒ 1 hoá đơn: `{KỲ}` = `T{m}/{yyyy}`
+   (như ví dụ) · **≥ 2 hoá đơn: `{KỲ}` = DANH SÁCH KỲ ghép bằng “, ”, xếp cũ → mới**
+   ⟳ **2026-10-17d** (mẫu người dùng: “Tiền điện T8/2026, T9/2026 tên KH: Văn Vũ, mã KH:
+   PB15020002335 là 694.676 đ”) — TRƯỚC đó là chữ `n tháng` (2026-10-14f: “chỗ 2 HĐ đổi thành
+   2 tháng”, ví dụ `PB15020069149`). Tiền vẫn là TỔNG mọi hoá đơn của khách.
+   ⛔ ĐỪNG quay lại `n HĐ` (nhãn `(n_HĐ)` trên thẻ là chữ NỘI BỘ, khác mục đích) và ⛔ đừng bỏ
+   việc liệt kê kỳ để “cho gọn”: danh sách kỳ là đòi hỏi mới nhất, và nó cũng cho khách biết
+   mình nợ những kỳ nào (trước đây khách nhiều kỳ không được nêu tên kỳ nào).
    ⚠️ Số hoá đơn lấy từ `_hdCountMap` (đếm trên **TOÀN BỘ `allData`**, y như vạch `multi-hd` và
    nhãn `(n_HĐ)` trên thẻ) — ⛔ ĐỪNG đếm trên tập đang lọc: vừa gõ tìm kiếm là KH 3 hoá đơn bị
    đếm thành 1 và câu đổi sang dạng có kỳ.
-   ⚠️ Có hậu tố ` đ` (người dùng viết vậy). Nhãn giữ nguyên chữ “Tiền điện” và “Quý KH”.
+   ⚠️ Có hậu tố ` đ` (người dùng viết vậy). Nhãn giữ nguyên chữ “Tiền điện”; ⟳ 2026-10-17b: nay là
+   **“tên KH: {tên}, mã KH: {mã}”** (bỏ “Quý” và cả “của” — xem mục “NHẤN GIỮ …” ở trên) — xem `lpCopyText()`.
    ⛔ ĐỪNG quay lại định dạng 3 dòng “Tên: / Mã KH: / Tiền điện:” (2026-10-14b) — yêu cầu này THAY THẾ.
    Đọc ĐÚNG thứ đang hiển thị trên phần tử (thẻ đã gộp nhiều hoá đơn thì số là TỔNG của khách),
    thiếu thì lấy từ bản ghi đang hiển thị trong `filtered`; kỳ lấy từ `thang_no` của bản ghi đó
@@ -8660,10 +8682,41 @@ function lpCopyText(el) {
   /* Số hoá đơn của KH: ưu tiên `_hdCountMap` (đếm trên toàn bộ dữ liệu, dựng trong `buildOldFlags`),
      không có thì đếm tại chỗ theo mã KH. `|| 1` để dữ liệu thiếu cũng ra dạng 1 hoá đơn (còn kỳ). */
   const nHd = ma ? (_hdCountMap.get(ma) || allData.filter(x => (x.ma_khach_hang || '') === ma).length || 1) : 1;
-  const slot = nHd >= 2 ? (nHd + ' tháng') : ky;   // ≥ 2 hoá đơn ⇒ thay kỳ bằng SỐ THÁNG (kèm tiền TỔNG)
+  /* ⟳ 2026-10-17d (mẫu người dùng gửi: “Tiền điện T8/2026, T9/2026 tên KH: Văn Vũ, mã KH:
+     PB15020002335 là 694.676 đ”): KH ≥ 2 hoá đơn nay LIỆT KÊ TỪNG KỲ, GHÉP BẰNG “, ” — thay hẳn
+     chữ “n tháng” (lượt 2026-10-14f). Kỳ gom từ MỌI bản ghi cùng mã trong `allData` (⛔ không dùng
+     tập đang lọc — vừa gõ tìm kiếm là mất kỳ), mỗi kỳ đổi sang nhãn ngắn `T{m}/{yyyy}` bằng CHÍNH
+     `lpPeriodLabel()`, bỏ trùng theo khoá kỳ rồi xếp CŨ → MỚI (ví dụ trên: “T8/2026, T9/2026”).
+     ⛔ Đừng xếp theo thứ tự gặp trong `allData` (tệp xếp kiểu gì là kỳ lộn xộn) và ⛔ đừng so khoá
+     `periodKeyOf` bằng CHUỖI: khoá dạng '2026-9-1' nên chuỗi xếp '2026-10-1' TRƯỚC tháng 9 — phải
+     so bằng số (`y*10000 + end*100 + start`). Dữ liệu thiếu, không đọc ra kỳ nào ⇒ đành quay về
+     lối cũ “n tháng” cho câu khỏi trống. */
+  const kyList = (() => {
+    const seen = new Map();
+    if (ma) allData.forEach(x => {
+      if ((x.ma_khach_hang || '') !== ma) return;
+      periodLabelsOf(x).forEach(l => {
+        const lab = lpPeriodLabel(l);
+        const k = periodKeyOf(l);
+        // ⛔ Chỉ nhận kỳ ĐỌC ĐƯỢC (`k` rỗng = chuỗi lạ): thà quay về “n tháng” còn hơn gửi cho
+        // khách một câu có kỳ rác kiểu “Tiền điện abc, xyz …”.
+        if (!lab || !k) return;
+        if (!seen.has(k)) seen.set(k, lab);
+      });
+    });
+    const num = k => { const p = k.split('-').map(Number); return (p[0] || 0) * 10000 + (p[1] || 0) * 100 + (p[2] || 0); };
+    return [...seen.entries()].sort((a, b) => num(a[0]) - num(b[0])).map(e => e[1]);
+  })();
+  // ≥ 2 hoá đơn ⇒ KỲ = danh sách kỳ của khách (số tiền vẫn là TỔNG mọi hoá đơn)
+  const slot = nHd >= 2 ? (kyList.length ? kyList.join(', ') : (nHd + ' tháng')) : ky;
   const ai = ten || ma;   // không có tên thì gọi bằng mã KH, câu vẫn đủ nghĩa
-  return 'Tiền điện' + (slot ? ' ' + slot : '') + ' của Quý KH ' + ai +
-         (ma ? ', mã KH ' + ma : '') + ' là ' + (tien || fmt(0)) + ' đ';
+  /* ⟳ 2026-10-17b: “của Quý KH {tên}” → “của KH: {tên}”.
+     ⟳ 2026-10-17c (mẫu người dùng gửi: “Tiền điện T9/2026 tên KH: Văn Vũ, mã KH: PB15020002335 là
+     594.676 đ”): BỎ HẲN chữ “của” ⇒ **“tên KH: {tên}”**; vế “, mã KH: {mã}” GIỮ NGUYÊN như lượt b.
+     Dấu hai chấm đặt NGAY SAU nhãn (không cách trước) ⇒ câu vẫn đọc được khi thiếu tên/mã;
+     ⛔ đừng thêm lại “của”, ⛔ cũng đừng viết “KH :”. */
+  return 'Tiền điện' + (slot ? ' ' + slot : '') + ' tên KH: ' + ai +
+         (ma ? ', mã KH: ' + ma : '') + ' là ' + (tien || fmt(0)) + ' đ';
 }
 // Hộp “Đã copy …” — MỘT hộp dùng chung, tự dựng khi cần; hẹn giờ cũ bị huỷ nên hai lần copy
 // liên tiếp không làm hộp tắt sớm.
