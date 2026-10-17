@@ -8394,7 +8394,7 @@ function renderCards(q='') {
         ${r.ma_sogcs && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}
         ${r.so_tbi ? `<span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}
         ${r.dia_chi ? `<div class="kh-addr-line" style="flex:0 0 100%;margin-top:5px"><svg class="addr-ico" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><use href="#i-pin"/></svg>${hi(trimDiaChi(r.dia_chi),q)}</div>` : ''}
-        ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}<!-- ➕ Viên ZALO (⟳ 2026-10-17j: TRẢ LẠI ICON bong bóng chat và để SÁT viên SĐT — yêu cầu “đổi chữ zalo thành icon tin nhắn và nằm gần sdt”). Chạm = mở chat Zalo với ĐÚNG số này (zalo.me/<số>), ở TAB MỚI (target=_blank) để không rời app đang xem danh sách nợ. onclick stopPropagation để cú chạm không lọt lên thẻ (nhấn 2 lần = đánh dấu cam). ⛔ KHÔNG đặt thuộc tính title ở đây (và ở viên mã KH): người dùng đã yêu cầu BỎ tooltip “Chạm: …” hiện trên màn hình; chỉ giữ aria-label cho trình đọc màn hình. Không có zHref (số dị dạng) thì không vẽ viên. ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->${zHref ? `<a class="kh-zalo" href="${esc(zHref)}" target="_blank" rel="noopener noreferrer" aria-label="Nhắn tin Zalo ${esc(phone)}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle"><use href="#i-zalo"/></svg></a>` : ''}${phone && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="copyMaKH(event,this);moAppEVNHCMC()" style="cursor:pointer"><svg class="ic" width="14" height="14" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-tag"/></svg>${hi(r.ma_khach_hang,q)}</span>` : ''}</span>` : ''}
+        ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}<!-- ➕ Viên ZALO (⟳ 2026-10-17j: TRẢ LẠI ICON bong bóng chat và để SÁT viên SĐT — yêu cầu “đổi chữ zalo thành icon tin nhắn và nằm gần sdt”). Chạm = mở chat Zalo với ĐÚNG số này (zalo.me/<số>), ở TAB MỚI (target=_blank) để không rời app đang xem danh sách nợ. onclick stopPropagation để cú chạm không lọt lên thẻ (nhấn 2 lần = đánh dấu cam). ⛔ KHÔNG đặt thuộc tính title ở đây (và ở viên mã KH): người dùng đã yêu cầu BỎ tooltip “Chạm: …” hiện trên màn hình; chỉ giữ aria-label cho trình đọc màn hình. Không có zHref (số dị dạng) thì không vẽ viên. ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->${zHref ? `<a class="kh-zalo" href="${esc(zHref)}" target="_blank" rel="noopener noreferrer" aria-label="Nhắn tin Zalo ${esc(phone)}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle"><use href="#i-zalo"/></svg></a>` : ''}${phone && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="copyMaKH(event,this)" style="cursor:pointer"><svg class="ic" width="14" height="14" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-tag"/></svg>${hi(r.ma_khach_hang,q)}</span>` : ''}</span>` : ''}
       </div>
       <div class="kh-ghichu-row">
         <svg class="ic" width="14" height="14" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><use href="#i-pencil"/></svg>
@@ -8461,7 +8461,7 @@ function renderTable(q='') {
     // (Bảng 2 DÒNG trên điện thoại không dùng thứ tự này — nó đặt ô theo `nth-child` ở CSS.)
     return `<tr data-ma="${esc(maKH)}" class="${isMarked ? 'highlighted' : (isPurple ? 'highlighted-purple' : '')}" ondblclick="toggleOrange(event, this)">
       <td style="color:var(--text-dim);font-size:12px;white-space:nowrap">${r.stt ? hi(r.stt,q) : (start+i+1)}</td>
-      <td><span class="ma-kh" onclick="copyMaKH(event, this);moAppEVNHCMC()" style="cursor:pointer">${hi(r.ma_khach_hang,q)}</span></td>
+      <td><span class="ma-kh" onclick="copyMaKH(event, this)" style="cursor:pointer">${hi(r.ma_khach_hang,q)}</span></td>
       <!-- HAI nhánh tên trong CÙNG một ô: span.ten-full cho BẢNG MÁY TÍNH (≥640px), span.ten-ngan
            cho bảng 3 hàng trên điện thoại. Bảng máy tính dùng CHUNG DOM với bảng 3 hàng nên nếu
            viết tắt thẳng vào ô thì bảng máy tính cũng đổi theo — tách nhánh là cách duy nhất giữ
@@ -8631,7 +8631,7 @@ function saoLuuDuLieu() {
   }
 }
 
-/* Chạm MỘT lần vào MÃ KH (thẻ `.kh-ma` và ô mã ở bảng `.ma-kh`) ⇒ COPY mã rồi MỞ APP EVNHCMC.
+/* Chạm MỘT lần vào MÃ KH (thẻ `.kh-ma` và ô mã ở bảng `.ma-kh`) ⇒ COPY mã (⟳ 2026-10-17l: CHỈ copy).
    ⛔ Chỉ stopPropagation trên 'click'. Thao tác đánh dấu nay là NHẤN 2 LẦN (`ondblclick`)
    gắn trực tiếp trên hàng/thẻ — xem mục “NHẤN 2 LẦN” cạnh `toggleMark()`.
    ⚠️ Nhấn 2 lần TRÊN Ô MÃ vẫn sẽ đánh dấu hàng (dblclick nổi từ ô mã lên hàng) — chấp nhận được.
@@ -8650,11 +8650,12 @@ function saoLuuDuLieu() {
      (1) `lpCopyFallback()` — `execCommand('copy')` chạy **ĐỒNG BỘ**, xong trước khi trang điều hướng;
      (2) không được ⇒ Clipboard API;
      (3) vẫn không được ⇒ mở hộp `lpShowCopyBox()` cho tự copy — ⛔ lúc này KHÔNG mở app (kẻo che hộp).
-   ⚠️ Mở app đặt SAU `LP_APP_MS` (800ms) để hộp “✓ Đã copy mã KH …” kịp hiện; 800ms vẫn nằm trong
-   “transient activation” (~5 giây) của Chrome nên `window.open` KHÔNG bị chặn popup (xem moAppEVNHCMC).
    ⚠️ Dấu ✓ tại chỗ nay chỉ NHÁY NỀN xanh — ⛔ KHÔNG thay `textContent` nữa: bản cũ thay chuỗi nên
-   làm MẤT icon 🏷 của viên mã KH trên thẻ và MẤT cả thẻ `<mark>` tô sáng từ khoá tìm kiếm. */
-const LP_APP_MS = 800;   // hoãn mở app EVNHCMC để người dùng kịp thấy hộp “✓ Đã copy”
+   làm MẤT icon 🏷 của viên mã KH trên thẻ và MẤT cả thẻ `<mark>` tô sáng từ khoá tìm kiếm.
+   ⟳ 2026-10-17l (yêu cầu người dùng: “tôi muốn chạm vô mã kh là copy, bỏ nhảy tới app evnhcmc”):
+   ĐÃ GỠ đường MỞ APP. Chạm viên mã KH / ô mã bảng nay CHỈ copy rồi báo hộp “✓ Đã copy mã KH …”,
+   ⛔ không `window.open` nữa ⇒ không rời trang đang xem danh sách nợ. Hằng số hoãn `LP_APP_MS` và
+   hàm `moAppEVNHCMC` đã XOÁ (xem ghi chú ở chỗ chúng từng nằm). */
 function copyMaKH(e, el) {
   e.stopPropagation();
   const txt = ((el && el.textContent) || '').trim();
@@ -8666,7 +8667,7 @@ function copyMaKH(e, el) {
     el.style.borderRadius = '4px';
     el._copyTimer = setTimeout(() => { el.style.background = bgCu; el._copyTimer = null; }, 1200);
   };
-  const xong = () => { nhay(); showToast('✓ Đã copy mã KH: ' + txt); setTimeout(moAppEVNHCMC, LP_APP_MS); };
+  const xong = () => { nhay(); showToast('✓ Đã copy mã KH: ' + txt); };   // 2026-10-17l: CHỈ copy, không mở app
   if (lpCopyFallback(txt)) { xong(); return; }                                   // (1) đồng bộ
   if (navigator.clipboard && navigator.clipboard.writeText) {                    // (2) bất đồng bộ
     navigator.clipboard.writeText(txt).then(xong).catch(() => lpShowCopyBox(txt));
@@ -8675,35 +8676,12 @@ function copyMaKH(e, el) {
   lpShowCopyBox(txt);                                                            // (3)
 }
 
-/* ➕ CHẠM MÃ KH ⇒ COPY mã RỒI MỞ APP “EVNHCMC” (yêu cầu người dùng 2026-10-17: “khi chọn mã kh tôi
-   muốn là chế độ copy và mở qua ứng dụng evnhcmc trên điện thoại”). Gọi từ HAI chỗ: viên mã KH trên
-   thẻ (`.kh-ma`) và ô mã KH ở bảng (`.ma-kh`) — cả hai đều gọi `copyMaKH(...)` rồi `moAppEVNHCMC()`.
-   ⚠️ App EVNHCMC KHÔNG có deep link tới một mã KH cụ thể, nên KHÔNG thể tự điền sẵn mã vào app —
-   vì vậy vẫn phải COPY mã vào clipboard trước (giữ nguyên hành vi cũ), người dùng dán vào mục
-   “Liên kết điểm dùng điện” của app.
-   · Android: mở thẳng app bằng link `intent://…package=com.evnhcmc.evnmobileapp…`; máy CHƯA cài
-     thì Chrome tự mở `S.browser_fallback_url` (trang CSKH) thay vì báo lỗi.
-   · iPhone: KHÔNG có cách mở app từ trang web (iOS chặn) ⇒ mở web CSKH `https://cskh.evnhcmc.vn/`.
-   · Máy tính (không nhận ra iPhone/Android): KHÔNG mở gì — giữ đúng hành vi “chạm = copy” như cũ,
-     tránh bật tab mới ngoài ý muốn mỗi lần copy mã.
-   ⟳ 2026-10-17k: nay được gọi QUA `setTimeout(…, LP_APP_MS = 800ms)` trong `copyMaKH()` — cố ý
-   hoãn để hộp “✓ Đã copy mã KH …” kịp hiện trước khi rời trang. 800ms vẫn nằm trong cửa sổ
-   “transient activation” (~5 giây) của Chrome nên `window.open` KHÔNG bị chặn popup.
-   ⛔ Đừng hoãn lâu hơn ~2–3 giây: quá cửa sổ đó là trình duyệt chặn. */
-const EVNHCMC_PKG = 'com.evnhcmc.evnmobileapp';
-const EVNHCMC_WEB = 'https://cskh.evnhcmc.vn/';
-function moAppEVNHCMC() {
-  const ua = navigator.userAgent || '';
-  let url = '';
-  if (/Android/i.test(ua)) {
-    url = 'intent://#Intent;package=' + EVNHCMC_PKG +
-          ';action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER' +
-          ';S.browser_fallback_url=' + encodeURIComponent(EVNHCMC_WEB) + ';end';
-  } else if (/iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1)) {
-    url = EVNHCMC_WEB;
-  }
-  if (url) window.open(url, '_blank', 'noopener');
-}
+/* ⛔ 2026-10-17l: ĐÃ XOÁ khối “CHẠM MÃ KH ⇒ COPY rồi MỞ APP EVNHCMC” (`EVNHCMC_PKG`,
+   `EVNHCMC_WEB`, `moAppEVNHCMC()`). Khối đó mở app khi chạm mã KH (Android: `intent://#Intent;
+   package=com.evnhcmc.evnmobileapp…` + `S.browser_fallback_url` = trang CSKH; iPhone: mở
+   `https://cskh.evnhcmc.vn/`). ⛔ KHÔNG dựng lại — yêu cầu người dùng 2026-10-17l: “tôi muốn
+   chạm vô mã kh là copy, bỏ nhảy tới app evnhcmc”. (App EVNHCMC vốn KHÔNG có deep link tới một
+   mã KH cụ thể nên mở app cũng không tự điền sẵn mã; nay chạm mã KH CHỈ copy — xem `copyMaKH`.) */
 
 /* ⛔ 2026-10-17k: `copyToClip()` đã bị XOÁ. Nó chỉ được `copyMaKH()` dùng và có 3 tật:
    (1) chỉ có Clipboard API, lỗi bị `.catch(()=>{})` nuốt im lặng ⇒ trên điện thoại “chạm mà
