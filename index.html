@@ -4093,7 +4093,9 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
 /* ⚠️ TỪ ĐÂY LÀ KHỐI “NỚI RUỘT”: chữ lớn hơn 1px và đệm cao hơn hẳn Ở MỌI HÀNG — đây mới là
    thứ làm tấm trông cao/to thật (xem bài học ở khối chiều cao ngay trên). Sửa đệm ở một hàng
    mà quên hàng khác là tấm lại lệch khoảng trống. */
-.pay-hd { padding: 16px 16px 8px; font-size: 18px; font-weight: 700; color: var(--text); font-family: 'Inter', sans-serif; }
+.pay-hd { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 16px 16px 8px; color: var(--text); font-family: 'Inter', sans-serif; }
+.pay-title { font-size: 18px; font-weight: 700; }
+.pay-x { flex: 0 0 auto; background: rgba(0,0,0,0.06); border: none; color: #64748b; font-size: 14px; line-height: 1; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
 .pay-row { display: flex; align-items: center; gap: 10px; padding: 15px 16px; }
 .pay-row-txt { font-size: 15px; color: var(--text-dim); }
 /* ⛔ Ô TÍCH TRONG TẤM NÀY **CHỈ ĐỂ HIỂN THỊ** — ⟳ 2026-10-13h (yêu cầu: “dấu tick chọn chỉ là ảnh
@@ -6032,7 +6034,10 @@ body.force-desktop .table-view { display: block; }
 <div class="modal-overlay" id="payModal" onclick="closePay(event)">
   <div class="modal pay-modal" role="dialog" aria-modal="true" aria-labelledby="payTitle">
     <div class="modal-handle"></div>
-    <div class="pay-hd" id="payTitle">Thanh toán cho điểm dùng điện</div>
+    <div class="pay-hd">
+      <span class="pay-title" id="payTitle">Thanh toán cho điểm dùng điện</span>
+      <button class="pay-x" type="button" onclick="closePayDirect()" aria-label="Đóng">✕</button>
+    </div>
     <div class="pay-body" id="payBody"></div>
   </div>
 </div>
