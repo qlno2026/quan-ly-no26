@@ -432,19 +432,9 @@
   --vien-vien: rgba(191,219,254,0.35);
   --vien-sdt-bg: #0f2438;
   --vien-sdt-vien: rgba(191,219,254,0.35);
-  /* ➕ VIÊN “ZALO” (2026-10-17) — viên MỚI, nằm NGAY SAU viên SĐT trên thẻ KH: chạm là mở chat
-     Zalo với ĐÚNG số đó (`https://zalo.me/<số>`, xem `zaloHref()`). Nền dùng CHUNG với viên
-     SĐT/Mã KH (`#0f2438`) nên viên mới chỉ khác 2 thứ: ICON màu XANH ZALO và VIỀN xanh Zalo ⇒
-     phân biệt được với viên SĐT bên cạnh, không sinh thêm “loại viên” mới.
-     ⟳ 2026-10-17g: viên đổi từ ICON sang **CHỮ “Zalo”** (yêu cầu người dùng) · ⟳ 2026-10-17j:
-     TRẢ LẠI **ICON bong bóng chat** + để SÁT viên SĐT (yêu cầu “đổi chữ zalo thành icon tin nhắn
-     và nằm gần sdt”) — xem chú thích đầy đủ ở `.kh-zalo` trong khối CSS.
-     ⛔ ĐỪNG lấy mã thương hiệu `#0068ff` làm màu icon: trên nền viên tối này nó chỉ **3,07:1**
-     (sát ngưỡng 3:1 của đồ hoạ). `#7db2ff` = **7,28:1** ✓ — dư xa ngưỡng. Chế độ SÁNG đổi ở
-     khối `body.light-mode` (xem chú thích ở đó). */
-  --vien-zalo-bg: #0f2438;
-  --vien-zalo-fg: #7db2ff;
-  --vien-zalo-vien: rgba(125,178,255,0.45);
+  /* ⛔ 3 TOKEN VIÊN “ZALO” ĐÃ XOÁ (2026-10-17m) cùng viên Zalo trên thẻ (xem chú thích ở khối
+     `.kh-zalo` đã gỡ trong `<style>`): `--vien-zalo-bg: #0f2438` · `--vien-zalo-fg: #7db2ff`
+     · `--vien-zalo-vien: rgba(125,178,255,0.45)`. Đừng dựng lại. */
   /* ➕ NỀN VIÊN “DANH SỐ” — TOKEN RIÊNG, ĐI THEO TỪNG MỨC NỀN SÁNG/TỐI.
      Yêu cầu người dùng: “khi ở chế độ dịu màu nền danh số đậm hơn cho dễ nhìn”.
      ⚠️ Viên danh số là viên DUY NHẤT **KHÔNG có viền** (`border: none` ở rule `.kh-danhso`)
@@ -776,12 +766,9 @@ body.light-mode {
   --vien-vien: #93b8e8;
   --vien-sdt-bg: #f0f6ff;
   --vien-sdt-vien: #93b8e8;
-  /* viên “Zalo” (khối chú thích đầy đủ ở `:root`): nền GIỐNG viên SĐT light, ICON đậm hơn mã
-     thương hiệu một nấc để dư ngưỡng AA trên nền sáng: `#0055d4` trên `#f0f6ff` = **5,95:1** ✓
-     (`#0068ff` chỉ **4,80** — vẫn đạt nhưng sát ngưỡng; bản đậm còn dư cho mọi mức “Nền”). */
-  --vien-zalo-bg: #f0f6ff;
-  --vien-zalo-fg: #0055d4;
-  --vien-zalo-vien: #7fb0f0;
+  /* ⛔ 3 token viên “Zalo” của CHẾ ĐỘ SÁNG đã XOÁ (2026-10-17m) cùng viên Zalo trên thẻ:
+     `--vien-zalo-bg: #f0f6ff` · `--vien-zalo-fg: #0055d4` · `--vien-zalo-vien: #7fb0f0`.
+     Đừng dựng lại (khối chú thích đầy đủ ở `:root`). */
   /* Mức “Chuẩn” của nền viên “danh số” ở chế độ sáng (khối chú thích đầy đủ ở `:root`).
      ⚠️ Bản cũ `#e8f1fd` chỉ chênh nền thẻ **1,04** ⇒ viên gần như dính vào thẻ.
      ⟳ 2026-10-03u — ĐẬM HƠN HẲN (yêu cầu “cho màu nền danh số dễ nhìn hơn”): mức “Sáng”
@@ -2364,6 +2351,21 @@ body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
 .lpcb-ta { width: 100%; min-height: 84px; box-sizing: border-box; resize: vertical; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: #ffffff; font-size: 15px; line-height: 1.4; padding: 8px; -webkit-user-select: text; user-select: text; }
 .lpcb-btn { margin-top: 10px; width: 100%; padding: 10px; border: 0; border-radius: 8px; background: #2563eb; color: #ffffff; font-size: 15px; font-weight: 600; cursor: pointer; }
 
+/* ➕ HỘP “GỌI ĐIỆN / NHẮN ZALO” — mở khi NHẤN-GIỮ viên SĐT (2026-10-17n).
+   Dùng lại NGUYÊN khung tối của hộp copy (`.lpcb-overlay`/`.lpcb-card`/`.lpcb-btn`, dòng 2345)
+   nên hai hộp trông như một hệ; ở đây chỉ thêm 2 “nút” — mà là **thẻ `<a>`** vì đích (gọi /
+   mở Zalo) là việc của hệ điều hành, ⛔ KHÔNG tự `window.open()`: webview chặn khi không có
+   cử chỉ thật, mà cú chạm vào chính `<a>` mới là cử chỉ thật.
+   ⚠️ Màu nút Zalo = **màu thương hiệu Zalo** `#0068ff` + chữ trắng = **4,74:1** ✓ (đạt AA 4,5:1
+   cho chữ thường, đo theo công thức tương phản WCAG). `#0055d4` sẽ cho 6,46:1 nếu sau này cần dư
+   ngưỡng — nhưng phải đổi CẢ nền lẫn viền ở đây, và nhớ đo lại.
+   ⚠️ Nút “Gọi điện” giữ tông xám-xanh của khung (`#1e293b` + viền `#334155`) để hàng nút không
+   tranh mắt với nút Zalo (thứ người dùng chính là đi tìm). */
+.lpsdt-act { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 10px; width: 100%; box-sizing: border-box; padding: 10px; border-radius: 8px; background: #1e293b; border: 1px solid #334155; color: #ffffff; font-size: 15px; font-weight: 600; text-decoration: none; }
+.lpsdt-act:active { filter: brightness(1.18); }
+.lpsdt-act-zalo { background: #0068ff; border-color: #0068ff; }
+.lpsdt-num { color: #93c5fd; }
+
 .filter-row { display: flex; gap: 2px; }
 /* Chấm màu nhóm trong ô lọc (thay emoji) */
 .nhom-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; vertical-align: middle; }
@@ -3407,21 +3409,13 @@ body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color:
 .kh-tbi { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: 400; white-space: nowrap; }
 body.light-mode .kh-tbi { color: #334155; }
 .kh-phone { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: var(--vien-weight); text-decoration: none !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid var(--vien-sdt-vien); border-radius: var(--vien-radius); }
-/* ➕ Viên ZALO (2026-10-17): nằm NGAY SAU viên SĐT trên thẻ KH — chạm là mở chat Zalo của đúng số
-   đó. Metric LẤY Y HỆT viên SĐT (cùng `--fs-card`, `--vien-pad-x`, `--vien-weight`, viền 1px,
-   `--vien-radius`) nên hai viên cao BẰNG NHAU (đo: 22,34px) và không lệch hàng; chỉ khác MÀU
-   (token `--vien-zalo-*`, tự đổi theo theme).
-   ⟳ 2026-10-17j (yêu cầu người dùng: “đổi chữ zalo thành icon tin nhắn và nằm gần sdt”, kèm ảnh
-   thẻ đang có viên CHỮ “Zalo”): quay lại viên **ICON bong bóng chat** (`#i-zalo`, ăn
-   `currentColor`) và **BỎ `margin-left: 4px`** ⇒ viên chỉ còn cách viên SĐT đúng `gap: 1px` của
-   `.kh-mid-row` (đo trước: 4,99px → nay **1px**). Lượt g (icon → chữ) nay bị ĐẢO.
-   ⚠️ `margin-left` từng là KHE CHẠM có chủ ý: chạm trượt dính viên SĐT là máy GỌI ĐIỆN ngay.
-   Người dùng đã xem và CHỐT hai viên sát nhau ⇒ GIỮ NGUYÊN `onclick="event.stopPropagation()"`
-   trên viên Zalo (thiếu nó thì cú chạm còn nổi lên thẻ, nhấn-đôi hoá ĐÁNH DẤU CAM).
-   ⚠️ Viên ICON rộng ~29px (viên CHỮ ~67px) ⇒ hàng [SĐT · Zalo · mã KH] lại nằm 1 dòng từ thẻ
-   ≥ ~375px, hết cảnh thẻ cao thêm ~23px ở dải thẻ 346–374px.
-   ⛔ Muốn quay lại viên CHỮ: thay `<svg…>` bằng chữ “Zalo” + trả lại `margin-left: 4px` — nhớ đo lại. */
-.kh-zalo { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: var(--vien-zalo-fg); background: var(--vien-zalo-bg); font-weight: var(--vien-weight); text-decoration: none !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid var(--vien-zalo-vien); border-radius: var(--vien-radius); margin-left: 0; }
+/* ⛔ RULE `.kh-zalo` ĐÃ XOÁ (2026-10-17m) cùng viên Zalo trên thẻ — yêu cầu người dùng: “tôi
+   muốn bỏ icon tin nhắn zalo”. Rule cũ (2026-10-17 → 2026-10-17j) có metric y hệt viên SĐT,
+   nền `--vien-zalo-bg`, màu icon `--vien-zalo-fg`, viền `--vien-zalo-vien`. Cả 3 token đó CŨNG
+   ĐÃ XOÁ ở `:root` và `body.light-mode` ⇒ đừng tham chiếu lại. Muốn dựng lại: xem chú thích
+   đầy đủ ở khối JS trước `renderCards()` (danh sách 4 việc phải làm + phải ĐO LẠI bề rộng hàng).
+   ⟳ 2026-10-17n: Zalo vẫn KHÔNG quay lại thẻ — nó nằm trong **hộp nhấn-giữ viên SĐT** (CSS
+   `.lpsdt-*` ở khối `.lpcb-*` dòng ~2354); vì vậy ⛔ đừng “thấy có Zalo” mà dựng lại rule này. */
 .kh-card-mid .badge { font-size: 12px; font-weight: 500; white-space: nowrap; }
 .kh-sep { font-size: var(--fs-card-sep); color: var(--text-dim); font-weight: 400; margin: 0 1px; }
 .kh-abc { font-size: var(--fs-card); color: #94a3b8; font-weight: 400; white-space: nowrap; border: none; border-radius: 3px; padding: 0px 2px; background: transparent; }
@@ -4864,7 +4858,12 @@ body.force-desktop .table-view { display: block; }
        Chrome mới **24px** (2×6 + 3×4) mở ra **10px** ⇒ đủ để hết vuốt ngang ở 320–430px.
        ⛔ Đừng hạ khe xuống dưới `4px`: MÃ SỔ và MÃ KH là hai mã khác nhau, dính sát là đọc sai. */
     column-gap: 4px;
-    row-gap: 2px;
+    /* ⟳ 2026-10-17m(b): `2px → var(--row-gap-lines)` (nay **5px**) — khe giữa **3 dòng TRONG
+       một khách**, theo yêu cầu “cho khoảng cách các dòng cho rộng cho dễ nhìn khi xem dạng
+       bảng”. Số khai ở rule `body.force-desktop .table-view { … }` (cùng chỗ với `--fs-row`).
+       ⚠️ Đây là khe DỌC **bên trong** một khách; khe giữa hai KHÁCH là `--row-pad-y` (đệm của
+       `tr` ngay dưới) — hai thứ KHÁC nhau, đừng lẫn. */
+    row-gap: var(--row-gap-lines, 2px);
     align-items: center;
     /* ── KHE GIỮA CÁC HÀNG: **0px** — MỨC TỐI THIỂU, chỉ còn ĐƯỜNG KẺ NGĂN ───────
        Yêu cầu người dùng (3 lượt liên tiếp): “cho khoảng cách các hàng gần hơn” …
@@ -4906,8 +4905,17 @@ body.force-desktop .table-view { display: block; }
         phá tính thẳng cột) và **không tràn** (`over ≤ 0,01px`).
         ℹ️ Muốn sát hơn nữa thì phải đụng vào **thanh cuộn 22px** (trang) hoặc lề trang
         `9,3px` — cả hai đều của TRANG, sửa là lệch hàng loạt thứ khác (header, thanh công cụ,
-        thẻ card) nên chỉ làm khi có yêu cầu riêng. */
-    padding: 0 var(--row-pad-r) 0 var(--row-pad-l);
+        thẻ card) nên chỉ làm khi có yêu cầu riêng.
+
+     ── ⟳ 2026-10-17m(b): **ĐẢO LẠI — KHÔNG CÒN MỨC TỐI THIỂU** ─────────────────────
+     Yêu cầu MỚI của người dùng: “cho khoảng cách các dòng cho rộng cho dễ nhìn khi xem dạng bảng”.
+     ⇒ đệm dọc của `tr`: `0` → **`var(--row-pad-y)` (nay 3px)** ⇒ khe giữa hai khách
+     `1,44px → 7,44px` (= 2 × 3 + viền 1,44144), và khe giữa 3 dòng trong khách `2px → 5px`.
+     Bảng “đệm → khe thật” ở trên vẫn đúng về CÔNG THỨC (khe = 2 × đệm + viền), chỉ đổi giá trị
+     đang dùng: hàng cao thêm **9px** (đo ở 375px: 76,41px, xem run doc).
+     ⛔ Hai chỗ đọc biến này (`padding` dưới đây + `--row-pad-y` khai cạnh `--fs-row`) phải đi
+     cùng nhau; ⛔ đừng hạ `--row-pad-y` về 0 trừ khi người dùng muốn “sát như cũ” lần nữa. */
+    padding: var(--row-pad-y, 0) var(--row-pad-r) var(--row-pad-y, 0) var(--row-pad-l);
   }
   /* ── SỌC XEN KẺ “ZEBRA” — ⚠️ **ĐÃ BỊ THAY Ở LƯỢT MỚI NHẤT** (xem khối “DẢI NỀN Ở HÀNG
      TÊN + TIỀN” bên dưới, chỗ 2 rule `nth-child(even)` cũ). Giữ đoạn chú thích này vì nó ghi
@@ -5163,7 +5171,21 @@ body.force-desktop .table-view { display: block; }
      (ô TÊN — nó bị loại khỏi `:not(.cell-tenkh)` nên KHÔNG ăn theo biến).
      ⚠️ Lượt “16px” đã ghi 16px là **sát trần ở 320px**; số đo lại ở lượt này ghi ngay dưới rule
      `.cell-tenkh` — đừng nâng cỡ tiếp mà không đọc chỗ đó trước. */
-  body.force-desktop .table-view { --fs-row: var(--fs-tb-row); }
+  /* ── GIÃN KHOẢNG CÁCH DÒNG (2026-10-17m — yêu cầu người dùng: “tôi không muốn giãn khoảng cách
+     chữ mà cho khoảng cách các dòng cho rộng cho dễ nhìn khi xem dạng bảng”, kèm ảnh BẢNG 3 HÀNG).
+     ⛔ Cùng ngày, lượt TRƯỚC đã thử “giãn CHỮ” (`--ls-row: 0.04em` + 3 chỗ đọc biến đó) và bị
+     người dùng GỠ ⇒ ⛔ **ĐỪNG dựng lại `--ls-row`** (đã xoá sạch, không còn chỗ nào đọc).
+     Nay giãn **khoảng cách DỌC** bằng 2 biến khai ở rule ngay dưới, cả hai đọc ở rule `tr`:
+        · `--row-gap-lines` = khe giữa **3 dòng TRONG một khách**  (chỗ `row-gap` của `tr`)
+        · `--row-pad-y`     = khe giữa **hai KHÁCH** (đệm trên/dưới của `tr`); khe THẬT =
+                              2 × đệm + viền ngăn 1,44144px (công thức ở khối `row-gap`).
+     ⚠️ Số đo trước/sau khi đổi: xem mục “GIÃN KHOẢNG CÁCH DÒNG” trong run doc. Muốn rộng/hẹp
+     hơn thì sửa **đúng 2 số dưới đây** — ⛔ đừng đi sửa lẻ ở `tr` (hai chỗ sẽ lệch nhau). */
+  body.force-desktop .table-view {
+    --fs-row: var(--fs-tb-row);
+    --row-gap-lines: 5px;   /* cũ 2px — khe giữa 3 dòng TRONG khách */
+    --row-pad-y: 3px;       /* cũ 0px — khe giữa hai KHÁCH: 2×3 + 1,44 = 7,44px (trước 1,44px) */
+  }
   body.force-desktop .table-view tbody td:not(.cell-tenkh),
   body.force-desktop .table-view tbody td:not(.cell-tenkh) .ma-kh,
   body.force-desktop .table-view tbody td:not(.cell-tenkh) .tien-no,
@@ -5196,6 +5218,8 @@ body.force-desktop .table-view { display: block; }
     border-radius: 0;
     font-size: inherit;
     font-weight: 400;
+    /* ⟳ 2026-10-17m: về lại `normal` — lượt “giãn CHỮ” (`letter-spacing`) đã bị người dùng GỠ
+       cùng ngày (“tôi không muốn giãn khoảng cách chữ”); xem khối “GIÃN KHOẢNG CÁCH DÒNG”. */
     letter-spacing: normal;
   }
   /* Tháng nợ ở light mode: nay `#475569` (lượt “nhạt hơn” trả về giá trị cũ) — rule thứ 5
@@ -5265,6 +5289,9 @@ body.force-desktop .table-view { display: block; }
        67,57 / 70,69 / 76,70px). Con số “16px là sát trần” trong các chú thích cũ là của **bố cục
        trước** (hàng 2 dòng, cột còn phụ thuộc tên) — đừng lấy nó làm lý do để chặn mức Lớn. */
     font-size: var(--fs-tb-row);
+    /* ⟳ 2026-10-17m: KHÔNG còn `letter-spacing` ở đây — lượt “giãn CHỮ” bị người dùng GỠ cùng
+       ngày, thay bằng “giãn khoảng cách DÒNG” (`--row-gap-lines` + `--row-pad-y`, xem khối
+       “GIÃN KHOẢNG CÁCH DÒNG” cạnh `--fs-row`). ⛔ Đừng thêm lại `letter-spacing` ở ô này. */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -5505,13 +5532,15 @@ body.force-desktop .table-view { display: block; }
   <!-- ── Đơn sắc cho thẻ khách hàng / modal (màu theo `color` của class cha) ── -->
   <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.8 9.8c0 3.9-3.1 7.6-6.8 11.6C8.3 17.4 5.2 13.7 5.2 9.8a6.8 6.8 0 1 1 13.6 0z"/><circle cx="12" cy="9.7" r="2.6"/></symbol>
   <symbol id="i-call" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
-  <!-- ➕ `i-zalo` (2026-10-17) — icon BONG BÓNG CHAT (ô vuông bo góc + đuôi nhọn chĩa xuống
+  <!-- `i-zalo` (2026-10-17) — icon BONG BÓNG CHAT (ô vuông bo góc + đuôi nhọn chĩa xuống
        dưới-trái), vẽ theo khuôn bộ icon nét của app (`stroke="currentColor"`, `stroke-width: 2.2`,
-       bo nét `round`, viewBox 24) nên tự ăn màu của viên, không cần khai màu riêng.
-       ⚠️ 2026-10-17j: viên Zalo trên thẻ ĐANG dùng LẠI chính symbol này (lượt g trước đó tạm đổi
-       viên sang chữ “Zalo”, nay đã ĐẢO) — xem chú thích `.kh-zalo` ở khối CSS.
-       ⛔ Cũng đừng thay bằng logo Zalo 4 màu: cả bộ icon trong sprite là ĐƠN SẮC theo
-       `currentColor`, một icon nhiều màu sẽ lệch hẳn và không theo theme sáng/tối. -->
+       bo nét `round`, viewBox 24).
+       ⟳ 2026-10-17m: viên Zalo trên thẻ ĐÃ BỎ (yêu cầu “tôi muốn bỏ icon tin nhắn zalo”) ⇒ symbol
+       này HIỆN KHÔNG NƠI NÀO DÙNG. **GIỮ LẠI CÓ CHỦ Ý** trong thư viện sprite (cùng tiền lệ
+       `#i-hourglass` / `#i-notebook` đã bỏ khỏi giao diện nhưng vẫn để trong sprite) — nó không
+       tốn gì khi không được `<use>` tới, và giữ lại thì dựng lại viên Zalo chỉ cần 3 bước (xem
+       chú thích ở khối JS trước `renderCards()`).
+       ⛔ Đừng thay bằng logo Zalo 4 màu: cả bộ icon trong sprite là ĐƠN SẮC theo `currentColor`. -->
   <symbol id="i-zalo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 15.4a1.8 1.8 0 0 1-1.8 1.8H7.4l-3.6 3.6V5.4a1.8 1.8 0 0 1 1.8-1.8h13a1.8 1.8 0 0 1 1.8 1.8z"/></symbol>
   <symbol id="i-mobile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.2" y="2.2" width="11.6" height="19.6" rx="2.4"/><path d="M11 18.1h2"/></symbol>
   <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.1"/></symbol>
@@ -8325,22 +8354,20 @@ updateSortButtons();
 
 
 // CARDS (mobile)
-/* ➕ Link “Nhắn Zalo” cho số trong ô `dien_thoai` (2026-10-17 — yêu cầu người dùng: “ở sđt có
-   thêm mục tuỳ chọn gửi tin nhắn zalo”).
-   VÌ SAO PHẢI CÓ HÀM RIÊNG (không dùng lại `phone.replace(/[^0-9+]/g,'')` của viên SĐT):
-   Zalo nhận link dạng `https://zalo.me/<số>` và số phải ở dạng NỘI ĐỊA (`0972773839`) trong khi
-   dữ liệu nhập từ Excel có thể là `0972 773 839`, `0972.773.839`, `+84972773839` hay
-   `84972773839` ⇒ phải (1) bỏ MỌI ký tự không phải chữ số, (2) đổi đầu `84` (mã nước VN) về `0`.
-   ⚠️ `tel:` thì ngược lại: nó CẦN giữ dấu `+` của dạng quốc tế — đó là lý do hai chỗ không dùng
-   chung một phép làm sạch.
-   ⛔ KHÔNG “đoán” thêm gì (ví dụ tự thêm `0` cho số 9 chữ số): thà Zalo báo không tìm thấy số, còn
-   hơn mở nhầm cửa sổ chat của người khác. Không ra được số nào thì trả `''` — markup dựa vào đó
-   để KHÔNG vẽ viên Zalo (tránh `href=""` làm tải lại trang). */
-function zaloHref(phone) {
-  let d = String(phone || '').replace(/\D/g, '');
-  if (d.length >= 11 && d.indexOf('84') === 0) d = '0' + d.slice(2);
-  return d ? 'https://zalo.me/' + d : '';
-}
+/* ⛔ `zaloHref()` + viên “Nhắn Zalo” ĐÃ XOÁ (2026-10-17m) — yêu cầu người dùng: “tôi muốn bỏ
+   icon tin nhắn zalo” (kèm ảnh thẻ đang có viên icon bong bóng chat cạnh viên SĐT). Trước đó
+   (2026-10-17) viên này từng được thêm ở đây theo yêu cầu “ở sđt có thêm mục tuỳ chọn gửi tin
+   nhắn zalo”, rồi 2 lượt đổi icon ↔ chữ “Zalo”; nay gỡ HẲN cả 3 phần: hàm này, rule `.kh-zalo`
+   trong `<style>` và 3 token `--vien-zalo-*`. Thẻ KH trở lại đúng dạng trước 2026-10-17g:
+   hàng giữa = [viên SĐT] · dấu gạch nối · [viên mã KH].
+   ⟳ 2026-10-17n (ngay sau đó): người dùng chốt phương án THAY THẾ — Zalo KHÔNG quay lại thẻ mà
+   nằm trong **hộp mở bằng NHẤN-GIỮ viên SĐT** (`lpSdtChay` + `zaloChatUrl`, xem khối
+   “NHẤN-GIỮ 0,5s TRÊN VIÊN SĐT”). Vì sao vẫn KHÔNG vẽ `zaloHref()` lại ở đây: viên trên thẻ là
+   thứ đã bị yêu cầu bỏ, còn hộp thì 0px bề rộng ⇒ không ảnh hưởng thẻ.
+   ⛔ ĐỪNG dựng lại: muốn quay lại phải (1) thêm lại hàm này, (2) thêm lại rule `.kh-zalo` +
+   3 token `--vien-zalo-*` (cả `:root` lẫn `body.light-mode`), (3) thêm lại markup trong
+   `renderCards()`, (4) ĐO LẠI bề rộng hàng giữa (viên icon rộng ~29px ⇒ thẻ ≥ ~375px mới đủ
+   1 dòng; dưới mốc đó hàng giữa tự xuống dòng và thẻ cao thêm ~23px). */
 function renderCards(q='') {
   const isOld = (currentTab === 'old' || currentTab === 'oldky' || currentTab === '1tr');
   const start = (currentPage-1)*PAGE_SIZE;
@@ -8353,8 +8380,6 @@ function renderCards(q='') {
 
   list.innerHTML = pageData.map((r,i) => {
     const phone = r.dien_thoai && r.dien_thoai!='0' ? r.dien_thoai : '';
-    /* Link chat Zalo của số này (rỗng = không vẽ viên Zalo) — xem zaloHref(). */
-    const zHref = zaloHref(phone);
     const oldKind = _oldKindMap.get(r.ma_khach_hang || r.ten_khach_hang);
     const omShow = !!oldKind;
     /* KH có **từ 2 hoá đơn trở lên** → thêm vạch XANH LÁ mỏng ở mép trên thẻ, ngay trên
@@ -8394,7 +8419,13 @@ function renderCards(q='') {
         ${r.ma_sogcs && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}
         ${r.so_tbi ? `<span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}
         ${r.dia_chi ? `<div class="kh-addr-line" style="flex:0 0 100%;margin-top:5px"><svg class="addr-ico" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><use href="#i-pin"/></svg>${hi(trimDiaChi(r.dia_chi),q)}</div>` : ''}
-        ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}<!-- ➕ Viên ZALO (⟳ 2026-10-17j: TRẢ LẠI ICON bong bóng chat và để SÁT viên SĐT — yêu cầu “đổi chữ zalo thành icon tin nhắn và nằm gần sdt”). Chạm = mở chat Zalo với ĐÚNG số này (zalo.me/<số>), ở TAB MỚI (target=_blank) để không rời app đang xem danh sách nợ. onclick stopPropagation để cú chạm không lọt lên thẻ (nhấn 2 lần = đánh dấu cam). ⛔ KHÔNG đặt thuộc tính title ở đây (và ở viên mã KH): người dùng đã yêu cầu BỎ tooltip “Chạm: …” hiện trên màn hình; chỉ giữ aria-label cho trình đọc màn hình. Không có zHref (số dị dạng) thì không vẽ viên. ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->${zHref ? `<a class="kh-zalo" href="${esc(zHref)}" target="_blank" rel="noopener noreferrer" aria-label="Nhắn tin Zalo ${esc(phone)}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle"><use href="#i-zalo"/></svg></a>` : ''}${phone && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="copyMaKH(event,this)" style="cursor:pointer"><svg class="ic" width="14" height="14" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-tag"/></svg>${hi(r.ma_khach_hang,q)}</span>` : ''}</span>` : ''}
+        ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}<!-- ⛔ Viên ZALO ĐÃ BỎ HẲN (2026-10-17m — yêu cầu người dùng: “tôi muốn bỏ icon tin nhắn zalo”,
+             kèm ảnh thẻ đang có viên icon bong bóng chat cạnh viên SĐT): thẻ KH nay chỉ còn
+             [viên SĐT] - [viên mã KH], khe hở giữa hai viên là dấu kh-sep như trước lượt 2026-10-17g.
+             ⛔ Hàm zaloHref() và rule .kh-zalo cũng ĐÃ XOÁ — ĐỪNG dựng lại viên này.
+             ⚠️ Dấu kh-sep giữa SĐT và mã KH KHÔNG được gỡ: nó vốn có từ trước viên Zalo và
+             chính là thứ ngăn “số điện thoại dính liền mã khách hàng”.
+             ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->${phone && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="copyMaKH(event,this)" style="cursor:pointer"><svg class="ic" width="14" height="14" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-tag"/></svg>${hi(r.ma_khach_hang,q)}</span>` : ''}</span>` : ''}
       </div>
       <div class="kh-ghichu-row">
         <svg class="ic" width="14" height="14" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><use href="#i-pencil"/></svg>
@@ -8763,8 +8794,102 @@ document.addEventListener('contextmenu', lpTenMenu, { capture: true, passive: fa
 /* Nuốt cú `click` bắn ngay sau khi cử chỉ đã copy (xem `lpTenChay`) — cũng ở pha capture nên chạy
    trước `ondblclick` của thẻ/hàng; ⛔ đừng gỡ, gỡ là nhấn-giữ xong dễ bị tính thành 2 lần chạm. */
 document.addEventListener('click', function (e) {
-  if (_lpFired) { e.stopPropagation(); e.preventDefault(); }
+  /* ⟳ 2026-10-17n: thêm cờ `_lpSdtFired` — NHẤN-GIỮ viên SĐT cũng bắn 1 cú `click` ngay sau đó
+     (rơi vào chính thẻ `<a href="tel:">`); không nuốt là máy **GỌI LUÔN** vừa lúc hộp
+     “Gọi điện / Nhắn Zalo” hiện ra. */
+  if (_lpFired || _lpSdtFired) { e.stopPropagation(); e.preventDefault(); }
 }, { capture: true });
+
+/* ── NHẤN-GIỮ 0,5s TRÊN VIÊN SĐT = hộp “Gọi điện / Nhắn Zalo” (2026-10-17n) ─────────────────
+   Yêu cầu người dùng: “cho phần gửi tin nhắn zalo tích hợp vô ô này” (ảnh kèm = MENU NHẤN-GIỮ
+   của trình duyệt trên liên kết `tel:`). ⛔ Menu đó do HỆ ĐIỀU HÀNH vẽ — trang web **không thêm
+   mục nào vào được**, và Zalo cũng không đăng ký nhận `sms:` ⇒ người dùng đã CHỐT cách thay thế:
+   **NHẤN-GIỮ viên SĐT** (chọn trong bảng hỏi, phương án (a)).
+   ⛔ Vì sao là NHẤN-GIỮ chứ không phải “chạm”: chạm viên SĐT từ trước tới nay là **GỌI NGAY**
+   (`tel:`) — đừng đổi hành vi đó; hộp này chỉ là đường THỨ HAI.
+   Khuôn cử chỉ chép ĐÚNG của ô tên (`lpTen*` ngay trên): 500ms · kéo quá 10px thì huỷ (người dùng
+   đang cuộn) · nghe `contextmenu` (Android bắn ở ~500ms ⇒ mở ngay) · cờ `_lpSdtFired` nuốt cú
+   `click` bắn theo sau (xem listener ngay trên — ⛔ thiếu là máy gọi luôn).
+   ⛔ KHÔNG gộp vào `lpTen*`: ô TÊN thì COPY, viên SĐT thì MỞ HỘP — gộp là phải rẽ nhánh trong
+   `lpTenChay()` và dễ làm hỏng cử chỉ copy đang chạy tốt. */
+const LP_SDT_MS = 500;
+const LP_SDT_SLOP = 10;
+let _lpSdtT = null, _lpSdtEl = null, _lpSdtX = 0, _lpSdtY = 0, _lpSdtFired = false, _lpSdtGuard = null;
+function lpSdtTarget(t) { return (t && t.closest) ? t.closest('.kh-phone, a[href^="tel:"]') : null; }
+function lpSdtHuy() { if (_lpSdtT) { clearTimeout(_lpSdtT); _lpSdtT = null; } _lpSdtEl = null; }
+/* SĐT → link chat Zalo (đây là “bản mới” của `zaloHref()` đã xoá ở lượt 2026-10-17m — ⛔ nhưng
+   KHÁC đích dùng: KHÔNG dựng lại viên Zalo trên thẻ, chỉ để hộp này có nút “Nhắn Zalo”).
+   Quy tắc: bỏ hết ký tự không phải số; số `0…` (10 số) đổi thành `84…` (chuẩn quốc tế, Zalo
+   nhận cả hai). Không đủ 9 số thì trả về `''` ⇒ hộp ẨN nút Zalo (thà thiếu nút còn hơn mở sai số).
+   ⛔ Đừng `encodeURIComponent`: chuỗi chỉ còn chữ số. */
+function zaloChatUrl(phone) {
+  const d = String(phone || '').replace(/\D/g, '');
+  if (d.length < 9) return '';
+  return 'https://zalo.me/' + (d.charAt(0) === '0' ? '84' + d.slice(1) : d);
+}
+/* Mở hộp: dựng MỘT LẦN rồi dùng lại (y như `lpShowCopyBox`) — mỗi lần mở chỉ đổi số + 2 `href`. */
+function lpSdtChay() {
+  const el = _lpSdtEl;
+  if (_lpSdtT) { clearTimeout(_lpSdtT); _lpSdtT = null; }
+  _lpSdtEl = null;                    // ⛔ đặt TRƯỚC khi mở: chặn `contextmenu` mở hộp lần hai
+  if (!el) return;
+  _lpSdtFired = true;
+  if (_lpSdtGuard) clearTimeout(_lpSdtGuard);
+  _lpSdtGuard = setTimeout(function () { _lpSdtFired = false; _lpSdtGuard = null; }, 600);
+  try { if (navigator.vibrate) navigator.vibrate(15); } catch (e) {}
+  const tel = String(el.getAttribute('href') || '').replace(/^tel:/i, '') ||
+              String(el.textContent || '').trim();
+  const num = tel.replace(/[^0-9+]/g, '');
+  const z = zaloChatUrl(num);
+  let ov = document.getElementById('lpSdtBox');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = 'lpSdtBox';
+    ov.className = 'lpcb-overlay';
+    ov.innerHTML = '<div class="lpcb-card">' +
+        '<div class="lpcb-title">Số điện thoại <b class="lpsdt-num"></b></div>' +
+        '<a class="lpsdt-act" data-act="call" href="#"><svg class="ic" width="16" height="16" ' +
+          'aria-hidden="true" style="vertical-align:middle"><use href="#i-call"/></svg>Gọi điện</a>' +
+        '<a class="lpsdt-act lpsdt-act-zalo" data-act="zalo" href="#" target="_blank" rel="noopener">' +
+          '<svg class="ic" width="16" height="16" aria-hidden="true" style="vertical-align:middle">' +
+          '<use href="#i-zalo"/></svg>Nhắn Zalo</a>' +
+        '<button class="lpcb-btn" type="button">Đóng</button>' +
+      '</div>';
+    ov.addEventListener('click', function (e) { if (e.target === ov) lpCloseSdtBox(); });
+    ov.querySelector('.lpcb-btn').addEventListener('click', lpCloseSdtBox);
+    document.body.appendChild(ov);
+  }
+  ov.querySelector('.lpsdt-num').textContent = num;
+  ov.querySelector('[data-act="call"]').setAttribute('href', 'tel:' + num);
+  const za = ov.querySelector('[data-act="zalo"]');
+  if (z) { za.setAttribute('href', z); za.style.display = ''; }
+  else { za.setAttribute('href', '#'); za.style.display = 'none'; }
+  ov.classList.add('on');
+}
+function lpCloseSdtBox() { const ov = document.getElementById('lpSdtBox'); if (ov) ov.classList.remove('on'); }
+function lpSdtDown(e) {
+  if (e.isPrimary === false || (e.pointerType === 'mouse' && e.button !== 0)) return;
+  const el = lpSdtTarget(e.target);
+  if (!el) return;
+  _lpSdtEl = el; _lpSdtX = e.clientX; _lpSdtY = e.clientY;
+  if (_lpSdtT) clearTimeout(_lpSdtT);
+  _lpSdtT = setTimeout(lpSdtChay, LP_SDT_MS);
+}
+function lpSdtMove(e) {
+  if (!_lpSdtEl) return;
+  if (Math.abs(e.clientX - _lpSdtX) > LP_SDT_SLOP || Math.abs(e.clientY - _lpSdtY) > LP_SDT_SLOP) lpSdtHuy();
+}
+function lpSdtUp() { lpSdtHuy(); }
+function lpSdtMenu(e) {
+  if (!lpSdtTarget(e.target)) return;
+  e.preventDefault();                 // nuốt menu của hệ điều hành (nó cũng không có mục Zalo)
+  lpSdtChay();
+}
+document.addEventListener('pointerdown', lpSdtDown, { capture: true });
+document.addEventListener('pointermove', lpSdtMove, { capture: true });
+document.addEventListener('pointerup', lpSdtUp, { capture: true });
+document.addEventListener('pointercancel', lpSdtUp, { capture: true });
+document.addEventListener('contextmenu', lpSdtMenu, { capture: true, passive: false });
 // ⟳ 2026-10-17k: máy móc NHẤN-GIỮ đã được DỰNG LẠI (ngay phía trên) — bản 2026-10-14c bị gỡ ở
 // lượt 2026-10-17h, nay có lại nhưng GỌN HƠN: chỉ còn `lpTenDown/Move/Up/Menu/Chay`, chạy trên
 // CHÍNH 2 ô TÊN (`.kh-name`/`.cell-tenkh`) chứ ⛔ không phải cả thẻ như bản cũ (bản cũ nhấn-giữ ở
@@ -9823,7 +9948,7 @@ function clearNvScope() {
 }
 
 // Esc đóng lần lượt: tấm “Thanh toán…” (nếu đang mở) rồi tới tấm “Chi tiết”.
-document.addEventListener('keydown', e => { if (e.key==='Escape') { lpCloseCopyBox(); closeShotDirect(); closeKyDirect(); closePayDirect(); closeModalDirect(); } });
+document.addEventListener('keydown', e => { if (e.key==='Escape') { lpCloseCopyBox(); lpCloseSdtBox(); closeShotDirect(); closeKyDirect(); closePayDirect(); closeModalDirect(); } });
 
 // ── COLUMN RESIZE (desktop) ────────────────
 // ⚠️ v1 → v2 khi ĐỔI THỨ TỰ CỘT. Bản đồ độ rộng lưu theo **chỉ số cột**, nên bản lưu từ v1
