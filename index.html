@@ -2358,13 +2358,16 @@ body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
    người dùng thấy). Nay nền = **`#ffffff`** — tức nền light mode — áp cho **CẢ HAI chế độ**, nên
    hộp không còn phụ thuộc theme ⇒ ⛔ đừng thay bằng token `--card`/`--surface` (ở dark chúng lại tối).
    Số đo (đo bằng công thức tương phản WCAG, nền mới):
-     · chữ `#0f172a` trên nền hộp `#ffffff` **17,85:1** ✓ · trên nút `#f1f5f9` **15,2:1** ✓
+     · chữ trong hộp `#0f172a` trên nền hộp `#ffffff` **17,85:1** ✓
      · số điện thoại `.lpsdt-num` `#1d4ed8` (blue-700) trên trắng **6,70:1** ✓
-     · viền nút `#64748b` vs nền hộp **4,76:1** ✓ (>3:1, đủ cho đường bao control)
-     · nút Zalo giữ màu thương hiệu `#0068ff` + chữ trắng **4,74:1** ✓ (không đổi)
-     · `.lpcb-btn` (Đóng / “Sao chép”) giữ `#2563eb` + chữ trắng **5,17:1** ✓
-   ⚠️ Vì nền sáng, hiệu ứng `:active` phải **TỐI đi** (`brightness(0.94)`) — giữ `1.18` như bản nền
-   tối là bấm vào nút “sáng nhoè” rồi mất chữ. */
+     · ⟳ 2026-10-19 (yêu cầu “đổi luôn viền xanh, chữ xanh”): MỌI nút (3 nút phụ `.lpsdt-act` ·
+       Zalo `#0068ff` · “Đóng” `.lpcb-btn` `#2563eb`) nay đều **nền TRONG SUỐT + viền & chữ XANH**
+       ⇒ chữ `#2563eb` trên trắng **5,17:1** ✓ · chữ `#0068ff` trên trắng **4,74:1** ✓ (đều > 4,5:1;
+       viền cùng màu chữ nên chắc chắn > 3:1 cho đường bao control).
+     · Lúc ĐANG CHẠM: **ĐẢO MÀU** — nền = chính màu xanh đó + chữ trắng ⇒ tương phản y hệt lúc
+       thường (5,17:1 · 4,74:1) ✓.
+   ⚠️ Vì nền sáng, hiệu ứng `:active` phải **TỐI đi** (`brightness(0.97)`) — giữ
+   `1.18` như bản nền tối là bấm vào nút “sáng nhoè” rồi mất chữ. */
 .lpcb-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 4200; }
 .lpcb-overlay.on { display: flex; }
 .lpcb-card { width: min(92vw, 560px); background: #ffffff; color: #0f172a; border: 1px solid #94a3b8; border-radius: 12px; padding: 14px; box-shadow: var(--elev-3); }
@@ -2372,7 +2375,18 @@ body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
 /* `user-select: text` là BẮT BUỘC (app đặt `user-select: none` cho thẻ/hàng; ô này nằm ngoài
    các thẻ đó nhưng vẫn phải khai tường minh để không phụ thuộc vào chỗ dán vào). */
 .lpcb-ta { width: 100%; min-height: 84px; box-sizing: border-box; resize: vertical; border-radius: 8px; border: 1px solid #64748b; background: #f1f5f9; color: #0f172a; font-size: 15px; line-height: 1.4; padding: 8px; -webkit-user-select: text; user-select: text; }
-.lpcb-btn { margin-top: 10px; width: 100%; padding: 10px; border: 0; border-radius: 8px; background: #2563eb; color: #ffffff; font-size: 15px; font-weight: 600; cursor: pointer; }
+/* ⟳ 2026-10-19 (yêu cầu người dùng “bỏ màu nền, khi chọn mới hiện màu nền”, ảnh = hộp SĐT):
+   nút “Đóng” của CẢ 3 hộp dùng chung khung `.lpcb-*` nay **NỀN TRONG SUỐT** + viền/chữ `#2563eb`
+   (**5,17:1** ✓ AA) — trước đây nút này ĐẶC nền xanh nên “nặng” hơn hẳn các nút phụ cùng hộp.
+   ⚠️ PHẢI GIỮ VIỀN (5,17:1 > 3:1 mà đường bao cần): bỏ nền mà bỏ luôn viền là nút biến mất
+   khỏi nền hộp trắng — cùng lý do đã ghi cho `.lpsdt-act` ngay dưới.
+   ⚠️ Thêm viền 1px làm nút cao thêm 2px (38 → **40px**), NAY BẰNG ĐÚNG các nút `.lpsdt-act`
+   (cũng 1px viền + 10px đệm) ⇒ hàng nút trong hộp đều nhau; ⛔ đừng “trả lại” `border: 0`.
+   ⚠️ `font-family: inherit` cũng phải có (đây là **thẻ `<button>`** — nút KHÔNG tự thừa hưởng
+   font như `<a>`; chú thích ở `.lpsdt-act` dưới đã nhắc đúng lỗi này). */
+.lpcb-btn { margin-top: 10px; width: 100%; padding: 10px; border: 1px solid #2563eb; border-radius: 8px; background: transparent; color: #2563eb; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; }
+/* Nút “Đóng” khi ĐANG CHẠM mới hiện nền (đổ đầy `#2563eb` + chữ trắng = 5,17:1 ✓). */
+.lpcb-btn:active { background: #2563eb; color: #ffffff; filter: brightness(0.97); }
 
 /* ➕ HỘP “GỌI ĐIỆN / NHẮN ZALO” — mở khi NHẤN-GIỮ viên SĐT (2026-10-17n).
    Dùng lại NGUYÊN khung của hộp copy (`.lpcb-overlay`/`.lpcb-card`/`.lpcb-btn`) — ⟳ 2026-10-18
@@ -2380,13 +2394,21 @@ body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
    ở đây chỉ thêm các “nút” — mà là **thẻ `<a>`** vì đích (gọi / mở Zalo) là việc của hệ điều
    hành, ⛔ KHÔNG tự `window.open()`: webview chặn khi không có cử chỉ thật, mà cú chạm vào chính
    `<a>` mới là cử chỉ thật.
-   ⚠️ Màu nút Zalo = **màu thương hiệu Zalo** `#0068ff` + chữ trắng = **4,74:1** ✓ (đạt AA 4,5:1
-   cho chữ thường, đo theo công thức tương phản WCAG). `#0055d4` sẽ cho 6,46:1 nếu sau này cần dư
-   ngưỡng — nhưng phải đổi CẢ nền lẫn viền ở đây, và nhớ đo lại.
-   ⚠️ 3 nút còn lại (“Gọi điện”/“Nhắn SMS”/“Sao chép”) dùng nền xám RẤT NHẠT `#f1f5f9` + viền
-   `#64748b` + chữ `#0f172a`: hàng nút vẫn không tranh mắt với nút Zalo (thứ người dùng đi tìm),
-   mà nút vẫn “ra nút” trên nền trắng (**4,76:1** cho đường bao — ⛔ đừng dùng `#cbd5e1`/`#e2e8f0`,
-   chỉ ~1,3–1,5:1 là nút biến mất khỏi nền hộp).
+   ⟳ 2026-10-19 (yêu cầu người dùng “bỏ màu nền, khi chọn mới hiện màu nền”; người dùng CHỐT:
+   **bỏ nền ĐẶC của CẢ 2 nút màu**): **MỌI nút** của 2 hộp (SĐT + mã KH) lẫn nút “Đóng” của hộp
+   tự-copy nay đều **NỀN TRONG SUỐT** ở trạng thái thường — **chỉ hiện nền lúc ĐANG CHẠM**. Màu
+   thương hiệu Zalo được GIỮ nhưng chuyển từ NỀN sang **VIỀN + CHỮ** `#0068ff` (**4,74:1** ✓ đạt
+   AA 4,5:1 cho chữ thường, đo theo công thức tương phản WCAG). `#0055d4` cho 6,46:1 nếu sau này
+   cần dư ngưỡng — nhưng phải đổi CẢ viền lẫn chữ ở đây, và nhớ đo lại.
+   ⟳ 2026-10-19 (yêu cầu tiếp, kèm ảnh hộp SĐT: “đổi luôn viền xanh, chữ xanh”): 3 nút phụ
+   (“Gọi điện”/“Nhắn SMS”/“Sao chép”) nay cũng **VIỀN + CHỮ `#2563eb`** (trước là viền `#64748b` +
+   chữ `#0f172a`) ⇒ MỌI nút trong hộp cùng một màu xanh, khớp nút “Đóng” `.lpcb-btn`; dòng số
+   `.lpsdt-num` vẫn `#1d4ed8`. Tương phản chữ **5,17:1** ✓ AA, đường bao 5,17:1 > 3:1 ✓.
+   ⚠️ Lúc ĐANG CHẠM thì ĐẢO MÀU: nền `#2563eb` + chữ trắng (5,17:1 ✓) — ⛔ ĐỪNG quay lại nền xám
+   `#e2e8f0` khi chữ đã xanh: `#2563eb` trên `#e2e8f0` chỉ **4,16:1** (trượt AA 4,5:1).
+   (⟳ 2026-10-18 lượt trước — yêu cầu “khi chọn mới hiển thị màu nền”: nền xám `#f1f5f9` đã GỠ khỏi
+   trạng thái thường.)
+   ⛔ Đừng đổi **VIỀN** sang `#cbd5e1`/`#e2e8f0`: ~1,3–1,5:1 là nút biến mất khỏi nền hộp.
    ⟳ 2026-10-18: hộp có thêm **2 mục** (yêu cầu “thêm mục Nhắn SMS và mục Sao chép”) ⇒ nay 4 nút
    theo thứ tự: Gọi điện · **Nhắn SMS** (`<a href="sms:…">` + icon `#i-sms`) · Nhắn Zalo ·
    **Sao chép số** (`<button>` + icon `#i-copy`) rồi mới “Đóng”. (Lượt đầu đặt Zalo trước SMS;
@@ -2394,9 +2416,25 @@ body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
    ⚠️ `font-family: inherit` + `cursor: pointer` phải có vì mục “Sao chép” là **thẻ `<button>`**
    (nút KHÔNG tự thừa hưởng `font-family` như `<a>` ⇒ thiếu là chữ trong nút đổi sang font hệ thống,
    lệch hẳn 3 nút còn lại — đã thấy đúng kiểu lỗi này ở `.lpcb-btn`). */
-.lpsdt-act { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 10px; width: 100%; box-sizing: border-box; padding: 10px; border-radius: 8px; background: #f1f5f9; border: 1px solid #64748b; color: #0f172a; font-size: 15px; font-weight: 600; text-decoration: none; font-family: inherit; cursor: pointer; }
-.lpsdt-act:active { filter: brightness(0.94); }
-.lpsdt-act-zalo { background: #0068ff; border-color: #0068ff; color: #ffffff; }
+.lpsdt-act { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 10px; width: 100%; box-sizing: border-box; padding: 10px; border-radius: 8px; background: transparent; border: 1px solid #2563eb; color: #2563eb; font-size: 15px; font-weight: 600; text-decoration: none; font-family: inherit; cursor: pointer; }
+/* ⟳ 2026-10-18: nút phụ để NỀN TRONG SUỐT (trước là xám `#f1f5f9` ⇒ cả 4 nút đều trông như
+   “đang được chọn”). Nay **CHỈ HIỆN NỀN khi ĐANG CHẠM** (`:active`) — đúng yêu cầu “khi chọn
+   mới hiển thị màu nền”.
+   ⟳ 2026-10-19 (yêu cầu “đổi luôn viền xanh, chữ xanh”): nút phụ ăn `#2563eb` cả viền lẫn chữ ⇒
+   lúc ĐANG CHẠM phải ĐỔI SANG NỀN XANH + CHỮ TRẮNG (5,17:1 ✓) chứ ⛔ KHÔNG dùng lại nền xám
+   `#e2e8f0`: chữ `#2563eb` trên `#e2e8f0` chỉ **4,16:1** (trượt AA 4,5:1). */
+.lpsdt-act:active { background: #2563eb; color: #ffffff; filter: brightness(0.97); }
+/* ⟳ 2026-10-19 (yêu cầu “bỏ màu nền, khi chọn mới hiện màu nền” — người dùng CHỐT bỏ nền ĐẶC của
+   CẢ 2 nút màu, tức nút Zalo này lẫn nút “Đóng” `.lpcb-btn`): nút Zalo nay **NỀN TRONG SUỐT** +
+   viền & chữ `#0068ff` (**4,74:1** ✓) — vẫn đọc ra “nút Zalo” nhờ màu thương hiệu, mà không còn
+   “nặng” hơn các nút phụ trong cùng hộp.
+   ⚠️ Icon `#i-zalo` ăn `currentColor` ⇒ tự xanh theo chữ, ⛔ KHÔNG phải khai màu cho icon. */
+.lpsdt-act-zalo { background: transparent; border-color: #0068ff; color: #0068ff; }
+/* Khi ĐANG CHẠM mới hiện nền: đổ đầy màu thương hiệu `#0068ff` + chữ trắng (4,74:1 ✓).
+   ⚠️ PHẢI khai lại `color: #ffffff` NGAY ĐÂY: rule `.lpsdt-act-zalo` ngay trên đang đặt chữ màu
+   xanh, mà cả 2 rule cùng độ ưu tiên (2 lớp) ⇒ thiếu dòng này là **chữ xanh trên nền xanh**
+   (tương phản 1,0:1 — mất chữ lúc đang bấm). */
+.lpsdt-act-zalo:active { background: #0068ff; color: #ffffff; }
 .lpsdt-num { color: #1d4ed8; }
 
 .filter-row { display: flex; gap: 2px; }
@@ -2709,7 +2747,9 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
    yêu cầu “màu nền danh số đậm hơn cho dễ nhìn”; trước lượt này viên ở mức “Dịu” còn SÁNG HƠN
    thẻ nên nó đọc như một vết sáng, không như một cái viên. */
 /* ⚠️ Hai rule theo mức nền nay phải khai **BA** token: `--light-surface` (bảng chính + bảng
-   Tổng hợp) · `--light-card` (thẻ KH) · `--row1-bg` (DẢI NỀN hàng “tên + tiền” của bảng 3 hàng).
+   Tổng hợp) · `--light-card` (thẻ KH) · `--row1-bg` (SỌC NỀN XEN KẺ của bảng 3 hàng — ⟳ 2026-10-18
+   nay dùng cho **2 sọc**: hàng “tên + tiền” VÀ hàng “mã kh + sđt”, xem khối “SỌC NỀN XEN KẺ THEO
+   TỪNG DÒNG” cuối `@media (max-width: 639.98px)`; ⛔ tên token giữ nguyên, chỉ đổi công dụng).
    Chỉ khai một-hai cái là có mức “Sáng”/“Dịu” mà thẻ (hay bảng, hay dải) đứng im — nút “Nền”
    bấm vào như không có gì đổi ở nhóm bề mặt bị bỏ sót.
    ℹ️ `--row1-bg` là **màu ĐỤC**, không phải alpha (xem chú thích ở rule `body.light-mode` phía trên). */
@@ -3419,9 +3459,10 @@ body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color:
    (hàng viên SĐT + Mã KH rớt từ 1 xuống 2 dòng). */
 .kh-danhso { font-size: var(--fs-card); font-weight: var(--vien-weight) !important; padding: 0 var(--vien-pad-x); border: none; border-radius: var(--vien-radius); }
 .kh-name { font-size: var(--fs-card-big); font-weight: 500; flex: 1; line-height: 1.3; color: #60a5fa; }
-/* ⟳ 2026-10-17k: 2 ô TÊN KH (`.kh-name` trên thẻ, `.cell-tenkh` trên bảng) ăn cử chỉ NHẤN-GIỮ
-   0,5s ⇒ phải TẮT bôi-đen + bong bóng của HỆ ĐIỀU HÀNH đúng trên 2 ô đó, kẻo cú nhấn-giữ bị
-   iOS/Android “cướp” (đây chính là lý do cử chỉ này từng bị người dùng báo “không thấy” 2 lần):
+/* ⟳ 2026-10-17k → ⟳ 2026-10-19: 2 ô TÊN KH (`.kh-name` trên thẻ, `.cell-tenkh` trên bảng) nay ăn
+   cử chỉ CHẠM 1 LẦN là copy (yêu cầu người dùng 2026-10-19, đảo đường 2026-10-17k) ⇒ VẪN phải TẮT
+   bôi-đen + bong bóng của HỆ ĐIỀU HÀNH đúng trên 2 ô đó, kẻo cú chạm vừa copy vừa bung menu chọn
+   chữ (còn với cử chỉ nhấn-giữ của lượt cũ thì đây là thứ hay bị iOS/Android “cướp”):
    `user-select: none` chặn bôi đen, `-webkit-touch-callout: none` chặn menu nhấn-giữ của iOS.
    ⚠️ Chỉ khai cho 2 ô TÊN — ⛔ đừng đặt ở `.kh-card`/`tbody`: chặn luôn việc bôi đen nơi khác.
    ⚠️ `!important` KHÔNG cần: chưa rule nào khác đặt user-select cho 2 ô này. */
@@ -4542,11 +4583,24 @@ body.light-mode .cfg-select { background: #ffffff; color: #0f172a; border-color:
 body.light-mode .adv-btn { background: var(--ctl-light-bg); border-color: var(--ctl-light-line); color: #4b5563; }
 body.light-mode .adv-btn[data-active="1"] { background-color: #cfd6e0; border-color: var(--ic-hash); color: #0f172a; }
 
-.adv-frame { display: flex; flex-direction: column; gap: 7px; padding: 0 16px 18px; }
-.adv-lab { margin-top: 3px; font-size: 13px; font-weight: 600; color: var(--text-dim); }
+/* ⟳ 2026-10-18: người dùng “cho bảng này cao hơn và chữ to hơn” (tấm Lọc theo yêu cầu) ⇒ nới
+   ĐỆM + KHOẢNG CÁCH và nâng cỡ chữ của MỌI thứ trong tấm. Đo ở khổ 533×394: tấm 342px → 401px
+   (vẫn dưới trần 94vh = 370px? KHÔNG — xem ghi chú ở `.adv-modal` bên dưới), chữ nhập 15→17px.
+   ⚠️ Sửa tiếp thì sửa ở 6 rule ` .adv-* ` dưới đây; ⛔ đừng đụng `.ky-title` trần (nó dùng CHUNG
+   với tấm “Nợ cũ theo từng kỳ”).
+   ⟳ 2026-10-19 (yêu cầu MỚI, kèm ảnh tấm Lọc ở dark mode: “cho bảng này to hơn và chữ lớn hơn”):
+   nâng ĐỀU một nấc nữa — tiêu đề 23→**26px** · nhãn 15→**17** · ô nhập 17→**19** · gạch nối 15→**18** ·
+   nút nhanh 15→**17** · dòng đếm 16→**18** · 2 nút dưới 17→**19**; đệm/khoảng cách cũng nới
+   (frame gap 10→12 · đệm 16/22→18/26 · ô nhập 13/14→15/16 · nút nhanh 11/14→13/16 ·
+   dòng đếm 13/14→15/16 · nút dưới 15/12→17/12) và tấm rộng hơn ở màn lớn:
+   `.adv-modal { max-width: 640px }` (trần chung `.modal` là 560px).
+   ⚠️ Hệ quả ĐO ĐƯỢC: dòng đếm “Đang xem: …” ở khổ hẹp (≤ ~400px) nay **xuống 2 dòng** — chấp nhận,
+   vì yêu cầu là chữ LỚN hơn; ⛔ đừng “sửa” bằng cách hạ cỡ chữ riêng dòng đó. */
+.adv-frame { display: flex; flex-direction: column; gap: 12px; padding: 0 18px 26px; }
+.adv-lab { margin-top: 3px; font-size: 17px; font-weight: 600; color: var(--text-dim); }
 .adv-in {
   width: 100%; box-sizing: border-box;
-  padding: 10px 12px; border-radius: 10px;
+  padding: 15px 16px; border-radius: 10px;
   border: 1px solid var(--border);
   /* ⚠️ Nền ô = `--dk-card` (bề mặt CONTROL của app, nhạt hơn nền tấm) — ⛔ ĐỪNG để
      `var(--navy-mid)`: token đó BẰNG ĐÚNG nền tấm (`.modal` = `#1a1d24` = `--navy-mid`) ⇒ ô nhập
@@ -4554,7 +4608,7 @@ body.light-mode .adv-btn[data-active="1"] { background-color: #cfd6e0; border-co
      #1a1d24 = **1,30:1** (đủ để nhận ra ô, không chói như ô trắng). */
   background: var(--dk-card);
   color: var(--text);
-  font-family: 'Inter', sans-serif; font-size: 15px;
+  font-family: 'Inter', sans-serif; font-size: 19px;
 }
 .adv-in:focus { border-color: #3b82f6; outline: none; }
 .adv-in::placeholder { color: #5f697a; }
@@ -4562,18 +4616,18 @@ body.light-mode .adv-in { background: #ffffff; color: #0f172a; border-color: #d1
 body.light-mode .adv-in::placeholder { color: #8d98a4; }   /* chép nhánh light của placeholder ô tìm kiếm (1369) */
 .adv-range { display: flex; align-items: center; gap: 8px; }
 .adv-range .adv-in { flex: 1 1 0; min-width: 0; }
-.adv-dash { flex: 0 0 auto; color: var(--text-dim); font-size: 15px; }
-.adv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 3px; }
+.adv-dash { flex: 0 0 auto; color: var(--text-dim); font-size: 18px; }
+.adv-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 3px; }
 .adv-chip {
-  font-family: 'Inter', sans-serif; font-size: 13px;
-  padding: 8px 11px; border-radius: 999px;
+  font-family: 'Inter', sans-serif; font-size: 17px;
+  padding: 13px 16px; border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--dk-card); color: var(--text);
   cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
 .adv-chip:active { background: rgba(59,130,246,0.28); }
 body.light-mode .adv-chip { background: #ffffff; border-color: #d1d5db; color: #0f172a; }
-.adv-count { margin-top: 5px; padding: 10px 12px; border-radius: 10px; background: rgba(148,163,184,0.14); font-size: 14px; line-height: 1.5; color: var(--text); }
+.adv-count { margin-top: 5px; padding: 15px 16px; border-radius: 10px; background: rgba(148,163,184,0.14); font-size: 18px; line-height: 1.5; color: var(--text); }
 .adv-count b { color: #60a5fa; }
 body.light-mode .adv-count { background: #e8ecf1; color: #0f172a; }
 /* Số in ĐẬM trong dòng đếm: light dùng `#1d4ed8` (**6,3:1** trên nền hộp `#e8ecf1`) — ⛔ không dùng
@@ -4581,11 +4635,11 @@ body.light-mode .adv-count { background: #e8ecf1; color: #0f172a; }
 body.light-mode .adv-count b { color: #1d4ed8; }
 .adv-acts { display: flex; gap: 8px; margin-top: 5px; }
 .adv-act {
-  flex: 1 1 0; padding: 11px 12px; border-radius: 10px;
+  flex: 1 1 0; padding: 17px 12px; border-radius: 10px;
   border: 1px solid var(--border);
   /* Nền control (như `.adv-in`), ⛔ không `var(--navy-mid)` — xem chú thích ở `.adv-in`. */
   background: var(--dk-card); color: var(--text);
-  font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600;
+  font-family: 'Inter', sans-serif; font-size: 19px; font-weight: 600;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
 .adv-act:active { background: rgba(59,130,246,0.28); }
@@ -4600,6 +4654,13 @@ body.light-mode .adv-act { background: #ffffff; border-color: var(--light-edge);
 .adv-act-primary { background: #2563eb; border-color: #2563eb; color: #ffffff; }
 .adv-act-primary:active { background: #1d4ed8; }
 body.light-mode .adv-act-primary { background: #2563eb; border-color: #2563eb; color: #ffffff; }
+/* ⟳ 2026-10-18: tiêu đề tấm “Lọc theo yêu cầu” to hơn (20 → 23px) — ⛔ PHẢI scope vào `.adv-modal`:
+   `.ky-title` trần (dòng ~4459) dùng CHUNG với tấm “Nợ cũ theo từng kỳ”; đổi trần là tấm kia
+   cũng to theo ngoài ý muốn.
+   ⟳ 2026-10-19: 23 → **26px** (yêu cầu “chữ lớn hơn” — xem chú thích khối `.adv-frame`) và tấm
+   rộng hơn ở màn lớn: trần chung `.modal` là 560px ⇒ riêng tấm này **640px**. */
+.adv-modal .ky-title { font-size: 26px; }
+.adv-modal { max-width: 640px; }
 
 /* ── RESPONSIVE ─────────────────────────── */
 /* Mobile: cards */
@@ -5062,53 +5123,38 @@ body.force-desktop .table-view { display: block; }
      cùng nhau; ⛔ đừng hạ `--row-pad-y` về 0 trừ khi người dùng muốn “sát như cũ” lần nữa. */
     padding: var(--row-pad-y, 0) var(--row-pad-r) var(--row-pad-y, 0) var(--row-pad-l);
   }
-  /* ── SỌC XEN KẺ “ZEBRA” — ⚠️ **ĐÃ BỊ THAY Ở LƯỢT MỚI NHẤT** (xem khối “DẢI NỀN Ở HÀNG
-     TÊN + TIỀN” bên dưới, chỗ 2 rule `nth-child(even)` cũ). Giữ đoạn chú thích này vì nó ghi
-     LÝ DO chọn màu pha xanh accent (đo tương phản) — màu đó nay được tái dùng cho dải nền.
-     ⛔ Đừng dựng lại `nth-child(even)`; yêu cầu mới là **bỏ xen kẻ**, không phải “đổi xen kẻ”.
-     Yêu cầu người dùng: “có nên cho màu nền xen kẻ từng ô cho dễ nhìn không”.
-     Bảng **3 hàng/KH** không còn cho mắt bám theo dòng như bảng 1 hàng, nên sọc xen kẻ là
-     cách rẻ nhất để mắt không lạc hàng khi đã đi xa mép trái.
-
-     ⚠️ Chọn SỌC PHA XANH ACCENT (không dùng xám trung tính) vì lý do ĐO ĐƯỢC — đo ở
-     light mode trên chữ TIỀN (ngưỡng AA 4,5:1):
+  /* ── SỌC NỀN XEN KẺ THEO TỪNG DÒNG — quay lại lần thứ BA (⟳ 2026-10-18) ─────────────────────
+     ⚠️ LỊCH SỬ, ĐỌC KỸ TRƯỚC KHI ĐỔI TIẾP (mục này đã đảo chiều 3 lần):
+       · ① đầu tiên: sọc xen kẻ **theo KHÁCH** — `tbody tr:nth-child(even)` tô nền `tr`;
+       · ② người dùng: “bỏ màu xen kẻ các ô và thay vào đó là màu nền ở hàng tên kh và số tiền”
+         ⇒ XOÁ 2 rule `nth-child(even)`, thay bằng **DẢI NỀN** ở hàng “tên + tiền” của MỌI khách;
+       · ③ ⟳ NAY người dùng: “cho từng ô màu xen kẻ khi xem dạng bảng, ví dụ ô đầu nền xám thì ô
+         kế nền trắng” ⇒ **quay lại xen kẻ**, nhưng theo **TỪNG DÒNG trong mỗi khách** — rule thật
+         ở khối “SỌC NỀN XEN KẺ THEO TỪNG DÒNG” cuối `@media` này (⛔ KHÔNG dựng lại
+         `nth-child(even)`: nó tô theo KHÁCH, mà nay yêu cầu là theo DÒNG).
+     ⚠️ Màu sọc vẫn là token `--row1-bg` (tông PHA XANH ACCENT, không phải xám trung tính) — có
+     LÝ DO ĐO ĐƯỢC, đo ở light mode trên chữ TIỀN (ngưỡng AA 4,5:1):
          xám `rgba(15,23,42,…)`      : 3% → 4,55 · **4% → 4,46 (ĐÃ dưới AA)**
          xanh `rgba(59,130,246,…)` + `#dc2626`: **5% → 4,56** · 6% → ~4,5
      ⇒ sọc xanh vừa ĐẬM thấy rõ hơn vừa giữ được AA (xám hạ độ tương phản nhanh hơn).
-     ⟳ **CẬP NHẬT (lượt “màu nền ở tên kh và số tiền còn nhạt quá”):** dải nền nay
-     **light 14% · dark 15%** (trước 5% / 7%) — mắt người dùng còn thấy nhạt ở 5–7%.
+     ⟳ Mức đang dùng: **light 14% · dark 15%** (trước 5% / 7%) — mắt người dùng còn thấy nhạt ở 5–7%.
      ⚠️ NHƯNG alpha cao chỉ giữ được AA khi chữ tiền hạ 1 nấc `#dc2626 → #b91c1c`:
          light 14% + `#dc2626` → **4,11:1 ✗** · light 14% + `#b91c1c` → **5,51:1 ✓**
          dark  15% + `rgb(255,136,136)` → **6,12:1 ✓**
      Đo toàn bộ màu chữ khi đó: light 14% → tên `18,3` ✓ · mã kh `9,0` ✓ · mã sổ `6,6` ✓ ·
      danh số `6,2` ✓; dark 15% → tên `11,4` ✓ · mã kh `11,4` ✓ · mã sổ `5,5` ✓ · danh số `4,59` ✓.
      ⛔ Trần: light **14%** (với `#b91c1c`) · dark **~15%** (16% → danh số 4,51:1; 20% → 4,27:1 ✗).
-     ⛔ **MỨC ĐANG DÙNG: dark `0.07` · light `0.05` = TRẦN của light.** Lên `0.06` là chữ
-     tiền tụt còn `4,28` (dưới AA).Ở dark còn dư nhiều (10% mới còn 5,55) nhưng 7% đã đủ
-     để xen kẻ thấy rõ mà không biến hàng thành “khối xanh”.
-     ⛔ **`!important` + KHÔNG còn `:not(:hover):not(:active)`** (đổi ở lượt “bỏ màu khi chạm”):
-     trước đây sọc phải **nhường chỗ** cho màu hover nên mới có `:not(:hover):not(:active)`.
-     Nay yêu cầu là **không đổi màu khi chạm** ⇒ sọc phải **đứng vững trong lúc hover/chạm**,
-     và vì luật “không đổi màu” ở trên dùng `!important` nên sọc cũng phải `!important`; khi
-     hai bên cùng `!important` thì **độ cụ thể quyết định**, và selector này (0,5,3) cao hơn
-     luật trong suốt (0,3,3) ⇒ hàng CHẴN giữ sọc, hàng LẺ trong suốt — không hàng nào đổi màu.
-     ⛔ Đừng gỡ `!important` ở đây: gỡ là hàng chẵn mất sọc khi chạm (quay lại đúng lỗi vừa sửa).
-     ⛔ `:not(.highlighted):not(.highlighted-purple)`: hàng ĐƯỢC ĐÁNH DẤU phải giữ nền
-     cam/tím của nó — sọc đè lên là mất dấu (và đè cả `box-shadow` vạch mép trái).
      ℹ️ Chỉ áp cho **bảng 3 hàng trên điện thoại** (khối `@media` này + `force-desktop`).
-     Bảng máy tính (≥640px) giữ nguyên — bố cục 14 cột đã ổn định, sọc xen kẻ ở đó là
-     thay đổi riêng, chỉ làm khi có yêu cầu. */
+     Bảng máy tính (≥640px) giữ nguyên — người dùng đã CHỐT “chỉ bảng điện thoại”. */
   /* ── KHÔNG ĐỔI MÀU KHI RÊ CHUỘT / CHẠM TRÊN BẢNG 3 HÀNG (yêu cầu “bỏ hiển thị màu khi chạm
      vào ở bảng này”) — khối `@media (max-width: 639.98px)` NÀY mới là bảng trên điện thoại;
      khối `@media (min-width: 640px)` ở trên là bảng máy tính và **KHÔNG đụng tới**.
-     Cách làm KHÔNG phải “tắt hover” mà là **trả nền về ĐÚNG nền chuẩn của hàng** — vì mỗi hàng
-     có nền chuẩn khác nhau: hàng LẺ trong suốt, hàng CHẴN có sọc, hàng ĐÁNH DẤU có cam/tím.
-     ⚠️ Rất dễ làm sai ở đây: nếu chỉ đặt `background: transparent` cho mọi hàng thì hàng CHẴN
-     sẽ **MẤT SỌC khi chạm** — vẫn là “đổi màu khi chạm”, chỉ khác chiều.
-     🔄 **CẬP NHẬT (lượt “bỏ sọc xen kẻ”):** SỌC ĐÃ BỊ XOÁ ⇒ **mọi hàng nay nền trong suốt**,
-     nên rule `transparent !important` ngay dưới đã đúng cho **MỌI** hàng — không còn ngoại lệ
-     nào phải nhớ. Dải nền hàng “tên + tiền” là `::after` của HÀNG nên **không bị rule này
-     ảnh hưởng** (nó không phải `background` của hàng) ⇒ chạm vào vẫn giữ dải, đúng yêu cầu.
+     Cách làm KHÔNG phải “tắt hover” mà là **trả nền về ĐÚNG nền chuẩn của hàng** — và nay
+     **MỌI hàng** đều có `background` TRONG SUỐT: sọc xen kẻ là 2 pseudo-element `::before`/
+     `::after` của hàng (⛔ KHÔNG phải `background` của `tr`), hàng ĐÁNH DẤU có cam/tím riêng.
+     ⇒ rule `transparent !important` ngay dưới đúng cho **MỌI** hàng, không còn ngoại lệ nào phải
+     nhớ; và vì sọc là pseudo-element nên **không bị rule này ảnh hưởng** ⇒ chạm vào hàng vẫn giữ
+     sọc, đúng yêu cầu “bỏ hiển thị màu khi chạm”.
      ⚠️ `!important` là BẮT BUỘC: phải thắng `tbody tr:hover` (0.40) và `tbody tr:active` (0.50)
      ở rule nền (~1486) và `body.light-mode .table-view tr:hover` (`#e8eefc`) — luật này có độ
      cụ thể cao hơn nên nếu không `!important` sẽ **thấy như chưa sửa gì**.
@@ -5116,8 +5162,10 @@ body.force-desktop .table-view { display: block; }
      hàng đang được đánh dấu phải giữ nền cam/tím **trong lúc vừa nhấn** (nhấn 2 lần ⇒ cú
      nhấn thứ hai rơi vào lúc hàng vừa `:active` vừa `.highlighted`; thiếu `:not()` là hàng
      chớp về nền `:active` đúng lúc người dùng cần thấy phản hồi nhất).
-     ℹ️ (Lịch sử) Hàng CHẴN từng giữ sọc nhờ rule sọc được nâng `!important` + bỏ
-     `:not(:hover):not(:active)` — nay sọc không còn nên phần đó không cần nữa. */
+     ℹ️ (Lịch sử) Hồi sọc còn tô bằng `background` của `tr` THEO KHÁCH (`nth-child(even)`), sọc
+     phải nâng `!important` + bỏ `:not(:hover):not(:active)` để không mất khi chạm — nay sọc là
+     pseudo-element nên phần đó KHÔNG còn cần; ⛔ đừng quay lại cách tô nền `tr` (sẽ phải làm lại
+     toàn bộ phần chống-đổi-màu này). */
   tbody tr:not(.highlighted):not(.highlighted-purple):hover,
   tbody tr:not(.highlighted):not(.highlighted-purple):active { background: transparent !important; }
   /* Hàng ĐÃ ĐÁNH DẤU: chạm vào không được nhạt màu.
@@ -5132,44 +5180,54 @@ body.force-desktop .table-view { display: block; }
   body.light-mode.force-desktop .table-view tbody tr.highlighted:active { background: #fef3c7 !important; }
   body.light-mode.force-desktop .table-view tbody tr.highlighted-purple:hover,
   body.light-mode.force-desktop .table-view tbody tr.highlighted-purple:active { background: #e8f0ff !important; }
-  /* ── DẢI NỀN Ở HÀNG “TÊN KH + SỐ TIỀN” — **THAY CHO SỌC XEN KẺ** ──────────────────────────
-     Yêu cầu người dùng: “bỏ màu xen kẻ các ô và thay vào đó là màu nền ở hàng tên kh và số tiền”.
-     ⛔ Đã XOÁ 2 rule `tbody tr:nth-child(even)` (sạch hẳn, không còn nhánh xen kẻ nào ở bảng
-     điện thoại). Hệ quả đáng nhớ: mọi hàng nay **có nền trong suốt** ⇒ rule
-     “không đổi màu khi rê/chạm” (`background: transparent !important`) đã đúng cho MỌI hàng,
-     không cần nhánh nào cho hàng chẵn nữa (xem chú thích ở khối đó).
-     ── Vì sao dùng `::after` của HÀNG chứ không tô nền 2 ô tên/tiền:
-        hai ô đó là 2 ô lưới khác nhau nên nền của chúng **hở đúng `column-gap` 4px** ở giữa,
-        và cũng **không phủ hết lề hàng** (6px trái / 2px phải). `::after` đặt ở
-        `grid-area: 1 / 1 / 2 / -1` trải **cả 2 cột trong ĐÚNG track hàng 1** ⇒ tự khớp chiều
-        cao hàng 1, tự nối qua khe, **không cần con số ma nào cho 4px đó**.
+  /* ── SỌC NỀN XEN KẺ THEO TỪNG DÒNG (⟳ 2026-10-18) — rule THẬT của lượt “cho từng ô màu xen kẻ”
+     Yêu cầu người dùng: “cho từng ô màu xen kẻ khi xem dạng bảng, ví dụ ô đầu nền xám thì ô kế
+     nền trắng”. Người dùng đã được **HỎI TRƯỚC** (vì đây là ĐẢO lại lượt “bỏ sọc xen kẻ”) và CHỐT:
+       · kiểu **theo từng DÒNG trong mỗi khách** ⇒ mỗi khách lặp lại: hàng1 SỌC · hàng2 TRẮNG ·
+         hàng3 SỌC — và ⛔ **khách kế tiếp CŨNG bắt đầu bằng sọc** (⟳ khác `nth-child(even)` cũ:
+         bản cũ tô theo KHÁCH nên khách chẵn bị đảo chiều);
+       · ⛔ **chỉ bảng điện thoại** (khối `@media` này); bảng 14 cột ≥640px GIỮ NGUYÊN.
+     ⚠️ Vì sao ⛔ KHÔNG dùng lại `nth-child(even)`: mỗi KHÁCH là **MỘT `tr`** chứa CẢ 3 dòng (lưới
+     `grid-template-areas` 3 hàng × 4 cột) ⇒ `tr:nth-child(...)` chỉ phân biệt được KHÁCH, không
+     phân biệt được dòng. Muốn “từng dòng” thì phải phủ nền bằng pseudo-element đặt vào ĐÚNG track:
+       · `::after`  → `grid-area: 1 / 1 / 2 / -1` = hàng “TÊN KH + TIỀN NỢ”;
+       · `::before` → `grid-area: 3 / 1 / 4 / -1` = hàng “MÃ KH + SĐT” (MỚI của lượt này);
+       · hàng 2 (“DANH SỐ · MÃ SỔ · THÁNG”) ⛔ KHÔNG phủ gì ⇒ trong suốt = nền bảng = ô TRẮNG.
+     ── Vì sao dùng pseudo-element của HÀNG chứ không tô nền từng `td`:
+        hai ô cùng một dòng là 2 ô lưới khác nhau nên nền của chúng **hở đúng `column-gap` 4px**
+        ở giữa, và **không phủ hết lề hàng** (6px trái / 8px phải). Pseudo-element trải hết các
+        cột trong đúng track ⇒ tự khớp chiều cao dòng, tự nối qua khe, **không cần con số ma nào**.
      ⚠️ `align-self: stretch` là BẮT BUỘC: lưới có `align-items: center` nên mặc định ô này
-     bị co về **0** chiều cao (dải biến mất, mà số đo vẫn “đúng” vì không có gì để đo).
+     bị co về **0** chiều cao (sọc biến mất, mà số đo vẫn “đúng” vì không có gì để đo).
      ⚠️ `z-index: -1` phải đi KÈM `isolation: isolate` ở `tr`: `tr` không tự tạo stacking
-     context nên `z-index: -1` sẽ tụt xuống **dưới cả nền bảng** ⇒ dải vô hình. `isolation`
+     context nên `z-index: -1` sẽ tụt xuống **dưới cả nền bảng** ⇒ sọc vô hình. `isolation`
      tạo context mà KHÔNG đụng `position`/`z-index` của hàng (an toàn hơn `position: relative`).
-     ⚠️ `pointer-events: none`: dải nằm đè cả TRACK HÀNG 1, mà hàng có `ondblclick="toggleOrange()"`)
-     — không tắt thì cú nhấn 2 lần rơi vào dải và **không đánh dấu được thẻ/hàng**.
+     ⚠️ `pointer-events: none`: sọc nằm đè cả TRACK của dòng, mà hàng có `ondblclick="toggleOrange()"`
+     — không tắt thì cú nhấn 2 lần rơi vào sọc và **không đánh dấu được thẻ/hàng**.
      ℹ️ 2026-10-16: lý do cũ (ô TÊN có `onclick="showDetail()"`) nay KHÔNG còn — tên khách đã
      thôi bấm được (cả thẻ lẫn bảng), nhưng `pointer-events: none` VẪN PHẢI GIỮ vì lý do vừa nêu.
      ⛔ `:not(.highlighted):not(.highlighted-purple)`: hàng ĐƯỢC ĐÁNH DẤU đã có nền cam/tím,
-     dải đè lên là mất dấu.
-     ⚠️ Bề rộng dải lấy từ token `--row-pad-l` / `--row-pad-r` (CÙNG token với `padding` của
-     hàng) ⇒ đổi lề hàng là dải vẫn phủ khít, không hở mép.
-     ⟳ **2026-10-18 — DẢI ĂN LÊN TỚI ĐƯỜNG KẺ** (yêu cầu người dùng: “cho màu nền tên sát với
-     đường kẻ”; ảnh kèm = dải xanh ở hàng TÊN còn hở một khe ngay dưới đường kẻ):
-     đệm trên của `tr` (`--row-pad-y` = 3px) nằm NGOÀI track hàng 1 nên dải chỉ bắt đầu từ MÉP
-     TRÊN VÙNG NỘI DUNG ⇒ khe đo được **3px** (đệm) + 0,96px (viền ngăn bị gộp của
-     `border-collapse`) giữa đường kẻ và dải. Nay thêm
-     `margin-top: calc(-1 * var(--row-pad-y))` ⇒ dải nở lên đúng 3px, mép trên dải trùng mép trên
-     `tr` = **đúng vị trí đường kẻ** ⇒ khe còn 0.
-     ⚠️ CHỈ nới LÊN TRÊN: phía dưới dải là khe `--row-gap-lines` (5px) nối xuống hàng “mã kh” —
-     **không có đường kẻ nào ở đó**, nới xuống là dải tràn sang hàng mã kh (mất tác dụng phân hàng).
-     ⚠️ `--row-pad-y` khai ở `body.force-desktop .table-view`, mà `::after` là con của `tr` ⇒ vẫn
-     kế thừa được biến; đổi `--row-pad-y` là dải tự bám theo, ⛔ không phải sửa số cứng ở đây.
-     ⚠️ Hàng ĐÁNH DẤU không dùng dải này (`:not(.highlighted)…`) nên vạch/nền cam-tím không đổi. */
-     ℹ️ Màu: `--row1-bg` (`:root` = dark **15%**, `body.light-mode` = light **14%**) — tông của sọc cũ,
-     đã đo AA cho chữ tiền/mã/tên trên nó. */
+     sọc đè lên là mất dấu (và đè cả `box-shadow` vạch mép trái).
+     ⚠️ Bề rộng sọc lấy từ token `--row-pad-l` / `--row-pad-r` (CÙNG token với `padding` của
+     hàng) ⇒ đổi lề hàng là sọc vẫn phủ khít, không hở mép.
+     ⟳ **2026-10-18 — SỌC ĂN RA TỚI 2 MÉP NGOÀI CỦA KHÁCH**: đệm dọc của `tr`
+     (`--row-pad-y` = 3px) nằm NGOÀI track lưới nên sọc chỉ bắt đầu từ mép vùng NỘI DUNG, hở
+     **3px** + 0,96px (viền ngăn bị gộp của `border-collapse`) so với đường kẻ. Nay nới MỘT NẤC
+     ĐỆM ra phía NGOÀI ở CẢ HAI sọc, mỗi sọc nới về phía mép của nó:
+       · sọc HÀNG 1 nới **LÊN**:   `margin-top: calc(-1 * var(--row-pad-y))`   (giữ từ lượt trước)
+       · sọc HÀNG 3 nới **XUỐNG**: `margin-bottom: calc(-1 * var(--row-pad-y))`
+     ⇒ mép NGOÀI của mỗi khách bao giờ cũng là mép sọc, mép TRONG (cạnh hàng 2) luôn là nền trắng.
+     ⛔ ĐỪNG nới vào phía TRONG: đó là khe `--row-gap-lines` (5px) — sọc sẽ tràn lên/xuống hàng 2
+     và mất đúng hình “xám · trắng · xám” mà người dùng đã chọn.
+     ⚠️ `--row-pad-y` khai ở `body.force-desktop .table-view`, pseudo-element là con của `tr` ⇒ vẫn
+     kế thừa được biến; đổi `--row-pad-y` là sọc tự bám theo, ⛔ đừng thay bằng số cứng.
+     ℹ️ Màu: `--row1-bg` (`:root` = dark **15%**, `body.light-mode` = light **14%**) — tông của sọc
+     cũ, đã đo AA cho chữ tiền/mã/tên trên nó (xem khối “SỌC NỀN XEN KẺ THEO TỪNG DÒNG” ở đầu
+     `@media` này). ⛔ Tên token vẫn là `--row1-bg` dù nay dùng cho **2** sọc: đổi tên là phải sửa
+     cả `:root`, 5 khối `body.light-mode[data-surface]` và mọi chú thích — ⛔ không đáng.
+     ⚠️ Cả hai sọc cùng `z-index: -1` nên thứ tự vẽ theo tree order (`::before` trước `::after`)
+     — hai sọc nằm ở 2 track khác nhau nên ⛔ không đè lên nhau.
+     ℹ️ `@media print` đã ẩn cả `tr::after` LẪN `tr::before` (xem rule gần cuối file). */
   body.force-desktop .table-view tbody tr { isolation: isolate; }
   body.force-desktop .table-view tbody tr:not(.highlighted):not(.highlighted-purple)::after {
     content: '';
@@ -5177,6 +5235,17 @@ body.force-desktop .table-view { display: block; }
     align-self: stretch;
     justify-self: stretch;
     margin: calc(-1 * var(--row-pad-y)) calc(-1 * var(--row-pad-r)) 0 calc(-1 * var(--row-pad-l));
+    background: var(--row1-bg);
+    z-index: -1;
+    pointer-events: none;
+  }
+  /* Sọc thứ HAI — hàng 3 “MÃ KH + SĐT”. Nới XUỐNG cho ĐỐI XỨNG với sọc hàng 1 (xem chú thích trên). */
+  body.force-desktop .table-view tbody tr:not(.highlighted):not(.highlighted-purple)::before {
+    content: '';
+    grid-area: 3 / 1 / 4 / -1;
+    align-self: stretch;
+    justify-self: stretch;
+    margin: 0 calc(-1 * var(--row-pad-r)) calc(-1 * var(--row-pad-y)) calc(-1 * var(--row-pad-l));
     background: var(--row1-bg);
     z-index: -1;
     pointer-events: none;
@@ -5739,6 +5808,9 @@ body.force-desktop .table-view { display: block; }
        Dựng theo khuôn “copy” quen thuộc (ô sau + đường viền ô trước lộ ra ở góc trên-trái), cùng
        lưới 24×24 · `stroke-width: 2.2` · `currentColor` — ⛔ đừng vẽ đặc/đổi lưới. -->
   <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8.6" y="9.4" width="12.4" height="12.2" rx="2.2"/><path d="M5.4 15.2h-.8A2.2 2.2 0 0 1 2.4 13V4.6A2.2 2.2 0 0 1 4.6 2.4h8.4A2.2 2.2 0 0 1 15.2 4.6v.8"/></symbol>
+  <!-- `i-mobile` — hình điện thoại. ⚠️ Còn dùng ở mục lọc “KH chưa gọi” của thanh công cụ (`selectLoai`);
+       ⛔ KHÔNG còn dùng cho hộp NHẤN-GIỮ mã KH nữa (nút “Mở app EVNHCMC” đã gỡ 2026-10-18) — nhưng
+       ⛔ đừng xoá icon: xoá là mục lọc kia mất hình. -->
   <symbol id="i-mobile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.2" y="2.2" width="11.6" height="19.6" rx="2.4"/><path d="M11 18.1h2"/></symbol>
   <!-- ⟳ 2026-10-18: `#i-share` — nút “Chia sẻ / mở app khác” của hộp NHẤN-GIỮ MÃ KH (hình “share-2”
        quen thuộc: 2 mũi nối + 3 chấm). Đúng 3 quy tắc icon ở đầu khối sprite: lưới 24×24, nét
@@ -8853,15 +8925,16 @@ function renderCards(q='') {
        ghi chú KHÔNG đánh dấu thẻ. */
     return `<div class="kh-card${hdCount >= 2 ? ' multi-hd' : ''}" data-ma="${esc(r.ma_khach_hang)}" ondblclick="toggleOrange(event, this)">
       <div class="kh-card-top">
-        <!-- ⟳ 2026-10-17k (yêu cầu: “đổi chạm vô tên kh là copy sang NHẤN GIỮ 0,5 giây là copy tin
-             nhắn”): bỏ đường “chạm 1 lần” của lượt 2026-10-17h — TÊN nay ăn cử chỉ NHẤN-GIỮ
-             500ms (hằng LP_TEN_MS, xem hàm lpTenDown), nên ⛔ đã GỠ thuộc tính onclick ở đây.
+        <!-- ⟳ 2026-10-19 (yêu cầu: “bỏ chế độ nhấn giữ tên kh copy tin nhắn thành chạm vô tên kh
+             là copy tin nhắn”): TÊN quay lại CHẠM 1 LẦN là copy (đảo đường 2026-10-17k) ⇒ onclick
+             gọi lpTenTap(this) — xem khối “CHẠM VÀO TÊN KH” ở phần JS cuối file.
              ⛔ VẪN KHÔNG gắn showDetail(): tấm “Chi tiết” không còn đường mở, và người dùng đã
-             2 lần báo không muốn chạm tên mở bảng (2026-10-16). Chạm NHANH vào tên: KHÔNG copy,
-             cũng KHÔNG mở gì.
+             2 lần báo không muốn chạm tên mở bảng (2026-10-16).
+             ⚠️ Nhấn 2 lần VẪN là ĐÁNH DẤU CAM (ondblclick của cả thẻ) ⇒ nhấn 2 lần trên ô tên thì
+             vừa copy vừa đánh dấu; muốn đánh dấu “sạch” thì nhấn 2 lần ở chỗ khác trên thẻ.
              ⛔ KHÔNG dùng dấu backtick trong chú thích NÀY: nó nằm TRONG một template literal,
              backtick sẽ đóng chuỗi sớm và cả script không parse được. -->
-        <div class="kh-name" style="cursor:pointer">${hi(r.ten_khach_hang,q)||'—'}</div>
+        <div class="kh-name" style="cursor:pointer" onclick="lpTenTap(this)">${hi(r.ten_khach_hang,q)||'—'}</div>
         <div class="kh-tien-col">
           <!-- ⚠️ LỚP pay-tap + onclick = CHẠM VÀO SỐ TIỀN LÀ MỞ TẤM “Thanh toán cho điểm dùng điện”
                (yêu cầu người dùng). event.stopPropagation() để cú chạm không lọt lên thẻ card
@@ -8960,13 +9033,12 @@ function renderTable(q='') {
            được “bảng máy tính không đổi”. Tên GỐC nay ở thuộc tính data-ten (xem chú thích 2026-10-17k ngay dưới).
            ⛔ KHÔNG dùng dấu backtick trong chú thích NÀY: nó nằm TRONG một template literal của
            JS, backtick sẽ đóng chuỗi sớm và làm cả script không parse được (đã từng xảy ra). -->
-      <!-- ⟳ 2026-10-17k: ô TÊN KH của BẢNG nay cũng CHỈ copy khi NHẤN-GIỮ 500ms (cùng cử chỉ với
-           tên trên thẻ — xem lpTenDown() trong khối “NHẤN-GIỮ 0,5 GIÂY TRÊN TÊN KH”).
-           ⛔ ĐÃ BỎ thuộc tính title: trên điện thoại title hiện BONG BÓNG đúng lúc nhấn-giữ nên
-           CƯỚP mất cử chỉ (đây là một lý do cử chỉ này từng bị báo “không thấy”), và nó cũng là
-           một tooltip người dùng không muốn. Tên GỐC nay nằm ở thuộc tính data-ten (lpCopyText đọc).
+      <!-- ⟳ 2026-10-19: ô TÊN KH của BẢNG cũng CHẠM 1 LẦN là copy (cùng cử chỉ với
+           tên trên thẻ — xem lpTenTap() trong khối “CHẠM VÀO TÊN KH”).
+           ⛔ VẪN ĐỪNG thêm lại thuộc tính title: trên điện thoại title hiện BONG BÓNG che chữ và là
+           một tooltip người dùng không muốn. Tên GỐC nằm ở thuộc tính data-ten (lpCopyText đọc).
            ⛔ KHÔNG mở tấm “Chi tiết”. Không dùng backtick trong chú thích này. -->
-      <td class="cell-tenkh" style="cursor:pointer" data-ten="${esc(r.ten_khach_hang||'')}"><span class="ten-full">${hi(r.ten_khach_hang,q)||'—'}</span><span class="ten-ngan">${hi(tenKHNgan(r.ten_khach_hang),q)||'—'}</span></td>
+      <td class="cell-tenkh" style="cursor:pointer" onclick="lpTenTap(this)" data-ten="${esc(r.ten_khach_hang||'')}"><span class="ten-full">${hi(r.ten_khach_hang,q)||'—'}</span><span class="ten-ngan">${hi(tenKHNgan(r.ten_khach_hang),q)||'—'}</span></td>
       <td class="cell-addr">${hi(r.dia_chi,q)||'—'}</td>
       <td class="cell-dim">${hi(r.ma_sogcs,q)||'—'}</td>
       <td class="cell-dim">${hi(r.danh_so,q)||'—'}</td>
@@ -9160,8 +9232,9 @@ function saoLuuDuLieu() {
    ⟳ 2026-10-17l (yêu cầu người dùng: “tôi muốn chạm vô mã kh là copy, bỏ nhảy tới app evnhcmc”):
    ĐÃ GỠ đường MỞ APP. Chạm viên mã KH / ô mã bảng nay CHỈ copy rồi báo hộp “✓ Đã copy mã KH …”,
    ⛔ không `window.open` nữa ⇒ không rời trang đang xem danh sách nợ. Hằng số hoãn `LP_APP_MS` đã
-   XOÁ; hàm `moAppEVNHCMC` thì ⟳ 2026-10-18 được DỰNG LẠI nhưng CHỈ để nút “Mở app EVNHCMC” của hộp
-   NHẤN-GIỮ mã KH gọi (xem khối “NHẤN-GIỮ 0,5s TRÊN MÃ KH”) — ⛔ hàm đó vẫn KHÔNG được gọi ở đây. */
+   XOÁ; hàm `moAppEVNHCMC` thì 2026-10-18 được DỰNG LẠI (chỉ để nút “Mở app EVNHCMC” của hộp
+   NHẤN-GIỮ mã KH gọi) rồi ⟳ **CÙNG NGÀY LẠI XOÁ** khi nút đó bị gỡ — ⛔ hàm đó KHÔNG BAO GIỜ được
+   gọi ở đây. */
 function copyMaKH(e, el) {
   e.stopPropagation();
   const txt = ((el && el.textContent) || '').trim();
@@ -9182,14 +9255,16 @@ function copyMaKH(e, el) {
   lpShowCopyBox(txt);                                                            // (3)
 }
 
-/* 📜 LỊCH SỬ “MỞ APP EVNHCMC” — đã ĐẢO CHIỀU 2 lần, đọc trước khi đổi tiếp:
+/* 📜 LỊCH SỬ “MỞ APP EVNHCMC” — đã ĐẢO CHIỀU 3 lần, đọc trước khi đổi tiếp:
      · 2026-10-17k: `LP_APP_MS` + `EVNHCMC_PKG`/`EVNHCMC_WEB`/`moAppEVNHCMC()` sống ở ĐÂY và được
        `copyMaKH()` gọi qua `setTimeout(…, 800)` ⇒ CHẠM mã KH vừa copy vừa mở app.
      · 2026-10-17l: người dùng đòi “chạm vô mã kh là copy, bỏ nhảy tới app evnhcmc” ⇒ XOÁ khối đó.
-     · **2026-10-18 (nay) DỰNG LẠI nhưng KHÁC ĐƯỜNG DÙNG**: `EVNHCMC_PKG`/`EVNHCMC_WEB`/
+     · 2026-10-18 (lượt 1): DỰNG LẠI nhưng KHÁC ĐƯỜNG DÙNG — `EVNHCMC_PKG`/`EVNHCMC_WEB`/
        `moAppEVNHCMC()` nằm trong khối “NHẤN-GIỮ 0,5s TRÊN MÃ KH” (ngay sau các listener `lpSdt*`)
        và CHỈ chạy khi người dùng bấm nút “Mở app EVNHCMC” trong hộp nhấn-giữ.
-       ⛔ `copyMaKH()` KHÔNG gọi hàm này nữa — chạm mã KH vẫn CHỈ copy (đúng yêu cầu 2026-10-17l). */
+     · ⟳ 2026-10-18 (lượt 2, NAY): người dùng “bỏ mở app evnhcmc, trong chia sẻ app không có những
+       app như evnhcmc” ⇒ GỠ nút đó khỏi hộp + **XOÁ LẦN HAI** cả 3 thứ trên (không còn ai gọi).
+       ⛔ `copyMaKH()` chưa từng gọi hàm này — chạm mã KH vẫn CHỈ copy (đúng yêu cầu 2026-10-17l). */
 
 /* ⛔ 2026-10-17k: `copyToClip()` đã bị XOÁ. Nó chỉ được `copyMaKH()` dùng và có 3 tật:
    (1) chỉ có Clipboard API, lỗi bị `.catch(()=>{})` nuốt im lặng ⇒ trên điện thoại “chạm mà
@@ -9200,76 +9275,46 @@ function copyMaKH(e, el) {
    Nay việc copy mã KH nằm trọn trong `copyMaKH()` (đồng bộ trước → Clipboard API → hộp tự copy),
    còn dấu ✓ chỉ là NHÁY NỀN xanh nên không phá DOM. */
 
-/* ══ NHẤN-GIỮ 0,5 GIÂY TRÊN TÊN KH = COPY CÂU TIN NHẮN NHẮC NỢ ═══════════════════════════════
-   ⟳ 2026-10-17k (yêu cầu người dùng: “đổi chạm vô tên kh là copy sang NHẤN GIỮ 0,5 giây là copy
-   tin nhắn”): ĐẢO đường 2026-10-17h. Nay `.kh-name` (thẻ) và `.cell-tenkh` (bảng) CHỈ copy khi
-   NHẤN-GIỮ **`LP_TEN_MS` = 500ms**; chạm nhanh KHÔNG copy (và cũng ⛔ không mở gì — tấm “Chi
-   tiết” đã bị gỡ mọi đường mở, xem chú thích ở `.kh-name` trong `renderCards`).
-   ⚠️ Cử chỉ này TỪNG bị người dùng báo “không thấy” 2 lần (lý do lượt 2026-10-17h phải đổi sang
-   chạm). Nay bù ĐỦ 3 đường hay làm nó bị hệ điều hành “cướp”:
-     (1) CSS tắt bôi-đen/callout ĐÚNG trên 2 ô tên — rule `.kh-name, .cell-tenkh` (xem khối CSS);
-     (2) ⛔ ĐÃ BỎ `title` khỏi ô tên của BẢNG: trên điện thoại title hiện bong bóng ĐÚNG LÚC
-         nhấn-giữ nên cướp cử chỉ (tên GỐC nay ở `data-ten`; `lpCopyText()` đọc lại từ đó);
-     (3) NGHE `contextmenu`: Android bắn sự kiện này ở ~500ms (TRƯỚC `pointerup`) nên chỉ dựa vào
-         timer thì tuỳ máy mà hụt ⇒ `preventDefault()` bong bóng rồi COPY luôn.
-   ⚠️ Nhấn-giữ mà KÉO quá `LP_TEN_SLOP` = 10px (người dùng đang CUỘN danh sách) thì HUỶ; nhả tay
-   sớm (<500ms) cũng huỷ.
-   ⛔ Cú `click` bắn ngay sau khi đã copy bị NUỐT bằng cờ `_lpFired` (pha capture): không nuốt thì
-   nó nổi lên thẻ/hàng và hai cú liên tiếp thành NHẤN 2 LẦN = ĐÁNH DẤU CAM (`toggleOrange`).
+/* ══ CHẠM VÀO TÊN KH = COPY CÂU TIN NHẮN NHẮC NỢ ═════════════════════════════════════════════
+   ⟳ 2026-10-19 (yêu cầu người dùng: “bỏ chế độ nhấn giữ tên kh copy tin nhắn thành chạm vô tên
+   kh là copy tin nhắn”): ĐẢO LẠI đường 2026-10-17k. Nay `.kh-name` (thẻ) và `.cell-tenkh` (bảng)
+   copy khi **CHẠM 1 LẦN** — ⛔ không còn ngưỡng 500ms, không còn theo dõi kéo-tay, không còn
+   nuốt `contextmenu`. Đây là lần THỨ BA đổi chiều (đọc kỹ trước khi đổi lần nữa):
+     · 2026-10-17h — người dùng đòi CHẠM ⇒ gỡ máy móc nhấn-giữ;
+     · 2026-10-17k — người dùng đòi lại NHẤN-GIỮ 0,5 GIÂY ⇒ dựng bộ `lpTen*`;
+     · 2026-10-19 — người dùng đòi lại CHẠM ⇒ GỠ HẲN bộ `lpTen*` (lượt này).
+   ⚠️ HỆ QUẢ CỐ Ý: `ondblclick="toggleOrange(...)"` (NHẤN 2 LẦN = ĐÁNH DẤU) vẫn nằm trên thẻ và
+   hàng bảng ⇒ nhấn 2 lần NGAY TRÊN Ô TÊN là vừa copy vừa đánh dấu. Muốn đánh dấu “sạch” thì nhấn
+   2 lần ở chỗ khác của thẻ/hàng (số tiền, danh số, khoảng trống). ⛔ Đừng “sửa” bằng cách chặn
+   `click` trên ô tên: cú chạm cần NỔI LÊN cho các listener khác ở `document` (ví dụ listener đóng
+   dropdown lọc `#nhomDropdown`).
    ⛔ KHÔNG dùng đường copy của mã KH cho TÊN (tên phải copy CẢ CÂU — `lpCopyText()` dựng câu), và
    ⛔ đừng thay `textContent` của ô tên để báo “✓ …”: ô tên có thể chứa `<mark>` tô sáng từ khoá
    tìm kiếm ⇒ báo bằng `showToast()` (không đụng DOM tên).
+   ⛔ ĐÃ XOÁ (đừng dựng lại): `LP_TEN_MS` · `LP_TEN_SLOP` · `_lpT/_lpEl/_lpX/_lpY/_lpGuard` ·
+   `lpTenDown/lpTenMove/lpTenUp/lpTenMenu/lpTenChay/lpTenHuy` · 5 listener `pointerdown/pointermove/
+   pointerup/pointercancel/contextmenu` pha capture · cờ `_lpFired` (cú `click` nay CHÍNH LÀ thao
+   tác copy nên không phải nuốt gì).
+   ⚠️ CSS VẪN GIỮ `user-select: none` + `-webkit-touch-callout: none` trên 2 ô tên (rule ngay dưới
+   `.kh-name`): có cử chỉ chạm mà không tắt thì cú chạm vừa copy vừa bôi-đen/bung menu chọn chữ của
+   hệ điều hành.
    CÂU COPY — một câu duy nhất, định dạng CHỐT (2026-10-17c/d/i):
      `Tiền điện {kỳ} KH: {tên}, mã KH: {mã} là {số tiền} đ`
-   ⟳ 2026-10-17i (yêu cầu: “Tiền điện T8/2025 KH: Lê Thị Võ, mã KH: …”): bỏ chữ “tên” ⇒ **`KH: {tên}`**.
    ⭐ {kỳ} theo SỐ HOÁ ĐƠN: 1 hoá đơn ⇒ `T{m}/{yyyy}` · ≥2 hoá đơn ⇒ DANH SÁCH KỲ (“, ”, cũ→mới).
    Xem `lpCopyText()` (dựng câu) và `lpCopy()` (đẩy vào clipboard + `showToast`). */
-const LP_TEN_MS = 500;     // ngưỡng NHẤN-GIỮ của ô tên (yêu cầu người dùng 2026-10-17k)
-const LP_TEN_SLOP = 10;    // kéo quá 10px = người dùng đang CUỘN ⇒ huỷ cử chỉ
-let _lpT = null, _lpEl = null, _lpX = 0, _lpY = 0, _lpFired = false, _lpGuard = null;
 function lpTenTarget(t) { return (t && t.closest) ? t.closest('.kh-name, .cell-tenkh') : null; }
-function lpTenHuy() { if (_lpT) { clearTimeout(_lpT); _lpT = null; } _lpEl = null; }
-function lpTenChay() {
-  const el = _lpEl;
-  if (_lpT) { clearTimeout(_lpT); _lpT = null; }
-  _lpEl = null;                       // ⛔ đặt TRƯỚC khi copy: chặn `contextmenu` copy lần hai
-  if (!el) return;
-  _lpFired = true;                    // nuốt cú `click` bắn theo sau (600ms)
-  if (_lpGuard) clearTimeout(_lpGuard);
-  _lpGuard = setTimeout(() => { _lpFired = false; _lpGuard = null; }, 600);
-  try { if (navigator.vibrate) navigator.vibrate(15); } catch (e) {}   // rung nhẹ cho biết đã ăn
-  const row = el.closest('.kh-card[data-ma], .table-view tbody tr[data-ma]');
-  if (row) lpCopy(row);
+/* Handler của thuộc tính onclick trên 2 ô tên. ⛔ Gắn THẲNG trong mẫu của `renderCards`/
+   `renderTable` (mẫu dựng lại mỗi lần render) chứ ⛔ không uỷ nhiệm ở `document`: ô tên đã là đích
+   rõ ràng, uỷ nhiệm chỉ thêm một lớp phải đoán lại đích.
+   ⛔ KHÔNG `stopPropagation()` (xem lý do ở chú thích dài ngay trên). */
+function lpTenTap(el) {
+  const row = (el && el.closest) ? el.closest('.kh-card[data-ma], .table-view tbody tr[data-ma]') : null;
+  if (row) lpCopy(row);   // `lpCopy` → `lpCopyText` lấy tên ở `.kh-name`/`.cell-tenkh` (data-ten)
 }
-function lpTenDown(e) {
-  if (e.isPrimary === false || (e.pointerType === 'mouse' && e.button !== 0)) return;
-  const el = lpTenTarget(e.target);
-  if (!el) return;
-  _lpEl = el; _lpX = e.clientX; _lpY = e.clientY;
-  if (_lpT) clearTimeout(_lpT);
-  _lpT = setTimeout(lpTenChay, LP_TEN_MS);
-}
-function lpTenMove(e) {
-  if (!_lpEl) return;
-  if (Math.abs(e.clientX - _lpX) > LP_TEN_SLOP || Math.abs(e.clientY - _lpY) > LP_TEN_SLOP) lpTenHuy();
-}
-function lpTenUp() { lpTenHuy(); }
-function lpTenMenu(e) {
-  if (!lpTenTarget(e.target)) return;
-  e.preventDefault();                 // (3) nuốt menu của hệ điều hành
-  if (_lpEl) lpTenChay();             // máy bắn `contextmenu` thay vì để timer kịp nổ
-}
-/* ⛔ Gắn ở `document`, pha CAPTURE: mẫu thẻ/hàng được DỰNG LẠI mỗi lần render nên gắn thẳng vào
-   phần tử là mất sau mỗi lần vẽ lại; capture để chạy trước mọi handler con. `contextmenu` phải
-   `passive:false` (cần `preventDefault()`). ⛔ KHÔNG chặn `pointerdown`/`touchstart` (không
-   `preventDefault()`): chặn là ô ghi chú lẫn cả danh sách hết bấm/cuộn được. */
-document.addEventListener('pointerdown', lpTenDown, { capture: true });
-document.addEventListener('pointermove', lpTenMove, { capture: true });
-document.addEventListener('pointerup', lpTenUp, { capture: true });
-document.addEventListener('pointercancel', lpTenUp, { capture: true });
-document.addEventListener('contextmenu', lpTenMenu, { capture: true, passive: false });
-/* Nuốt cú `click` bắn ngay sau khi cử chỉ đã copy (xem `lpTenChay`) — cũng ở pha capture nên chạy
-   trước `ondblclick` của thẻ/hàng; ⛔ đừng gỡ, gỡ là nhấn-giữ xong dễ bị tính thành 2 lần chạm. */
+/* Nuốt cú `click` bắn ngay sau khi một cử chỉ NHẤN-GIỮ đã chạy xong — cũng ở pha capture nên chạy
+   trước `ondblclick` của thẻ/hàng.
+   ⟳ 2026-10-19: cờ `_lpFired` của ô TÊN đã BỊ XOÁ cùng bộ `lpTen*` (ô tên nay CHẠM là copy, cú
+   `click` chính là thao tác) ⇒ ở đây chỉ còn 2 cờ của 2 hộp nhấn-giữ. */
 document.addEventListener('click', function (e) {
   /* ⟳ 2026-10-17n: thêm cờ `_lpSdtFired` — NHẤN-GIỮ viên SĐT cũng bắn 1 cú `click` ngay sau đó
      (rơi vào chính thẻ `<a href="tel:">`); không nuốt là máy **GỌI LUÔN** vừa lúc hộp
@@ -9280,7 +9325,7 @@ document.addEventListener('click', function (e) {
      ⟳ 2026-10-18 (nhấn-giữ MÃ KH): thêm cờ `_lpMaFired` — ô mã có `onclick="copyMaKH(…)"` nên cú
      `click` bắn theo sau cử chỉ nhấn-giữ sẽ COPY LẦN NỮA + hiện hộp “✓ Đã copy” đè lên hộp vừa mở.
      Hộp của cử chỉ này (`#lpMaBox`) cũng phải được chừa y như `#lpSdtBox`. */
-  if (_lpFired || _lpSdtFired || _lpMaFired) {
+  if (_lpSdtFired || _lpMaFired) {
     if (e.target && e.target.closest && e.target.closest('#lpSdtBox, #lpMaBox')) return;
     e.stopPropagation(); e.preventDefault();
   }
@@ -9293,11 +9338,11 @@ document.addEventListener('click', function (e) {
    **NHẤN-GIỮ viên SĐT** (chọn trong bảng hỏi, phương án (a)).
    ⛔ Vì sao là NHẤN-GIỮ chứ không phải “chạm”: chạm viên SĐT từ trước tới nay là **GỌI NGAY**
    (`tel:`) — đừng đổi hành vi đó; hộp này chỉ là đường THỨ HAI.
-   Khuôn cử chỉ chép ĐÚNG của ô tên (`lpTen*` ngay trên): 500ms · kéo quá 10px thì huỷ (người dùng
-   đang cuộn) · nghe `contextmenu` (Android bắn ở ~500ms ⇒ mở ngay) · cờ `_lpSdtFired` nuốt cú
-   `click` bắn theo sau (xem listener ngay trên — ⛔ thiếu là máy gọi luôn).
-   ⛔ KHÔNG gộp vào `lpTen*`: ô TÊN thì COPY, viên SĐT thì MỞ HỘP — gộp là phải rẽ nhánh trong
-   `lpTenChay()` và dễ làm hỏng cử chỉ copy đang chạy tốt. */
+   Khuôn cử chỉ nhấn-giữ 0,5s (500ms · kéo quá 10px thì huỷ vì người dùng đang cuộn · nghe
+   `contextmenu` vì Android bắn ở ~500ms ⇒ mở ngay · cờ `_lpSdtFired` nuốt cú `click` bắn theo sau,
+   xem listener ngay trên — ⛔ thiếu là máy gọi luôn) nay ĐỘC LẬP với ô tên: ⟳ 2026-10-19 ô TÊN chỉ
+   còn CHẠM 1 LẦN là copy (`lpTenTap()`). ⛔ Đừng “cho đồng bộ” mà bắt ô tên nhấn-giữ lại, và ⛔ cũng
+   đừng gộp 3 cử chỉ làm một: ô TÊN thì COPY, viên SĐT và mã KH (`lpMa*`) thì MỞ HỘP. */
 const LP_SDT_MS = 500;
 const LP_SDT_SLOP = 10;
 let _lpSdtT = null, _lpSdtEl = null, _lpSdtX = 0, _lpSdtY = 0, _lpSdtFired = false, _lpSdtGuard = null;
@@ -9414,14 +9459,16 @@ document.addEventListener('pointerup', lpSdtUp, { capture: true });
 document.addEventListener('pointercancel', lpSdtUp, { capture: true });
 document.addEventListener('contextmenu', lpSdtMenu, { capture: true, passive: false });
 
-/* ── NHẤN-GIỮ 0,5s TRÊN MÃ KH = hộp “Sao chép / Mở app EVNHCMC” (2026-10-18) ─────────────────
+/* ── NHẤN-GIỮ 0,5s TRÊN MÃ KH = hộp “Sao chép / Chia sẻ / mở app khác” (2026-10-18) ───────────
    Yêu cầu người dùng: “tôi muốn khi nhấn giữ mã kh là chọn copy và hiển thị ứng dụng cần mở trên
    điện thoại được không”. Lịch sử 2 lượt — đọc trước khi đổi:
      · 2026-10-17k: CHẠM mã KH = copy RỒI MỞ APP EVNHCMC (hộp “✓ Đã copy” hoãn 800ms);
      · 2026-10-17l: người dùng đòi “chạm vô mã kh là copy, bỏ nhảy tới app evnhcmc” ⇒ GỠ đường mở
        app, xoá `moAppEVNHCMC()` + hằng hoãn (xem ghi chú ở chỗ chúng từng nằm, ngay dưới `copyMaKH`).
-   Nay app quay lại nhưng qua **ĐƯỜNG THỨ HAI**: NHẤN-GIỮ 0,5s mở hộp cho CHỌN — đúng khuôn hộp
-   nhấn-giữ viên SĐT (`lpSdt*`) và ô tên (`lpTen*`).
+   Nay app quay lại nhưng qua **ĐƯỜNG THỨ HAI**: NHẤN-GIỮ 0,5s mở hộp cho CHỌN — cùng khuôn
+   nhấn-giữ của viên SĐT (`lpSdt*`). ⚠️ Ô TÊN KHÔNG còn nhấn-giữ (2026-10-19: chạm 1 lần là copy).
+   ⟳ 2026-10-18 (lượt sau): nút **“Mở app EVNHCMC” GỠ** (người dùng: “bỏ mở app evnhcmc, trong chia
+   sẻ app không có những apps như evnhcmc”) ⇒ hộp còn **Sao chép · Chia sẻ / mở app khác · Đóng**.
    ⛔ **CHẠM vẫn COPY NGAY** (`copyMaKH`) — yêu cầu 2026-10-17l KHÔNG hết hiệu lực, đừng đổi.
    ⚠️ Vì sao hộp vẫn cần nút “Sao chép”: app EVNHCMC **không có deep link tới một mã KH cụ thể** ⇒
    không tự điền mã vào app được; đường thật là copy mã rồi dán vào mục “Liên kết điểm dùng điện”
@@ -9430,7 +9477,7 @@ document.addEventListener('contextmenu', lpSdtMenu, { capture: true, passive: fa
    sách) · nghe `contextmenu` (Android bắn ở ~500ms ⇒ mở hộp ngay, và PHẢI `preventDefault()`) ·
    cờ `_lpMaFired` sống 600ms để NUỐT cú `click` bắn theo sau — ⛔ thiếu cờ là nhấn-giữ xong máy
    vẫn chạy `onclick="copyMaKH(...)"` của ô mã (copy thêm lần nữa + hộp “✓ Đã copy” đè lên).
-   ⛔ KHÔNG gộp vào `lpSdt*`: viên SĐT thì hộp gọi/Zalo, ô mã thì hộp copy/app — gộp là phải rẽ
+   ⛔ KHÔNG gộp vào `lpSdt*`: viên SĐT thì hộp gọi/Zalo, ô mã thì hộp copy/chia sẻ — gộp là phải rẽ
    nhánh trong `lpSdtChay()` và dễ làm hỏng cử chỉ SĐT đang chạy tốt. */
 const LP_MA_MS = 500;
 const LP_MA_SLOP = 10;
@@ -9439,28 +9486,13 @@ let _lpMaT = null, _lpMaEl = null, _lpMaX = 0, _lpMaY = 0, _lpMaFired = false, _
    `copyMaKH()` khi chạm, nên cả hai đều phải nhận cử chỉ này. */
 function lpMaTarget(t) { return (t && t.closest) ? t.closest('.kh-ma, .ma-kh') : null; }
 function lpMaHuy() { if (_lpMaT) { clearTimeout(_lpMaT); _lpMaT = null; } _lpMaEl = null; }
-/* Đích của nút “Mở app EVNHCMC” — DỰNG LẠI hàm đã xoá ở 2026-10-17l, nay CHỈ dùng cho nút này
-   (⛔ không gọi lúc chạm mã nữa):
-     · Android: mở thẳng app bằng `intent://…package=com.evnhcmc.evnmobileapp…`; máy CHƯA cài thì
-       Chrome tự mở `S.browser_fallback_url` (trang CSKH) thay vì báo lỗi.
-     · iPhone/iPad: iOS KHÔNG cho trang web mở app ⇒ mở web CSKH.
-     · Máy tính: mở web CSKH — ⚠️ KHÁC lượt 2026-10-17k (hồi đó máy tính KHÔNG mở gì). Nay nút là
-       việc người dùng CHỦ ĐỘNG bấm nên “bấm mà không có gì xảy ra” là lỗi; mà trang CSKH cũng
-       chính là đích dự phòng của Android ⇒ một quy tắc cho mọi máy.
-   ⛔ Gọi TRỰC TIẾP trong handler `click` (cử chỉ thật) — đừng bọc `setTimeout`: ra khỏi cửa sổ
-   “transient activation” là trình duyệt chặn popup. */
-const EVNHCMC_PKG = 'com.evnhcmc.evnmobileapp';
-const EVNHCMC_WEB = 'https://cskh.evnhcmc.vn/';
-function moAppEVNHCMC() {
-  const ua = navigator.userAgent || '';
-  let url = EVNHCMC_WEB;
-  if (/Android/i.test(ua)) {
-    url = 'intent://#Intent;package=' + EVNHCMC_PKG +
-          ';action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER' +
-          ';S.browser_fallback_url=' + encodeURIComponent(EVNHCMC_WEB) + ';end';
-  }
-  window.open(url, '_blank', 'noopener');
-}
+/* ⛔ 2026-10-18: `EVNHCMC_PKG`/`EVNHCMC_WEB`/`moAppEVNHCMC()` ĐÃ XOÁ **LẦN HAI** — người dùng:
+   “bỏ mở app evnhcmc, trong chia sẻ app không có những app như evnhcmc”.
+   Vòng đời: dựng ở 2026-10-17k → xoá ở 2026-10-17l → dựng lại 2026-10-18 (chỉ để nuôi nút “Mở app
+   EVNHCMC” của hộp NHẤN-GIỮ mã KH) → **nay nút đó GỠ ⇒ hàm không còn ai gọi** (để lại là hàm chết).
+   ⛔ ĐỪNG dựng lại lần thứ ba mà không hỏi: lịch sử 2 lần đảo chiều đã ghi ở khối “LỊCH SỬ MỞ APP”
+   (ngay dưới `copyMaKH`) — và trang này KHÔNG phải chỗ mở app EVNHCMC. Muốn sang app thì dùng nút
+   “Chia sẻ / mở app khác” (`navigator.share`) hoặc chạm mã KH để COPY rồi dán vào app. */
 /* Mở hộp: dựng MỘT LẦN rồi dùng lại (y như `lpSdtChay`/`lpShowCopyBox`) — mỗi lần mở chỉ đổi mã. */
 function lpMaChay() {
   const el = _lpMaEl;
@@ -9479,17 +9511,16 @@ function lpMaChay() {
     ov.id = 'lpMaBox';
     ov.className = 'lpcb-overlay';
     /* Dùng lại NGUYÊN khung + khuôn nút của hộp SĐT (`.lpcb-*` + `.lpsdt-act`, nay là KHUNG SÁNG)
-       ⇒ hai hộp nhìn như một hệ. Icon: `#i-copy` (Sao chép) · `#i-mobile` (Mở app EVNHCMC) ·
-       `#i-share` (Chia sẻ / mở app khác).
-       ⚠️ “Sao chép” là `<button>` (không đi đâu cả); “Mở app” và “Chia sẻ” cũng `<button>` vì đích
-       do `moAppEVNHCMC()`/`navigator.share()` quyết định theo máy — ⛔ đừng đổi thành thẻ `<a href>`:
-       URL `intent://` đặt sẵn sẽ bị webview coi là điều hướng lạ và bấm không mở được app. */
+       ⇒ hai hộp nhìn như một hệ. Icon: `#i-copy` (Sao chép) · `#i-share` (Chia sẻ / mở app khác).
+       ⟳ 2026-10-18: nút “Mở app EVNHCMC” (icon `#i-mobile`) ĐÃ GỠ — người dùng: “bỏ mở app evnhcmc,
+       trong chia sẻ app không có những app như evnhcmc”. Hộp nay còn ĐÚNG 2 mục + “Đóng”.
+       ⚠️ “Sao chép” là `<button>` (không đi đâu cả); “Chia sẻ” cũng `<button>` vì đích do
+       `navigator.share()` quyết định theo máy — ⛔ đừng đổi thành thẻ `<a href>`.
+       (`#i-mobile` KHÔNG xoá: nó còn dùng ở mục lọc “KH chưa gọi” của thanh công cụ.) */
     ov.innerHTML = '<div class="lpcb-card">' +
         '<div class="lpcb-title">Mã khách hàng <b class="lpsdt-num"></b></div>' +
         '<button class="lpsdt-act" data-act="copy" type="button"><svg class="ic" width="16" height="16" ' +
           'aria-hidden="true" style="vertical-align:middle"><use href="#i-copy"/></svg>Sao chép</button>' +
-        '<button class="lpsdt-act" data-act="app" type="button"><svg class="ic" width="16" height="16" ' +
-          'aria-hidden="true" style="vertical-align:middle"><use href="#i-mobile"/></svg>Mở app EVNHCMC</button>' +
         '<button class="lpsdt-act" data-act="share" type="button"><svg class="ic" width="16" height="16" ' +
           'aria-hidden="true" style="vertical-align:middle"><use href="#i-share"/></svg>Chia sẻ / mở app khác</button>' +
         '<button class="lpcb-btn" type="button">Đóng</button>' +
@@ -9497,7 +9528,6 @@ function lpMaChay() {
     ov.addEventListener('click', function (e) { if (e.target === ov) lpCloseMaBox(); });
     ov.querySelector('.lpcb-btn').addEventListener('click', lpCloseMaBox);
     ov.querySelector('[data-act="copy"]').addEventListener('click', function () { lpMaCopy(); });
-    ov.querySelector('[data-act="app"]').addEventListener('click', function () { lpCloseMaBox(); moAppEVNHCMC(); });
     ov.querySelector('[data-act="share"]').addEventListener('click', function () { lpMaShare(); });
     document.body.appendChild(ov);
   }
@@ -9532,8 +9562,10 @@ function lpMaCopy(msgOk) {
    ⛔ TRANG WEB KHÔNG THỂ tự liệt kê app trong máy: không có API nào cho việc đó (cũng không đọc
    được tên/icon app đã cài). Thứ duy nhất làm được là `navigator.share()` — nó mở **BẢNG CHIA SẺ
    CỦA HỆ ĐIỀU HÀNH**, và chính HĐH vẽ danh sách app nhận được chữ: Zalo · Tin nhắn · Facebook ·
-   Ghi chú · Gmail… (app EVNHCMC cũng hiện nếu nó đăng ký nhận chia sẻ — phần này do app đó quyết
-   định, không phải trang này). Người dùng chọn app, mã được đưa sang đó.
+   Ghi chú · Gmail… Người dùng chọn app, mã được đưa sang đó.
+   ⚠️ ⟳ 2026-10-18: người dùng ĐÃ KIỂM CHỨNG — bảng chia sẻ **KHÔNG có app EVNHCMC** (app đó không
+   đăng ký nhận chia sẻ). ⛔ Đừng hứa “EVNHCMC cũng hiện” ở bất kỳ ghi chú/nhãn nào nữa; đó cũng
+   chính là lý do nút “Mở app EVNHCMC” bị gỡ (xem khối “LỊCH SỬ MỞ APP” dưới `copyMaKH`).
    ⚠️ `navigator.share` cần ĐỦ 2 điều kiện: (1) trang ở NGỮ CẢNH AN TOÀN — https hoặc localhost;
    mở bằng `file://` là KHÔNG có; (2) do CỬ CHỈ THẬT của người dùng gọi — ở đây đúng là handler
    `click` nên hợp lệ.
@@ -9581,10 +9613,10 @@ document.addEventListener('pointerup', lpMaUp, { capture: true });
 document.addEventListener('pointercancel', lpMaUp, { capture: true });
 document.addEventListener('contextmenu', lpMaMenu, { capture: true, passive: false });
 
-// ⟳ 2026-10-17k: máy móc NHẤN-GIỮ đã được DỰNG LẠI (ngay phía trên) — bản 2026-10-14c bị gỡ ở
-// lượt 2026-10-17h, nay có lại nhưng GỌN HƠN: chỉ còn `lpTenDown/Move/Up/Menu/Chay`, chạy trên
-// CHÍNH 2 ô TÊN (`.kh-name`/`.cell-tenkh`) chứ ⛔ không phải cả thẻ như bản cũ (bản cũ nhấn-giữ ở
-// đâu trên thẻ cũng copy, dễ đụng lúc định bấm ô ghi chú / nút thanh toán).
+// ⟳ 2026-10-19: máy móc NHẤN-GIỮ ở ô TÊN ĐÃ BỊ GỠ HẲN (lượt này) — ô tên chỉ còn CHẠM 1 LẦN là
+// copy (hàm `lpTenTap()`, xem khối “CHẠM VÀO TÊN KH”). Máy móc nhấn-giữ còn lại là của viên SĐT
+// (`lpSdt*`) và mã KH (`lpMa*`). ⛔ Đừng dựng thêm bản nhấn-giữ nào cho ô tên nữa: người dùng đã
+// 3 lần đổi chiều (2026-10-17h chạm → 2026-10-17k nhấn-giữ → 2026-10-19 chạm).
 // `lpCopyText()`/`lpCopy()`/`showToast()` giữ nguyên và vẫn là 3 mảnh dùng chung.
 /* “T9/2026” — NHÃN KỲ cho câu tin nhắn. Người dùng viết kỳ theo THÁNG CUỐI của kỳ (“T9/2026” =
    kỳ `1-9/2026`) nên phải cắt lấy số thứ HAI khi nhãn có dạng “A-B/YYYY”; nhãn “B/YYYY” thì lấy
@@ -9767,8 +9799,8 @@ function lpCopy(el) {
     done(lpCopyFallback(txt));   // ⛔ Đừng im lặng: người dùng cần biết là dán ra sẽ không có gì.
   }
 }
-/* ⟳ 2026-10-17k: khối CỬ CHỈ NHẤN-GIỮ nay nằm ở mục “NHẤN-GIỮ 0,5 GIÂY TRÊN TÊN KH” (hàm
-   `lpTenDown/Move/Up/Menu/Chay` + 6 listener ở pha capture, gắn 1 lần lúc nạp script) — chỗ này
+/* ⟳ 2026-10-19: cử chỉ COPY ô tên nay là CHẠM 1 LẦN, gắn bằng thuộc tính onclick trong mẫu của
+   `renderCards`/`renderTable` (hàm `lpTenTap()` — xem khối “CHẠM VÀO TÊN KH” ở trên) — chỗ này
    chỉ nhắc lại để ⛔ KHÔNG dựng thêm bản thứ hai: mọi cử chỉ copy chỉ được có MỘT nguồn. */
 
 function goPage(p) {
@@ -9809,9 +9841,9 @@ function getHighlightedIds() {
    (`.table-view tbody tr`) — cùng ghi vào `qlno_highlighted` nên “Chú ý” ở tab lọc vẫn
    đếm chung một danh sách.
 
-   ⚠️ CÁC LỚP NHẤN-GIỮ TỪNG BỊ GỠ (lượt 2026-10-17h) NAY ĐÃ QUAY LẠI — nhưng CHỈ MỘT lớp, ở mục
-   “NHẤN-GIỮ 0,5 GIÂY TRÊN TÊN KH” (`lpTenDown/Move/Up/Menu/Chay`, `LP_TEN_MS`/`LP_TEN_SLOP`,
-   `_lpT/_lpEl/_lpX/_lpY/_lpFired/_lpGuard`), và nó CHỈ ăn trên 2 ô TÊN (`.kh-name`/`.cell-tenkh`).
+   ⚠️ Ô TÊN KHÔNG còn cử chỉ NHẤN-GIỮ nào: ⟳ 2026-10-19 người dùng đòi lại **CHẠM 1 LẦN là copy**
+   ⇒ bộ `lpTen*` (LP_TEN_MS/LP_TEN_SLOP + các listener pointer/contextmenu + cờ _lpFired) đã bị
+   XOÁ HẲN; ô tên nay chỉ có onclick gọi `lpTenTap()` (xem khối “CHẠM VÀO TÊN KH”).
    ⛔ Nó KHÔNG liên quan tới việc ĐÁNH DẤU: đánh dấu vẫn là `ondblclick="toggleOrange(...)"` (dưới
    đây), ⛔ đừng gộp hai thứ lại.
    Nay thao tác đánh dấu là `ondblclick="toggleOrange(event, this)"` gắn TRỰC TIẾP trong
@@ -9820,9 +9852,10 @@ function getHighlightedIds() {
 
    ⚠️ Ô ghi chú (`.kh-ghichu-input` / `.ghi-chu-table`) vẫn giữ `ondblclick="event.stopPropagation()"`
    ⇒ NHẤN 2 LẦN TRONG Ô GHI CHÚ không đánh dấu thẻ/hàng (đúng ý).
-   ⛔ Muốn QUAY LẠI cách cũ “nhấn-giữ ở ĐÂU TRÊN THẺ cũng copy”: phải dựng lại đủ lớp uỷ nhiệm
-   theo thẻ (không chỉ đổi tên hàm) — xem lịch sử ở run doc (`2026-10-03c`), và nhớ vì sao lượt
-   2026-10-17k CỐ Ý thu hẹp vào 2 ô tên (đụng ô ghi chú / nút thanh toán thì rất dễ copy oan). */
+   ⛔ Muốn QUAY LẠI “nhấn-giữ” cho ô tên: PHẢI HỎI TRƯỚC rồi mới dựng lại bộ `lpTen*` (đã xoá hẳn
+   ngày 2026-10-19 — xem khối “CHẠM VÀO TÊN KH” để biết đã xoá những gì và lịch sử 3 lần đổi
+   chiều). ⛔ Cũng đừng mở rộng cử chỉ copy ra CẢ THẺ (bản 2026-10-14c): đụng ô ghi chú / nút thanh
+   toán là copy oan. */
 
 /* Bật/tắt dấu CAM cho một thẻ card HOẶC một hàng bảng. */
 function toggleMark(el) {
