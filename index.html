@@ -712,9 +712,19 @@ body.light-mode {
      cũng xám theo; muốn CHỈ thẻ đổi thì phải tách bảng sang token riêng (hỏi trước).
      ⚠️ HỆ QUẢ ĐÃ BÙ: `.kh-name` light `#2563eb` → **`#1d4ed8`** (chữ trên nền mới vẫn > AA) và
      `--multi-hd` mức “Dịu” `#059669` → **`#047857`** (vạch “≥2 HĐ” trên nền mới vẫn > 3:1). */
-  --light-card: #eaecf0;   /* ⟳ 2026-10-17a: `#e7e9ed` → **`#eaecf0`** (mức “Chuẩn” sáng hơn một nấc, cùng
-     lượt với `--light-surface` ngay trên). ⚠️ Vẫn KHÔNG trùng `--ctl-light-bg` `#eff1f5` — ⛔ đừng “cho
-     gọn” bằng cách trả về token control, làm thế là thanh control xám theo thẻ (xem chú thích trên). */
+  --light-card: #f2f4f7;   /* ⟳ 2026-10-20: **`#eaecf0` → `#f2f4f7`** — “cho màu nền ở chế độ chuẩn sáng
+     hơn” (người dùng CHỌN mức “Vừa” sau khi được hỏi, vì phải nâng cả 2 nấc trên mới giữ đúng
+     thứ tự nhạt dần: “Sáng” `#f0f3f6` → **`#f8fafc`** (2767) · “Rất sáng” `#f8fafc` → **`#fdfefe`** (2778)).
+     Token này dùng cho: thẻ KH (`.kh-card` 1489) · mặt bảng (`body.light-mode .table-wrap` 1687,
+     chỉ còn ở bảng ≥640px) · ô tìm kiếm (1347) · ô lọc (1384) · nút sắp xếp (1415) · `.count-info`
+     · thẻ khách ở dạng bảng 3 hàng (5195) ⇒ đổi là CẢ HỆ sáng lên đồng bộ.
+     ⚠️ Nền SÁNG HƠN ⇒ mọi tương phản CHỮ trên nó CHỈ TĂNG (ngược chiều với lượt 2026-10-17a) ⇒
+     hai ngưỡng sát biên (`.kh-name` 4,57 · vạch `≥2 HĐ` 3,49) nay RỘNG RA, không phải đo lại.
+     ⚠️ Chênh nền thẻ ↔ nền trang (trắng) tụt còn **~1,05:1** ⇒ viền `--light-edge` + bóng đổ vẫn là
+     thứ phân định thẻ — ⛔ đừng gỡ. Thang đầy đủ (đậm → nhạt): Rất dịu `#d2d9e2` · Dịu `#dee3ea` ·
+     Chuẩn **`#f2f4f7`** · Sáng **`#f8fafc`** · Rất sáng **`#fdfefe`.
+     ⚠️ Vẫn KHÔNG trùng `--ctl-light-bg` `#eff1f5` — ⛔ đừng “cho gọn” bằng cách trả về token control,
+     làm thế là thanh control xám theo thẻ (xem chú thích trên). */
 
    /* Vạch "KH có ≥ 2 hoá đơn" trên thẻ: nền thẻ light NAY LÀ `#f1f5f9` (token
       `--light-surface`) — KHÔNG còn trắng — nên phải dùng tông ĐẬM hơn bản dark
@@ -1565,8 +1575,8 @@ body.light-mode .i-tenkh .info-value { color: #2563eb !important; }
 /* Ô Tiền nợ: rule nền là color #ffffff (dành cho dark); ở light phải đổi màu chữ,
    nếu không mọi chữ nằm trực tiếp trong ô sẽ trắng trên nền sáng */
 body.light-mode .i-tien .info-value { color: #0f172a; }
-body.light-mode .i-tien .info-value .tien-no.low { color: #047857 !important; }
-body.light-mode .i-tien .info-value .tien-no.high { color: #b91c1c !important; }
+body.light-mode .i-tien .info-value .tien-no.low { color: #064e3b !important; }   /* ⟳ 2026-10-20: #047857 → #064e3b (đậm hơn, đồng bộ bảng) */
+body.light-mode .i-tien .info-value .tien-no.high { color: #991b1b !important; }  /* ⟳ 2026-10-20: #b91c1c → #991b1b */
 /* Số TBI - slightly darker */
 body.light-mode .i-tbi .info-value { color: #334155 !important; }
 /* .modal-header h2 đã có font-size 15px + font-weight 300 ở rule nền → ở đây chỉ đổi màu */
@@ -1747,15 +1757,22 @@ body.light-mode .tien-no { color: #166534 !important; }
      `.low`  #047857: **3,72 · 3,42 · 3,13** · `.mid` #15803d: **3,40 · 3,13 · 2,87**
    ⇒ mức “Dịu” nay DƯỚI AA 4,5 cho chữ tiền (giống hệ quả lượt `.count-tien` 2026-10-03). Người
    dùng đã chọn “sáng hơn” nên giữ; ⛔ muốn về AA thì trả lại `#991b1b` / `#064e3b`.
-   (Lịch sử: 2026-09-28f từng HẠ 3 màu này xuống đúng để đạt AA trên dải — lượt này đảo lại.) */
-body.light-mode .tien-no.high { color: #b91c1c !important; }
-body.light-mode .tien-no.low { color: #047857 !important; }
-body.light-mode .tien-no.mid { color: #15803d !important; }
-body.light-mode .tien-no .mil-digit { color: #b91c1c !important; }   /* cùng `.high` — sửa LẺ rule này là số tiền hai tông */
-body.light-mode .kh-tien { color: #b91c1c; }
-body.light-mode .kh-tien.high { color: #b91c1c; }   /* thẻ card: 6,6:1 trên nền thẻ (trước #dc2626 = 4,83:1) */
-body.light-mode .kh-tien.low { color: #047857; }
-body.light-mode .kh-tien .mil-digit { color: #c2410c; }
+   (Lịch sử: 2026-09-28f từng HẠ 3 màu này xuống đúng để đạt AA trên dải — lượt này đảo lại.)
+   ⟳ **2026-10-20: ĐẢO LẠI LẦN NỮA — “cho màu tiền đậm hơn ở light mode”** (ảnh: bảng 3 hàng,
+   tiền `4.418.600` đỏ nhạt). Trả ĐÚNG bộ màu AA của 2026-09-28f:
+   `.high`/`.mil-digit` `#b91c1c` → **`#991b1b`** · `.low` `#047857` → **`#064e3b`** ·
+   `.mid` `#15803d` → **`#166534`**. Trên nền THẺ light (`--light-card`) tương phản:
+   `#991b1b` **6,94:1** · `#064e3b` **8,31:1** · `#166534` **6,55:1** — dư AA 4,5:1.
+   ⛔ Vẫn phải sửa `.high` và `.mil-digit` CÙNG NHAU (chúng vẽ chung một số tiền). */
+body.light-mode .tien-no { color: #14532d !important; }
+body.light-mode .tien-no.high { color: #991b1b !important; }
+body.light-mode .tien-no.low { color: #064e3b !important; }
+body.light-mode .tien-no.mid { color: #166534 !important; }
+body.light-mode .tien-no .mil-digit { color: #991b1b !important; }   /* cùng `.high` — sửa LẺ rule này là số tiền hai tông */
+body.light-mode .kh-tien { color: #991b1b; }
+body.light-mode .kh-tien.high { color: #991b1b; }   /* ⟳ 2026-10-20: #b91c1c → #991b1b (đậm hơn; 6,98:1 trên nền thẻ light) */
+body.light-mode .kh-tien.low { color: #064e3b; }
+body.light-mode .kh-tien .mil-digit { color: #9a3412; }
 /* Màu chữ của khối tổng phải ĐO TRÊN NỀN TRANG XÁM (không còn khối trắng của `.main`):
    `#2563eb` chỉ đạt **3.51:1** và `#dc2626` chỉ **3.28:1** ⇒ dưới ngưỡng 4.5:1 cho chữ 17px.
    Hạ xuống token blue-800 / red-800: **5.92:1** và **5.64:1**. */
@@ -1770,8 +1787,8 @@ body.light-mode .count-kh-hd { color: #1e40af; }
    nhưng KHÔNG tụt chuẩn. (Giá trị cũ tính trên nền trang `#f8fafc` là 5,64 / 4,81 / 5,22.)
    ℹ️ Từ 2026-10-03b, `.tien-no.high`/`.mil-digit` của BẢNG cũng sáng lên `#b91c1c` ⇒ hai chỗ
    TRÙNG tông trở lại (trước đó lệch vì bảng hạ riêng ở 2026-09-28f). */
-body.light-mode .count-tien { color: #b91c1c; }   /* = mức `.high` (đỏ), cũng là nền cho mọi mức chưa ghi đè */
-body.light-mode .count-tien.low { color: #047857; }   /* xanh emerald-700 (cũ #065f46) — 5,6:1 trên nền trắng */
+body.light-mode .count-tien { color: #991b1b; }   /* = mức `.high` (đỏ) — ⟳ 2026-10-20: `#b91c1c` → **`#991b1b`** cho đồng bộ “màu tiền đậm hơn” (dòng tổng nợ trên đầu danh sách) */
+body.light-mode .count-tien.low { color: #064e3b; }   /* ⟳ 2026-10-20: `#047857` → **`#064e3b`** (đồng bộ `.tien-no.low`); xanh emerald-900 trên nền trắng ≈ 9:1 */
 body.light-mode .count-tien.mid { color: #b45309; }   /* cam amber-700 (cũ #92400e) — 5,1:1 trên nền trắng */
 
 #fileInput { display: none; }
@@ -2764,7 +2781,7 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
    tối hơn TRẮNG một chút rồi thôi, tối nữa là TRÙNG “Chuẩn” (nút “Nền” mất tác dụng ở thẻ).
    Nếu muốn thẻ XÁM RÕ hơn nữa thì phải hạ CẢ THANG light (gồm “Chuẩn” — tức tách khỏi control).
    ℹ️ Vẫn giữ `--light-surface: #ffffff` (bảng) — yêu cầu chỉ nói về THẺ. */
-body.light-mode[data-surface="sang"] { --light-surface: #ffffff; --light-card: #f0f3f6; --row1-bg: #c9d6e5; }   /* ⟳ 2026-10-03q: thẻ #f2f5f9 → #eaedf1 · ⟳ 2026-10-03v: thẻ #eaedf1 → #f0f3f6 · ⟳ 2026-10-03z: BỎ `--danhso-bg` theo mức — light dùng chung alpha với dark */
+body.light-mode[data-surface="sang"] { --light-surface: #ffffff; --light-card: #f8fafc; --row1-bg: #c9d6e5; }   /* ⟳ 2026-10-03q: thẻ #f2f5f9 → #eaedf1 · ⟳ 2026-10-03v: thẻ #eaedf1 → #f0f3f6 · ⟳ 2026-10-03z: BỎ `--danhso-bg` theo mức — light dùng chung alpha với dark · ⟳ 2026-10-20: thẻ `#f0f3f6` → **`#f8fafc`** (đi theo mức “Chuẩn” vừa sáng lên `#f2f4f7`) */
 body.light-mode[data-surface="diu"]  { --light-surface: #edf2f8; --light-card: #dee3ea; /* ⟳ 2026-10-17a: nền `#e3e9f0` → **`#edf2f8`** · thẻ `#d5dbe3` → **`#dee3ea`** — mức “Dịu” SÁNG LÊN một nấc theo yêu cầu “màu nền ở mức rất dịu, dịu, chuẩn cho màu sáng hơn”. Nền sáng hơn ⇒ hai chỗ bù cho nền tối (`--multi-hd`, `--text-dim` của mức này) CHỈ DƯ ngưỡng thêm, ⛔ giữ nguyên đừng gỡ. */ --multi-hd: #047857; --row1-bg: #b9c5d4; --text-dim: #4f5b6b; }   /* ⟳ 2026-10-03q: thẻ #e3e9f0 → #dbe1e8; vạch #059669 → #047857 · ⟳ 2026-10-03v: thẻ #dbe1e8 → #d5dbe3 + `--text-dim` #5b6777 → #4f5b6b · ⟳ 2026-10-03z: BỎ `--danhso-bg` theo mức — light dùng chung alpha với dark */
 body.light-mode[data-surface="diu"] .kh-name { color: #1d4ed8; }
 /* ⟳ 2026-10-03ag: 3 mức → **5 MỨC** (yêu cầu “thêm mức rất dịu, rất sáng”). Hai mức mới là
@@ -2775,7 +2792,7 @@ body.light-mode[data-surface="diu"] .kh-name { color: #1d4ed8; }
      · `.kh-name` `#1d4ed8` chỉ còn **4,28 ✗** ⇒ dùng `#1e40af` = **6,20 ✓**
      · vạch “≥2 HĐ” `#047857` chỉ còn **2,88 ✗** ⇒ dùng `#036647` = **3,13 ✓** (ngưỡng 3:1)
    ⚠️ `--text-dim` `#46525f` trên `#c8d0da` = **6,60:1** ✓ (đậm hơn mức “Dịu” — nhất quán). */
-body.light-mode[data-surface="ratsang"] { --light-surface: #ffffff; --light-card: #f8fafc; --row1-bg: #d3deeb; }   /* nửa bước từ “Chuẩn” về “Sáng”: thẻ #f8fafc (vẫn đọc ra khỏi nền trang #f8fafc nhờ viền+bóng) */
+body.light-mode[data-surface="ratsang"] { --light-surface: #ffffff; --light-card: #fdfefe; --row1-bg: #d3deeb; }   /* nửa bước từ “Chuẩn” về “Sáng”: ⟳ 2026-10-20: thẻ `#f8fafc` → **`#fdfefe`** (Chuẩn nay `#f2f4f7`, Sáng `#f8fafc` ⇒ nấc này phải nhạt hơn Sáng mới giữ đúng thứ tự; vẫn đọc ra khỏi nền trang #ffffff nhờ viền `--light-edge` + bóng) */
 body.light-mode[data-surface="ratdiu"]  { --light-surface: #e6ecf3; --light-card: #d2d9e2; /* ⟳ 2026-10-17a: nền `#dae1ea` → **`#e6ecf3`** · thẻ `#c8d0da` → **`#d2d9e2`** — mức “Rất dịu” SÁNG LÊN một nấc (cùng yêu cầu như mức “Dịu”). ⚠️ Vì nền nay SÁNG HƠN nên hai màu đã bù cho nền tối nhất (`#1e40af` cho `.kh-name`, `#036647` cho vạch “≥2 HĐ”) KHÔNG còn cần thiết nhưng vẫn DƯ ngưỡng ⇒ giữ nguyên cho khỏi lệch giữa các lượt, ⛔ đừng gỡ. */ --multi-hd: #036647; --row1-bg: #adbaca; --text-dim: #46525f; }
 body.light-mode[data-surface="ratdiu"] .kh-name { color: #1e40af; }   /* navy-800 — thay `#1d4ed8` (chỉ 4,28 trên thẻ tối nhất) */
 /* Mức “Rất dịu”: thẻ tối nhất nên SỐ TIỀN trên thẻ cũng phải đậm lại — `.kh-tien` `#b91c1c`
@@ -3411,7 +3428,7 @@ body.light-mode .nhom-sel-name {
    Đo được ở light: tên 4.31 và tiền đỏ 4.02 (dưới 4.5), viền 2.65 (dưới 3). */
 .kh-card.highlighted { background: #2e2412; border: 2px solid #fbbf24; box-shadow: var(--elev-1); }
 body.light-mode .kh-card.highlighted { background: #fef3c7; border: 2px solid #b45309; box-shadow: 0 1px 3px rgba(146,64,14,0.25); }
-/* Trên nền vàng/xanh (đậm hơn trắng) chữ đỏ #dc2626 tụt xuống 4.34:1 → dùng #b91c1c;
+/* Trên nền vàng/xanh (đậm hơn trắng) chữ đỏ #dc2626 tụt xuống 4.34:1 → #b91c1c, ⟳ 2026-10-20 → **#991b1b** (đồng bộ “màu tiền đậm hơn” của thẻ thường);
    tên KH #2563eb tụt xuống 4.64 ở nền vàng / 4.09 ở nền xanh → dùng #1d4ed8. */
 /* Tên KH trên thẻ: nền vàng là bổ sắc với xanh dương nên chữ xanh bị "bẩn" màu
    (blue on amber) — dùng nâu đậm cùng họ với nền; nền xanh thì giữ chữ xanh đậm. */
@@ -3422,7 +3439,7 @@ body.light-mode .kh-card.highlighted .kh-tien.high,
 body.light-mode .kh-card.highlighted .kh-tien .mil-digit,
 body.light-mode .kh-card.highlighted-purple .kh-tien,
 body.light-mode .kh-card.highlighted-purple .kh-tien.high,
-body.light-mode .kh-card.highlighted-purple .kh-tien .mil-digit { color: #b91c1c !important; }
+body.light-mode .kh-card.highlighted-purple .kh-tien .mil-digit { color: #991b1b !important; }
 .kh-card.highlighted-purple { background: #17233f; border-color: #00e5ff; border-width: 2px; box-shadow: var(--elev-1); }
 body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color: #1d4ed8; border-width: 2px; box-shadow: 0 0 0 2.5px rgba(29,78,216,0.20); }
 
@@ -3730,9 +3747,10 @@ body.light-mode .table-view tbody tr.highlighted td:first-child { box-shadow: in
 body.light-mode .table-view tbody tr.highlighted-purple { background: #e8f0ff; }
 body.light-mode .table-view tbody tr.highlighted-purple:hover { background: #d8e6ff; }
 body.light-mode .table-view tbody tr.highlighted-purple td:first-child { box-shadow: inset 3px 0 0 0 #1d4ed8; }
-/* Trên nền vàng/xanh, màu tiền `#ffa0a0` (hồng rất nhạt) tụt xuống ~1,4:1 ⇒ dùng #b91c1c,
+/* Trên nền vàng/xanh, màu tiền `#ffa0a0` (hồng rất nhạt) tụt xuống ~1,4:1 ⇒ dùng #991b1b,
    ĐÚNG màu mà thẻ card đã dùng cho `.kh-tien` khi thẻ được đánh dấu. Chỉ sửa trong hàng
-   ĐƯỢC ĐÁNH DẤU, hàng thường giữ nguyên màu cũ. */
+   ĐƯỢC ĐÁNH DẤU, hàng thường giữ nguyên màu cũ.
+   ⟳ 2026-10-20: `#b91c1c` → **`#991b1b`** (đậm hơn, đồng bộ với màu tiền hàng thường). */
 body.light-mode .table-view tbody tr.highlighted .tien-no,
 body.light-mode .table-view tbody tr.highlighted .tien-no.high,
 body.light-mode .table-view tbody tr.highlighted .tien-no.low,
@@ -3740,7 +3758,7 @@ body.light-mode .table-view tbody tr.highlighted .tien-no .mil-digit,
 body.light-mode .table-view tbody tr.highlighted-purple .tien-no,
 body.light-mode .table-view tbody tr.highlighted-purple .tien-no.high,
 body.light-mode .table-view tbody tr.highlighted-purple .tien-no.low,
-body.light-mode .table-view tbody tr.highlighted-purple .tien-no .mil-digit { color: #b91c1c !important; }
+body.light-mode .table-view tbody tr.highlighted-purple .tien-no .mil-digit { color: #991b1b !important; }
 
 tbody td { padding: 5px 8px; font-size: var(--fs-tb); vertical-align: middle; }
 tbody td:not(.cell-ghi) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -5149,6 +5167,18 @@ body.force-desktop .table-view { display: block; }
      khai (bảng máy tính ≥640px còn dùng).
      ℹ️ Chỉ khổ điện thoại (`force-desktop`); bảng máy tính giữ nền bảng như cũ. */
   body.force-desktop .table-wrap { background: transparent; }
+  /* ⟳ 2026-10-20 (tiếp): **THẺ RỘNG HƠN** (yêu cầu “cho thẻ khi xem dạng bảng rộng hơn”).
+     Chuỗi bề rộng đo live ở khổ 533px: trang **523,24** → `#mainContent` đệm 8px mỗi bên →
+     `.table-wrap`/`table`/`tr` = **507,25px** ⇒ mép thẻ cách mép màn hình **8px**.
+     Lấy lại 6px mỗi bên bằng **lề ÂM trên chính `.table-view`** ⇒ thẻ **519,25px** (+12px, +2,4%),
+     mép thẻ cách màn hình **2px**.
+     ⚠️ Đặt trên `.table-view` (KHÔNG đặt trên `#mainContent`): `#mainContent` bọc cả toolbar dính,
+     sửa ở đó là toolbar cũng rộng ra và **lệch với chế độ “Xem dạng thẻ”** (thẻ KH vẫn đệm 8px).
+     ⚠️ Lề âm trên khối `width: auto` KHÔNG gây vuốt ngang (bề rộng tự co lại theo khung chứa —
+     đo lại `scrollWidth − clientWidth` = 0).
+     ℹ️ Muốn rộng hơn nữa thì hạ số này về `-8px` (= thẻ sát mép màn hình); ⛔ đừng xuống dưới
+     `-8px`: thẻ sẽ TRÀN ra ngoài khung và sinh vuốt ngang. */
+  body.force-desktop .table-view { margin-left: -6px; margin-right: -6px; }
   /* ── ⟳ 2026-10-20: MỖI KHÁCH = MỘT “THẺ” (chỉ ở dạng bảng trên điện thoại) ─────────────────
      Yêu cầu người dùng: “đổi tách ô từng kh làm dạng thẻ khi xem dạng bảng” (ảnh kèm = bảng 3
      hàng đang DÍNH LIỀN, chỉ ngăn nhau bằng 1 đường kẻ 1px), rồi “bỏ màu nền hàng tên”, rồi
