@@ -24,7 +24,7 @@
      ⛔ Đừng gộp favicon với `.theme-logo`: sửa logo trong trang KHÔNG làm favicon đổi theo,
      phải sửa cả chuỗi SVG ở đây. -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cstyle%3Epath%7Bfill:%23111827%7D@media (prefers-color-scheme:dark)%7Bpath%7Bfill:%23ffffff%7D%7D%3C/style%3E%3Cpath d='M22 2 C24 14 30 20 42 22 C30 24 24 30 22 42 C20 30 14 24 2 22 C14 20 20 14 22 2 Z'/%3E%3C/svg%3E">
-<title>TongHopNo BR</title>
+<title>dstonno BR</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap');
 
@@ -5125,7 +5125,79 @@ body.force-desktop .table-view { display: block; }
      cùng nhau; ⛔ đừng hạ `--row-pad-y` về 0 trừ khi người dùng muốn “sát như cũ” lần nữa. */
     padding: var(--row-pad-y, 0) var(--row-pad-r) var(--row-pad-y, 0) var(--row-pad-l);
   }
-  /* ── DẢI NỀN Ở HÀNG “TÊN KH + TIỀN NỢ” — LỊCH SỬ ĐÃ ĐẢO CHIỀU 4 LẦN (⛔ đọc kỹ trước khi đổi tiếp) ─
+  /* ── BỎ VIỀN BAO QUANH CẢ BẢNG (người dùng: “bỏ viền xung quanh, thêm viền từng thẻ”) ───────────
+     Rule gốc `.table-wrap` (**3548**) khai `border: 1px solid var(--tb-edge)` + `border-radius:
+     var(--radius)` (12px). Dạng THẺ thì khung bao đó là thừa — để nguyên là thấy “khung ngoài +
+     khung trong lồng nhau” (mỗi khách đã có viền + bo góc riêng ở rule ngay dưới).
+     ⟳ 2026-10-20 (tiếp): NỀN của khung nay cũng `transparent` — xem rule ngay dưới. Trước đó
+     nền khung là “NỀN KHE giữa các thẻ” (dark `--dk-table`, light `--light-card`); người dùng đòi
+     “đồng bộ với màu nền khi xem dạng thẻ” ⇒ khe nay lộ nền TRANG. ⛔ Đừng trả lại nền đặc cho
+     khung: sẽ ra lại mảng khác màu sau lưng các thẻ.
+     ⚠️ `overflow: clip` của rule gốc VẪN CẦN (cắt con theo đường bo + cho `.table-scroll` cuộn
+     ngang) — chỉ bỏ `border`/`border-radius`/`background`, ⛔ đừng đụng `overflow`.
+     ℹ️ Chỉ khổ điện thoại: bảng máy tính (≥640px) giữ nguyên khung. */
+  body.force-desktop .table-wrap { border: 0; border-radius: 0; }
+  /* ⟳ 2026-10-20 (tiếp): **NỀN PHÍA SAU CÁC THẺ = NỀN TRANG, Ở CẢ 2 THEME** (yêu cầu “cho màu nền
+     khi xem dạng bảng đồng bộ với màu nền khi xem dạng thẻ trên điện thoại”; trước đó khung còn nền
+     `--dk-table` (dark) / `--light-card` (light) nên khe giữa các thẻ ra một mảng khác màu với
+     chế độ “Xem dạng thẻ”).
+     Nay `transparent` ⇒ khe + vùng quanh thẻ lộ **ĐÚNG nền trang** (`--page-bg` ở dark, `--light-surface`
+     ở light) = y hệt nền của `#cardView` ⇒ hai chế độ xem cùng một “mặt nền”.
+     ⚠️ Độ cụ thể 0,2,1 (`body` + `.force-desktop` + `.table-wrap`) > `.table-wrap` (0,1,0) và
+     `body.light-mode .table-wrap` (**1687**, 0,1,1) ⇒ thắng ở cả 2 theme, không cần `!important`.
+     ℹ️ Vì nền khung nay trong suốt nên `--dk-table` **không còn hiện** ở khổ điện thoại — token vẫn
+     khai (bảng máy tính ≥640px còn dùng).
+     ℹ️ Chỉ khổ điện thoại (`force-desktop`); bảng máy tính giữ nền bảng như cũ. */
+  body.force-desktop .table-wrap { background: transparent; }
+  /* ── ⟳ 2026-10-20: MỖI KHÁCH = MỘT “THẺ” (chỉ ở dạng bảng trên điện thoại) ─────────────────
+     Yêu cầu người dùng: “đổi tách ô từng kh làm dạng thẻ khi xem dạng bảng” (ảnh kèm = bảng 3
+     hàng đang DÍNH LIỀN, chỉ ngăn nhau bằng 1 đường kẻ 1px), rồi “bỏ màu nền hàng tên”, rồi
+     “cho khoảng cách các hàng gần nhau hơn và bỏ đường kẻ dọc giữa các thẻ”, rồi (cùng ngày)
+     “bỏ viền xung quanh, thêm viền từng thẻ” ⇒ viền bao cả bảng GỠ, mỗi thẻ có viền RIÊNG.
+     Vì sao làm được bằng `margin`/`border-radius` trên `tr`: `table` + `tbody` ở khối `@media`
+     này đã là `display: block` (xem 3 rule ngay trên) và `tr` là `display: grid` ⇒ `tr` là HỘP
+     KHỐI bình thường. ⛔ Nếu ai đó “sửa cho đúng chuẩn” về `display: table` thì `margin` và
+     `border-radius` trên `tr` MẤT TÁC DỤNG (bảng thật không cho margin hàng) — mất luôn lưới 3 hàng.
+       · `margin-bottom: 4px` — KHE HỞ giữa hai khách (lượt đầu để 8px, người dùng đòi “gần nhau
+         hơn” ⇒ 4px). Khe THẤY ĐƯỢC = 4px + 2 × viền 1px;
+       · `border: 1px solid var(--tb-edge)` (sáng ghi đè `--light-edge` ở rule ngay dưới) — VIỀN
+         RIÊNG TỪNG THẺ, thay cho viền bao cả bảng (rule `body.force-desktop .table-wrap` ngay trên
+         đã bỏ viền đó). Rule này ĐỒNG THỜI ghi đè `tbody tr { border-bottom: 1px solid
+         var(--tb-line) }` (**3701**, ngoài `@media` này) ⇒ ⛔ không còn kẻ ngang dư dưới đáy thẻ;
+       · `border-radius: 10px` — bằng `.kh-card` (một hệ bo góc với chế độ “Xem dạng thẻ”);
+       · `background: var(--dk-card)` — nền thẻ, bằng thẻ KH (dark `#242a34` trên nền bảng
+         `#12171f` ≈ **1,28:1** — đúng độ nổi của `.kh-card` ở chế độ “Xem dạng thẻ”);
+       · light: **`var(--light-card)`** — ⟳ 2026-10-20: đổi từ `#ffffff` sang token này để **ĐỒNG BỘ
+         với `.kh-card`** (“Xem dạng thẻ” ở light cũng dùng `--light-card`, xem **1489**); nền PHÍA SAU
+         các thẻ là nền trang (`--light-surface`, rule `.table-wrap` phía trên) ⇒ hai chế độ xem cùng
+         một cặp “nền trang / nền thẻ”. ⚠️ Nếu ai đổi `.kh-card` light sang màu khác thì đổi Ở ĐÂY nữa;
+       · `overflow: hidden` — CẮT vạch đánh dấu `::before` (3px, `left: 0`) theo ĐÚNG đường bo bên
+         trong viền, và cắt mọi thứ vẽ tràn khác của hàng (bài học ở `.kh-card`/`.table-wrap`:
+         thiếu nó là vuông góc chòi ra).
+     ⚠️ Nền thẻ PHẢI scope `:not(.highlighted):not(.highlighted-purple)`: rule này (0,2,3) THẮNG
+     `.table-view tbody tr.highlighted` (0,2,2) ⇒ thiếu scope là hàng ĐÁNH DẤU mất nền cam/tím.
+     ⛔ Đừng thay `margin-bottom` bằng `border-bottom`: ra lại đúng hình “bảng liền” mà người dùng
+     đã 2 lần yêu cầu bỏ. ⚠️ Viền để **1px** — dày hơn là đổi “thẻ” thành “hộp”; và viền phải
+     luôn đi KÈM `margin-bottom` (bỏ khe mà chỉ có viền là ra lại “bảng có kẻ”). */
+  body.force-desktop .table-view tbody tr {
+    margin-bottom: 4px;
+    border: 1px solid var(--tb-edge);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  body.light-mode.force-desktop .table-view tbody tr { border-color: var(--light-edge); }
+  /* Khách CUỐI không cần khe dưới (khung `.table-wrap` đã có đệm/viền riêng). */
+  body.force-desktop .table-view tbody tr:last-child { margin-bottom: 0; }
+  body.force-desktop .table-view tbody tr:not(.highlighted):not(.highlighted-purple) {
+    background: var(--dk-card);
+  }
+  body.light-mode.force-desktop .table-view tbody tr:not(.highlighted):not(.highlighted-purple) {
+    background: var(--light-card);
+  }
+  /* ── DẢI NỀN Ở HÀNG “TÊN KH + TIỀN NỢ” — ⛔ ĐÃ GỠ HẲN 2026-10-20 ───────────────────────────
+     (nền của cả khách nay do `background` của `tr` gánh — rule “MỖI KHÁCH = MỘT THẺ” phía trên;
+     ghi chú gỡ nằm ở chỗ rule `::after` từng đứng, cuối khối này). ĐOẠN DƯỚI LÀ **LỊCH SỬ + SỐ ĐO
+     MÀU**, giữ nguyên để dựng lại dải nếu người dùng đổi ý — vùng này đã đảo chiều **5 lần**.
      ⚠️ Màu dải là token `--row1-bg` (tông PHA XANH ACCENT, không phải xám trung tính) — có
      LÝ DO ĐO ĐƯỢC, đo ở light mode trên chữ TIỀN (ngưỡng AA 4,5:1):
          xám `rgba(15,23,42,…)`      : 3% → 4,55 · **4% → 4,46 (ĐÃ dưới AA)**
@@ -5141,39 +5213,40 @@ body.force-desktop .table-view { display: block; }
      ℹ️ Chỉ áp cho **bảng 3 hàng trên điện thoại** (khối `@media` này + `force-desktop`).
      Bảng máy tính (≥640px) giữ nguyên — người dùng đã CHỐT “chỉ bảng điện thoại”.
 
-     ── LỊCH SỬ (mục này đã đảo chiều **4 lần**, lượt cuối 2026-10-19): ──────────────────────
+     ── LỊCH SỬ (mục này đã đảo chiều **5 lần**, lượt cuối 2026-10-20): ──────────────────────
        · ① đầu tiên: sọc xen kẻ **theo KHÁCH** — `tbody tr:nth-child(even)` tô nền `tr`;
        · ② người dùng: “bỏ màu xen kẻ các ô và thay vào đó là màu nền ở hàng tên kh và số tiền”
          ⇒ XOÁ 2 rule `nth-child(even)`, thay bằng **DẢI NỀN** ở hàng “tên + tiền” của MỌI khách;
        · ③ 2026-10-18: “cho từng ô màu xen kẻ khi xem dạng bảng, ví dụ ô đầu nền xám thì ô kế nền
          trắng” ⇒ thêm dải thứ HAI ở hàng “mã kh + sđt” (pseudo-element `::before`, đặt vào track 3);
-       · ④ ⟳ 2026-10-19 (NAY): “bỏ màu nền xen kẻ khi xem dạng bảng” ⇒ **GỠ dải hàng 3**; đã HỎI
+       · ④ ⟳ 2026-10-19: “bỏ màu nền xen kẻ khi xem dạng bảng” ⇒ **GỠ dải hàng 3**; đã HỎI
          TRƯỚC và người dùng CHỐT: **giữ dải hàng “tên + tiền”** (thiết kế cũ từ 2026-09-27).
-         ⇒ trạng thái chốt: mỗi khách = hàng1 DẢI · hàng2 TRẮNG · hàng3 TRẮNG, khách sau lặp y hệt.
-     ⛔ KHÔNG dựng lại `nth-child(even)` (tô theo KHÁCH) và ⛔ cũng không tự thêm lại dải hàng 3:
-     cả hai đều đã được hỏi và bị chốt là KHÔNG dùng. */
+         ⇒ khi đó: mỗi khách = hàng1 DẢI · hàng2 TRẮNG · hàng3 TRẮNG, khách sau lặp y hệt;
+       · ⑤ ⟳ 2026-10-20 (NAY): “bỏ màu nền hàng tên” ⇒ **GỠ NỐT dải hàng 1** (rule `::after`), nói
+         ngay sau khi xem bản “mỗi khách = một thẻ”. Nền giờ do `background` của `tr` gánh (NỀN THẺ —
+         rule “MỖI KHÁCH = MỘT THẺ” phía trên) ⇒ **KHÔNG còn dải/pseudo-element nền nào**.
+     ⛔ KHÔNG dựng lại `nth-child(even)` (tô theo KHÁCH), ⛔ cũng không tự thêm lại dải hàng 1/3:
+     cả ba đều đã được hỏi và bị chốt là KHÔNG dùng. Muốn tách khách thì dùng NỀN THẺ + KHE
+     (`margin-bottom` + `background` ở rule “MỖI KHÁCH = MỘT THẺ”), ⛔ đừng quay lại dải. */
   /* ── KHÔNG ĐỔI MÀU KHI RÊ CHUỘT / CHẠM TRÊN BẢNG 3 HÀNG (yêu cầu “bỏ hiển thị màu khi chạm
      vào ở bảng này”) — khối `@media (max-width: 639.98px)` NÀY mới là bảng trên điện thoại;
      khối `@media (min-width: 640px)` ở trên là bảng máy tính và **KHÔNG đụng tới**.
-     Cách làm KHÔNG phải “tắt hover” mà là **trả nền về ĐÚNG nền chuẩn của hàng** — và nay
-     **MỌI hàng** đều có `background` TRONG SUỐT: dải nền hàng 1 là pseudo-element `::after`
-     của hàng (⛔ KHÔNG phải `background` của `tr`), hàng ĐÁNH DẤU có cam/tím riêng.
-     ⇒ rule `transparent !important` ngay dưới đúng cho **MỌI** hàng, không còn ngoại lệ nào phải
-     nhớ; và vì dải là pseudo-element nên **không bị rule này ảnh hưởng** ⇒ chạm vào hàng vẫn giữ
-     dải, đúng yêu cầu “bỏ hiển thị màu khi chạm”.
-     ⚠️ `!important` là BẮT BUỘC: phải thắng `tbody tr:hover` (0.40) và `tbody tr:active` (0.50)
-     ở rule nền (~1486) và `body.light-mode .table-view tr:hover` (`#e8eefc`) — luật này có độ
-     cụ thể cao hơn nên nếu không `!important` sẽ **thấy như chưa sửa gì**.
+     Cách làm KHÔNG phải “tắt hover” mà là **trả nền về ĐÚNG nền chuẩn của hàng**.
+     ⟳ 2026-10-20: mỗi hàng nay CÓ `background` riêng (NỀN THẺ — rule “MỖI KHÁCH = MỘT THẺ” ở
+     trên) ⇒ giá trị trả về là **chính nền thẻ** (`--dk-card` / light `var(--light-card)`), ⛔ **KHÔNG còn
+     là `transparent`**: để `transparent` là chạm/vuốt vào thẻ thì thẻ **mất nền**, lộ nền bảng.
+     Hàng ĐÁNH DẤU có cam/tím riêng (2 rule ngay dưới).
+     ⚠️ `!important` là BẮT BUỘC: phải thắng `tbody tr:hover` và `tbody tr:active` ở rule nền
+     (~3701) và `body.light-mode .table-view tr:hover` (`#e8eefc`) — luật này có độ cụ thể cao
+     hơn nên nếu không `!important` sẽ **thấy như chưa sửa gì**.
      ⚠️ `:not(.highlighted):not(.highlighted-purple)` là BẮT BUỘC, không phải viết cho gọn:
      hàng đang được đánh dấu phải giữ nền cam/tím **trong lúc vừa nhấn** (nhấn 2 lần ⇒ cú
      nhấn thứ hai rơi vào lúc hàng vừa `:active` vừa `.highlighted`; thiếu `:not()` là hàng
-     chớp về nền `:active` đúng lúc người dùng cần thấy phản hồi nhất).
-     ℹ️ (Lịch sử) Hồi sọc còn tô bằng `background` của `tr` THEO KHÁCH (`nth-child(even)`), sọc
-     phải nâng `!important` + bỏ `:not(:hover):not(:active)` để không mất khi chạm — nay sọc là
-     pseudo-element nên phần đó KHÔNG còn cần; ⛔ đừng quay lại cách tô nền `tr` (sẽ phải làm lại
-     toàn bộ phần chống-đổi-màu này). */
+     chớp về nền `:active` đúng lúc người dùng cần thấy phản hồi nhất). */
   tbody tr:not(.highlighted):not(.highlighted-purple):hover,
-  tbody tr:not(.highlighted):not(.highlighted-purple):active { background: transparent !important; }
+  tbody tr:not(.highlighted):not(.highlighted-purple):active { background: var(--dk-card) !important; }
+  body.light-mode.force-desktop .table-view tbody tr:not(.highlighted):not(.highlighted-purple):hover,
+  body.light-mode.force-desktop .table-view tbody tr:not(.highlighted):not(.highlighted-purple):active { background: var(--light-card) !important; }
   /* Hàng ĐÃ ĐÁNH DẤU: chạm vào không được nhạt màu.
      ⚠️ Bốn giá trị màu dưới TRÙNG với `.table-view tbody tr.highlighted` / `.highlighted-purple`
      ở rule nền — đổi màu đánh dấu thì phải đổi CẢ Ở ĐÂY, nếu không hàng đánh dấu sẽ lại đổi
@@ -5186,7 +5259,9 @@ body.force-desktop .table-view { display: block; }
   body.light-mode.force-desktop .table-view tbody tr.highlighted:active { background: #fef3c7 !important; }
   body.light-mode.force-desktop .table-view tbody tr.highlighted-purple:hover,
   body.light-mode.force-desktop .table-view tbody tr.highlighted-purple:active { background: #e8f0ff !important; }
-  /* ── DẢI NỀN HÀNG “TÊN KH + TIỀN NỢ” (bảng 3 hàng trên điện thoại) ─────────────────────────────
+  /* ── (LỊCH SỬ — ĐÃ GỠ) DẢI NỀN HÀNG “TÊN KH + TIỀN NỢ” · bảng 3 hàng trên điện thoại ────────────
+     ⛔ 2026-10-20: dải này ĐÃ GỠ HẲN (xem ghi chú “ĐÃ GỠ HẲN” ở cuối khối, ngay dưới rule
+     `isolation: isolate`). Toàn bộ đoạn dưới đây giữ lại làm SỐ ĐO + LÝ DO để dựng lại nếu cần.
      ⟳ 2026-10-19 — NGƯỜI DÙNG ĐỔI LẦN NỮA: “bỏ màu nền xen kẻ khi xem dạng bảng”. Đã **HỎI TRƯỚC**
      (vì đây là vùng đã đảo chiều nhiều lần) và người dùng CHỐT: **chỉ bỏ dải HÀNG 3 (“mã kh + sđt”,
      thêm ở 2026-10-18), GIỮ dải HÀNG 1 (“tên + tiền”, thiết kế cũ từ 2026-09-27)**.
@@ -5243,16 +5318,21 @@ body.force-desktop .table-view { display: block; }
      ℹ️ `@media print` đã ẩn cả `tr::after` LẪN `tr::before` (xem rule gần cuối file; từ
      2026-10-19 `tr::before` là VẠCH ĐÁNH DẤU của hàng được đánh dấu, ⛔ vẫn phải ẩn khi in). */
   body.force-desktop .table-view tbody tr { isolation: isolate; }
-  body.force-desktop .table-view tbody tr:not(.highlighted):not(.highlighted-purple)::after {
-    content: '';
-    grid-area: 1 / 1 / 2 / -1;
-    align-self: stretch;
-    justify-self: stretch;
-    margin: calc(-1 * var(--row-pad-y)) calc(-1 * var(--row-pad-r)) 0 calc(-1 * var(--row-pad-l));
-    background: var(--row1-bg);
-    z-index: -1;
-    pointer-events: none;
-  }
+  /* ⛔ ⟳ 2026-10-20: DẢI NỀN HÀNG “TÊN KH + TIỀN NỢ” ĐÃ GỠ HẲN — người dùng: “bỏ màu nền hàng tên”
+     (nói ngay sau khi xem bản “mỗi khách = một thẻ”). Nay nền của CẢ khách do `background` của
+     `tr` gánh (rule “MỖI KHÁCH = MỘT THẺ” ở trên) ⇒ hàng 1 KHÔNG còn dải riêng.
+     Rule cũ (dựng lại thì chép y nguyên — ⛔ đừng tô nền từng `td`: nền sẽ HỞ đúng `column-gap`
+     4px và không phủ hết lề hàng):
+       body.force-desktop .table-view tbody tr:not(.highlighted):not(.highlighted-purple)::after {
+         content: ''; grid-area: 1 / 1 / 2 / -1; align-self: stretch; justify-self: stretch;
+         margin: calc(-1 * var(--row-pad-y)) calc(-1 * var(--row-pad-r)) 0 calc(-1 * var(--row-pad-l));
+         background: var(--row1-bg); z-index: -1; pointer-events: none;
+       }
+     ⚠️ Dựng lại thì `tr` PHẢI có `isolation: isolate` (không có là `z-index: -1` tụt xuống dưới
+     cả nền bảng ⇒ dải vô hình) — rule đó VẪN CÒN ngay trên, giữ nguyên.
+     ℹ️ `--row1-bg` nay **KHÔNG còn chỗ nào đọc** (`grep "var(--row1-bg)"` = 0) — token ở `:root`
+     + 5 khối `body.light-mode[data-surface]` vẫn khai: GIỮ LẠI để dựng lại dải mà không phải đo
+     màu lại. ⛔ Đừng “dọn” token này: xoá là mất luôn bộ màu đã đo AA (light 14% / dark 15%). */
   /* ⛔ ⟳ 2026-10-19: DẢI NỀN HÀNG 3 (“MÃ KH + SĐT”) ĐÃ GỠ — người dùng: “bỏ màu nền xen kẻ khi xem
      dạng bảng”, và sau khi **HỎI TRƯỚC** thì CHỐT: chỉ bỏ dải HÀNG 3, GIỮ dải HÀNG 1.
      Rule cũ (dựng lại thì chép y nguyên, ⛔ đừng tô nền từng `td` — nền sẽ hở đúng `column-gap`
@@ -5674,8 +5754,14 @@ body.force-desktop .table-view { display: block; }
     border-color: #9aa3b0 !important; box-shadow: none !important;
   }
   .table-scroll, .table-wrap { overflow: visible !important; }
-  /* Dải nền “tên + tiền” + vạch đánh dấu: in ra là tốn mực mà không thêm dữ liệu nào */
-  tbody tr::after, tbody tr::before { display: none !important; }
+  /* Vạch đánh dấu (`::before`, 3px ở mép trái hàng): in ra là tốn mực mà không thêm dữ liệu nào.
+     ⟳ 2026-10-20: dải nền `::after` (hàng “tên + tiền”) ĐÃ GỠ HẲN ⇒ không cần ẩn nữa. */
+  tbody tr::before { display: none !important; }
+  /* ⟳ 2026-10-20: bỏ KHUNG “THẺ” của bảng điện thoại khi in (giấy không cần bo góc/khe hở;
+     xem rule `margin-bottom: 4px` + `border: 0` + `border-radius: 10px` trong
+     `@media (max-width: 639.98px)`). ⚠️ `background` ở dòng dưới đã ép trắng nên nền thẻ không lọt
+     vào bản in — nhưng bo góc/khe hở thì PHẢI ép ở đây. */
+  tbody tr { margin-bottom: 0 !important; border: 0 !important; border-radius: 0 !important; overflow: visible !important; }
   table, thead, tbody, tbody td, tbody tr { background: #ffffff !important; box-shadow: none !important; }
   table { width: 100% !important; border-collapse: collapse !important; }
   thead th { color: #000000 !important; background: #eceff3 !important; border-bottom: 1px solid #000000 !important; }
@@ -5934,7 +6020,7 @@ body.force-desktop .table-view { display: block; }
     </button>
     <div class="title-wrap">
 
-      <div class="header-title">TongHopNo BR</div>
+      <div class="header-title">dstonno BR</div>
       <div class="header-sub" id="fileLabel">Chưa có dữ liệu</div>
     </div>
   </div>
@@ -9203,7 +9289,7 @@ function saoLuuDuLieu() {
   const hai = (x) => String(x).padStart(2, '0');
   const tem = `${d.getFullYear()}-${hai(d.getMonth() + 1)}-${hai(d.getDate())}_${hai(d.getHours())}${hai(d.getMinutes())}`;
   const goi = {
-    ungDung: 'TongHopNo BR',
+    ungDung: 'dstonno BR',
     phienBan: 1,
     thoiDiem: d.toISOString(),
     soKH: new Set(allData.map(r => r.ma_khach_hang || r.ten_khach_hang)).size,
