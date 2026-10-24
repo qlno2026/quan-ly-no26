@@ -3546,7 +3546,11 @@ body.light-mode .nhom-sel-name {
      (box-shadow của thẻ không phải phần tử con nên không bị `overflow` cắt), và đã đo:
      không có con nào của thẻ vượt mép thẻ ở 320/362/429px (xem run.md). */
   overflow: hidden;
-  padding: 8px 14px;
+  /* ⟳ 2026-10-24 (yêu cầu “chỉnh cho các hàng ra gần sát đường kẻ của thẻ”): đệm NGANG
+     14px → **8px** (bằng đệm DỌC) ⇒ mọi hàng (tên, danh số, viên SĐT, ô ghi chú, dòng địa chỉ)
+     sát đường kẻ thẻ hơn 6px mỗi bên; bề rộng chữ được thêm 12px nên địa chỉ dài bớt xuống dòng.
+     ⚠️ Đệm dọc GIỮ 8px (đã siết ở lượt “thẻ sát xuống tên”); ⛔ đừng nâng lại 14px mà không hỏi. */
+  padding: 8px 8px;
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
   -webkit-user-select: none;
@@ -3745,13 +3749,20 @@ body.light-mode .ghi-chu-input::placeholder { color: #5b6777; opacity: 1; }
 body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
 .ghi-chu-input:focus { border-color: #60a5fa; }
 
-.kh-addr-line { font-size: var(--fs-card); color: #94a3b8; font-weight: 400; margin-bottom: 3px; white-space: normal; word-wrap: break-word; } /* địa chỉ TRONG THẺ CARD — +1px, xem chú thích “CỠ CHỮ NỘI DUNG THẺ CARD” */
+.kh-addr-line { font-size: var(--fs-card); color: #94a3b8; font-weight: 400; margin-bottom: 0; white-space: normal; word-wrap: break-word; } /* địa chỉ TRONG THẺ CARD — +1px, xem chú thích “CỠ CHỮ NỘI DUNG THẺ CARD”. ⟳ 2026-10-24: nay là HÀNG CUỐI của thẻ (dưới ghi chú) ⇒ margin-bottom 0, khe trên do inline margin-top 3px */
 /* ── 📍 GHIM “VỊ TRÍ MỚI” Ở DÒNG ĐỊA CHỈ (2026-10-24) ─────────────────────────────
    Yêu cầu người dùng: “chọn vào địa chỉ ghim vị trí mới… hiển thị màu xanh lá để phân biệt
    kh có vị trí mới và kh chưa ghi vị trí mới” + “cho thêm icon nhỏ bên cạnh”.
-   ⇒ Chính ICON GHIM ở đầu dòng địa chỉ (trước đây là `<svg class="addr-ico">` TRƠ) nay là
-   một NÚT NHỎ `.kh-pin-btn` (ô chạm 24×18, icon 15px) — chạm để GHIM / BỎ GHIM; chạm vào
-   CHỮ địa chỉ cũng ghim (cùng một hàm pinToggle).
+   ⇒ Chính ICON GHIM (trước đây là `<svg class="addr-ico">` TRƠ ở ĐẦU dòng địa chỉ) nay là phần tử
+   `.kh-pin-btn` (20×18, icon 15px) đứng TRƯỚC chữ địa chỉ. ⛔ **KHÔNG bấm được**: từ 2026-10-24
+   người dùng yêu cầu “bỏ chức năng nhấn vào icon để ghim vị trí luôn” ⇒ nó chỉ còn là DẤU HIỆU
+   “khách CHƯA ghim” (xanh dương), `pointer-events: none` (xem rule bên dưới).
+   Đã ghim thì nút ghim ẨN, hiện nút MŨI TÊN `.kh-nav-btn` (20×18, icon `#i-nav`) — bấm để DẪN
+   ĐƯỜNG tới toạ độ GPS đã lưu (xem `pinNav`). Bố cục: **[📌 chưa ghim] hoặc [➤ dẫn đường] <địa chỉ>**.
+   ⟳ **NHẤN-GIỮ 0,5s trên CHỮ ĐỊA CHỈ** mở hộp nhỏ có 2 tuỳ chọn “Cập nhật vị trí mới” + “Bỏ ghim
+   vị trí” (xem `pinMenuOpen`, dùng lại khung `.lpcb-*` của hộp SĐT) — đây là **ĐƯỜNG DUY NHẤT**
+   để ghim / cập nhật / bỏ ghim. Chạm 1 lần vào chữ địa chỉ KHÔNG làm gì (đã gỡ onclick theo yêu
+   cầu “bỏ chức năng nhấn vào địa chỉ để ghim và bỏ ghim vị trí, vì đã có chức năng nhấn giữ”).
    Màu: bình thường icon ăn `--ic-blue` (`#3b82f6`; light `--ic-blue-dark` `#2563eb` — cùng tông
    ghim cũ `.addr-ico`), chữ địa chỉ giữ màu cũ (`#94a3b8` / light `#334155`).
    ĐÃ GHIM thì **XANH LÁ** đích danh từng theme — dark `#4ade80` (**6,56–8,28:1** trên 3 mức nền
@@ -3768,27 +3779,81 @@ body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
   align-items: center;
   justify-content: center;
   vertical-align: middle;
-  width: 24px;
-  /* ⚠️ Cao 18px (KHÔNG phải 22): dòng địa chỉ chỉ cao ~20,4px với cỡ chữ “Chuẩn” ⇒ nút cao hơn
-     là ĐẨY dòng cao thêm, thẻ cao thêm (đo live: 22px → 168,9 · 20px → 167,9 · 18px → 166,9 như cũ).
-     Bề rộng 24px vẫn đủ chạm; icon 15px nằm gọn; chạm vào CHỮ địa chỉ cũng ghim nên không khó bấm. */
+  /* ⟳ 2026-10-24 (yêu cầu “cho hàng icon địa chỉ đều với các hàng trên”): 24 → **20px** + `margin-left:
+     -2,5px` ⇒ **mép TRÁI của icon ghim trùng đúng mép icon cây viết của hàng ghi chú / mép viên SĐT
+     (đều 14,95px)**. Trước đây hộp chạm 24px rộng hơn glyph 15px nên glyph bị đẩy vào ~4,5px, mắt đọc
+     là “thụt vào” so với các hàng trên. Công thức: (20 − 15) / 2 = 2,5px ⇒ bù bằng margin-left âm.
+     ⚠️ Cao 18px (KHÔNG phải 22): dòng địa chỉ chỉ cao ~20,4px với cỡ chữ “Chuẩn” ⇒ nút cao hơn
+     là ĐẨY dòng cao thêm, thẻ cao thêm (đo live: 22px → 168,9 · 20px → 167,9 · 18px → 166,9 như cũ). */
+  width: 20px;
   height: 18px;
   padding: 0;
-  margin-right: 2px;
+  margin-left: -2.5px;
+  margin-right: 0;
   border: 0;
   border-radius: 6px;
   background: transparent;
   color: var(--ic-blue);   /* bình thường: XANH DƯƠNG như icon ghim cũ (`.addr-ico`) */
   font-family: inherit;
-  cursor: pointer;
+  /* ⟳ 2026-10-24 (yêu cầu “bỏ chức năng nhấn vào icon để ghim vị trí luôn”): nút này nay CHỈ là
+     DẤU HIỆU “chưa ghim”, KHÔNG bấm được nữa ⇒ `pointer-events: none` (chạm vào icon không làm gì,
+     cũng không bắt sự kiện). Muốn ghim: NHẤN-GIỮ chữ địa chỉ → “Cập nhật vị trí mới”.
+     ⚠️ VẪN GIỮ trong DOM kèm `data-ma`: `pinApply` đồng bộ lớp `.is-pinned` qua nó và hộp nhấn-giữ
+     dùng `document.querySelector('.kh-pin-btn[data-ma]')` để gọi `pinUpdate`. */
+  pointer-events: none;
+  cursor: default;
   -webkit-tap-highlight-color: transparent;
 }
-.kh-pin-btn:active { background: rgba(255,255,255,0.12); }
-body.light-mode .kh-pin-btn:active { background: rgba(15,23,42,0.08); }
 /* Light mode: ghim dùng blue-600 (`--ic-blue-dark` = #2563eb) cho ĐỦ 3:1 trên CẢ 5 mức nền —
    y hệt lý do đã ghi ở rule `body.light-mode[data-surface] .addr-ico` (dòng ~892). */
 body.light-mode .kh-pin-btn { color: var(--ic-blue-dark); }
-.kh-addr-txt { cursor: pointer; }   /* chạm vào CHỮ địa chỉ cũng ghim (xem pinToggle) */
+/* ⟳ 2026-10-24: chữ địa chỉ KHÔNG còn bấm để ghim/bỏ ghim. Nay:
+   · CHƯA ghim → bấm không làm gì ⇒ con trỏ mặc định.
+   · ĐÃ ghim   → bấm = MỞ GOOGLE MAPS CHỈ ĐƯỜNG tới toạ độ đã lưu (yêu cầu “khi dẫn đường thì nhấn
+     chọn hàng địa chỉ đã được cập nhật mới”) ⇒ `cursor: pointer` để báo bấm được. */
+.kh-addr-txt { cursor: default; }
+.kh-addr-line.is-pinned .kh-addr-txt { cursor: pointer; }
+/* CỤM NÚT nằm NGAY TRƯỚC chữ địa chỉ: [📌 cập nhật] [➤ dẫn đường] <địa chỉ>. `inline-flex` + `nowrap`
+   để 2 nút LUÔN đứng liền nhau (không bị tách sang 2 dòng khi dòng địa chỉ tự xuống dòng). */
+.kh-addr-acts { display: inline-flex; align-items: center; gap: 2px; vertical-align: middle; margin-right: 4px; white-space: nowrap; }
+/* ➤ NÚT DẪN ĐƯỜNG — chỉ HIỆN khi khách đã ghim (2026-10-24, yêu cầu “khi ghim vị trí mới thì
+   có dẫn đường đến vị trí mới đã ghim luôn”). Đứng TRƯỚC chữ địa chỉ; khách ĐÃ GHIM thì nút 📌
+   bị ẩn ⇒ hàng đọc là **➤ <địa chỉ xanh>** (yêu cầu 2026-10-24: “hiển thị icon như ảnh”).
+   Bấm ⇒ mở Google Maps chỉ đường tới toạ độ GPS đã lưu (xem pinNav).
+   ⚠️ Cao 18px (bằng nút ghim) để KHÔNG đẩy dòng địa chỉ cao thêm (mỗi px cao thêm là thẻ cao
+   thêm). Màu `currentColor` ⇒ tự XANH LÁ theo dòng địa chỉ đã ghim.
+   ⚠️ Nút LUÔN có trong DOM (ẩn bằng `display:none`) ⇒ `pinToggle` chỉ cần bật/tắt lớp
+   `.is-pinned` của dòng, KHÔNG phải vẽ lại thẻ. */
+.kh-nav-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: 20px;
+  height: 18px;
+  padding: 0;
+  /* Bù 2,5px để MÉP TRÁI của mũi tên trùng mép icon các hàng trên (xem chú thích ở .kh-pin-btn). */
+  margin-left: -2.5px;
+  margin-right: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.kh-addr-line.is-pinned .kh-nav-btn { display: inline-flex; }
+/* ⟳ 2026-10-24 (yêu cầu: “khi ghim vị trí mới thì hàng địa chỉ hiển thị icon như ảnh” — ảnh chỉ có
+   MỘT mũi tên chỉ đường màu xanh lá đứng trước chữ): ĐÃ GHIM thì ẨN nút ghim 📌, chỉ còn mũi tên ➤.
+   ⇒ hàng địa chỉ đọc là **➤ <địa chỉ xanh>** đúng như ảnh. Lúc CHƯA ghim vẫn là **📌 <địa chỉ>**.
+   ⚠️ Nút 📌 bị ẩn nhưng VẪN NẰM TRONG DOM (chỉ `display:none`) ⇒ hộp nhấn-giữ địa chỉ vẫn gọi được
+   `pinUpdate` qua nó, và `pinApply` vẫn đồng bộ lớp `.is-pinned` cho cả 2 nút như cũ.
+   ⛔ Muốn “cập nhật vị trí mới” khi đã ghim thì NHẤN-GIỮ chữ địa chỉ (hộp 2 tuỳ chọn) — đó là lý do
+   hộp đó tồn tại; ⛔ đừng bỏ ẩn nút ghim mà không hỏi. */
+body .kh-card .kh-addr-line.is-pinned .kh-pin-btn { display: none; }
+.kh-nav-btn:active { background: rgba(255,255,255,0.14); }
+body.light-mode .kh-nav-btn:active { background: rgba(15,23,42,0.10); }
 /* ĐÃ GHIM = xanh lá. Selector phải đủ mạnh: khối “nền Sáng / Rất sáng” (dòng ~3013/3027) khai
    `body:not(.light-mode)[data-surface-dark=…] .kh-addr-line` = (0,3,1) ⇒ dùng (0,3,1)/(0,4,1)
    và khai SAU nên thắng; ⛔ đừng rút gọn thành `.kh-addr-line.is-pinned` (0,2,0) là mất màu. */
@@ -6337,6 +6402,10 @@ body.force-desktop .table-view { display: block; }
   <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="3.8" y="13.4" width="4.6" height="7" rx="1.3"/><rect x="9.7" y="9" width="4.6" height="11.4" rx="1.3"/><rect x="15.6" y="3.6" width="4.6" height="16.8" rx="1.3"/></symbol>
   <!-- ── Đơn sắc cho thẻ khách hàng / modal (màu theo `color` của class cha) ── -->
   <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.8 9.8c0 3.9-3.1 7.6-6.8 11.6C8.3 17.4 5.2 13.7 5.2 9.8a6.8 6.8 0 1 1 13.6 0z"/><circle cx="12" cy="9.7" r="2.6"/></symbol>
+  <!-- ➤ `i-nav` (2026-10-24) — MŨI TÊN CHỈ ĐƯỜNG (kiểu “navigation” của Google Maps), dùng cho
+       nút `.kh-nav-btn` cạnh dòng địa chỉ của khách ĐÃ GHIM: bấm là mở Google Maps chỉ đường tới
+       toạ độ GPS đã lưu lúc ghim. Đúng 3 quy tắc icon: lưới 24×24 · nét 2,2 · ăn currentColor. -->
+  <symbol id="i-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></symbol>
   <symbol id="i-call" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
   <!-- `i-zalo` (2026-10-17) — icon BONG BÓNG CHAT (ô vuông bo góc + đuôi nhọn chĩa xuống
        dưới-trái), vẽ theo khuôn bộ icon nét của app (`stroke="currentColor"`, `stroke-width: 2.2`,
@@ -6636,10 +6705,11 @@ body.force-desktop .table-view { display: block; }
              rút gọn nhãn → “không hiển thị 2 tab này” (KH đã gọi / KH chưa gọi) →
              “thêm 1 tab Chi tiết” → **“bỏ tab 1tr-3tr”** → **“đưa tab lọc nằm kế tab chú ý”** →
              **“đổi thành Nợ cũ”** + **“Trên 3Tr”**.
-             THỨ TỰ CHỐT: **Chi tiết · Trên 3Tr · Nợ cũ · Tổng hợp · Chú ý · [phễu Lọc]**
-             (Chú ý CUỐI hàng tab · tab “Chi tiết” ở ĐẦU và SÁNG ngay khi mở app · **nút phễu
-             “Lọc theo yêu cầu” (`#advBtn`, không phải tab lọc) nằm NGAY SAU tab “Chú ý”**),
-             5 tab RỘNG BẰNG NHAU nhờ `equalizeLoaiTabs()` (gọi trong `syncLoaiTabs` +
+             ⟳ Lần 8 (cùng ngày): **“bỏ tab chú ý”** ⇒ dải còn **4 TAB**.
+             THỨ TỰ CHỐT: **Chi tiết · Trên 3Tr · Nợ cũ · Tổng hợp**
+             (tab “Chi tiết” ở ĐẦU và SÁNG ngay khi mở app · nút phễu “Lọc theo yêu cầu”
+             `#advBtn` KHÔNG nằm trong dải — nó ở hàng tìm kiếm),
+             4 tab RỘNG BẰNG NHAU nhờ `equalizeLoaiTabs()` (gọi trong `syncLoaiTabs` +
              `ResizeObserver`). “KH đã gọi”/“KH chưa gọi”/“Nợ 1Tr đến 3Tr” chỉ còn trong ô
              “Chi tiết nợ”.
              ⟳ Nhãn được RÚT GỌN theo yêu cầu “Nợ trên 3tr thành 3Tr, nợ 1tr đến 3tr
@@ -6664,7 +6734,10 @@ body.force-desktop .table-view { display: block; }
           <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="old" onclick="selectLoai('old')"><span class="nhom-dot" style="background:#ef4444"></span><span>Trên 3Tr</span></button>
           <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="oldky" onclick="selectLoai('oldky')"><span class="nhom-dot" style="background:#8b5cf6"></span><span>Nợ cũ</span></button>
           <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="summary" onclick="selectLoai('summary')"><span class="nhom-dot" style="background:#3b82f6"></span><span>Tổng hợp</span></button>
-          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="marked" onclick="selectLoai('marked')"><span class="nhom-dot" style="background:#b45309"></span><span>Chú ý</span></button>
+          <!-- ⛔ TAB “CHÚ Ý” ĐÃ BỊ BỎ (2026-10-24 — yêu cầu “bỏ tab chú ý”). Dải nay còn **4 TAB**:
+               Chi tiết · Trên 3Tr · Nợ cũ · Tổng hợp. Lọc “Chú ý” VẪN dùng được ở ô “Chi tiết nợ”
+               ngay trên (data-val="marked") — chỉ là lúc đó KHÔNG tab nào sáng, đúng như ca “1Tr -
+               3Tr” đã bỏ trước đó. ⛔ Đừng dựng lại tab này nếu người dùng không yêu cầu. -->
         </div>
         <!-- 📑 HÀNG SẮP XẾP — 2 tab “Danh Số” / “Tiền Nợ”.
              ⟳ **ĐÃ TRẢ VỀ CHỖ CŨ** theo yêu cầu “đưa nút danh số và tiền nợ về chỗ cũ”: lượt
@@ -9641,6 +9714,15 @@ updateSortButtons();
 /* ── 📍 GHIM “VỊ TRÍ MỚI” (2026-10-24) ─────────────────────────────────────────────────────
    Yêu cầu người dùng: chạm vào DÒNG ĐỊA CHỈ để “ghim vị trí mới”; khách đã ghim hiện XANH LÁ
    (chữ địa chỉ + icon ghim), để phân biệt với khách CHƯA ghim; thêm icon nhỏ bên cạnh địa chỉ.
+   ⟳ 2026-10-24 (tiếp): “khi ghim vị trí mới thì có dẫn đường đến vị trí mới đã ghim luôn” ⇒ lúc
+   ghim, app lấy **GPS tại chỗ** (`pinGps`) và lưu `{lat,lng,acc}` vào đúng bản ghi đó; khách đã
+   ghim có thêm nút mũi tên `.kh-nav-btn` (`pinNav`) mở Google Maps chỉ đường tới toạ độ đã lưu.
+   ⟳ 2026-10-24 (tiếp nữa): “dấu cập nhật vị trí mới NGAY SAU hàng địa chỉ; khi tới vị trí mới thì
+   chọn vào dấu cập nhật để cập nhật vị trí mới” ⇒ nút 📌 đổi việc: bấm = **GHIM (nếu chưa) / LẤY
+   LẠI GPS (nếu đã ghim)** — xem `pinUpdate`; ⛔ không còn là bỏ ghim. Đường BỎ GHIM = **chạm vào
+   CHỮ địa chỉ** (`pinToggle`). ⟳ cùng ngày, yêu cầu cuối: “cho icon này nằm phía trước địa chỉ”
+   ⇒ icon ở TRƯỚC chữ địa chỉ: `[📌 cập nhật] [➤ dẫn đường] <địa chỉ>`. Bản giữa lượt từng để
+   sau chữ — ⛔ đừng đảo lại nếu người dùng không yêu cầu.
    ⚠️ Lưu **THEO MÃ KH** ở khoá RIÊNG `qlno_pinned_addr_v1` (KHÔNG nằm trong file Excel, KHÔNG
    phụ thuộc kỳ) ⇒ tháng sau nhập file mới, khách còn nợ là tự hiện lại xanh, không phải ghim lại;
    khách đã trả hết / không còn trong file thì chỉ KHÔNG hiện (dữ liệu ghim vẫn giữ).
@@ -9664,8 +9746,115 @@ function pinOn(ma) {
   return !!pinAll()[ma];
 }
 
-/* Chạm ICON GHIM hoặc CHỮ ĐỊA CHỈ → ghim / bỏ ghim. Cập nhật TẠI CHỖ (không vẽ lại danh sách)
-   để không mất vị trí cuộn. `el` có thể là nút (có data-ma) hoặc ô chữ (lấy mã ở thẻ cha). */
+/* ➤ DẪN ĐƯỜNG tới “vị trí mới” đã ghim (2026-10-24 — yêu cầu: “khi ghim vị trí mới thì có dẫn
+   đường đến vị trí mới đã ghim luôn”). Mở Google Maps chỉ đường tới TOẠ ĐỘ GPS đã lưu lúc ghim
+   (xem pinGps) — ⛔ KHÔNG dẫn theo `dia_chi` trong file: địa chỉ đó là địa chỉ CŨ, đúng lý do
+   người dùng phải ghim vị trí mới.
+   `dir_action=navigate` = vào thẳng chế độ chỉ đường; máy có app Google Maps thì app tự mở. */
+function pinNav(el) {
+  if (!el || !el.closest) return;
+  const card = el.closest('.kh-card');
+  const ma = (el.dataset && el.dataset.ma) || (card && card.dataset.ma) || '';
+  const rec = pinAll()[ma];
+  if (!rec) return;
+  if (rec.lat == null || rec.lng == null) {
+    if (typeof showToast === 'function') showToast(_pinGpsWaiting[ma]
+      ? 'Đang lấy toạ độ GPS — chờ vài giây rồi bấm lại'
+      : 'Chưa có toạ độ — bấm nút 📌 cạnh địa chỉ để cập nhật vị trí');
+    return;
+  }
+  const url = 'https://www.google.com/maps/dir/?api=1&destination=' +
+              encodeURIComponent(rec.lat + ',' + rec.lng) + '&travelmode=driving&dir_action=navigate';
+  window.open(url, '_blank');
+}
+
+/* Đánh dấu “đang chờ GPS” cho từng mã KH (chỉ để báo đúng lý do khi người dùng bấm mũi tên quá
+   sớm — GPS có máy mất vài giây). */
+const _pinGpsWaiting = {};
+
+/* Lấy GPS TẠI CHỖ rồi ghi vào bản ghi của khách (lat/lng/acc). Lý do phải lấy tại chỗ: vị trí
+   mới KHÔNG có trong file Excel, và toạ độ chỉ đúng khi người dùng đang đứng ở đó.
+   `isUpdate = true` khi bấm nút 📌 của khách ĐÃ GHIM (cập nhật lại vị trí) — chỉ khác câu báo.
+   ⚠️ `navigator.geolocation` chỉ chạy ở ngữ cảnh AN TOÀN (https hoặc localhost) và cần người
+   dùng CHO PHÉP. Máy chặn / từ chối / quá lâu ⇒ vẫn GIỮ ghim (chỉ không dẫn đường được) và
+   báo rõ lý do, ⛔ không im lặng.
+   ⚠️ Bản ghi mã đó có thể đã bị BỎ GHIM trong lúc chờ GPS ⇒ kiểm `map[ma]` lại trước khi ghi. */
+function pinGps(ma, isUpdate) {
+  if (!ma) return;
+  if (!navigator.geolocation) {
+    const why = (typeof window.isSecureContext === 'boolean' && !window.isSecureContext)
+      ? 'Trình duyệt chỉ cho lấy vị trí khi mở bằng https'
+      : 'Máy này không hỗ trợ GPS';
+    if (typeof showToast === 'function') showToast(why + ' — chưa lưu được toạ độ');
+    return;
+  }
+  _pinGpsWaiting[ma] = true;
+  try {
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      delete _pinGpsWaiting[ma];
+      const map = pinAll();
+      if (!map[ma]) return;
+      map[ma].lat = +pos.coords.latitude.toFixed(6);
+      map[ma].lng = +pos.coords.longitude.toFixed(6);
+      map[ma].acc = Math.round(pos.coords.accuracy || 0);
+      map[ma].ts = Date.now();
+      try { localStorage.setItem(PIN_KEY, JSON.stringify(map)); } catch (e) {}
+      if (typeof showToast === 'function') showToast(isUpdate
+        ? '✓ Đã cập nhật vị trí mới (sai số ~' + map[ma].acc + 'm) — bấm ➤ để dẫn đường'
+        : '✓ Đã lưu toạ độ GPS (sai số ~' + map[ma].acc + 'm) — bấm mũi tên ➤ để dẫn đường');
+    }, function (err) {
+      delete _pinGpsWaiting[ma];
+      const why = (err && err.code === 1) ? 'bạn chưa cho phép lấy vị trí'
+                : (err && err.code === 3) ? 'lấy vị trí quá lâu'
+                : 'không lấy được vị trí';
+      if (typeof showToast === 'function') showToast(isUpdate
+        ? 'Chưa cập nhật được vị trí: ' + why
+        : 'Đã ghim nhưng ' + why + ' — chưa dẫn đường được');
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+  } catch (e) { delete _pinGpsWaiting[ma]; }
+}
+
+/* 📌 NÚT “CẬP NHẬT VỊ TRÍ MỚI” (đứng TRƯỚC chữ địa chỉ — yêu cầu 2026-10-24: “khi tới vị trí mới
+   thì chọn vào dấu cập nhật để cập nhật vị trí mới”).
+   · Khách CHƯA ghim ⇒ ghim lần đầu (đi qua pinToggle để tô xanh + lưu map) rồi lấy GPS.
+   · Khách ĐÃ ghim  ⇒ giữ nguyên ghim, LẤY LẠI GPS tại chỗ và ghi đè lat/lng (đúng “cập nhật”).
+   ⛔ KHÔNG bỏ ghim ở đây — đường BỎ GHIM là chạm vào CHỮ địa chỉ (pinToggle). */
+function pinUpdate(el) {
+  if (!el || !el.closest) return;
+  const card = el.closest('.kh-card');
+  const ma = (el.dataset && el.dataset.ma) || (card && card.dataset.ma) || '';
+  if (!ma) return;
+  if (!pinAll()[ma]) { pinToggle(el); return; }
+  if (_pinGpsWaiting[ma]) {
+    if (typeof showToast === 'function') showToast('Đang lấy vị trí — chờ vài giây');
+    return;
+  }
+  if (typeof showToast === 'function') showToast('Đang cập nhật vị trí mới…');
+  pinGps(ma, true);
+}
+
+/* Ghi / xoá ghim của MỘT mã KH rồi cập nhật TẠI CHỖ mọi nút + dòng địa chỉ của mã đó
+   (không vẽ lại danh sách ⇒ không mất vị trí cuộn). Dùng chung cho `pinToggle` (ghim lần đầu),
+   `pinMenuUpdate` và `pinMenuUnpin` (hộp nhấn-giữ địa chỉ). */
+function pinApply(ma, on, ten) {
+  if (!ma) return pinAll();
+  const map = pinAll();
+  if (on) map[ma] = { ts: Date.now(), ten: ten || (map[ma] && map[ma].ten) || '' };
+  else delete map[ma];
+  try { localStorage.setItem(PIN_KEY, JSON.stringify(map)); } catch (e) {}
+  document.querySelectorAll('.kh-pin-btn[data-ma="' + CSS.escape(ma) + '"]').forEach(function (b) {
+    b.classList.toggle('is-pinned', on);
+    b.setAttribute('aria-label', on ? 'Cập nhật vị trí mới' : 'Ghim vị trí mới');
+    const line = b.closest('.kh-addr-line');
+    if (line) line.classList.toggle('is-pinned', on);
+  });
+  return map;
+}
+
+/* GHIM / BỎ GHIM một khách + cập nhật TẠI CHỖ (không vẽ lại danh sách) để không mất vị trí cuộn.
+   ⟳ 2026-10-24: KHÔNG còn gắn vào cú chạm nào — chỉ được `pinUpdate` gọi khi khách CHƯA ghim
+   (đường vào duy nhất là hộp NHẤN-GIỮ địa chỉ → “Cập nhật vị trí mới”). `el` là nút 📌 (có
+   data-ma) hoặc phần tử bất kỳ trong thẻ (lấy mã ở thẻ cha `[data-ma]`). */
 function pinToggle(el) {
   if (!el || !el.closest) return;
   const card = el.closest('.kh-card');
@@ -9674,18 +9863,182 @@ function pinToggle(el) {
   const map = pinAll();
   const nameEl = card ? card.querySelector('.kh-name') : null;
   const ten = nameEl ? nameEl.textContent.trim() : '';
-  let on;
-  if (map[ma]) { delete map[ma]; on = false; }
-  else { map[ma] = { ts: Date.now(), ten: ten }; on = true; }
-  try { localStorage.setItem(PIN_KEY, JSON.stringify(map)); } catch (e) {}
-  document.querySelectorAll('.kh-pin-btn[data-ma="' + CSS.escape(ma) + '"]').forEach(function (b) {
-    b.classList.toggle('is-pinned', on);
-    b.setAttribute('aria-label', on ? 'Bỏ ghim vị trí mới' : 'Ghim vị trí mới');
-    const line = b.closest('.kh-addr-line');
-    if (line) line.classList.toggle('is-pinned', on);
-  });
+  const on = !map[ma];
+  pinApply(ma, on, ten);
   if (typeof showToast === 'function') showToast(on ? '✓ Đã ghim vị trí mới' : 'Đã bỏ ghim vị trí');
+  /* Chỉ lấy GPS khi GHIM (bỏ ghim thì không cần). Chạy SAU khi đã ghi + đổi màu để hộp “Đã ghim”
+     hiện ngay, không phải chờ GPS (có máy mất vài giây). */
+  if (on) pinGps(ma, false);
 }
+
+/* ════════════════════════════════════════════════════════════════════════════════════════
+   📌 NHẤN-GIỮ CHỮ ĐỊA CHỈ → HỘP “Cập nhật vị trí mới · Bỏ ghim vị trí” (2026-10-24)
+   Yêu cầu người dùng: “tôi muốn nhấn giữ vô địa chỉ để có tuỳ chọn cập nhật vị trí mới và bỏ ghim
+   vị trí”.
+   ⟳ Cùng ngày, yêu cầu tiếp: “bỏ chức năng nhấn vào địa chỉ để ghim và bỏ ghim vị trí, vì đã có
+   chức năng nhấn giữ” ⇒ chạm 1 lần KHÔNG còn ghim/bỏ ghim (trước đây là `pinToggle`).
+   ⟳ Rồi: “khi dẫn đường thì nhấn chọn hàng địa chỉ đã được cập nhật mới” ⇒ **CHẠM 1 LẦN vào chữ
+   địa chỉ của khách ĐÃ GHIM = MỞ GOOGLE MAPS CHỈ ĐƯỜNG** (`pinTextTap` → `pinNav`, y hệt bấm nút
+   ➤); khách CHƯA ghim thì chạm không làm gì. Đây là lần đảo chiều THỨ BA của dòng địa chỉ trong
+   ngày (① chạm = ghim/bỏ ghim → ② chạm không làm gì → ③ chạm = dẫn đường) — ⛔ đổi nữa thì HỎI.
+   ⟳ Cùng ngày, yêu cầu tiếp: “bỏ chức năng nhấn vào icon để ghim vị trí luôn” ⇒ nút 📌 KHÔNG bấm
+   được nữa (CSS `pointer-events: none`; nó chỉ còn là dấu hiệu “chưa ghim”), còn nút ➤ (hiện khi
+   ĐÃ ghim) vẫn bấm để DẪN ĐƯỜNG.
+   ⇒ ĐƯỜNG DUY NHẤT để ghim / cập nhật / bỏ ghim: NHẤN-GIỮ 0,5 giây trên CHỮ ĐỊA CHỈ ⇒ hộp nhỏ
+   (dùng lại khung sáng `.lpcb-*` của hộp SĐT):
+           – “Cập nhật vị trí mới” → `pinMenuUpdate` (chưa ghim thì ghim + GPS; đã ghim thì lấy lại)
+           – “Bỏ ghim vị trí”      → CHỈ hiện khi khách đang ghim
+           – “Đóng”
+   ⛔ Đừng gắn lại pinToggle cho ô chữ / nút ghim mà không hỏi — người dùng đã 2 lần yêu cầu bỏ.
+   ⚠️ Kéo quá 10px thì HUỶ (người dùng đang cuộn trang) — cùng khuôn với 2 cử chỉ nhấn-giữ kia.
+   ⚠️ Nghe luôn `contextmenu` (Android bắn ở ~500ms) và `preventDefault()` để menu sao chép của hệ
+     điều hành không đè lên hộp của app.
+   ⚠️ Vì chạm chữ (khi đã ghim) nay MỞ GOOGLE MAPS, cờ `_pinLpFired` trở nên BẮT BUỘC: thiếu nó
+     thì nhấn-giữ để mở hộp rồi nhả tay là cú `click` theo sau mở luôn Maps (đúng kiểu lỗi đã gặp
+     ở viên SĐT — xem `_lpSdtFired`).
+   ════════════════════════════════════════════════════════════════════════════════════════ */
+const PIN_LP_MS = 500;
+const PIN_LP_SLOP = 10;
+let _pinLpT = null, _pinLpEl = null, _pinLpX = 0, _pinLpY = 0;
+let _pinLpFired = false, _pinLpGuard = null;   // nuốt cú click bắn theo sau cú NHẤN-GIỮ
+let _pinMenuMa = '', _pinMenuTen = '';
+
+function pinLpTarget(t) { return (t && t.closest) ? t.closest('.kh-addr-txt') : null; }
+function pinLpHuy() {
+  if (_pinLpT) { clearTimeout(_pinLpT); _pinLpT = null; }
+  _pinLpEl = null;
+}
+/* Giữ cờ “vừa nhấn-giữ” đủ lâu để nuốt cú click theo sau (kể cả khi người dùng giữ rất lâu rồi mới
+   nhả: mỗi lần nhả tay lại gia hạn thêm 700ms). */
+function pinLpArm() {
+  _pinLpFired = true;
+  if (_pinLpGuard) clearTimeout(_pinLpGuard);
+  _pinLpGuard = setTimeout(function () { _pinLpFired = false; _pinLpGuard = null; }, 700);
+}
+/* CHẠM 1 LẦN vào CHỮ ĐỊA CHỈ (2026-10-24 — yêu cầu “khi dẫn đường thì nhấn chọn hàng địa chỉ đã
+   được cập nhật mới”):
+     · KHÁCH ĐÃ GHIM  ⇒ mở Google Maps chỉ đường tới toạ độ đã lưu (`pinNav`) — giống hệt bấm nút ➤.
+     · KHÁCH CHƯA GHIM ⇒ KHÔNG LÀM GÌ (⛔ không ghim — yêu cầu trước “bỏ chức năng nhấn vào địa chỉ
+       để ghim và bỏ ghim vị trí, vì đã có chức năng nhấn giữ”; muốn ghim thì NHẤN-GIỮ).
+   ⚠️ Cờ `_pinLpFired` PHẢI chặn cú click bắn theo sau cú nhấn-giữ, nếu không: nhấn-giữ mở hộp rồi
+   nhả tay là máy mở luôn Google Maps. */
+function pinTextTap(el) {
+  if (_pinLpFired) return;
+  if (!el || !el.closest) return;
+  const card = el.closest('.kh-card');
+  const ma = card ? (card.dataset.ma || '') : '';
+  if (ma && pinOn(ma)) pinNav(el);
+}
+
+function pinMenuOpen(el) {
+  const card = el && el.closest ? el.closest('.kh-card') : null;
+  if (!card) return;
+  const ma = card.dataset.ma || '';
+  if (!ma) return;
+  const tenEl = card.querySelector('.kh-name');
+  _pinMenuMa = ma;
+  _pinMenuTen = tenEl ? tenEl.textContent.trim() : '';
+  const ov = pinMenuEl();
+  ov.querySelector('.pin-box-name').textContent = _pinMenuTen || ma;
+  ov.querySelector('[data-act="unpin"]').style.display = pinOn(ma) ? '' : 'none';
+  ov.classList.add('on');
+  pinLpArm();
+  try { if (navigator.vibrate) navigator.vibrate(15); } catch (e) {}
+}
+
+function pinMenuClose() {
+  const ov = document.getElementById('pinBox');
+  if (ov) ov.classList.remove('on');
+  /* ⚠️ Hạ cờ nuốt-click NGAY khi đóng hộp: nếu để cờ sống 700ms thì người dùng bấm “Cập nhật vị trí
+     mới” rồi CHẠM vào địa chỉ để dẫn đường sẽ bị nuốt mất cú chạm đầu. Cú `click` bắn theo sau
+     NHẤN-GIỮ đã trôi qua từ trước đó (nó tới ngay sau `pointerup`). */
+  _pinLpFired = false;
+  if (_pinLpGuard) { clearTimeout(_pinLpGuard); _pinLpGuard = null; }
+}
+
+function pinMenuEl() {
+  let ov = document.getElementById('pinBox');
+  if (ov) return ov;
+  ov = document.createElement('div');
+  ov.id = 'pinBox';
+  ov.className = 'lpcb-overlay';
+  ov.innerHTML = '<div class="lpcb-card">' +
+      '<div class="lpcb-title">Vị trí khách hàng <b class="pin-box-name"></b></div>' +
+      '<button class="lpsdt-act" data-act="upd" type="button">' +
+        '<svg class="ic" width="16" height="16" aria-hidden="true" style="vertical-align:middle">' +
+        '<use href="#i-pin"/></svg>Cập nhật vị trí mới</button>' +
+      '<button class="lpsdt-act" data-act="unpin" type="button">' +
+        '<svg class="ic" width="16" height="16" aria-hidden="true" style="vertical-align:middle">' +
+        '<use href="#i-close"/></svg>Bỏ ghim vị trí</button>' +
+      '<button class="lpcb-btn" type="button">Đóng</button>' +
+    '</div>';
+  ov.addEventListener('click', function (e) { if (e.target === ov) pinMenuClose(); });
+  ov.querySelector('.lpcb-btn').addEventListener('click', pinMenuClose);
+  ov.querySelector('[data-act="upd"]').addEventListener('click', pinMenuUpdate);
+  ov.querySelector('[data-act="unpin"]').addEventListener('click', pinMenuUnpin);
+  document.body.appendChild(ov);
+  return ov;
+}
+
+/* “Cập nhật vị trí mới” của hộp: đi qua nút 📌 của thẻ để dùng CHUNG đường `pinUpdate`
+   (chưa ghim ⇒ ghim mới + GPS; đã ghim ⇒ lấy lại GPS) — ⛔ đừng viết đường GPS thứ hai. */
+function pinMenuUpdate() {
+  const ma = _pinMenuMa;
+  pinMenuClose();
+  if (!ma) return;
+  const btn = document.querySelector('.kh-pin-btn[data-ma="' + CSS.escape(ma) + '"]');
+  if (btn) { pinUpdate(btn); return; }
+  if (!pinAll()[ma]) { pinApply(ma, true, _pinMenuTen); pinGps(ma, false); }
+  else pinGps(ma, true);
+}
+
+/* “Bỏ ghim vị trí” của hộp: CHỈ xoá ghim (giữ toạ độ đã lưu? KHÔNG — xoá cả bản ghi như pinToggle). */
+function pinMenuUnpin() {
+  const ma = _pinMenuMa;
+  pinMenuClose();
+  if (!ma || !pinAll()[ma]) return;
+  pinApply(ma, false);
+  if (typeof showToast === 'function') showToast('Đã bỏ ghim vị trí');
+}
+
+/* Khuôn nhấn-giữ 0,5s trên CHỮ ĐỊA CHỈ. */
+function pinLpDown(e) {
+  if (e.button != null && e.button !== 0) return;   // chỉ chuột trái / ngón tay
+  const el = pinLpTarget(e.target);
+  if (!el) return;
+  _pinLpEl = el;
+  _pinLpX = e.clientX; _pinLpY = e.clientY;
+  if (_pinLpT) clearTimeout(_pinLpT);
+  _pinLpT = setTimeout(function () {
+    _pinLpT = null;
+    const t = _pinLpEl;
+    _pinLpEl = null;
+    if (t) pinMenuOpen(t);
+  }, PIN_LP_MS);
+}
+function pinLpMove(e) {
+  if (!_pinLpEl) return;
+  if (Math.abs(e.clientX - _pinLpX) > PIN_LP_SLOP || Math.abs(e.clientY - _pinLpY) > PIN_LP_SLOP) pinLpHuy();
+}
+function pinLpUp() {
+  const wasEl = _pinLpEl;
+  pinLpHuy();
+  /* Nếu hộp VỪA mở: gia hạn cờ nuốt click tính từ lúc NHẢ TAY (người dùng có thể giữ rất lâu). */
+  const ov = document.getElementById('pinBox');
+  if (wasEl && ov && ov.classList.contains('on')) pinLpArm();
+}
+function pinLpMenu(e) {
+  const el = pinLpTarget(e.target);
+  if (!el) return;
+  e.preventDefault();
+  pinLpHuy();
+  pinMenuOpen(el);
+}
+document.addEventListener('pointerdown', pinLpDown, true);
+document.addEventListener('pointermove', pinLpMove, true);
+document.addEventListener('pointerup', pinLpUp, true);
+document.addEventListener('pointercancel', pinLpHuy, true);
+document.addEventListener('contextmenu', pinLpMenu, true);
 
 function renderCards(q='') {
   const isOld = (currentTab === 'old' || currentTab === 'oldky' || currentTab === '1tr');
@@ -9758,7 +10111,6 @@ function renderCards(q='') {
         ${r.ma_sogcs ? `<span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span>` : ''}
         ${r.ma_sogcs && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}
         ${r.so_tbi ? `<span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}
-        ${r.dia_chi ? `<div class="kh-addr-line${pinHere ? ' is-pinned' : ''}" style="flex:0 0 100%;margin-top:3px" ondblclick="event.stopPropagation()"><button type="button" class="kh-pin-btn${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinToggle(this)" aria-label="${pinHere ? 'Bỏ ghim vị trí mới' : 'Ghim vị trí mới'}"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-pin"/></svg></button><span class="kh-addr-txt" onclick="event.stopPropagation();pinToggle(this)">${hi(trimDiaChi(r.dia_chi),q)}</span></div>` : ''}
         ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}<!-- ⛔ Viên ZALO ĐÃ BỎ HẲN (2026-10-17m — yêu cầu người dùng: “tôi muốn bỏ icon tin nhắn zalo”,
              kèm ảnh thẻ đang có viên icon bong bóng chat cạnh viên SĐT): thẻ KH nay chỉ còn
              [viên SĐT] - [viên mã KH], khe hở giữa hai viên là dấu kh-sep như trước lượt 2026-10-17g.
@@ -9772,6 +10124,22 @@ function renderCards(q='') {
         <input type="text" class="kh-ghichu-input" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" oninput="saveGhiChu(this)" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()" onpointerdown="event.stopPropagation()" onpointerup="event.stopPropagation()">
         ${r.abc ? `<span style="margin-left:8px;display:flex;align-items:center;gap:4px;flex-shrink:0;min-width:0"><svg class="ic kh-abc-ico" width="14" height="14" aria-hidden="true" style="vertical-align:middle"><use href="#i-tag"/></svg><span class="kh-abc" style="font-size:var(--fs-card)">${hi(r.abc,q)}</span></span>` : ''}
       </div>
+      <!-- ⟳ 2026-10-24 (yêu cầu: “dời hàng địa chỉ xuống dưới ghi chú”): dòng ĐỊA CHỈ rời khỏi
+           khối giữa (kh-card-mid) và xuống CUỐI THẺ, ngay dưới hàng ghi chú. Vì thẻ là khối
+           block nên bỏ flex:0 0 100% (trước đây cần nó để ép địa chỉ xuống hàng riêng trong
+           khối flex-wrap); nay chỉ còn margin-top 3px cho khớp khe với hàng ghi chú.
+           ⚠️ Nút 📌/➤ vẫn ĐỨNG TRƯỚC chữ địa chỉ. ⟳ 2026-10-24: BỎ CẢ 2 đường “chạm để ghim” —
+           (a) chữ địa chỉ không còn ghim/bỏ ghim khi chạm (yêu cầu “bỏ chức năng nhấn vào địa chỉ
+           để ghim và bỏ ghim vị trí, vì đã có chức năng nhấn giữ”), (b) nút 📌 không còn onclick +
+           CSS pointer-events none (yêu cầu “bỏ chức năng nhấn vào icon để ghim vị trí luôn”) ⇒ nút
+           📌 chỉ còn là DẤU HIỆU “chưa ghim”.
+           ⇒ GHIM / BỎ GHIM / CẬP NHẬT: NHẤN-GIỮ 0,5s trên CHỮ ĐỊA CHỈ → hộp “Cập nhật vị trí mới /
+           Bỏ ghim vị trí” (pinLp*). CHẠM 1 LẦN vào chữ khi khách ĐÃ GHIM = mở Google Maps chỉ
+           đường (pinTextTap → pinNav) — yêu cầu “khi dẫn đường thì nhấn chọn hàng địa chỉ đã được
+           cập nhật mới”; khách CHƯA ghim thì chạm không làm gì.
+           ⛔ Đừng gắn lại pinToggle cho ô chữ hay nút ghim.
+           ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
+      ${r.dia_chi ? `<div class="kh-addr-line${pinHere ? ' is-pinned' : ''}" style="margin-top:3px" ondblclick="event.stopPropagation()"><span class="kh-addr-acts"><button type="button" class="kh-pin-btn${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" tabindex="-1" aria-hidden="true"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-pin"/></svg></button><button type="button" class="kh-nav-btn" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí đã ghim"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-nav"/></svg></button></span><span class="kh-addr-txt" onclick="pinTextTap(this)">${hi(trimDiaChi(r.dia_chi),q)}</span></div>` : ''}
     </div>`;
   }).join('');
   fitGhiChuInputs();
@@ -11140,6 +11508,9 @@ function closeShotDirect() {
    · Ảnh được THU NHỎ + nén JPEG (`photoCompress`, cạnh dài ≤1280px, chất lượng 0,72) rồi lưu
      vào IndexedDB kho `qlno_photos` (mỗi ảnh 1 bản ghi). ⛔ ĐỪNG lưu vào `localStorage`: 1 ảnh
      điện thoại 3–5MB, trần localStorage chỉ ~5MB ⇒ đầy là app không lưu được DỮ LIỆU CHÍNH.
+   · 🏷️ ẢNH ĐƯỢC ĐÓNG DẤU SẴN (2026-10-24): lúc nén, `photoStamp` vẽ vào GÓC DƯỚI - TRÁI khối nền
+     đen mờ gồm **ngày giờ chụp (dd/mm/yyyy hh:mm) · TÊN KH · Mã KH** ⇒ dấu là ĐIỂM ẢNH, gửi Zalo
+     hay lưu vào thư viện vẫn còn. ⛔ Đừng vẽ dấu bằng lớp phủ HTML — xuất ảnh/gửi đi là mất.
    · ĐẾM ẢNH: `qlno_photo_meta_v1` (localStorage) = { mã KH: {n: số ảnh} }. Có bản đếm này để
      `renderCards` không phải mở IndexedDB 50 lần mỗi lần vẽ (gõ tìm kiếm sẽ khựng). Nếu bản đếm
      sai (hiếm: xoá DB tay) thì chỉ ảnh hưởng NHÃN nút, ảnh thật vẫn còn.
@@ -11227,7 +11598,101 @@ function photoTap(btn) {
 }
 
 // Nén ảnh: trả về {data: 'data:image/jpeg;base64,…', w, h}.
-function photoCompress(file, maxSide, quality) {
+/* ── 🏷️ ĐÓNG DẤU THÔNG TIN LÊN ẢNH (2026-10-24) ─────────────────────────────────────────────
+   Yêu cầu người dùng: “khi chụp ảnh thì trên ảnh hiển thị thông tin ngày tháng năm giờ chụp, và
+   tên kh, mã kh trên góc ảnh”.
+   ⇒ Vẽ ngay trên canvas lúc nén (ảnh lưu xuống đã CÓ sẵn dấu, xem ở đâu cũng thấy — kể cả khi gửi
+   Zalo hay lưu vào thư viện ảnh, vì dấu là điểm ảnh chứ không phải lớp phủ của app).
+   Bố cục: khối nền đen mờ bo góc ở GÓC DƯỚI - BÊN TRÁI:
+     · ngày chụp `dd/mm/yyyy hh:mm` (xám sáng)
+     · TÊN KH (trắng, đậm — TỰ XUỐNG DÒNG nếu dài, tối đa 2 dòng)
+     · `Mã KH: …`
+   ⚠️ Cỡ chữ tính theo cạnh NGẮN của ảnh (~3,2%), trần 44px.
+   ⟳ 2026-10-24 (đo ảnh dọc 720×1280): bề rộng tối đa mỗi dòng nay là **80%** bề rộng ảnh (bản đầu
+     là 62% ⇒ tên công ty dài bị thu chữ xuống 14px, bé tí). Nay TÊN được NGẮT THEO TỪ để xuống
+     2 dòng (đo lại: giữ 23px, tên 2 dòng, khối dấu vẫn nằm gọn trong ảnh). Chỉ khi KHÔNG THỂ
+     (1 từ dài hơn 80%) hoặc quá 4 dòng mới thu cỡ chữ, sàn 11px.
+   ⚠️ Chữ phải có `shadowBlur` + nền mờ: ảnh chụp ngoài trời sáng trắng mà chữ trắng trơn là mất.
+   ⚠️ `roundRect` có thể không có ở webview cũ ⇒ lùi về `fillRect`. */
+function photoStampFont(fs, kind) {
+  const w = (kind === 'time') ? 500 : (kind === 'name' ? 700 : 600);
+  return w + ' ' + fs + 'px "Segoe UI", Roboto, Arial, sans-serif';
+}
+
+function photoStamp(ctx, w, h, info) {
+  if (!info) return;
+  const d = new Date(info.ts || Date.now());
+  const p = n => String(n).padStart(2, '0');
+  const when = p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() +
+               ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  const maLine = info.ma ? ('Mã KH: ' + info.ma) : '';
+  const maxLineW = w * 0.80;
+
+  // Ngắt 1 chuỗi thành các dòng ≤ maxLineW (theo TỪ) — dùng cho TÊN KH dài.
+  const wrapAt = (text, fs, kind) => {
+    if (!text) return [];
+    ctx.font = photoStampFont(fs, kind);
+    if (ctx.measureText(text).width <= maxLineW) return [text];
+    const out = [];
+    let cur = '';
+    String(text).split(/\s+/).forEach(wd => {
+      const t = cur ? (cur + ' ' + wd) : wd;
+      if (!cur || ctx.measureText(t).width <= maxLineW) cur = t;
+      else { out.push(cur); cur = wd; }
+    });
+    if (cur) out.push(cur);
+    return out;
+  };
+
+  // Dựng danh sách dòng ở 1 cỡ chữ + cho biết có dòng nào TRÀN 80% không.
+  const build = fs => {
+    const arr = [{ t: when, k: 'time' }];
+    wrapAt(info.ten ? String(info.ten) : '', fs, 'name').forEach(t => arr.push({ t: t, k: 'name' }));
+    wrapAt(maLine, fs, 'code').forEach(t => arr.push({ t: t, k: 'code' }));
+    let ok = true, widest = 0;
+    arr.forEach(l => {
+      ctx.font = photoStampFont(fs, l.k);
+      const tw = ctx.measureText(l.t).width;
+      if (tw > maxLineW + 0.5) ok = false;
+      if (tw > widest) widest = tw;
+    });
+    return { arr: arr, ok: ok, widest: widest };
+  };
+
+  let fs = Math.max(14, Math.min(44, Math.round(Math.min(w, h) * 0.032)));
+  let b = build(fs);
+  while (!b.ok && fs > 11) { fs -= 1; b = build(fs); }
+  while (b.arr.length > 4 && fs > 11) { fs -= 1; b = build(fs); }
+  const lines = b.arr;
+
+  const pad = Math.round(fs * 0.62);
+  const lh = Math.round(fs * 1.32);
+  const margin = Math.round(Math.min(w, h) * 0.026);
+  const boxW = Math.ceil(b.widest + pad * 2);
+  const boxH = Math.ceil((lines.length - 1) * lh + fs + pad * 2);
+  const x = margin;
+  const y = h - margin - boxH;
+
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  const r = Math.round(fs * 0.42);
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x, y, boxW, boxH, r);
+  else ctx.rect(x, y, boxW, boxH);
+  ctx.fill();
+  ctx.textBaseline = 'top';
+  ctx.shadowColor = 'rgba(0,0,0,0.6)';
+  ctx.shadowBlur = Math.max(2, Math.round(fs * 0.18));
+  lines.forEach((l, i) => {
+    ctx.font = photoStampFont(fs, l.k);
+    ctx.fillStyle = (l.k === 'time') ? '#e2e8f0' : '#ffffff';
+    ctx.fillText(l.t, x + pad, y + pad + i * lh);
+  });
+  ctx.restore();
+  return { fs: fs, n: lines.length, box: { x: x, y: y, w: boxW, h: boxH } };
+}
+
+function photoCompress(file, maxSide, quality, info) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const im = new Image();
@@ -11247,6 +11712,8 @@ function photoCompress(file, maxSide, quality) {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, w, h);
         ctx.drawImage(im, 0, 0, w, h);
+        /* Đóng dấu ngày giờ + tên KH + mã KH lên góc ảnh TRƯỚC khi xuất JPEG. */
+        photoStamp(ctx, w, h, info);
         const data = cv.toDataURL('image/jpeg', quality);
         URL.revokeObjectURL(url);
         resolve({ data: data, w: w, h: h });
@@ -11270,12 +11737,15 @@ async function photoPicked(e) {
   if (_photoBusy) return;
   _photoBusy = true;
   try {
-    const im = await photoCompress(file, 1280, 0.72);
+    const ts = Date.now();
+    /* Đóng dấu NGAY LÚC CHỤP: ngày giờ + tên KH + mã KH (xem photoStamp). `ts` dùng chung cho cả
+       dấu trên ảnh lẫn bản ghi ⇒ giờ trên ảnh khớp giờ hiện ở thumbnail. */
+    const im = await photoCompress(file, 1280, 0.72, { ten: _photoTarget.ten, ma: _photoTarget.ma, ts: ts });
     const rec = {
       ma: _photoTarget.ma,
       ten: _photoTarget.ten,
       ky: _photoTarget.ky,
-      ts: Date.now(),
+      ts: ts,
       w: im.w,
       h: im.h,
       data: im.data
@@ -11624,7 +12094,7 @@ function clearNvScope() {
 
 // Esc đóng lần lượt: tấm “Thanh toán…” (nếu đang mở) rồi tới tấm “Chi tiết”.
 // ⟳ 2026-10-19: bỏ `lpCloseMaBox()` (hộp nhấn-giữ mã KH đã gỡ hẳn — gọi vào là ReferenceError).
-document.addEventListener('keydown', e => { if (e.key==='Escape') { lpCloseCopyBox(); lpCloseSdtBox(); closeShotDirect(); photoCloseDirect(); closeKyDirect(); closeAdv(); closePayDirect(); closeModalDirect(); } });
+document.addEventListener('keydown', e => { if (e.key==='Escape') { lpCloseCopyBox(); lpCloseSdtBox(); pinMenuClose(); closeShotDirect(); photoCloseDirect(); closeKyDirect(); closeAdv(); closePayDirect(); closeModalDirect(); } });
 
 // ── COLUMN RESIZE (desktop) ────────────────
 // ⚠️ v1 → v2 khi ĐỔI THỨ TỰ CỘT. Bản đồ độ rộng lưu theo **chỉ số cột**, nên bản lưu từ v1
