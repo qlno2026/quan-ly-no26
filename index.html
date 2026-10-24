@@ -961,6 +961,28 @@ body.light-mode .kh-danhso .ic { color: #1d4ed8; }
   transition: background-color var(--theme-anim-dur) var(--theme-anim-ease), color var(--theme-anim-dur) var(--theme-anim-ease), box-shadow var(--theme-anim-dur) var(--theme-anim-ease), border-color var(--theme-anim-dur) var(--theme-anim-ease);
 }
 
+/* ── ⟳ 2026-10-24: HEADER **ĐỨNG YÊN THẬT** KHI CUỘN TRÊN ĐIỆN THOẠI ─────────────────────────
+   Yêu cầu: “khi cuộn trang thì bảng header đứng yên”.
+   `.header` vốn đã `position: sticky; top: 0` và trên Chrome máy tính ĐÚNG là đứng yên,
+   NHƯNG `body` có `overflow-x: hidden` (**812**) ⇒ `body` trở thành scroll container, và trên
+   nhiều webview điện thoại (Zalo/Facebook/iOS Safari) `position: sticky` KHÔNG ghim trong tình
+   huống đó ⇒ cuộn là header trôi khỏi màn hình.
+   Cách sửa: ở khổ điện thoại đổi hẳn sang `position: fixed` (không phụ thuộc scroll container
+   nào) + bù đúng chỗ bằng `padding-top` của `body`.
+   ⚠️ `padding-top` PHẢI bằng ĐÚNG công thức `height` của `.header`:
+   `calc(var(--header-h) + env(safe-area-inset-top))` — lệch là hở một khe hoặc đè lên nội dung.
+   ⚠️ `body` có `min-height: 100vh` + `box-sizing: border-box` (rule `*`) ⇒ phần đệm nằm TRONG
+   100vh, KHÔNG làm trang cao thêm 56px (trang ngắn vẫn không sinh thanh cuộn).
+   ⛔ Đừng gỡ `position: sticky; top: 0` của `.header`: desktop (≥640px) vẫn dùng nó.
+   ℹ️ `updateToolbar()` đặt `toolbar.style.top = headerEl.offsetHeight` ⇒ thanh công cụ vẫn ghim
+   NGAY DƯỚI header, không phải sửa JS. `offsetHeight` của header fixed vẫn = 56px (+ tai thỏ).
+   ⚠️ `@media print` đã trả `padding-top: 0 !important` (khối in cuối file) — nếu không, tờ in
+   bị trống 56px ở đầu trang. */
+@media (max-width: 639.98px) {
+  body { padding-top: calc(var(--header-h) + env(safe-area-inset-top, 0px)); }
+  .header { position: fixed; top: 0; left: 0; right: 0; }
+}
+
 .header-left { display: flex; align-items: center; gap: 4px; }
 
 .title-wrap { display: flex; flex-direction: column; align-items: flex-start; }
@@ -2232,7 +2254,12 @@ body.light-mode .cfg .page-actions > .page-act:only-child { box-shadow: 0 1px 3p
    được thanh (z 150). Dịch `100% + 40px` (không chỉ 100%) để CẢ BÓNG ĐỔ (`--elev-3` = offset
    8px + blur 20px = 28px dưới đáy) cũng nằm trong vùng bị che — nếu chỉ -100% thì bóng hắt
    xuống dưới header thành một vệt xám. Class do JS thêm, CHỈ khi thanh đã `stuck`. Đừng bỏ
-   `transform` khỏi `transition` ở trên: không có nó là thanh NHẢY tức thì. */
+   `transform` khỏi `transition` ở trên: không có nó là thanh NHẢY tức thì.
+   ⛔ 2026-10-24: **KHÔNG AI THÊM CLASS NÀY NỮA** — người dùng đổi ý 2 lần trong ngày: trước là
+   2 hàng tab/sắp xếp “đứng yên, không cuộn theo” (⇒ thanh luôn hiện), rồi “cho các tab này cuộn
+   theo khi cuộn trang” (⇒ **điện thoại KHÔNG ghim thanh**, thanh trôi theo trang — xem
+   `updateToolbar`). Rule giữ lại chỉ để bật lại nhanh nếu họ đổi ý; ⛔ đừng xoá `transform` khỏi
+   `transition`. */
 .toolbar.auto-hidden { transform: translateY(calc(-100% - 40px)); }
 
 .search-box { position: relative; }
@@ -2709,6 +2736,175 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
    xem khối chú thích đầy đủ + bảng đo ở rule `#sortDanhSo.active`. ⛔ Đừng để 2 nút lệch nhau. */
 #sortTienNo.active { border-color: var(--ic-hash); background: #536274; box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 8px rgba(0,0,0,0.45); }  /* ⟳ (27/9) viền XANH cùng bộ với `#sortDanhSo.active` ngay trên — 2 nút LOẠI TRỪ NHAU nên phải y hệt (đã đo: bản dùng `--ic-blue-dark` cho ra `#2563eb` chỉ 3,6:1 vs toolbar, LỆCH với `#35a3e0` 6,61:1 của nút kia ⇒ đã đồng bộ về `var(--ic-hash)`). */
 .sort-btn:active { background: rgba(148,163,184,0.22); }   /* ⟳ nhấn giữ: xám trung tính (trước là xanh `rgba(59,130,246,0.22)`) */
+
+/* ══ 📑 HÀNG TAB “CHI TIẾT NỢ” (2026-10-24) ═════════════════════════════════════
+   Yêu cầu: “cho các tab này thành tab riêng như tab chi tiết, cho nằm dưới tab nhóm”
+   (ảnh = danh sách đổ xuống của ô “Chi tiết nợ”). Nay mỗi phân loại là MỘT TAB bấm
+   được ngay, đứng NGAY DƯỚI hàng 2 ô lọc (Nhóm | Chi tiết nợ).
+   · Dải tab là con của `.toolbar` (flex CỘT) ⇒ `flex: 0 0 auto` để nó KHÔNG bị kéo
+     giãn chiều cao như `.sort-row`.
+   ⟳ 2026-10-24 (7 yêu cầu tiếp, liên tiếp trong cùng ngày):
+     (1) “đổi tab chi tiết thành tab chú ý” ⇒ bỏ tab “Chi tiết” và đưa **Chú ý** vào dải;
+     (2) “cho tab chú ý ra cuối hàng, và cho các tab chiều ngang bằng nhau” ⇒ Chú ý
+         đứng CUỐI, mọi tab rộng bằng nhau;
+     (3) “Nợ trên 3tr thành 3Tr, nợ 1tr đến 3tr thành 1Tr - 3Tr, Nhiều kỳ, Tổng hợp” ⇒
+         RÚT GỌN nhãn; rồi “không hiển thị 2 tab này” (ảnh = KH đã gọi / KH chưa gọi)
+         ⇒ **BỎ 2 tab đó khỏi dải** (2 mục ấy VẪN còn trong ô “Chi tiết nợ”);
+     (4) “thêm 1 tab Chi tiết” ⇒ **TRẢ LẠI tab “Chi tiết” ở ĐẦU hàng** (icon biên lai
+         `#i-receipt`, giống hàng 1 của `#loaiDropdown`);
+     (5) **“bỏ tab 1tr-3tr”** ⇒ BỎ hẳn tab đó (vẫn chọn được ở ô “Chi tiết nợ”);
+     (6) **“đưa tab lọc nằm kế tab chú ý”** ⇒ nút phễu `#advBtn` rời hàng tìm kiếm, thành
+         “tab lọc” 34px NGAY SAU tab “Chú ý” (xem `.loai-row` + `.loai-tab-filter`);
+     (7) **“đổi thành Nợ cũ”** + **“Trên 3Tr”** ⇒ nhãn 2 tab: “Nhiều kỳ” → **Nợ cũ**,
+         “3Tr” → **Trên 3Tr** (giá trị lọc vẫn là `oldky` / `old`, ⛔ không đổi).
+     ⇒ CHỐT LẠI **5 TAB**: **Chi tiết · Trên 3Tr · Nợ cũ · Tổng hợp · Chú ý** + nút phễu.
+     · Tab **“Chi tiết” SÁNG ngay khi mở app** (bộ lọc rỗng = danh sách đầy đủ) — trước
+       lượt này dải không tab nào sáng vì không có tab “Chi tiết”; nay `.active` nằm sẵn
+       trong markup và `syncLoaiTabs('')` cũng bật lại đúng tab đó.
+     · Vẫn KHÔNG có tab “KH đã gọi”/“KH chưa gọi”/“1Tr - 3Tr” — các mục đó chỉ còn trong
+       ô “Chi tiết nợ” (chọn ở đó thì **không tab nào sáng**).
+   ⚖️ MỌI TAB RỘNG BẰNG NHAU: bề rộng KHÔNG viết cứng trong CSS mà do
+   `equalizeLoaiTabs()` đo tab RỘNG NHẤT rồi gán cùng một `width` cho cả 5 (xem chú
+   thích ở hàm đó; nút phễu nằm NGOÀI `#loaiTabs` nên không bị gán). Tab “Tổng hợp”
+   là tab quyết định (~110px). Vì sao desktop không dùng `flex: 1`: màn rộng thì 5 tab
+   chia đều sẽ rất dài, dải phình ra vô ích.
+   · CUỘN NGANG vẫn giữ (`overflow-x: auto`) làm lưới an toàn; trên điện thoại CSS chia
+     đều bằng `flex` (xem khối `@media` bên dưới) nên **không còn tràn**.
+     `syncLoaiTabs()` tự đưa tab đang chọn vào khung nhìn nếu có tràn.
+     ⛔ Đừng đổi sang `flex-wrap: wrap`: xuống thêm 1–2 hàng là thanh công cụ cao thêm
+     ~40–70px, mất chỗ xem danh sách trên điện thoại.
+   · Bề mặt/viền chép ĐÚNG hệ control của thanh công cụ (`.filter-select` /
+     `.sort-btn`): viền `--ctl-line` (dark) · `--ctl-light-line` (light); ĐANG CHỌN
+     = viền `--ic-hash` + nền `rgba(148,163,184,0.22)` — đúng cặp màu “ô lọc đang có
+     hiệu lực” (`.filter-select[data-active="1"]`), không tự nghĩ bộ màu thứ ba.
+   · Chấm màu / icon của từng tab chép đúng hàng tương ứng trong `#loaiDropdown`
+     (đỏ `#ef4444` · cam `#ea580c` · tím `#8b5cf6` · xanh `#3b82f6` · hổ phách
+     `#b45309`) ⇒ sửa màu một bên PHẢI sửa bên kia.
+   ⚠️ Chiều cao 34px (thấp hơn `--ctl-h` 44px của ô lọc) là CỐ Ý: tab là đường tắt
+   phụ, không được làm thanh công cụ cao thêm 44px nữa. */
+/* ⟳ 2026-10-24 (yêu cầu “đưa tab lọc nằm kế tab chú ý”): dải tab + NÚT PHỄU nằm chung một HÀNG.
+   `.loai-row` giữ nhiệm vụ canh lề/ngắt dòng (trước đây `.loai-tabs` tự lo), còn `.loai-tabs` nay là
+   flex item co giãn (`flex: 1 1 auto` + `min-width: 0`) để nhường 34px cho phễu mà KHÔNG sinh cuộn
+   ngang. Vì sao tách 2 lớp: `#loaiTabs` mang `role="tablist"`, mà đặt một `<button>` mở TẤM lọc vào
+   trong đó là sai nghĩa với trình đọc màn hình — tách ra nhưng vẫn cùng hàng, cùng hình. */
+.loai-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  margin: 2px 0 3px;
+}
+.loai-tabs {
+  display: flex;
+  gap: 4px;
+  width: auto;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 1px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.loai-tabs::-webkit-scrollbar { width: 0; height: 0; display: none; }
+.loai-tab {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;   /* ⚖️ chữ CĂN GIỮA: `equalizeLoaiTabs()` gán cùng một bề rộng cho cả 5 tab ⇒ tab ngắn (Chú ý) không được dồn chữ sang trái, lệch hẳn các tab khác */
+  gap: 5px;
+  height: 34px;
+  padding: 0 11px;
+  border: 1px solid var(--ctl-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;          /* chặn chữ tràn sang tab bên cạnh nếu phông dự phòng rộng hơn Inter (chỉ cắt khi thiếu phông) */
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+.loai-tab .loai-tab-ic { width: 15px; height: 15px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--ic-hash); }
+.loai-tab .nhom-dot { width: 8px; height: 8px; }
+.loai-tab:active { background: rgba(148,163,184,0.22); }
+.loai-tab.active {
+  border-color: var(--ic-hash);
+  background: rgba(148,163,184,0.22);
+  color: var(--text);
+  font-weight: 600;
+}
+/* Light mode: cùng cặp `--ctl-light-line` + `#cfd6e0` của trạng thái “đang lọc” —
+   chữ `#0f172a` trên `#cfd6e0` = **14,2:1** ✓; chưa chọn `#4b5563` trên toolbar
+   trắng = **7,5:1** ✓. */
+body.light-mode .loai-tab { border-color: var(--ctl-light-line); color: #4b5563; }
+body.light-mode .loai-tab.active { border-color: var(--ic-hash); background: #cfd6e0; color: #0f172a; }
+body.light-mode .loai-tab:active { background: #cfd6e0; }
+/* 🔎 NÚT PHỄU “Lọc theo yêu cầu” — nay là “TAB LỌC” cuối dải (2026-10-24, yêu cầu “đưa tab lọc
+   nằm kế tab chú ý”). Dùng lại NGUYÊN hình `.loai-tab` (viền, bo 999px, cao 34px, hover/active) để
+   cùng hệ với 5 tab — chỉ khác: KHÔNG co giãn (`flex: 0 0 auto` + rộng 34px, icon căn giữa) vì nó
+   là nút MỞ TẤM, không phải tab lọc; và `data-active="1"` (do `advOnState()` bật khi đang có điều
+   kiện lọc) sáng **y hệt tab đang chọn** ⇒ nhìn là biết vì sao danh sách ngắn hơn bình thường.
+   ⚠️ Viết `.loai-tab.loai-tab-filter` (2 lớp) để thắng `flex: 1 1 0` của `.loai-tab` trong
+   `@media (max-width: 639.98px)` — thiếu vậy phễu bị chia đều rộng như tab. */
+.loai-tab.loai-tab-filter {
+  flex: 0 0 auto;
+  width: 34px;
+  padding: 0;
+  gap: 0;
+}
+.loai-tab.loai-tab-filter[data-active="1"] {
+  border-color: var(--ic-hash);
+  background: rgba(148,163,184,0.22);
+  color: var(--text);
+}
+body.light-mode .loai-tab.loai-tab-filter[data-active="1"] {
+  border-color: var(--ic-hash);
+  background: #cfd6e0;
+  color: #0f172a;
+}
+
+/* ── 📱 2026-10-24 (yêu cầu: “cho dải tab ôm vừa 6 tab trên điện thoại thay vì cuộn ngang, thu
+   nhỏ chữ/đệm và cho viền sát vô chữ”) ──────────────────────────────────────────
+   Cách làm: **chia đều bằng `flex`** (mỗi tab `flex: 1 1 0` + `min-width: 0`) ⇒ các tab LUÔN lấp
+   đúng bề rộng dải, không bao giờ sinh cuộn ngang; và **thu đệm + cỡ chữ** để nội dung vẫn vừa.
+   ⟳ 2026-10-24 (lượt sau): dải còn **5 tab** (**Chi tiết · Trên 3Tr · Nợ cũ · Tổng hợp · Chú ý**,
+   bỏ “1Tr - 3Tr”) + nút PHỄU 34px ở cuối (.loai-row) ⇒ mỗi tab rộng hơn hẳn bản 6 tab. Số đo
+   CHỐT (5 tab + phễu): 599px → **103,6px** · 533px → **90,4px** · 480 → **79,8** · 430 → **69,8** ·
+   400 → **63,8** · 375 → **58,7** · 360 → **55,8** · **320 → 47,8** (chữ 9,5px) — `overX` = 0,
+   KHÔNG tab nào cắt chữ ở mọi khổ (bản 6 tab từng hụt ~2px ở 320px).
+   ⚠️ Phải có `min-width: 0`: mặc định flex item không co dưới `min-content` ⇒ tab dài nhất
+   (“Tổng hợp”) sẽ đẩy cả dải tràn ra ngoài.
+   ⚠️ Kèm theo `equalizeLoaiTabs()` phải **BỎ QUA** ở khổ điện thoại (nó gán `width` cứng ⇒ đè
+   `flex-basis` ⇒ tràn): xem hàm đó.
+   ⚠️ Nút phễu KHÔNG chia đều: `.loai-tab.loai-tab-filter` (2 lớp) đè `flex: 1 1 0` ⇒ luôn 34px.
+   · Đo bản **6 tab** (cũ, giữ làm mốc an toàn): 599px có tab **93,1px**; nội dung tab dài nhất
+     (“Tổng hợp” 13px) = **85,4px** ⇒ dư ~7,7px. Nay ít tab hơn nên dư nhiều hơn.
+   · **Dưới 560px** phải bỏ icon/chấm đầu tab (chúng chiếm 16px mỗi tab) và cho chữ **co theo bề
+     rộng màn hình** (`clamp(9.5px, 2.75vw, 13px)`): 533 → 13px · 430 → 11,8px · 375 → 10,3px ·
+     360 → 9,9px. Vì sao dùng `vw` chứ không phải vài mốc `@media` cứng: bề rộng mỗi tab tỉ lệ với
+     bề rộng màn hình; gán mốc cứng là có khổ rơi vào giữa 2 mốc ⇒ cắt chữ.
+   · **Dưới 400px** thu đệm còn 2px mỗi bên (viền vẫn sát chữ như yêu cầu) để 375/360px không bị cắt.
+   ⛔ Đừng bỏ `overflow: hidden` của `.loai-tab`: đó là lưới an toàn khi máy thiếu phông Inter. */
+@media (max-width: 639.98px) {
+  .loai-tabs { gap: 3px; }
+  .loai-tab { flex: 1 1 0; min-width: 0; padding: 0 4px; gap: 3px; font-size: 13px; }
+  .loai-tab .loai-tab-ic { width: 13px; height: 13px; }
+  .loai-tab .nhom-dot { width: 6px; height: 6px; }
+}
+@media (max-width: 560px) {
+  .loai-tab { padding: 0 3px; gap: 0; font-size: clamp(9.5px, 2.75vw, 13px); }
+  .loai-tab .loai-tab-ic,
+  .loai-tab .nhom-dot { display: none; }
+}
+@media (max-width: 400px) {
+  .loai-tab { padding: 0 2px; }
+}
 
 /* ── NÚT “Nền”: BA MỨC — MỖI THEME MỘT BỘ RIÊNG ───────────────────────────────
    Bấm nút là xoay vòng 3 mức của ĐÚNG theme đang xem, và mỗi theme NHỚ RIÊNG mức của nó
@@ -3567,6 +3763,98 @@ body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
    đây. Sửa cỡ chữ tháng phải sửa **cả hai** (đã +2 lần ⇒ **18px** ở cả hai), nếu không bạn
    sẽ sửa bản trên rồi đo lại thấy y nguyên như cũ. */
 .kh-thang { font-size: var(--fs-card); color: #94a3b8; font-weight: 400; }
+
+/* ── 📷 NÚT “CHỤP ẢNH” DƯỚI DÒNG THÁNG (2026-10-24) ──────────────────────────────
+   Yêu cầu người dùng: “thêm chế độ chụp ảnh nằm dưới tháng” (ảnh kèm = THẺ khách ở chế
+   độ xem dạng thẻ) và chốt: bấm là MỞ CAMERA chụp ảnh thực tế rồi GẮN vào đúng khách đó.
+   Nút nằm trong `.kh-tien-col` (cột phải của `.kh-card-top`), NGAY SAU `.kh-thang` ⇒ tự
+   căn phải theo `align-items:flex-end` của cột, không phải đặt toạ độ.
+   Màu: viền + chữ mờ như `.kh-thang` (dark `#94a3b8` trên thẻ `#2e3644` = 4,6:1 ✓;
+   light `#475569` trên `--light-card` #f2f4f7 = 7,5:1 ✓). Khi khách ĐÃ có ảnh thì đổi
+   sang xanh + chữ “Ảnh (n)” để nhìn ra ngay là đã chụp.
+   ⛔ Đừng đổi thành nền ĐẶC: nút phụ trong thẻ, nền đặc sẽ tranh chấp với số tiền.
+   ⚠️ Nút nằm TRONG `.kh-tien-col` nên nó làm cột phải cao thêm ~22px ⇒ nếu thẻ đang
+   thấp hơn cột trái thì chiều cao thẻ có thể tăng; đo lại nếu đổi cỡ chữ. */
+.kh-photo {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 7px;
+  background: transparent;
+  color: #94a3b8;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.kh-photo:active { background: rgba(255,255,255,0.12); }
+/* ⟳ 2026-10-24 (yêu cầu “bỏ chữ chụp ảnh”, ảnh = nút đang có chữ Chụp ảnh):
+   khách CHƯA có ảnh ⇒ nút CHỈ CÒN ICON MÁY ẢNH (bỏ hẳn nhãn chữ, thu về ô vuông nhỏ);
+   khách ĐÃ có ảnh ⇒ VẪN hiện “Ảnh (n)” vì đó là thông tin ĐẾM, không phải chữ “Chụp ảnh”.
+   ⚠️ Nhãn chữ vẫn nằm trong DOM (chỉ `display: none`) để `photoRefreshBtn()` cập nhật số đếm
+   ở cùng một chỗ — chụp xong là nó hiện ra ngay, không phải vẽ lại cả danh sách. */
+.kh-photo:not(.has-photo) .kh-photo-txt { display: none; }
+.kh-photo:not(.has-photo) { padding: 3px 5px; gap: 0; }
+.kh-photo.has-photo { border-color: #3b82f6; color: #93c5fd; }
+body.light-mode .kh-photo { border-color: #94a3b8; color: #475569; }
+body.light-mode .kh-photo:active { background: rgba(15,23,42,0.08); }
+body.light-mode .kh-photo.has-photo { border-color: #2563eb; color: #1d4ed8; }
+
+/* ── TẤM XEM ẢNH CỦA KHÁCH (`#photoModal`) ────────────────────────────────────────
+   Dùng lại `.modal-overlay`/`.modal` + đầu tấm `.ky-hd`/`.ky-title`/`.pay-x` (đã theo
+   theme ở cả 2 theme — ⛔ đừng khai lại màu nền tấm ở đây, xem `body.light-mode .modal`).
+   Ảnh xem TOÀN MÀN HÌNH bằng cách chạm vào thumbnail ⇒ mở `#shotModal` (tấm ảnh trắng
+   có sẵn, nhấn-giữ để lưu/chia sẻ) — ⛔ đừng dựng tấm xem ảnh thứ hai. */
+.photo-sub { padding: 0 16px 10px; font-size: 14px; line-height: 1.4; color: var(--text-dim); }
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  padding: 0 16px 14px;
+}
+.photo-empty { grid-column: 1 / -1; padding: 18px 0; font-size: 14px; color: var(--text-dim); text-align: center; }
+.photo-item { position: relative; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #0f131a; }
+body.light-mode .photo-item { border-color: #cbd5e1; background: #e2e8f0; }
+.photo-item img { display: block; width: 100%; height: 108px; object-fit: cover; cursor: zoom-in; }
+.photo-meta { padding: 4px 7px; font-size: 11px; line-height: 1.4; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.light-mode .photo-meta { color: #475569; }
+.photo-del {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.66);
+  color: #ffffff;
+  font-size: 13px;
+  line-height: 26px;
+  text-align: center;
+  cursor: pointer;
+}
+.photo-acts { display: flex; gap: 10px; padding: 0 16px 20px; }
+.photo-btn {
+  flex: 1;
+  padding: 12px 10px;
+  border: 1px solid #3b82f6;
+  border-radius: 10px;
+  background: transparent;
+  color: #93c5fd;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.photo-btn.primary { background: #2563eb; border-color: #2563eb; color: #ffffff; }
+body.light-mode .photo-btn { border-color: #2563eb; color: #2563eb; }
+body.light-mode .photo-btn.primary { background: #2563eb; color: #ffffff; }
 
 
 /* ── TABLE (desktop view) ───────────────── */
@@ -4579,37 +4867,19 @@ body.light-mode .cfg-select { background: #ffffff; color: #0f172a; border-color:
 /* ══ 🔎 “LỌC THEO YÊU CẦU” (2026-10-18) — NÚT PHỄU cạnh ô tìm kiếm + TẤM `#advModal` ══════════════
    Người dùng: “tôi muốn thêm 1 tính năng tìm kiếm theo yêu cầu (ví dụ như là tôi muốn lọc những
    kh có tiền từ 2 triệu đến 3 triệu, hay là khách hàng có tên nguyễn văn a)”.
-   · Chỗ đặt nút: trong `.search-export-row`, NGAY SAU ô tìm kiếm — người dùng CHỐT phương án này
-     (“nút lọc cạnh ô tìm kiếm”) sau khi được nêu 2 đường khác (đưa vào tấm ⚙ Cài đặt / gõ thẳng
-     cú pháp vào ô tìm kiếm).
-   · Kích thước `var(--ctl-h)` (44px) = ĐÚNG chiều cao ô tìm kiếm kề nó ⇒ hàng tìm kiếm không
-     nhích. ⛔ Đừng cho cao/thấp hơn: hàng này còn 2 ô lọc ngay dưới, lệch một nấc là thấy ngay.
+   · Chỗ đặt nút: ⟳ **2026-10-24 (yêu cầu “đưa tab lọc nằm kế tab chú ý”) — ĐÃ RỜI hàng tìm kiếm**,
+     nay là **“tab lọc” cuối dải tab** (`.loai-tab.loai-tab-filter`, ngay sau tab “Chú ý”); CSS của
+     nó nằm trong khối `.loai-*` phía trên. Ô tìm kiếm vì thế rộng hết hàng.
+     (Trước đó: trong `.search-export-row`, ngay sau ô tìm kiếm — người dùng CHỐT phương án “nút lọc
+     cạnh ô tìm kiếm” sau khi được nêu 2 đường khác: đưa vào tấm ⚙ Cài đặt / gõ thẳng cú pháp.)
    · ĐANG CÓ ĐIỀU KIỆN LỌC ⇒ nút sáng lên (`[data-active="1"]`, cùng khuôn với 2 ô lọc) để người
      dùng biết vì sao danh sách ngắn hơn bình thường — bộ lọc “dính” mà không có dấu hiệu là
      đúng loại lỗi đã từng gây thắc mắc.
    · Tấm dùng lại `.modal-overlay`/`.modal` + đầu tấm `.ky-hd/.ky-title/.ky-x` (đã theo theme ở
      CẢ 2 theme) ⇒ ⛔ không dựng bộ CSS thứ ba cho phần đầu tấm. */
-.adv-btn {
-  flex: 0 0 auto;
-  width: var(--ctl-h); height: var(--ctl-h);
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 0;
-  /* Cùng hệ hình với Ô TÌM KIẾM kề nó (`--dk-card` + viền MẢNH `--ctl-vien`): nút này thuộc NHÓM
-     MẢNH của thanh công cụ (ô tìm kiếm · nút xuất file · nút dạng xem), ⛔ không phải nhóm viền
-     ĐẬM `--ctl-line` của 2 ô lọc (xem chú thích ở rule `.filter-select`). */
-  background: var(--dk-card);
-  border: 1px solid var(--ctl-vien);
-  border-radius: 10px;
-  color: #cbd5e1;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
-}
-.adv-btn:active { background: rgba(59,130,246,0.22); }
-.adv-btn[data-active="1"] { border-color: var(--ic-hash); background-color: rgba(148,163,184,0.22); color: #e2e8f0; }
-body.light-mode .adv-btn { background: var(--ctl-light-bg); border-color: var(--ctl-light-line); color: #4b5563; }
-body.light-mode .adv-btn[data-active="1"] { background-color: #cfd6e0; border-color: var(--ic-hash); color: #0f172a; }
+/* ⛔ Rule `.adv-btn` (ô vuông 44px trong hàng tìm kiếm) ĐÃ GỠ 2026-10-24 cùng lúc với việc dời nút
+   vào dải tab — nút nay dùng `.loai-tab.loai-tab-filter`. Trạng thái “đang lọc” vẫn do
+   `advOnState()` bật `data-active="1"`, màu đã khai trong khối `.loai-*`. */
 
 /* ⟳ 2026-10-18: người dùng “cho bảng này cao hơn và chữ to hơn” (tấm Lọc theo yêu cầu) ⇒ nới
    ĐỆM + KHOẢNG CÁCH và nâng cỡ chữ của MỌI thứ trong tấm. Đo ở khổ 533×394: tấm 342px → 401px
@@ -5855,7 +6125,7 @@ body.force-desktop .table-view { display: block; }
    ⚠️ `break-inside: avoid` để một khách không bị cắt đôi giữa hai trang giấy. */
 @media print {
   @page { margin: 12mm; }
-  body { background: #ffffff !important; color: #000000 !important; }
+  body { background: #ffffff !important; color: #000000 !important; padding-top: 0 !important; }
   .header, .toolbar, .page-actions, .page-actions-slot, .page-btns,
   .th-resizer, .sa, .cfg, .cfg-back { display: none !important; }
   .main, .table-wrap, .summary-wrap, .card-view, .kh-card {
@@ -6017,6 +6287,11 @@ body.force-desktop .table-view { display: block; }
        Dựng theo khuôn “copy” quen thuộc (ô sau + đường viền ô trước lộ ra ở góc trên-trái), cùng
        lưới 24×24 · `stroke-width: 2.2` · `currentColor` — ⛔ đừng vẽ đặc/đổi lưới. -->
   <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8.6" y="9.4" width="12.4" height="12.2" rx="2.2"/><path d="M5.4 15.2h-.8A2.2 2.2 0 0 1 2.4 13V4.6A2.2 2.2 0 0 1 4.6 2.4h8.4A2.2 2.2 0 0 1 15.2 4.6v.8"/></symbol>
+  <!-- ➕ `i-camera` (2026-10-24) — icon MÁY ẢNH cho nút “Chụp ảnh” dưới dòng tháng của thẻ
+       khách (xem `photoTap`). Khuôn máy ảnh quen thuộc: thân hộp + “gù” kính ngắm + 1 vòng
+       tròn ống kính. Đúng 3 quy tắc icon ở đầu khối sprite: lưới 24×24 · `stroke-width: 2.2`
+       · ăn `currentColor` (không hard-code màu). -->
+  <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 19.6a2.2 2.2 0 0 1-2.2 2.2H5.6a2.2 2.2 0 0 1-2.2-2.2V9.2a2.2 2.2 0 0 1 2.2-2.2h2.9l1.7-2.6h3.6l1.7 2.6h2.9a2.2 2.2 0 0 1 2.2 2.2z"/><circle cx="12" cy="13.6" r="3.5"/></symbol>
   <!-- `i-mobile` — hình điện thoại. ⚠️ Còn dùng ở mục lọc “KH chưa gọi” của thanh công cụ (`selectLoai`);
        ⛔ KHÔNG còn dùng cho hộp NHẤN-GIỮ mã KH nữa (nút “Mở app EVNHCMC” đã gỡ 2026-10-18) — nhưng
        ⛔ đừng xoá icon: xoá là mục lọc kia mất hình. -->
@@ -6224,12 +6499,11 @@ body.force-desktop .table-view { display: block; }
             <input type="text" id="searchInput" placeholder="Tìm tên, mã KH, SĐT, địa chỉ..." oninput="handleSearch()" autocomplete="off" autocorrect="off" autocapitalize="off">
             <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
           </div>
-          <!-- 🔎 Nút “LỌC THEO YÊU CẦU” (2026-10-18) — mở tấm `#advModal` (ô tìm kiếm quét MỌI
-               trường + khoảng TIỀN NỢ của khách). Nằm SAU ô tìm kiếm trong `.search-export-row`,
-               cao đúng `var(--ctl-h)` cho khỏi nhích hàng. Nhãn là `data-tip` + `aria-label` (nút
-               icon-only) — ⛔ đừng bỏ: thiếu cả hai là nút vô nghĩa với trình đọc màn hình
-               (bài học của nút ⚙ ở `.cfg-btn`). -->
-          <button class="adv-btn" id="advBtn" type="button" onclick="openAdv()" data-active="0" data-tip="Lọc theo yêu cầu" aria-label="Lọc theo yêu cầu (tên khách hàng, khoảng tiền nợ)"><svg class="ic" width="21" height="21" aria-hidden="true"><use href="#i-filter"/></svg></button>
+          <!-- 🔎 Nút “LỌC THEO YÊU CẦU” — ⟳ 2026-10-24 (yêu cầu “đưa tab lọc nằm kế tab chú ý”):
+               ĐÃ RỜI khỏi hàng tìm kiếm, nay là **TAB PHỄU CUỐI DẢI TAB** (ngay sau tab “Chú ý”) —
+               xem markup `#advBtn` trong `.loai-tab` ở dưới. Ô tìm kiếm vì thế rộng hết hàng.
+               Vẫn giữ `id="advBtn"` + `data-active` (để `advOnState()` làm nút sáng khi đang lọc)
+               và `aria-label` (nút icon-only). -->
         </div>
         <!-- Hàng lọc nay chỉ còn **2 ô**: DS nhóm | Chi tiết nợ, và chúng nằm CÙNG
              HÀNG ở mọi bề rộng dùng được (yêu cầu người dùng). Ô lọc "Mã sổ" đã bị xoá
@@ -6280,6 +6554,52 @@ body.force-desktop .table-view { display: block; }
           <input type="hidden" id="filterLoai" value="">
         </div>
       </div>
+        <!-- 📑 HÀNG TAB “CHI TIẾT NỢ” (2026-10-24) ──────────────────────────────
+             Yêu cầu: “cho các tab này thành tab riêng như tab chi tiết, cho nằm dưới
+             tab nhóm”. Các mục của ô “Chi tiết nợ” nay thành TAB bấm được ngay, đứng
+             NGAY DƯỚI hàng 2 ô lọc (Nhóm | Chi tiết nợ) và TRÊN hàng sắp xếp.
+             ⟳ Yêu cầu tiếp (7 lần, cùng ngày): “đổi tab chi tiết thành tab chú ý” →
+             “cho tab chú ý ra cuối hàng, và cho các tab chiều ngang bằng nhau” →
+             rút gọn nhãn → “không hiển thị 2 tab này” (KH đã gọi / KH chưa gọi) →
+             “thêm 1 tab Chi tiết” → **“bỏ tab 1tr-3tr”** → **“đưa tab lọc nằm kế tab chú ý”** →
+             **“đổi thành Nợ cũ”** + **“Trên 3Tr”**.
+             THỨ TỰ CHỐT: **Chi tiết · Trên 3Tr · Nợ cũ · Tổng hợp · Chú ý · [phễu Lọc]**
+             (Chú ý CUỐI hàng tab · tab “Chi tiết” ở ĐẦU và SÁNG ngay khi mở app · **nút phễu
+             “Lọc theo yêu cầu” (`#advBtn`, không phải tab lọc) nằm NGAY SAU tab “Chú ý”**),
+             5 tab RỘNG BẰNG NHAU nhờ `equalizeLoaiTabs()` (gọi trong `syncLoaiTabs` +
+             `ResizeObserver`). “KH đã gọi”/“KH chưa gọi”/“Nợ 1Tr đến 3Tr” chỉ còn trong ô
+             “Chi tiết nợ”.
+             ⟳ Nhãn được RÚT GỌN theo yêu cầu “Nợ trên 3tr thành 3Tr, nợ 1tr đến 3tr
+             thành 1Tr - 3Tr, Nhiều kỳ, Tổng hợp” (tên ĐẦY ĐỦ vẫn còn trong ô
+             “Chi tiết nợ” ngay trên), rồi **đổi tiếp 2026-10-24**: “3Tr” → **Trên 3Tr** ·
+             “Nhiều kỳ” → **Nợ cũ** · “Tổng hợp” → **Tổng hợp**. (Tab “1Tr - 3Tr” đã BỊ BỎ —
+             vẫn chọn được ở ô “Chi tiết nợ”, chỉ là lúc đó KHÔNG tab nào sáng.)
+             ⚠️ MỌI tab đi CHUNG một đường xử lý với ô “Chi tiết nợ”: `selectLoai(val)`
+             — ⛔ đừng viết hàm lọc thứ hai. Nhờ vậy chọn ở tab hay ở dropdown đều:
+               · đổi nhãn ô “Chi tiết nợ” (`applyLoaiLabel`),
+               · đổi view (`switchTab`: thẻ/bảng ↔ Tổng hợp ↔ Nợ cũ),
+               · đổi tab đang sáng (`syncLoaiTabs`, gọi ở cuối `selectLoai`),
+               · lưu “chỗ đang xem” (`saveUiState`) ⇒ mở lại vẫn đúng tab.
+             ⚠️ Dải cuộn NGANG chỉ còn là lưới an toàn (điện thoại đã chia đều bằng `flex` ⇒ luôn
+             vừa): tab đang chọn được `syncLoaiTabs()` tự đưa vào khung nhìn nếu có tràn.
+             ℹ️ Chấm màu + icon chép ĐÚNG hàng tương ứng trong `#loaiDropdown` —
+             ⛔ sửa màu một bên phải sửa bên kia (xem chú thích CSS `.loai-tabs`).
+             ⚠️ Nút phễu nằm NGOÀI `#loaiTabs` (trong `.loai-row`) để `role="tablist"` không chứa
+             một phần tử không phải tab — nhưng vẫn CÙNG HÀNG, dùng chung hình `.loai-tab`. -->
+        <div class="loai-row">
+          <div class="loai-tabs" id="loaiTabs" role="tablist" aria-label="Chi tiết nợ">
+            <button class="loai-tab active" type="button" role="tab" aria-selected="true" data-val="" onclick="selectLoai('')"><span class="loai-tab-ic"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-receipt"/></svg></span><span>Chi tiết</span></button>
+            <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="old" onclick="selectLoai('old')"><span class="nhom-dot" style="background:#ef4444"></span><span>Trên 3Tr</span></button>
+            <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="oldky" onclick="selectLoai('oldky')"><span class="nhom-dot" style="background:#8b5cf6"></span><span>Nợ cũ</span></button>
+            <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="summary" onclick="selectLoai('summary')"><span class="nhom-dot" style="background:#3b82f6"></span><span>Tổng hợp</span></button>
+            <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="marked" onclick="selectLoai('marked')"><span class="nhom-dot" style="background:#b45309"></span><span>Chú ý</span></button>
+          </div>
+          <!-- 🔎 “TAB LỌC” — nút phễu “Lọc theo yêu cầu” nay nằm NGAY SAU tab “Chú ý”
+               (yêu cầu 2026-10-24). Dùng lại hình của `.loai-tab` (viền + bo + cao 34px) nhưng
+               `flex: 0 0 auto` để không bị chia đều như 5 tab; `data-active` do `advOnState()` bật
+               ⇒ đang có điều kiện lọc thì viền + nền sáng y hệt tab đang chọn. -->
+          <button class="loai-tab loai-tab-filter" id="advBtn" type="button" onclick="openAdv()" data-active="0" data-tip="Lọc theo yêu cầu" aria-label="Lọc theo yêu cầu (tên khách hàng, khoảng tiền nợ)"><svg class="ic" width="17" height="17" aria-hidden="true"><use href="#i-filter"/></svg></button>
+        </div>
         <!-- 📑 HÀNG SẮP XẾP — 2 tab “Danh Số” / “Tiền Nợ”.
              ⟳ **ĐÃ TRẢ VỀ CHỖ CŨ** theo yêu cầu “đưa nút danh số và tiền nợ về chỗ cũ”: lượt
              trước chúng bị đưa vào tấm `#cfg` cùng các nút điều khiển khác; nay trở lại đây và
@@ -6733,6 +7053,28 @@ body.force-desktop .table-view { display: block; }
   </div>
 </div>
 
+<!-- 📷 TẤM XEM ẢNH CỦA KHÁCH (`#photoModal`) — 2026-10-24.
+     Mở bằng nút “Chụp ảnh” dưới dòng tháng của thẻ khách KHI khách đó ĐÃ có ảnh (nếu chưa
+     có thì bấm là mở CAMERA luôn, không qua tấm này — xem `photoTap()`).
+     Chạm vào 1 ảnh ⇒ mở `#shotModal` (tấm ảnh trắng có sẵn) để xem to / nhấn-giữ lưu-chia sẻ;
+     `#shotModal` có `z-index: 320` > `.modal-overlay` 300 nên luôn nằm TRÊN tấm này.
+     ⛔ Đừng dựng tấm xem ảnh thứ hai; ⛔ đừng gắn nút Xoá vào `#shotModal` (khách quen nhấn-giữ
+     để lưu, lỡ tay là mất ảnh). -->
+<div class="modal-overlay" id="photoModal" onclick="photoClose(event)">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Ảnh khách hàng">
+    <div class="ky-hd">
+      <span class="ky-title" id="photoTitle">Ảnh khách hàng</span>
+      <button class="pay-x" type="button" onclick="photoCloseDirect()" aria-label="Đóng">✕</button>
+    </div>
+    <div class="photo-sub" id="photoSub"></div>
+    <div class="photo-grid" id="photoGrid"></div>
+    <div class="photo-acts">
+      <button class="photo-btn primary" type="button" onclick="photoShootAgain()">Chụp thêm</button>
+      <button class="photo-btn" type="button" onclick="photoCloseDirect()">Đóng</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════════════════════════════════════════════════════════════════════════════
      ⚙️ TẤM CÀI ĐẶT (`#cfg`) — MỘT CHỖ CHỨA MỌI NÚT ĐIỀU KHIỂN
      Yêu cầu người dùng: “cho thêm 1 nút cài đặt và bỏ tất cả các nút vào đó” (chốt lại:
@@ -6873,6 +7215,7 @@ const SAVE_KEY = 'qlno_data_v1';
 const DB_NAME = 'qlno_db';
 const DB_STORE = 'qlno_data';
 const DB_KEY = 'qlno_data';
+const DB_PHOTO_STORE = 'qlno_photos';   // 2026-10-24: ảnh khách hàng (xem `photoTap`)
 
 // ── Storage helpers: gzip-compressed localStorage → IndexedDB fallback ──
 function bytesToBase64(bytes) {
@@ -6902,10 +7245,23 @@ async function decompressBytes(bytes) {
 function openDB() {
   return new Promise((resolve, reject) => {
     if (!('indexedDB' in window)) return reject(new Error('IndexedDB không khả dụng'));
-    const req = indexedDB.open(DB_NAME, 1);
-    req.onupgradeneeded = () => { req.result.createObjectStore(DB_STORE); };
+    /* ⚠️ 2026-10-24: version 1 → **2** để thêm kho `qlno_photos` (ảnh khách hàng).
+       `onupgradeneeded` chạy LẠI cả trên máy đã có DB version 1 ⇒ PHẢI kiểm
+       `objectStoreNames.contains` trước khi tạo, nếu không `createObjectStore(DB_STORE)` ném
+       lỗi “object store already exists” và cả việc mở DB thất bại (mất luôn bản sao lưu nén).
+       ⛔ Đừng bỏ 2 dòng kiểm tra đó. */
+    const req = indexedDB.open(DB_NAME, 2);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(DB_STORE)) db.createObjectStore(DB_STORE);
+      if (!db.objectStoreNames.contains(DB_PHOTO_STORE)) {
+        const st = db.createObjectStore(DB_PHOTO_STORE, { keyPath: 'id', autoIncrement: true });
+        st.createIndex('ma', 'ma', { unique: false });
+      }
+    };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
+    req.onblocked = () => reject(new Error('Cơ sở dữ liệu đang bị tab khác giữ — đóng tab kia rồi thử lại'));
   });
 }
 function dbSet(value) {
@@ -8208,6 +8564,102 @@ function selectLoai(val) {
      `applyLoaiLabel()` là **một nguồn duy nhất** cho nhãn này — nó cũng được gọi khi
      `resize`, nên icon bị bỏ ở panel hẹp sẽ **tự quay về** khi nới rộng. */
   applyLoaiLabel(val);
+
+  /* 📑 ĐỒNG BỘ HÀNG TAB “CHI TIẾT NỢ” (2026-10-24) — đặt CUỐI hàm, sau khi view đã đổi:
+     `switchTab()` không đụng tới tab nên chỉ cần một chỗ này là đủ cho MỌI đường vào
+     (bấm tab · chọn trong dropdown · `restoreUiState()` lúc mở lại app). */
+  syncLoaiTabs(val);
+}
+
+/* 🏷️ TÔ SÁNG TAB ĐANG CHỌN trong hàng tab “Chi tiết nợ” (`#loaiTabs`).
+   · Nguồn duy nhất là giá trị `val` của `selectLoai()` (rỗng = tab **“Chi tiết”** —
+     từ 2026-10-24 (yêu cầu “thêm 1 tab Chi tiết”) tab đó có `data-val=""` nên rỗng
+     VẪN có tab sáng; trước đó rỗng = không tab nào sáng).
+   · Đưa tab đang chọn vào KHUNG NHÌN của dải cuộn ngang — nếu dải có tràn (khổ hẹp) mà
+     không cuộn tới thì người dùng không biết mình đang ở tab nào.
+     Dùng `getBoundingClientRect` (không dùng `offsetLeft`: `.loai-tabs` KHÔNG phải
+     phần tử định vị nên `offsetLeft` tính theo tổ tiên khác, sẽ cuộn sai chỗ).
+   ⚠️ KHÔNG đổi trạng thái theo `#filterLoai` mỗi lần render: chỉ `selectLoai` mới
+   đổi bộ lọc này, thêm chỗ thứ hai là hai nguồn dễ lệch nhau. */
+function syncLoaiTabs(val) {
+  const box = document.getElementById('loaiTabs');
+  if (!box) return;
+  const want = val || '';
+  let hit = null;
+  box.querySelectorAll('.loai-tab').forEach(t => {
+    const on = (t.dataset.val || '') === want;
+    t.classList.toggle('active', on);
+    t.setAttribute('aria-selected', on ? 'true' : 'false');
+    if (on) hit = t;
+  });
+  equalizeLoaiTabs();   /* ⚖️ trước khi đo để cuộn tới tab đang chọn (bề rộng vừa đổi) */
+  if (hit && box.scrollWidth > box.clientWidth + 1) {
+    const cr = box.getBoundingClientRect();
+    const tr = hit.getBoundingClientRect();
+    if (tr.left < cr.left) box.scrollLeft += (tr.left - cr.left) - 4;
+    else if (tr.right > cr.right) box.scrollLeft += (tr.right - cr.right) + 4;
+  }
+}
+
+/* ⚖️ MỌI TAB “CHI TIẾT NỢ” RỘNG BẰNG NHAU (yêu cầu 2026-10-24: “cho các tab chiều
+   ngang bằng nhau”).
+   Cách làm: **đo rồi gán** — xoá `width` đã gán, đọc bề rộng TỰ NHIÊN của từng tab
+   (chữ + đệm + viền), lấy số LỚN NHẤT, rồi gán đúng số đó cho cả 5 tab (nút phễu nằm
+   NGOÀI `#loaiTabs` nên hàm không đụng tới).
+   📱 **ĐIỆN THOẠI (< 640px) BỎ QUA HÀM NÀY** (2026-10-24, yêu cầu “cho dải tab ôm vừa
+   trên điện thoại thay vì cuộn ngang”): ở đó CSS dùng `flex: 1 1 0` + `min-width: 0` (xem khối
+   `@media` sau `.loai-tab.active`) ⇒ các tab chia đều đúng bề rộng dải, luôn vừa, không cuộn
+   ngang. Nếu vẫn gán `width` cứng thì nó đè `flex-basis` ⇒ dải tràn ra ngoài. Vì vậy hàm PHẢI
+   gỡ hết `width` cũ (do lần đo trên desktop để lại khi xoay/đổi cỡ cửa sổ) rồi thoát.
+   · Vì sao không viết cứng `width: 110px`: bề rộng phụ thuộc PHÔNG (Inter tải từ
+     Google Fonts; máy offline rơi về phông hệ thống RỘNG HƠN) ⇒ số cứng là cắt chữ.
+   · Vì sao desktop vẫn KHÔNG dùng `flex: 1 1 0`: màn rộng thì các tab chia đều sẽ rất dài,
+     dải phình ra vô ích; “vừa đủ chữ + đều nhau” mới đúng ý.
+   · Đo lúc dải còn ẨN (`#dataView` display:none — chưa nạp dữ liệu) thì mọi bề rộng = 0
+     ⇒ thoát sớm, giữ nguyên; `ResizeObserver` bên dưới gọi lại ngay khi dải hiện ra.
+   · `_loaiTabW` + phép so `style.width` là chốt chống lặp: đặt width làm dải đổi kích
+     thước ⇒ `ResizeObserver` bắn lại; lần 2 thấy y hệt là thoát, không sửa DOM nữa. */
+let _loaiTabW = 0;
+function equalizeLoaiTabs() {
+  const box = document.getElementById('loaiTabs');
+  if (!box || !box.clientWidth) return;
+  const tabs = Array.from(box.querySelectorAll('.loai-tab'));
+  if (!tabs.length) return;
+  if (window.innerWidth < 640) {
+    /* 📱 CSS lo phần chia đều (flex) — chỉ cần dọn `width` cũ để không đè `flex-basis`. */
+    if (_loaiTabW !== 0 || tabs.some(t => t.style.width)) {
+      tabs.forEach(t => { t.style.width = ''; });
+      _loaiTabW = 0;
+    }
+    return;
+  }
+  if (_loaiTabW === -1 && tabs.every(t => !t.style.width)) return;
+  if (_loaiTabW > 0 && tabs.every(t => t.style.width === _loaiTabW + 'px')) return;
+  tabs.forEach(t => { t.style.width = ''; });
+  let max = 0;
+  tabs.forEach(t => { const w = t.getBoundingClientRect().width; if (w > max) max = w; });
+  if (!max) return;
+  /* 📐 Khổ hẹp (máy tính bảng nhỏ / cửa sổ hẹp) mà KHÔNG đủ chỗ cho các tab đều nhau
+     (n tab × bề rộng tab dài nhất + khe > dải) ⇒ gán bề rộng đều là dải phải cuộn ngang.
+     Chi bằng GIỮ BỀ RỘNG TỰ NHIÊN; `-1` là cờ “đã xét, đừng làm lại”
+     để `ResizeObserver` không lặp vô hạn. */
+  const __n = tabs.length;
+  const __gap = parseFloat(getComputedStyle(box).columnGap) || 0;
+  const __fit = Math.floor((box.clientWidth - __gap * (__n - 1)) / __n);
+  if (Math.ceil(max) > __fit) { _loaiTabW = -1; return; }
+  const w = Math.ceil(max);
+  _loaiTabW = w;
+  tabs.forEach(t => { t.style.width = w + 'px'; });
+}
+/* Dải tab hiện ra / đổi bề rộng (xoay máy, mở tấm Cài đặt…) ⇒ đo lại. */
+if (typeof ResizeObserver !== 'undefined') {
+  const __tabBox = document.getElementById('loaiTabs');
+  if (__tabBox) new ResizeObserver(() => equalizeLoaiTabs()).observe(__tabBox);
+}
+window.addEventListener('resize', equalizeLoaiTabs);
+/* Phông Inter tải xong có thể RỘNG KHÁC phông dự phòng đã đo lúc đầu ⇒ đo lại 1 lần. */
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => { _loaiTabW = 0; equalizeLoaiTabs(); });
 }
 
 /* 🚫 ĐÃ XOÁ Ô LỌC "Mã sổ" (mã sổ GCS) — theo yêu cầu người dùng (“bỏ tab mã sổ”).
@@ -9053,7 +9505,13 @@ function applyFilters() {
   // `advSyncCount()` đọc được 3 con số vừa in ở trên (⛔ đừng gọi trước khối `countKH`).
   advOnState();
   advSyncCount();
-  // 🔔 Banner Cảnh báo + badge chuông
+  /* 📐 2026-10-24: đo lại bề rộng tab NGAY SAU khi danh sách vẽ xong. Lý do: lúc boot, dải tab
+     còn `display:none` (chưa có dữ liệu) ⇒ `equalizeLoaiTabs()` (gọi từ `restoreUiState`) đo
+     được toàn số 0 rồi thoát, mà `ResizeObserver` cũng có thể bắn lúc bề rộng vẫn 0 ⇒ các tab
+     đứng ở bề rộng TỰ NHIÊN (không đều). Gọi thêm ở đây là chốt cuối, rẻ vì hàm tự thoát khi
+     bề rộng đã đúng; trên điện thoại hàm thoát ngay (CSS chia đều bằng `flex`).
+     🔔 Banner Cảnh báo + badge chuông */
+  equalizeLoaiTabs();
   }
 
 function sortBy(col) {
@@ -9125,6 +9583,9 @@ function renderCards(q='') {
 
   list.innerHTML = pageData.map((r,i) => {
     const phone = r.dien_thoai && r.dien_thoai!='0' ? r.dien_thoai : '';
+    /* 2026-10-24: số ảnh đã chụp của khách (đọc từ `qlno_photo_meta_v1`, KHÔNG mở IndexedDB
+       trong lúc render — 50 thẻ/lần mà mở DB thì gõ ô tìm kiếm sẽ khựng). */
+    const pc = photoCount(r.ma_khach_hang);
     const oldKind = _oldKindMap.get(r.ma_khach_hang || r.ten_khach_hang);
     const omShow = !!oldKind;
     /* KH có **từ 2 hoá đơn trở lên** → thêm vạch XANH LÁ mỏng ở mép trên thẻ, ngay trên
@@ -9156,6 +9617,12 @@ function renderCards(q='') {
                backtick sẽ đóng chuỗi sớm và cả script không parse được (đã sập đúng một lần). -->
           <div class="kh-tien pay-tap${r.tien_no >= 2000000 ? ' high' : ' low'}" onclick="event.stopPropagation();openPayPanel(this)">${fmtHtml(r.tien_no)}</div>
           ${r.thang_no ? `<div class="kh-thang${r.thang_no.split(",").length >= 4 ? " multi-month" : ""}">${hi(shortMonths(r.thang_no),q)}${omShow ? ' (' + oldKind + ')' : ''}</div>` : (omShow ? `<div class="kh-thang">(${oldKind})</div>` : '')}
+          <!-- 📷 2026-10-24 (yêu cầu “thêm chế độ chụp ảnh nằm dưới tháng”): nút CHỤP ẢNH nằm
+               ngay DƯỚI dòng tháng, cuối cột phải. Bấm ⇒ mở camera chụp ảnh gắn vào khách này
+               (xem photoTap). ⚠️ event.stopPropagation() là BẮT BUỘC: thẻ có ondblclick đánh
+               dấu — không chặn thì bấm nút cũng tính vào cú nhấn của thẻ.
+               ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
+          <button type="button" class="kh-photo${pc ? ' has-photo' : ''}" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang || '')}" data-ky="${esc(r.thang_no || '')}" onclick="event.stopPropagation();photoTap(this)" aria-label="${pc ? 'Xem ảnh của khách (' + pc + ')' : 'Chụp ảnh khách hàng'}"><svg class="ic" width="14" height="14" aria-hidden="true"><use href="#i-camera"/></svg><span class="kh-photo-txt">${pc ? 'Ảnh (' + pc + ')' : ''}</span></button>
         </div>
       </div>
       <div class="kh-card-mid">
@@ -10528,8 +10995,271 @@ function closeShotDirect() {
   if (ov) ov.classList.remove('open');
   const pay = document.getElementById('payModal');
   const det = document.getElementById('modal');
-  const still = (pay && pay.classList.contains('open')) || (det && det.classList.contains('open'));
+  // 2026-10-24: tấm xem ẢNH KHÁCH (`#photoModal`) cũng có thể đang mở phía dưới ⇒ giữ khoá cuộn.
+  const ph = document.getElementById('photoModal');
+  const still = (pay && pay.classList.contains('open')) || (det && det.classList.contains('open')) ||
+                (ph && ph.classList.contains('open'));
   if (!still) document.body.style.overflow = '';
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════════════
+   📷 ẢNH KHÁCH HÀNG (2026-10-24) — nút “Chụp ảnh” DƯỚI DÒNG THÁNG của thẻ khách
+   Yêu cầu người dùng: “tôi muốn thêm chế độ chụp ảnh nằm dưới tháng”; đã HỎI TRƯỚC và người
+   dùng CHỐT: **mở CAMERA chụp ảnh thực tế rồi gắn vào đúng khách đó** (không phải chụp ảnh thẻ).
+   · Bấm nút: CHƯA có ảnh ⇒ mở camera ngay; ĐÃ có ảnh ⇒ mở tấm xem ảnh (có nút “Chụp thêm”).
+   · Camera mở bằng `<input type="file" accept="image/*" capture="environment">` — đây là đường
+     DUY NHẤT mở được camera từ web trên cả Android lẫn iPhone. ⛔ `getUserMedia` cần https và
+     mở một khung xem trước riêng; `capture` là cách hệ điều hành tự mở app máy ảnh quen thuộc.
+   · Ảnh được THU NHỎ + nén JPEG (`photoCompress`, cạnh dài ≤1280px, chất lượng 0,72) rồi lưu
+     vào IndexedDB kho `qlno_photos` (mỗi ảnh 1 bản ghi). ⛔ ĐỪNG lưu vào `localStorage`: 1 ảnh
+     điện thoại 3–5MB, trần localStorage chỉ ~5MB ⇒ đầy là app không lưu được DỮ LIỆU CHÍNH.
+   · ĐẾM ẢNH: `qlno_photo_meta_v1` (localStorage) = { mã KH: {n: số ảnh} }. Có bản đếm này để
+     `renderCards` không phải mở IndexedDB 50 lần mỗi lần vẽ (gõ tìm kiếm sẽ khựng). Nếu bản đếm
+     sai (hiếm: xoá DB tay) thì chỉ ảnh hưởng NHÃN nút, ảnh thật vẫn còn.
+   · Khoá DI TRUYỀN: `openDB` đã nâng version 1 → 2 (xem chú thích ở đó).
+   ⛔ Đừng gắn nút xoá ảnh vào tấm xem to (`#shotModal`) — khách quen NHẤN-GIỮ để lưu, lỡ tay
+     là mất ảnh. Nút xoá chỉ nằm ở thumbnail trong `#photoModal` (có `confirm`).
+   ⛔ Backtick: các template literal dưới đây là JS thật (không nằm trong renderCards/renderTable)
+     nên dùng backtick bình thường.
+   ════════════════════════════════════════════════════════════════════════════════════════ */
+const PHOTO_META_KEY = 'qlno_photo_meta_v1';
+// `var` (không phải `let`): `photoCount()` được gọi từ `renderCards()` — hàm đó có thể chạy
+// trước khi dòng này thực thi ⇒ `let` sẽ ném ReferenceError (TDZ), `var` chỉ là undefined.
+var _photoMeta = {};
+try { _photoMeta = JSON.parse(localStorage.getItem(PHOTO_META_KEY) || '{}') || {}; } catch (e) { _photoMeta = {}; }
+var _photoTarget = null;   // {ma, ten, ky} của khách đang chụp
+var _photoInput = null;    // <input type="file"> dựng 1 lần, dùng lại
+var _photoBusy = false;    // chặn bấm đúp khi đang nén/lưu
+
+function photoCount(ma) {
+  const m = _photoMeta && ma ? _photoMeta[ma] : null;
+  return (m && m.n) ? m.n : 0;
+}
+
+function photoSaveMeta() {
+  try { localStorage.setItem(PHOTO_META_KEY, JSON.stringify(_photoMeta)); } catch (e) {}
+}
+
+function photoPut(rec) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_PHOTO_STORE, 'readwrite');
+    const req = tx.objectStore(DB_PHOTO_STORE).add(rec);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  }));
+}
+
+function photoGetAll(ma) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_PHOTO_STORE, 'readonly');
+    const req = tx.objectStore(DB_PHOTO_STORE).index('ma').getAll(ma);
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  }));
+}
+
+function photoRemove(id) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(DB_PHOTO_STORE, 'readwrite');
+    tx.objectStore(DB_PHOTO_STORE).delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  }));
+}
+
+function photoInput() {
+  if (_photoInput) return _photoInput;
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'image/*';
+  inp.setAttribute('capture', 'environment');
+  inp.style.position = 'fixed';
+  inp.style.left = '-9999px';
+  inp.style.width = '1px';
+  inp.style.height = '1px';
+  inp.style.opacity = '0';
+  inp.addEventListener('change', photoPicked);
+  document.body.appendChild(inp);
+  _photoInput = inp;
+  return inp;
+}
+
+function photoPick() {
+  const inp = photoInput();
+  inp.value = '';
+  inp.click();
+}
+
+// Bấm nút dưới dòng tháng.
+function photoTap(btn) {
+  if (!btn) return;
+  _photoTarget = { ma: btn.dataset.ma || '', ten: btn.dataset.ten || '', ky: btn.dataset.ky || '' };
+  if (!_photoTarget.ma) return;
+  if (photoCount(_photoTarget.ma) > 0) photoOpen();
+  else photoPick();
+}
+
+// Nén ảnh: trả về {data: 'data:image/jpeg;base64,…', w, h}.
+function photoCompress(file, maxSide, quality) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const im = new Image();
+    im.onload = () => {
+      try {
+        let w = im.naturalWidth || im.width;
+        let h = im.naturalHeight || im.height;
+        const s = Math.min(1, maxSide / Math.max(w, h));
+        w = Math.max(1, Math.round(w * s));
+        h = Math.max(1, Math.round(h * s));
+        const cv = document.createElement('canvas');
+        cv.width = w;
+        cv.height = h;
+        const ctx = cv.getContext('2d');
+        /* Nền trắng trước khi vẽ: ảnh PNG trong suốt (ảnh chụp màn hình) mà lưu JPEG thì vùng
+           trong suốt thành ĐEN. */
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(im, 0, 0, w, h);
+        const data = cv.toDataURL('image/jpeg', quality);
+        URL.revokeObjectURL(url);
+        resolve({ data: data, w: w, h: h });
+      } catch (err) {
+        URL.revokeObjectURL(url);
+        reject(err);
+      }
+    };
+    im.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('máy không đọc được định dạng ảnh này (thử chụp lại bằng camera)'));
+    };
+    im.src = url;
+  });
+}
+
+async function photoPicked(e) {
+  const inp = e.target;
+  const file = inp && inp.files && inp.files[0];
+  if (!file || !_photoTarget) return;
+  if (_photoBusy) return;
+  _photoBusy = true;
+  try {
+    const im = await photoCompress(file, 1280, 0.72);
+    const rec = {
+      ma: _photoTarget.ma,
+      ten: _photoTarget.ten,
+      ky: _photoTarget.ky,
+      ts: Date.now(),
+      w: im.w,
+      h: im.h,
+      data: im.data
+    };
+    await photoPut(rec);
+    const m = _photoMeta[rec.ma] || { n: 0 };
+    m.n = (m.n || 0) + 1;
+    _photoMeta[rec.ma] = m;
+    photoSaveMeta();
+    photoRefreshBtn(rec.ma);
+    const pm = document.getElementById('photoModal');
+    if (pm && pm.classList.contains('open')) photoRender();
+    showToast('✓ Đã lưu ảnh cho KH ' + (rec.ten || rec.ma));
+  } catch (err) {
+    showToast('⚠️ Không lưu được ảnh: ' + ((err && err.message) || 'lỗi không rõ'));
+  } finally {
+    _photoBusy = false;
+    try { inp.value = ''; } catch (e2) {}
+  }
+}
+
+// Cập nhật nhãn nút đang thấy trên màn hình (không cần vẽ lại cả danh sách).
+function photoRefreshBtn(ma) {
+  const n = photoCount(ma);
+  document.querySelectorAll('.kh-photo[data-ma="' + CSS.escape(ma) + '"]').forEach(b => {
+    b.classList.toggle('has-photo', n > 0);
+    b.setAttribute('aria-label', n ? ('Xem ảnh của khách (' + n + ')') : 'Chụp ảnh khách hàng');
+    const t = b.querySelector('.kh-photo-txt');
+    /* ⟳ 2026-10-24: khách chưa có ảnh thì CSS ẩn hẳn nhãn chữ (nút chỉ còn icon) ⇒ chỉ cần
+       đặt số đếm khi CÓ ảnh; đặt 'Chụp ảnh' cũng vô hình nên bỏ luôn cho khỏi sai lệch DOM. */
+    if (t) t.textContent = n ? ('Ảnh (' + n + ')') : '';
+  });
+}
+
+function photoWhen(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  const p = n => String(n).padStart(2, '0');
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+
+function photoOpen() {
+  const ov = document.getElementById('photoModal');
+  if (!ov || !_photoTarget) return;
+  document.getElementById('photoTitle').textContent = _photoTarget.ten || _photoTarget.ma;
+  document.getElementById('photoSub').textContent =
+    'Mã KH: ' + _photoTarget.ma + (_photoTarget.ky ? ' · Kỳ ' + shortMonths(_photoTarget.ky) : '');
+  ov.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  photoRender();
+}
+
+function photoRender() {
+  const box = document.getElementById('photoGrid');
+  if (!box || !_photoTarget) return;
+  const ma = _photoTarget.ma;
+  box.innerHTML = '<div class="photo-empty">Đang tải ảnh…</div>';
+  photoGetAll(ma).then(list => {
+    if (!_photoTarget || _photoTarget.ma !== ma) return;
+    if (!list.length) {
+      box.innerHTML = '<div class="photo-empty">Chưa có ảnh nào. Bấm “Chụp thêm” để chụp.</div>';
+      return;
+    }
+    list.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    box.innerHTML = list.map(p => '<div class="photo-item">' +
+      '<img src="' + p.data + '" alt="Ảnh khách ' + esc(p.ten || p.ma) + '" onclick="photoView(' + p.id + ')">' +
+      '<button class="photo-del" type="button" onclick="photoDelete(' + p.id + ')" aria-label="Xoá ảnh">✕</button>' +
+      '<div class="photo-meta">' + photoWhen(p.ts) + (p.ky ? ' · ' + esc(shortMonths(p.ky)) : '') + '</div>' +
+      '</div>').join('');
+  }).catch(() => {
+    box.innerHTML = '<div class="photo-empty">Không đọc được ảnh trong máy.</div>';
+  });
+}
+
+function photoView(id) {
+  if (!_photoTarget) return;
+  photoGetAll(_photoTarget.ma).then(list => {
+    const p = list.find(x => x.id === id);
+    if (!p) return;
+    const ov = document.getElementById('shotModal');
+    const im = document.getElementById('shotImg');
+    if (!ov || !im) return;
+    im.src = p.data;
+    ov.classList.add('open');
+  }).catch(() => {});
+}
+
+function photoDelete(id) {
+  if (!confirm('Xoá ảnh này? Không khôi phục được.')) return;
+  const ma = _photoTarget ? _photoTarget.ma : '';
+  photoRemove(id).then(() => {
+    const m = _photoMeta[ma];
+    if (m) {
+      m.n = Math.max(0, (m.n || 1) - 1);
+      if (!m.n) delete _photoMeta[ma];
+      photoSaveMeta();
+    }
+    photoRefreshBtn(ma);
+    photoRender();
+    showToast('✓ Đã xoá ảnh');
+  }).catch(() => showToast('⚠️ Không xoá được ảnh'));
+}
+
+function photoShootAgain() { photoPick(); }
+
+function photoClose(e) { if (e.target === document.getElementById('photoModal')) photoCloseDirect(); }
+function photoCloseDirect() {
+  const ov = document.getElementById('photoModal');
+  if (ov) ov.classList.remove('open');
+  const shot = document.getElementById('shotModal');
+  if (!(shot && shot.classList.contains('open'))) document.body.style.overflow = '';
 }
 
 // Save/load ghi chú
@@ -10767,7 +11497,7 @@ function clearNvScope() {
 
 // Esc đóng lần lượt: tấm “Thanh toán…” (nếu đang mở) rồi tới tấm “Chi tiết”.
 // ⟳ 2026-10-19: bỏ `lpCloseMaBox()` (hộp nhấn-giữ mã KH đã gỡ hẳn — gọi vào là ReferenceError).
-document.addEventListener('keydown', e => { if (e.key==='Escape') { lpCloseCopyBox(); lpCloseSdtBox(); closeShotDirect(); closeKyDirect(); closeAdv(); closePayDirect(); closeModalDirect(); } });
+document.addEventListener('keydown', e => { if (e.key==='Escape') { lpCloseCopyBox(); lpCloseSdtBox(); closeShotDirect(); photoCloseDirect(); closeKyDirect(); closeAdv(); closePayDirect(); closeModalDirect(); } });
 
 // ── COLUMN RESIZE (desktop) ────────────────
 // ⚠️ v1 → v2 khi ĐỔI THỨ TỰ CỘT. Bản đồ độ rộng lưu theo **chỉ số cột**, nên bản lưu từ v1
@@ -10960,32 +11690,53 @@ if (toolbarEl && headerEl) {
   toolbarEl.parentNode.insertBefore(sentinel, toolbarEl);
   // ⟳ 2026-10-12c (yêu cầu người dùng: “tôi muốn khi cuộn lên hay xuống đều ẩn các tab, khi chạm
   //   vào đồng hồ các tab mới hiển thị”): TỰ ẨN/HIỆN thanh công cụ theo **HƯỚNG CUỘN BỊ BỎ HẲN**
-  //   — nay MỌI cú cuộn, LÊN hay XUỐNG, đều ẨN thanh; đường DUY NHẤT để hiện lại là **CHẠM ĐỒNG HỒ**:
-  //     · cuộn BẤT KỲ HƯỚNG (Δy ≠ 0) → LUÔN ẨN
-  //     · sát đỉnh (y ≤ headerH+2) → hiện (lúc đó thanh CHƯA ghim nên không có gì để ẩn)
-  //     · KHÔNG cuộn (Δy = 0) → GIỮ NGUYÊN trạng thái cuối ⇒ KHÔNG nhấp nháy khi dừng tay, và quan
-  //       trọng hơn: thanh VỪA ĐƯỢC CHẠM ĐỒNG HỒ MỞ RA thì Ở LẠI, không tự ẩn sau một nhịp.
-  //   ⚠️ CHỈ điện thoại (`innerWidth < 640` = media `≤639.98px`); desktop LUÔN hiện (2026-10-03ac).
-  //   ⛔ ĐỪNG khôi phục luật theo hướng/tốc độ (lịch sử: 03y theo HƯỚNG → 04b theo TỐC ĐỘ →
-  //     04d/04e đảo chiều từng lượt → 04g “lên hiện/xuống ẩn” → **12c “mọi cuộn đều ẩn, chạm đồng
-  //     hồ mới hiện”**). ⛔ Cũng ĐỪNG thêm hẹn giờ “đứng yên thì ẩn”: người dùng CHƯA từng đồng ý
-  //     kiểu đó (đã bị từ chối ở 04b) — ở đây tình huống còn tệ hơn: thanh vừa mở bằng một cú chạm
-  //     mà bị hẹn giờ ẩn đi thì cú chạm coi như vô hiệu.
+  //   — mọi cú cuộn, LÊN hay XUỐNG, đều ẨN thanh; đường DUY NHẤT để hiện lại là **CHẠM ĐỒNG HỒ**.
+  // ⟳ 2026-10-24 — **ĐẢO LẠI một phần** (yêu cầu: “khi cuộn thì 2 hàng này đứng yên, không cuộn
+  //   theo”; ảnh khoanh hàng TAB “Chi tiết nợ” + hàng SẮP XẾP) rồi **ĐẢO LẦN NỮA trong cùng ngày**
+  //   (yêu cầu: “cho các tab này cuộn theo khi cuộn trang”; ảnh khoanh CẢ thanh công cụ).
+  //   ⇒ CHỐT HIỆN TẠI: **ĐIỆN THOẠI KHÔNG GHIM** — thanh công cụ nằm trong luồng trang, cuộn xuống
+  //   là trôi đi, cuộn lên là thấy lại. Không dùng `auto-hidden` (12c) vì kiểu đó ẩn bằng
+  //   `position: fixed` + dịch lên, muốn thấy lại phải chạm đồng hồ — không phải “cuộn theo”.
+  //   **DESKTOP (≥640px) VẪN GHIM** như cũ (2026-10-03ac) — xem `isMobile` trong `updateToolbar`.
+  //   ⛔ Lịch sử đảo chiều (đừng tự ý đổi tiếp): 03y theo HƯỚNG → 04b theo TỐC ĐỘ → 04d/04e đảo
+  //     chiều từng lượt → 04g “lên hiện/xuống ẩn” → 12c “mọi cuộn đều ẩn, chạm đồng hồ mới hiện”
+  //     → 2026-10-24 “luôn hiện” → **2026-10-24 “cuộn theo (điện thoại)”**. Đổi nữa thì HỎI TRƯỚC.
   //   ⚠️ BẪY ĐO ĐÃ GẶP (04e): `preview_scroll` có quán tính smooth ⇒ đo bằng listener ghi TỪNG sự
   //     kiện `scroll` + `window.scrollTo()` không quán tính, đọc sau khi trang đứng yên.
-  //   Class `auto-hidden` chỉ áp dụng khi thanh đã `stuck` (position:fixed) — lúc chưa ghim thì
-  //   không có gì để ẩn.
-  let lastScrollY = window.scrollY || window.pageYOffset || 0;
+  /* 🔔 2026-10-24 (yêu cầu THỨ BA trong cùng ngày: “tôi muốn khi chạm vô đồng hồ thì hiện các tab”):
+     thanh công cụ trên điện thoại VẪN cuộn theo trang như vừa chốt, nhưng khi người dùng ĐANG Ở
+     GIỮA danh sách mà cần đổi tab / lọc thì **chạm đồng hồ** để “gọi” thanh ra: nó hiện DƯỚI header
+     dạng LỚP NỔI (`position: fixed`, z-index 150) và **KHÔNG đẩy nội dung** (sentinel giữ 0px ⇒
+     danh sách không nhảy), rồi **cuộn tiếp là tự trôi đi** như cũ.
+     · `tbSummon` = đang được gọi; `tbSummonY` = vị trí cuộn lúc gọi (cuộn lệch > 12px là ẩn lại).
+     · Chạm đồng hồ LẦN NỮA thì cất thanh đi (toggle) — không còn phải cuộn để đóng.
+     · Lúc thanh còn nhìn thấy đủ (đầu trang) thì cú chạm KHÔNG làm gì (tránh “bấm mà như không”). */
+  let tbSummon = false, tbSummonY = 0;
   function updateToolbar() {
-    const y = window.scrollY || window.pageYOffset || 0;
     const sentinelTop = sentinel.getBoundingClientRect().top;
     const toolbarH = toolbarEl.offsetHeight;
+    /* ⟳ 2026-10-24 (yêu cầu người dùng, LẦN 2 trong cùng ngày: “cho các tab này cuộn theo khi
+       cuộn trang” — ảnh khoanh CẢ thanh công cụ: hàng tìm kiếm + 2 ô lọc + dải tab + hàng sắp xếp):
+       **ĐIỆN THOẠI KHÔNG GHIM THANH NỮA** — thanh nằm trong luồng trang như mọi khối khác, cuộn
+       xuống thì trôi đi, cuộn lên là thấy lại (đúng nghĩa “cuộn theo”).
+       · Vì sao KHÔNG khôi phục luật 2026-10-12c (`auto-hidden` + chạm đồng hồ): luật đó ẩn thanh
+         bằng `position: fixed` + `translateY` ⇒ thanh KHÔNG cuộn theo trang mà “biến mất”, và muốn
+         thấy lại phải chạm đồng hồ. Người dùng nói “cuộn theo” ⇒ giữ nó trong luồng (đơn giản hơn,
+         không có `sentinel` giả, không nhảy nội dung).
+       · Hệ quả: trên điện thoại `sentinel` luôn cao 0 ⇒ không có khoảng trống nào bị giữ chỗ.
+       · ⚠️ DESKTOP (≥640px) GIỮ NGUYÊN cách ghim cũ (`position: fixed` dưới header) — màn hình lớn
+         không bị chiếm chỗ, và đây là hành vi đã chốt từ 2026-10-03ac.
+       ⛔ Muốn ghim lại trên điện thoại thì HỎI TRƯỚC (vùng này đã đảo 3 lần: ghim → tự ẩn 12c →
+       luôn ghim 2026-10-24 → **cuộn theo**). */
+    const isMobile = window.innerWidth < 640;
     // toolbarH === 0 khi lúc gọi hàm #dataView còn display:none (toolbar chưa được
     // layout): rect và offsetHeight đều = 0 nên điều kiện dưới luôn đúng, thanh bị
     // ghim với sentinel cao 0px → che mất phần đầu của thẻ đầu tiên cho tới lần cuộn
     // đầu tiên. Không ghim khi chưa đo được chiều cao.
-    if (toolbarH && sentinelTop <= headerH) {
-      sentinel.style.height = toolbarH + 'px';
+    if (toolbarH && sentinelTop <= headerH && (!isMobile || tbSummon)) {
+      // Điện thoại: ghim để “gọi” thanh ra là LỚP NỔI ⇒ sentinel 0 (không đẩy nội dung, danh
+      // sách không nhảy). Desktop: ghim thật ⇒ sentinel cao đúng bằng thanh để bù chỗ trống.
+      sentinel.style.height = (isMobile ? 0 : toolbarH) + 'px';
       toolbarEl.style.position = 'fixed';
       toolbarEl.style.top = headerH + 'px';
       var mainPad = parseInt(getComputedStyle(document.querySelector('.main')).paddingLeft) || 8;
@@ -10995,21 +11746,7 @@ if (toolbarEl && headerEl) {
       toolbarEl.style.margin = '0 auto';
       toolbarEl.style.zIndex = '150';
       toolbarEl.classList.add('stuck');
-      // ⟳ 2026-10-03ac: CHỈ tự ẩn/hiện trên ĐIỆN THOẠI; DESKTOP luôn giữ thanh hiện
-      // (yêu cầu người dùng). Ngưỡng PHẢI khớp `@media (max-width: 639.98px)` của CSS —
-      // đổi ngưỡng ở một nơi mà quên nơi kia là hai bên lệch nhau.
-      const isMobile = window.innerWidth < 640;
-      if (!isMobile) {
-        // Gỡ luôn nếu vừa thu nhỏ → mở rộng cửa sổ lúc thanh đang ẩn (resize cũng gọi hàm này).
-        toolbarEl.classList.remove('auto-hidden');
-      } else {
-        const dy = y - lastScrollY;
-        // ⟳ 2026-10-12c: CUỘN **LÊN HAY XUỐNG ĐỀU ẨN** · CHỈ **CHẠM ĐỒNG HỒ** MỚI HIỆN LẠI
-        //   (xem chú thích đầy đủ phía trên hàm).
-        if (y <= headerH + 2)  toolbarEl.classList.remove('auto-hidden'); // sát đỉnh → hiện (chưa ghim)
-        else if (dy !== 0)     toolbarEl.classList.add('auto-hidden');    // cuộn BẤT KỲ hướng → ẨN
-        // dy === 0 → GIỮ NGUYÊN: thanh vừa chạm đồng hồ mở ra sẽ Ở LẠI cho tới cú cuộn kế tiếp
-      }
+      toolbarEl.classList.remove('auto-hidden');
     } else {
       sentinel.style.height = '0';
       toolbarEl.style.position = '';
@@ -11021,9 +11758,14 @@ if (toolbarEl && headerEl) {
       toolbarEl.classList.remove('stuck');
       toolbarEl.classList.remove('auto-hidden');
     }
-    lastScrollY = y;
   }
-  window.addEventListener('scroll', updateToolbar, { passive: true });
+  window.addEventListener('scroll', function () {
+    /* Thanh được “gọi” bằng đồng hồ là lớp nổi tạm thời: vừa cuộn (lệch > 12px so với lúc gọi)
+       là cất đi, đúng như hành vi thường ngày (thanh cuộn theo trang). Ngưỡng 12px để cú chạm
+       đồng hồ / quán tính 1–2px không cất thanh ngay. */
+    if (tbSummon && Math.abs(window.scrollY - tbSummonY) > 12) tbSummon = false;
+    updateToolbar();
+  }, { passive: true });
   // Chiều cao thanh đổi theo bề rộng (flex-wrap) và theo font sau khi webfont tải
   // xong — đo lại để sentinel luôn cao đúng bằng thanh đang ghim.
   window.addEventListener('resize', updateToolbar, { passive: true });
@@ -11033,16 +11775,27 @@ if (toolbarEl && headerEl) {
   window.updateToolbar = updateToolbar;
   updateToolbar();
 
-  // ⟳ 2026-10-12c: CHẠM ĐỒNG HỒ → HIỆN LẠI các tab (thanh công cụ).
-  //   Đây là ĐƯỜNG DUY NHẤT để hiện thanh khi đã cuộn (mọi cú cuộn đều ẩn — xem `updateToolbar`).
-  //   Dùng `click` (không phải `touchstart`) để một cú chạm chỉ bắn MỘT lần và không giành cử chỉ
-  //   cuộn/vuốt của trang. `click` cũng chạy cho cả chuột trên desktop — ở đó thanh vốn KHÔNG tự
-  //   ẩn nên lời gọi chỉ là vô hại (gỡ một class không có).
-  //   ⛔ KHÔNG bật/tắt (toggle) và ⛔ KHÔNG ẩn thanh ở đây: yêu cầu chỉ nói “chạm đồng hồ thì
-  //   HIỆN”; muốn ẩn lại thì cuộn (đúng cử chỉ chính của tính năng) — thêm chiều ẩn nữa là tự ý
-  //   thêm hành vi thứ hai, và một cú chạm “không làm gì” khi thanh đang hiện trông như lỗi.
+  // ⟳ 2026-10-12c / 2026-10-24: CHẠM ĐỒNG HỒ → HIỆN LẠI các tab (thanh công cụ).
+  //   · **ĐIỆN THOẠI** (thanh cuộn theo trang): cú chạm “gọi” thanh ra thành LỚP NỔI dưới header
+  //     (`tbSummon` — xem `updateToolbar`), KHÔNG đẩy nội dung; cuộn tiếp là thanh tự trôi đi,
+  //     chạm lần nữa là cất đi. Thanh đang hiện đủ (đầu trang) thì cú chạm KHÔNG làm gì.
+  //   · **DESKTOP**: thanh vốn luôn ghim ⇒ chỉ gỡ `auto-hidden` cho chắc (vô hại).
+  //   · Dùng `click` (không phải `touchstart`) để một cú chạm chỉ bắn MỘT lần và không giành cử chỉ
+  //     cuộn/vuốt của trang.
   const clockEl = document.getElementById('clockBtn');
-  if (clockEl) clockEl.addEventListener('click', function () { toolbarEl.classList.remove('auto-hidden'); });
+  if (clockEl) clockEl.addEventListener('click', function () {
+    toolbarEl.classList.remove('auto-hidden');
+    if (window.innerWidth >= 640) return;
+    if (tbSummon) {
+      tbSummon = false;
+    } else {
+      const r = toolbarEl.getBoundingClientRect();
+      // Đang nhìn thấy TRỌN thanh ⇒ không cần gọi (và không được nhảy vị trí).
+      const full = r.top >= headerH - 1 && r.bottom <= window.innerHeight + 1;
+      if (!full) { tbSummon = true; tbSummonY = window.scrollY; }
+    }
+    updateToolbar();
+  });
 }
 
 // Touch swipe down to close modal
