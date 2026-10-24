@@ -3546,7 +3546,7 @@ body.light-mode .nhom-sel-name {
      (box-shadow của thẻ không phải phần tử con nên không bị `overflow` cắt), và đã đo:
      không có con nào của thẻ vượt mép thẻ ở 320/362/429px (xem run.md). */
   overflow: hidden;
-  padding: 10px 14px;
+  padding: 8px 14px;
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
   -webkit-user-select: none;
@@ -3622,7 +3622,7 @@ body.light-mode .kh-card.highlighted-purple .kh-tien .mil-digit { color: #b91c1c
 body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color: #1d4ed8; border-width: 2px; box-shadow: 0 0 0 2.5px rgba(29,78,216,0.20); }
 
 
-.kh-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+.kh-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 2px; }
 /* Viên Danh Số / Mã KH / SĐT: metric khai 1 lần ở đây cho CẢ 2 theme;
    chỉ màu mới khai lại trong khối theme (xem HỢP ĐỒNG ở mục LIGHT MODE) */
 /* ⚠️ CỠ CHỮ NỘI DUNG THẺ CARD — nay **GIẢM 1px so với lượt trước** (yêu cầu “cho nội dung trong thẻ
@@ -3665,6 +3665,19 @@ body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color:
    ⚠️ `!important` KHÔNG cần: chưa rule nào khác đặt user-select cho 2 ô này. */
 .kh-name, .table-view tbody td.cell-tenkh { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .kh-tien-col { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+/* ⟳ 2026-10-24 (yêu cầu “cho chiều cao thẻ sát xuống tên, và sát ghi chú”, ảnh = thẻ đang hở
+   một khoảng trống rất lớn dưới TÊN):
+   Trước đây nút CHỤP ẢNH đứng RIÊNG một hàng dưới dòng tháng ⇒ cột phải cao 76px (tiền 21,6 +
+   tháng 20,9 + lề 2 + nút 25,4 + lề 6) trong khi ô TÊN chỉ cao 23,4 ⇒ cả khối “tên + tiền”
+   bị đẩy cao 76px và phần danh số/mã sổ nằm cách tên **56px** (đo ở khổ 533).
+   Nay nút đi CÙNG HÀNG với dòng tháng (`.kh-thang-row`, canh phải) ⇒ cột phải còn **49px**,
+   danh số chỉ cách tên **25px**; thẻ 205,8 → **~173px** (−33).
+   ⚠️ Nút vẫn nằm DƯỚI số tiền và NGAY CẠNH dòng tháng (đúng tinh thần yêu cầu 2026-10-24
+   “chụp ảnh nằm dưới tháng”); chỉ đổi từ “xuống dòng” sang “cùng dòng với tháng”.
+   ⛔ Đừng trả nút về một hàng riêng: mỗi 25px của nút là 25px khoảng trống dưới tên. */
+.kh-thang-row { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 2px; }
+.kh-thang-row .kh-thang { margin-top: 0; }
+.kh-thang-row .kh-photo { margin-top: 0; }
 .kh-tien { font-family: 'Inter', sans-serif; font-size: var(--fs-card-big); font-weight: 500; color: #ffa0a0; white-space: nowrap; flex-shrink: 0; }
 .kh-tien.low { color: #86efac; }
 .kh-tien.high { color: #ff8888; }
@@ -3694,7 +3707,9 @@ body.light-mode .kh-abc { color: #475569; }
 .kh-ghichu-row {
   display: flex;
   align-items: center;
-  margin-top: 6px;
+  /* ⟳ 2026-10-24 (yêu cầu “sát ghi chú”): 6px → **3px** — hàng ghi chú nép sát hàng SĐT/mã KH.
+     ⚠️ Ô nhập ghi chú cao 22–24px nên 3px vẫn đủ tách, không dính viền ô vào viên SĐT. */
+  margin-top: 3px;
 }
 .kh-ghichu-input {
   flex: 0 1 auto;
@@ -3730,7 +3745,57 @@ body.light-mode .ghi-chu-input::placeholder { color: #5b6777; opacity: 1; }
 body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
 .ghi-chu-input:focus { border-color: #60a5fa; }
 
-.kh-addr-line { font-size: var(--fs-card); color: #94a3b8; font-weight: 400; margin-bottom: 5px; white-space: normal; word-wrap: break-word; } /* địa chỉ TRONG THẺ CARD — +1px, xem chú thích “CỠ CHỮ NỘI DUNG THẺ CARD” */
+.kh-addr-line { font-size: var(--fs-card); color: #94a3b8; font-weight: 400; margin-bottom: 3px; white-space: normal; word-wrap: break-word; } /* địa chỉ TRONG THẺ CARD — +1px, xem chú thích “CỠ CHỮ NỘI DUNG THẺ CARD” */
+/* ── 📍 GHIM “VỊ TRÍ MỚI” Ở DÒNG ĐỊA CHỈ (2026-10-24) ─────────────────────────────
+   Yêu cầu người dùng: “chọn vào địa chỉ ghim vị trí mới… hiển thị màu xanh lá để phân biệt
+   kh có vị trí mới và kh chưa ghi vị trí mới” + “cho thêm icon nhỏ bên cạnh”.
+   ⇒ Chính ICON GHIM ở đầu dòng địa chỉ (trước đây là `<svg class="addr-ico">` TRƠ) nay là
+   một NÚT NHỎ `.kh-pin-btn` (ô chạm 24×18, icon 15px) — chạm để GHIM / BỎ GHIM; chạm vào
+   CHỮ địa chỉ cũng ghim (cùng một hàm pinToggle).
+   Màu: bình thường icon ăn `--ic-blue` (`#3b82f6`; light `--ic-blue-dark` `#2563eb` — cùng tông
+   ghim cũ `.addr-ico`), chữ địa chỉ giữ màu cũ (`#94a3b8` / light `#334155`).
+   ĐÃ GHIM thì **XANH LÁ** đích danh từng theme — dark `#4ade80` (**6,56–8,28:1** trên 3 mức nền
+   thẻ tối) · light `#166534` (**5,01–7,06:1** trên CẢ 5 mức nền `#d2d9e2` … `#fdfefe`; ⛔ không
+   dùng `#15803d` vì trên nền “Rất dịu” `#d2d9e2` chỉ còn **3,88:1**, trượt AA 4,5:1).
+   ⚠️ CHỈ tô ở DÒNG ĐỊA CHỈ + icon: ⛔ không đổi nền/viền thẻ — xanh lá đã dùng cho tiền nợ thấp
+   và vạch “≥2 hoá đơn” ⇒ tô cả thẻ là lẫn, không còn phân biệt được.
+   ⚠️ Nút nằm TRONG thẻ có `ondblclick` = đánh dấu cam ⇒ phải `event.stopPropagation()` ở nút
+   và chặn `dblclick` ở cả dòng địa chỉ, không thì chạm 2 lần vào địa chỉ vừa ghim vừa đánh dấu.
+   ⚠️ Trạng thái ghim lưu ở khoá RIÊNG `qlno_pinned_addr_v1` THEO MÃ KH (không theo file
+   tháng) ⇒ tháng sau nhập file mới, khách còn nợ là tự hiện lại xanh — xem `pinToggle()`. */
+.kh-pin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: 24px;
+  /* ⚠️ Cao 18px (KHÔNG phải 22): dòng địa chỉ chỉ cao ~20,4px với cỡ chữ “Chuẩn” ⇒ nút cao hơn
+     là ĐẨY dòng cao thêm, thẻ cao thêm (đo live: 22px → 168,9 · 20px → 167,9 · 18px → 166,9 như cũ).
+     Bề rộng 24px vẫn đủ chạm; icon 15px nằm gọn; chạm vào CHỮ địa chỉ cũng ghim nên không khó bấm. */
+  height: 18px;
+  padding: 0;
+  margin-right: 2px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ic-blue);   /* bình thường: XANH DƯƠNG như icon ghim cũ (`.addr-ico`) */
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.kh-pin-btn:active { background: rgba(255,255,255,0.12); }
+body.light-mode .kh-pin-btn:active { background: rgba(15,23,42,0.08); }
+/* Light mode: ghim dùng blue-600 (`--ic-blue-dark` = #2563eb) cho ĐỦ 3:1 trên CẢ 5 mức nền —
+   y hệt lý do đã ghi ở rule `body.light-mode[data-surface] .addr-ico` (dòng ~892). */
+body.light-mode .kh-pin-btn { color: var(--ic-blue-dark); }
+.kh-addr-txt { cursor: pointer; }   /* chạm vào CHỮ địa chỉ cũng ghim (xem pinToggle) */
+/* ĐÃ GHIM = xanh lá. Selector phải đủ mạnh: khối “nền Sáng / Rất sáng” (dòng ~3013/3027) khai
+   `body:not(.light-mode)[data-surface-dark=…] .kh-addr-line` = (0,3,1) ⇒ dùng (0,3,1)/(0,4,1)
+   và khai SAU nên thắng; ⛔ đừng rút gọn thành `.kh-addr-line.is-pinned` (0,2,0) là mất màu. */
+.kh-card .kh-pin-btn.is-pinned { color: #4ade80; }
+body .kh-card .kh-addr-line.is-pinned { color: #4ade80; }
+body.light-mode .kh-card .kh-pin-btn.is-pinned { color: #166534; }
+body.light-mode .kh-card .kh-addr-line.is-pinned { color: #166534; }
 
 /* ⚠️ **Khai LẦN HAI** của `.kh-thang` (bản đầu ở trên, gần `.kh-tien`): rule này khai SAU
    nên **thắng** — hệ quả là `margin-top: 2px` của bản trên vẫn áp, còn `font-size` thì lấy ở
@@ -9572,6 +9637,56 @@ updateSortButtons();
    3 token `--vien-zalo-*` (cả `:root` lẫn `body.light-mode`), (3) thêm lại markup trong
    `renderCards()`, (4) ĐO LẠI bề rộng hàng giữa (viên icon rộng ~29px ⇒ thẻ ≥ ~375px mới đủ
    1 dòng; dưới mốc đó hàng giữa tự xuống dòng và thẻ cao thêm ~23px). */
+
+/* ── 📍 GHIM “VỊ TRÍ MỚI” (2026-10-24) ─────────────────────────────────────────────────────
+   Yêu cầu người dùng: chạm vào DÒNG ĐỊA CHỈ để “ghim vị trí mới”; khách đã ghim hiện XANH LÁ
+   (chữ địa chỉ + icon ghim), để phân biệt với khách CHƯA ghim; thêm icon nhỏ bên cạnh địa chỉ.
+   ⚠️ Lưu **THEO MÃ KH** ở khoá RIÊNG `qlno_pinned_addr_v1` (KHÔNG nằm trong file Excel, KHÔNG
+   phụ thuộc kỳ) ⇒ tháng sau nhập file mới, khách còn nợ là tự hiện lại xanh, không phải ghim lại;
+   khách đã trả hết / không còn trong file thì chỉ KHÔNG hiện (dữ liệu ghim vẫn giữ).
+   ⛔ Đừng gộp vào `qlno_highlighted` (đánh dấu cam) — 2 thứ độc lập, đánh dấu cam vẫn là nhấn 2 lần.
+   Định nghĩa đặt TRƯỚC `renderCards` để chắc chắn `PIN_KEY`/`_pinnedMap` đã có giá trị lúc vẽ
+   thẻ (renderCards có thể được gọi ngay khi boot, không chờ hết file).
+   ════════════════════════════════════════════════════════════════════════════════════════ */
+const PIN_KEY = 'qlno_pinned_addr_v1';
+let _pinnedMap = null;   // nạp 1 lần rồi dùng lại (renderCards chạy 50 thẻ/lần)
+
+function pinAll() {
+  if (_pinnedMap) return _pinnedMap;
+  try { _pinnedMap = JSON.parse(localStorage.getItem(PIN_KEY) || '{}') || {}; }
+  catch (e) { _pinnedMap = {}; }
+  return _pinnedMap;
+}
+
+/* Khách này đã ghim chưa (dùng trong renderCards). */
+function pinOn(ma) {
+  if (!ma) return false;
+  return !!pinAll()[ma];
+}
+
+/* Chạm ICON GHIM hoặc CHỮ ĐỊA CHỈ → ghim / bỏ ghim. Cập nhật TẠI CHỖ (không vẽ lại danh sách)
+   để không mất vị trí cuộn. `el` có thể là nút (có data-ma) hoặc ô chữ (lấy mã ở thẻ cha). */
+function pinToggle(el) {
+  if (!el || !el.closest) return;
+  const card = el.closest('.kh-card');
+  const ma = (el.dataset && el.dataset.ma) || (card && card.dataset.ma) || '';
+  if (!ma) return;
+  const map = pinAll();
+  const nameEl = card ? card.querySelector('.kh-name') : null;
+  const ten = nameEl ? nameEl.textContent.trim() : '';
+  let on;
+  if (map[ma]) { delete map[ma]; on = false; }
+  else { map[ma] = { ts: Date.now(), ten: ten }; on = true; }
+  try { localStorage.setItem(PIN_KEY, JSON.stringify(map)); } catch (e) {}
+  document.querySelectorAll('.kh-pin-btn[data-ma="' + CSS.escape(ma) + '"]').forEach(function (b) {
+    b.classList.toggle('is-pinned', on);
+    b.setAttribute('aria-label', on ? 'Bỏ ghim vị trí mới' : 'Ghim vị trí mới');
+    const line = b.closest('.kh-addr-line');
+    if (line) line.classList.toggle('is-pinned', on);
+  });
+  if (typeof showToast === 'function') showToast(on ? '✓ Đã ghim vị trí mới' : 'Đã bỏ ghim vị trí');
+}
+
 function renderCards(q='') {
   const isOld = (currentTab === 'old' || currentTab === 'oldky' || currentTab === '1tr');
   const start = (currentPage-1)*PAGE_SIZE;
@@ -9587,6 +9702,10 @@ function renderCards(q='') {
     /* 2026-10-24: số ảnh đã chụp của khách (đọc từ `qlno_photo_meta_v1`, KHÔNG mở IndexedDB
        trong lúc render — 50 thẻ/lần mà mở DB thì gõ ô tìm kiếm sẽ khựng). */
     const pc = photoCount(r.ma_khach_hang);
+    /* 📍 2026-10-24: khách đã được GHIM “vị trí mới” chưa (tra ở khoá riêng theo MÃ KH, xem
+       pinToggle) ⇒ dòng địa chỉ + icon ghim tô XANH LÁ. Đọc từ map đã nạp sẵn (KHÔNG đọc
+       localStorage 50 lần mỗi lần vẽ). */
+    const pinHere = pinOn(r.ma_khach_hang);
     const oldKind = _oldKindMap.get(r.ma_khach_hang || r.ten_khach_hang);
     const omShow = !!oldKind;
     /* KH có **từ 2 hoá đơn trở lên** → thêm vạch XANH LÁ mỏng ở mép trên thẻ, ngay trên
@@ -9617,13 +9736,20 @@ function renderCards(q='') {
                ⛔ KHÔNG viết dấu backtick trong chú thích NÀY — nó nằm TRONG một template literal,
                backtick sẽ đóng chuỗi sớm và cả script không parse được (đã sập đúng một lần). -->
           <div class="kh-tien pay-tap${r.tien_no >= 2000000 ? ' high' : ' low'}" onclick="event.stopPropagation();openPayPanel(this)">${fmtHtml(r.tien_no)}</div>
+          <!-- ⟳ 2026-10-24 (yêu cầu “cho chiều cao thẻ sát xuống tên”): dòng tháng + nút chụp ảnh nay
+               nằm CÙNG MỘT HÀNG (kh-thang-row, canh phải). Trước đây nút đứng riêng một hàng nên
+               cột phải cao 76px, đẩy phần danh số cách tên 56px; nay cột phải còn 49px.
+               ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
+          <div class="kh-thang-row">
           ${r.thang_no ? `<div class="kh-thang${r.thang_no.split(",").length >= 4 ? " multi-month" : ""}">${hi(shortMonths(r.thang_no),q)}${omShow ? ' (' + oldKind + ')' : ''}</div>` : (omShow ? `<div class="kh-thang">(${oldKind})</div>` : '')}
           <!-- 📷 2026-10-24 (yêu cầu “thêm chế độ chụp ảnh nằm dưới tháng”): nút CHỤP ẢNH nằm
-               ngay DƯỚI dòng tháng, cuối cột phải. Bấm ⇒ mở camera chụp ảnh gắn vào khách này
+               DƯỚI số tiền và NGAY CẠNH dòng tháng, cuối cột phải (cùng hàng với tháng để cột
+               phải thấp lại — “sát xuống tên”). Bấm ⇒ mở camera chụp ảnh gắn vào khách này
                (xem photoTap). ⚠️ event.stopPropagation() là BẮT BUỘC: thẻ có ondblclick đánh
                dấu — không chặn thì bấm nút cũng tính vào cú nhấn của thẻ.
                ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
           <button type="button" class="kh-photo${pc ? ' has-photo' : ''}" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang || '')}" data-ky="${esc(r.thang_no || '')}" onclick="event.stopPropagation();photoTap(this)" aria-label="${pc ? 'Xem ảnh của khách (' + pc + ')' : 'Chụp ảnh khách hàng'}"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-camera"/></svg><span class="kh-photo-txt">${pc ? 'Ảnh (' + pc + ')' : ''}</span></button>
+          </div>
         </div>
       </div>
       <div class="kh-card-mid">
@@ -9632,7 +9758,7 @@ function renderCards(q='') {
         ${r.ma_sogcs ? `<span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span>` : ''}
         ${r.ma_sogcs && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}
         ${r.so_tbi ? `<span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}
-        ${r.dia_chi ? `<div class="kh-addr-line" style="flex:0 0 100%;margin-top:5px"><svg class="addr-ico" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><use href="#i-pin"/></svg>${hi(trimDiaChi(r.dia_chi),q)}</div>` : ''}
+        ${r.dia_chi ? `<div class="kh-addr-line${pinHere ? ' is-pinned' : ''}" style="flex:0 0 100%;margin-top:3px" ondblclick="event.stopPropagation()"><button type="button" class="kh-pin-btn${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinToggle(this)" aria-label="${pinHere ? 'Bỏ ghim vị trí mới' : 'Ghim vị trí mới'}"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-pin"/></svg></button><span class="kh-addr-txt" onclick="event.stopPropagation();pinToggle(this)">${hi(trimDiaChi(r.dia_chi),q)}</span></div>` : ''}
         ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}<!-- ⛔ Viên ZALO ĐÃ BỎ HẲN (2026-10-17m — yêu cầu người dùng: “tôi muốn bỏ icon tin nhắn zalo”,
              kèm ảnh thẻ đang có viên icon bong bóng chat cạnh viên SĐT): thẻ KH nay chỉ còn
              [viên SĐT] - [viên mã KH], khe hở giữa hai viên là dấu kh-sep như trước lượt 2026-10-17g.
