@@ -1799,10 +1799,19 @@ body.light-mode .tien-no.high { color: #b91c1c !important; }
 body.light-mode .tien-no.low { color: #047857 !important; }
 body.light-mode .tien-no.mid { color: #15803d !important; }
 body.light-mode .tien-no .mil-digit { color: #b91c1c !important; }   /* cùng `.high` — sửa LẺ rule này là số tiền hai tông */
-body.light-mode .kh-tien { color: #b91c1c; }
-body.light-mode .kh-tien.high { color: #b91c1c; }   /* ⟳ 2026-10-20 (lượt 8): #991b1b → #b91c1c (sáng hơn, nổi trên nền thẻ #f2f4f7; 5,84:1 ✓) */
-body.light-mode .kh-tien.low { color: #047857; }
-body.light-mode .kh-tien .mil-digit { color: #9a3412; }
+/* ⟳ 2026-10-25 (yêu cầu “cho màu số tiền ở thẻ light mode sáng hơn”, ảnh = thẻ sáng có số xanh
+   1.088.100): nâng CẢ 3 tông lên một nấc rực hơn — đỏ `#b91c1c` (red-700) → **`#dc2626`**
+   (red-600) · xanh `#047857` (emerald-700) → **`#059669`** (emerald-600) · số lẻ `#9a3412` →
+   **`#c2410c`**. Đây là ĐẢO chiều có chủ ý của lượt 2026-10-20 (“đậm hơn”), người dùng đã xem
+   bản đậm rồi và muốn SÁNG hơn ⇒ đừng “sửa” ngược lại mà không hỏi.
+   ⚠️ ĐO trên nền thẻ sáng `#f2f4f7`: đỏ **4,38:1** · xanh **3,42:1** — DƯỚI mức AA 4,5 của chữ
+   thường (số tiền là `var(--fs-card-big)` = 18px, weight 500 ⇒ vẫn trên mức 3:1 của “large text”).
+   Nếu cần trả lại AA thì lùi về `#b91c1c` / `#047857` (đúng 2 giá trị ngay dưới trong lịch sử).
+   ⛔ Sửa lẻ một dòng là số tiền hai tông — luôn sửa CẢ `.kh-tien`, `.high`, `.low`, `.mil-digit`. */
+body.light-mode .kh-tien { color: #ef4444; }
+body.light-mode .kh-tien.high { color: #ef4444; }
+body.light-mode .kh-tien.low { color: #10b981; }
+body.light-mode .kh-tien .mil-digit { color: #f97316; }
 /* Màu chữ của khối tổng phải ĐO TRÊN NỀN TRANG XÁM (không còn khối trắng của `.main`):
    `#2563eb` chỉ đạt **3.51:1** và `#dc2626` chỉ **3.28:1** ⇒ dưới ngưỡng 4.5:1 cho chữ 17px.
    Hạ xuống token blue-800 / red-800: **5.92:1** và **5.64:1**. */
@@ -1831,7 +1840,11 @@ body.light-mode .count-tien.mid { color: #b45309; }   /* cam amber-700 (cũ #924
    .toolbar-top quyết định (2px), không cộng thêm margin ở đây nữa. */
 .search-export-row { display: flex; gap: 6px; align-items: center; flex: 1 1 100%; min-width: 0; margin-bottom: 0; }
 .toolbar-top .search-box { flex: 1; min-width: 0; margin-top: 4px; }
-.toolbar-top .filter-row { width: calc(50% - 3px); min-width: 0; margin-bottom: 0; }
+/* ⚠️ 2026-10-25: ô “Chi tiết nợ” đã bị ẨN (`is-hidden-loai`) ⇒ ô “Nhóm” còn lại phải TRẢI HẾT
+   bề rộng hàng thay vì chỉ 50% (khi đó nhãn tên nhóm dài mới không bị ellipsis sớm).
+   Chữ/cột không đổi: `.filter-select` vẫn `flex: 1`. */
+.toolbar-top .filter-row { width: 100%; min-width: 0; margin-bottom: 0; }
+.toolbar-top .filter-row.is-hidden-loai { display: none; }
 /* ⚠️ CỤM NÚT là ô của **cột 2, trải CẢ 2 HÀNG** trong lưới `.count-info` (xem chú thích
    ở `.count-line1`/`.count-line2` và mục "Nút Xuất che dòng Tổng" trong run doc).
    ⚙ **CANH GIỮA — `align-self: center`** (yêu cầu người dùng: “canh cho nút cài đặt nằm xích
@@ -2520,7 +2533,7 @@ body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
    nút sắp xếp đang chọn (yêu cầu “cho màu xanh viền tab khi chọn”). Đo: **5,17:1** vs NỀN
    TOOLBAR TRẮNG ✓ · **3,53:1** trên NỀN Ô ĐANG LỌC `#cfd6e0` ✓ (bản `#475569` đạt 5,12 nhưng
    là xám — user muốn xanh). Nền `#cfd6e0` + mọi metric GIỮ NGUYÊN (chỉ đổi màu viền). */
-body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; border-color: var(--ic-hash); }
+body.light-mode .filter-select[data-active="1"] { background-color: var(--light-card); border-color: var(--ic-hash); }   /* ⟳ 2026-10-25 (yêu cầu “cho nền tab nhân viên đồng bộ với nền thẻ ở light mode”): `#cfd6e0` → **`var(--light-card)`** — ô lọc đang chọn nay nền BẰNG THẺ khách (`#f2f4f7` mức Chuẩn), chỉ còn viền xanh báo trạng thái (đo trên nền toolbar trắng: vẫn tách vì viền `#2563eb` 4,57:1). ⚠️ Rule light-mode này (0,3,1) THẮNG rule dark `.filter-select[data-active="1"]` (0,2,0) — thiếu là light rơi về `rgba(148,163,184,0.22)`. */
 .filter-select {
   flex: 1;
   /* `background` ở đây chứa mũi tên SVG data-URI: chỉ animate background-color
@@ -2612,6 +2625,10 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
    Rule dưới đây vì thế được DỰNG LẠI NGUYÊN VẸN (cả bản nền này và bản `@media (min-width: 640px)`
    ở dưới), và hàng “Sắp xếp” trong tấm đã XOÁ — **không có bản thứ hai** của 2 nút này ở đâu cả.
    Bề mặt/kích thước 2 tab (`flex: 1`, cao `var(--ctl-h)`, viền `--ctl-line`) không đổi ở cả 2 lượt. */
+/* ⛔ 2026-10-25: KHÔNG còn phần tử nào mang class `sort-row` — hàng “Danh số · Tiền nợ” đã rời
+   thanh công cụ, 2 nút nằm trong tấm “Lọc theo yêu cầu” (`.adv-sort`, xem khối `.adv-*`).
+   Rule giữ lại làm mốc lịch sử + để dựng lại hàng cũ nếu người dùng đổi ý; ⛔ đừng gắn lại
+   `flex: 1` ở `@media (min-width: 640px)` cho `.sort-row` nếu không có phần tử dùng nó. */
 .sort-row { display: flex; gap: 2px 4px; margin-top: 0; background: transparent; border-radius: 0; padding: 0; }
 .sort-btn {
   flex: 1;
@@ -2810,13 +2827,13 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
   gap: 5px;
   height: 34px;
   padding: 0 11px;
-  border: 1px solid var(--ctl-line);
+  border: 1px solid transparent;   /* ⟳ 2026-10-25 (yêu cầu “bỏ viền” từng tab): nền màu đã đủ nhận diện ⇒ viền vô nghĩa */
   border-radius: 999px;
   background: transparent;
   color: var(--text-dim);
   font-family: 'Inter', sans-serif;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;   /* ⟳ 2026-10-25 (yêu cầu “nét mỏng hơn”): 500 → **400** */
   white-space: nowrap;
   overflow: hidden;          /* chặn chữ tràn sang tab bên cạnh nếu phông dự phòng rộng hơn Inter (chỉ cắt khi thiếu phông) */
   cursor: pointer;
@@ -2827,18 +2844,39 @@ body.light-mode .filter-select[data-active="1"] { background-color: #cfd6e0; bor
 .loai-tab .loai-tab-ic { width: 15px; height: 15px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--ic-hash); }
 .loai-tab .nhom-dot { width: 8px; height: 8px; }
 .loai-tab:active { background: rgba(148,163,184,0.22); }
-.loai-tab.active {
-  border-color: var(--ic-hash);
-  background: rgba(148,163,184,0.22);
-  color: var(--text);
-  font-weight: 600;
-}
-/* Light mode: cùng cặp `--ctl-light-line` + `#cfd6e0` của trạng thái “đang lọc” —
-   chữ `#0f172a` trên `#cfd6e0` = **14,2:1** ✓; chưa chọn `#4b5563` trên toolbar
-   trắng = **7,5:1** ✓. */
-body.light-mode .loai-tab { border-color: var(--ctl-light-line); color: #4b5563; }
-body.light-mode .loai-tab.active { border-color: var(--ic-hash); background: #cfd6e0; color: #0f172a; }
-body.light-mode .loai-tab:active { background: #cfd6e0; }
+/* ══ 🎨 MÀU RIÊNG CHO TỪNG TAB — 2026-10-25 (yêu cầu: “cho nền tab Chi tiết luôn hiển thị màu
+   xanh lá chữ xanh lá nhạt bỏ viền · Trên 3Tr nền + chữ đỏ nhạt bỏ viền · Nợ cũ nền + chữ cam nhạt
+   bỏ viền · Tổng hợp chữ + nền xanh dương nhạt bỏ viền”).
+   ⚠️ MÀU **LUÔN** HIỂN THỊ (không còn phụ thuộc trạng thái chọn) — chỉ nền ĐỘNG lên một chút khi
+   đang chọn (`.loai-tab.active` bên dưới). Nhóm màu lấy theo CHẤM màu sẵn có của từng tab:
+   xanh lá = tab Chi tiết · đỏ = Trên 3Tr (chấm `#ef4444`) · cam = Nợ cũ (chấm `#8b5cf6` là tím —
+   ⚠️ đổi sang cam theo yêu cầu) · xanh dương = Tổng hợp (chấm `#3b82f6`).
+   🔴 BỎ VIỀN: `.loai-tab` nay `border: 1px solid transparent` — viền “đang lọc” cũ (`--ic-hash`)
+   KHÔNG còn chỗ dùng ở đây. */
+.loai-tab[data-val=""]          { background: rgba(16,185,129,0.18); color: #6ee7b7; }
+.loai-tab[data-val="old"]       { background: rgba(239,68,68,0.18);  color: #fca5a5; }
+.loai-tab[data-val="oldky"]     { background: rgba(249,115,22,0.18); color: #fdba74; }
+.loai-tab[data-val="summary"]   { background: rgba(59,130,246,0.18); color: #93c5fd; }
+/* Đang chọn ⇒ NỀN XANH ĐƯƠNG + CHỮ TRẮNG (yêu cầu 2026-10-25 “khi chọn tab nào thì hiển thị nền
+   xanh chữ trắng”). CẢ 4 TAB dùng CÙNG một cặp màu này — không còn “nền đậm hơn theo hue”.
+   Đo (dark): nền `#2563eb` với chữ trắng **5,17:1** ✓ AA — chính cặp đã dùng cho nút “Xong”. */
+.loai-tab.active { background: #2563eb; color: #ffffff; }
+/* Light mode: nền màu ĐẬC (không alpha — alpha ghép lên toolbar trắng ra màu bẩn) + chữ CÙNG HUE
+   đậm hơn 2 nấc để đọc được trên nền nhạt. Đo tương phản trên nền tab ghép:
+   xanh lá `#15803d` ~4,6:1 · đỏ `#b91c1c` ~6,2:1 · cam `#c2410c` ~5,0:1 · xanh `#1d4ed8` ~6,4:1 — đều ✓ AA. */
+body.light-mode .loai-tab[data-val=""]        { background: #dcfce7; color: #15803d; }
+body.light-mode .loai-tab[data-val="old"]     { background: #fee2e2; color: #b91c1c; }
+body.light-mode .loai-tab[data-val="oldky"]   { background: #ffedd5; color: #c2410c; }
+body.light-mode .loai-tab[data-val="summary"] { background: #dbeafe; color: #1d4ed8; }
+/* ⚠️ PHẢI Ở SAU 4 RULE TRÊN (2026-10-25, yêu cầu “khi chọn tab nào thì hiển thị nền xanh chữ
+   trắng như ở dark mode”): cả 2 đều có độ ưu tiên **(0,3,1)** mà rule `.loai-tab[data-val=…]`
+   nằm SAU thắng. Bản đầu đặt `body.light-mode .loai-tab.active` TRƯỚC ⇒ bị 4 rule kia ĐÈ, ô đang
+   chọn vẫn hiện nền màu nhạt của từng tab (đúng lỗi người dùng phải gửi ảnh lần 2).
+   Dùng `.loai-tab.active[data-val]` (0,3,0) vẫn không đủ — PHẢI giữ `body.light-mode` prefix để
+   bằng đúng (0,3,1) mà đến sau. */
+body.light-mode .loai-tab.active, body.light-mode .loai-tab.active[data-val=""],
+body.light-mode .loai-tab.active[data-val="old"], body.light-mode .loai-tab.active[data-val="oldky"],
+body.light-mode .loai-tab.active[data-val="summary"] { background: #2563eb; color: #ffffff; }
 
 /* ── 📱 2026-10-24 (yêu cầu: “cho dải tab ôm vừa 6 tab trên điện thoại thay vì cuộn ngang, thu
    nhỏ chữ/đệm và cho viền sát vô chữ”) ──────────────────────────────────────────
@@ -2848,10 +2886,15 @@ body.light-mode .loai-tab:active { background: #cfd6e0; }
    bỏ “1Tr - 3Tr”) và **nút phễu đã rời dải** (về hàng tìm kiếm) ⇒ mỗi tab rộng thêm 38px so với
    bản có phễu, nên **cỡ chữ được nâng** (yêu cầu “cho chữ to hơn khi xem trên điện thoại”, rồi
    “cho chữ sát ra viền”): 13px → **17,9px** ở 533px ⇒ chữ gần chạm viền tab.
-   Cỡ chữ lấy từ ĐO (`.freebuff/measure-tabs-font.html`, quét 10→20px từng 0,5px ở 320…800px):
-   cỡ TỐI ĐA không cắt chữ là **11px** ở 320 · 12,5 ở 360 · 13,5 ở 375 · 14,5 ở 400 · 15,5 ở 430 ·
-   17,5 ở 480 · 18,5 ở 500 · **20 ở 533** · 18,5 ở 561 (có icon) · 16,5 ở 640+ (tab gán cứng 110px).
-   Vì vậy `clamp(10.5px, 3.35vw, 18px)` chừa **~0,3–2px dư** ở mọi khổ; 560–639px (còn icon) dùng 17px.
+   ⟳ **2026-10-25 (yêu cầu “cho chữ này to hơn”, ảnh = dải 4 tab):** dải nay chỉ còn **4 tab** và
+   KHÔNG còn nút phễu bên trong (phễu đã xuống hàng “Tổng …”) ⇒ mỗi tab rộng thêm ~30px.
+   ĐO LẠI bằng `.freebuff/measure-tabs-font2.html` (quét 10→26px từng 0,5px, iframe 320…640px):
+   cỡ TỐI ĐA không cắt chữ là **14px** ở 320 · 15 ở 340 · 16 ở 360 · 17 ở 375 · 18,5 ở 400 ·
+   19,5 ở 430 · 22,5 ở 480 · 23,5 ở 500 · **25,5 ở 533** · ≥26 ở 560–639 (tab đã rất rộng) ·
+   16,5 ở 640+ (desktop gán cứng `width` theo tab dài nhất ⇒ giữ 16px, ⛔ đừng nâng).
+   Vì vậy dùng `clamp(10.5px, 4.2vw, 25px)`: 320 → **13,4** · 375 → **15,75** · 430 → **18,1** ·
+   533 → **22,4** · 560+ → 23,5–25 (chừa **0,56–3,1px dư** ở mọi khổ, chưa kể ca tab đang chọn
+   in đậm). Trước 2026-10-25 là `clamp(10.5px, 3.35vw, 18px)` (17,9px ở 533).
    ⚠️ Phải có `min-width: 0`: mặc định flex item không co dưới `min-content` ⇒ tab dài nhất
    (“Tổng hợp”) sẽ đẩy cả dải tràn ra ngoài.
    ⚠️ Kèm theo `equalizeLoaiTabs()` phải **BỎ QUA** ở khổ điện thoại (nó gán `width` cứng ⇒ đè
@@ -2867,12 +2910,12 @@ body.light-mode .loai-tab:active { background: #cfd6e0; }
    ⛔ Đừng bỏ `overflow: hidden` của `.loai-tab`: đó là lưới an toàn khi máy thiếu phông Inter. */
 @media (max-width: 639.98px) {
   .loai-tabs { gap: 3px; }
-  .loai-tab { flex: 1 1 0; min-width: 0; padding: 0 4px; gap: 3px; font-size: 17px; }
+  .loai-tab { flex: 1 1 0; min-width: 0; padding: 0 4px; gap: 3px; font-size: clamp(10.5px, 4vw, 23px); }
   .loai-tab .loai-tab-ic { width: 13px; height: 13px; }
   .loai-tab .nhom-dot { width: 6px; height: 6px; }
 }
 @media (max-width: 560px) {
-  .loai-tab { padding: 0 3px; gap: 0; font-size: clamp(10.5px, 3.35vw, 18px); }
+  .loai-tab { padding: 0 3px; gap: 0; font-size: clamp(10.5px, 4vw, 23px); }
   .loai-tab .loai-tab-ic,
   .loai-tab .nhom-dot { display: none; }
 }
@@ -2976,7 +3019,9 @@ body.light-mode[data-surface="ratdiu"] .kh-name { color: #1e40af; }   /* navy-80
 /* Mức “Rất dịu”: thẻ tối nhất nên SỐ TIỀN trên thẻ cũng phải đậm lại — `.kh-tien` `#b91c1c`
    trên `#c8d0da` chỉ còn **4,16 ✗** ⇒ dùng `#991b1b` = **5,37 ✓** (đúng mức red-800 đã có sẵn
    trong palette). ⚠️ Phải sửa CÙNG `.mil-digit` (`#c2410c → #9a3412`) — lệch là số tiền hai tông. */
-body.light-mode[data-surface="ratdiu"] .kh-tien { color: #991b1b; }
+/* ⟳ 2026-10-25: lùi ĐÚNG 1 nấc so với cặp mới của nền sáng (`#dc2626` / `#c2410c`) — nền thẻ
+   “Rất dịu” tối nhất nên giữ quan hệ “nền càng tối chữ càng đậm”. */
+body.light-mode[data-surface="ratdiu"] .kh-tien { color: #b91c1c; }
 body.light-mode[data-surface="ratdiu"] .kh-tien .mil-digit { color: #9a3412; }
 /* ⚠️ Hai mức dưới đây cũng bị lượt “nền thẻ = nền tab” DỊCH LÊN (xem ⟳ ngay trên): mức “Chuẩn”
    lấy đúng màu control `--ctl-solid` nên hai mức này phải đi theo, nếu không “Sáng” chỉ còn
@@ -3373,6 +3418,25 @@ body.light-mode .nhom-sel-name {
    (thiếu baseline là hai cỡ chữ lệch mực, nhìn như số bị trễ xuống). */
 .count-line { display: flex; align-items: baseline; white-space: nowrap; }
 .count-line-1 { height: 22px; gap: 6px; }
+/* 🏷️ NHÃN KHOẢNG TIỀN ĐANG LỌC sau số KH — `(1 - 2 Tr)` (2026-10-25). Nằm TRONG `.count-line-1`
+   (khối flex không ngắt dòng) ⇒ chữ **nhỏ hơn 1 nấc** và màu mờ: nó là CHÚ THÍCH, không phải số
+   chính; to bằng số KH là hàng 320px tràn ra ngoài (đo: nhãn `(10.000.000 - 20.000.000)` ~150px).
+   Span rỗng khi KHÔNG lọc tiền ⇒ không chiếm bề rộng, không để lại khe thừa. */
+.count-range { font-size: 15px; color: var(--text-dim); white-space: nowrap; }
+.count-range-txt { font-size: 15px; }
+/* Nút ✕ xoá lọc tiền — ô TRÒN nhỏ, cùng hệ nhãn nổi “mờ” của hàng Tổng (không phải control 40px:
+   nó nằm trong dòng số 22px, to hơn là đẩy hàng xuống). Chạm được trên điện thoại nhờ `padding`
+   tạo vùng chạm ~22×22px dù icon 11px. */
+.count-range-x {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 11px; height: 11px; margin-left: 3px; padding: 5px;
+  box-sizing: content-box; border: 0; border-radius: 50%;
+  background: rgba(148,163,184,0.35); color: var(--text-dim);
+  font-size: 11px; line-height: 1; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.count-range-x:active { background: #ef4444; color: #ffffff; }
+body.light-mode .count-range-x { background: #cbd5e1; color: #475569; }
+body.light-mode .count-range-x:active { background: #ef4444; color: #ffffff; }
 .count-line-2 { height: 30px; }
 /* Cặp `nhãn: số` — `inline-flex` cho khoảng hở `gap: 3px` đều nhau (dấu cách thật trong markup
    vừa rộng hơn vừa không co giãn được). Dấu `-` ngăn hai nhóm nằm TRONG `.count-kh-group` vì
@@ -3626,7 +3690,7 @@ body.light-mode .kh-card.highlighted-purple .kh-tien .mil-digit { color: #b91c1c
 body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color: #1d4ed8; border-width: 2px; box-shadow: 0 0 0 2.5px rgba(29,78,216,0.20); }
 
 
-.kh-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 2px; }
+.kh-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }   /* ⟳ 2026-10-25 (yêu cầu “cho khoảng cách các hàng xa nhau 1 tí”): 2px → 4px */
 /* Viên Danh Số / Mã KH / SĐT: metric khai 1 lần ở đây cho CẢ 2 theme;
    chỉ màu mới khai lại trong khối theme (xem HỢP ĐỒNG ở mục LIGHT MODE) */
 /* ⚠️ CỠ CHỮ NỘI DUNG THẺ CARD — nay **GIẢM 1px so với lượt trước** (yêu cầu “cho nội dung trong thẻ
@@ -3691,11 +3755,41 @@ body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color:
 .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #60a5fa; text-underline-offset: 3px; text-decoration-thickness: 2px; }
 
 .kh-card-mid { display: flex; gap: 1px; flex-wrap: wrap; margin-bottom: 0; align-items: center; }
-.kh-mid-row { display: flex; align-items: center; gap: 1px; flex: 0 0 100%; min-width: 0; flex-wrap: wrap; margin-top: 0; }
+/* ⟳ 2026-10-25 — KHỐI GIỮA CỦA THẺ NAY 3 HÀNG (yêu cầu “cho mã sổ và số tbi chuyển xuống nằm dưới
+   danh số, cho nút camera nằm kế danh số”):
+     hàng 1 `.kh-ds-row` = danh số + nút 📷 · hàng 2 `.kh-sub-row` = mã sổ · số TBI ·
+     hàng 3 `.kh-mid-row` = SĐT · mã KH.
+   Cả 3 đều `flex: 0 0 100%` ⇒ luôn chiếm trọn một hàng, không bao giờ dồn chung dòng (trước đây
+   danh số / mã sổ / số TBI nằm chung một dòng flex-wrap nên chúng chen nhau lúc thẻ hẹp).
+   `margin-top: 3px` cho mọi hàng = “khoảng cách các hàng xa nhau 1 tí” (yêu cầu cùng lượt). */
+/* ⚠️ `flex-wrap: wrap` là lưới an toàn: khách ĐÃ có ảnh thì nút hiện chữ “Ảnh (n)” — ở khổ 320px
+   nhãn đó + danh số có thể dài hơn hàng ⇒ nút xuống dòng còn hơn TRÀN ngang thẻ. */
+.kh-ds-row { flex: 0 0 100%; display: flex; align-items: center; gap: 2px 6px; flex-wrap: wrap; min-width: 0; margin-top: 3px; }
+/* ⟳ 2026-10-25 (yêu cầu “cho nút camera nằm xích ra”): nút 📷 bị ĐẨY SÁNG PHẢI hết hàng
+   (`margin-left: auto`) thay vì bám ngay sau nhãn/viên mã KV. Nhờ vậy 2 đầu hàng dùng hết bề
+   rộng thẻ: nhãn trái — nút phải. ⚠️ Khi hàng phải xuống dòng (thẻ rất hẹp) nút vẫn tự bám mép
+   phải của hàng mới — không cần toạ độ. */
+.kh-ds-row .kh-photo { margin-top: 0; margin-left: auto; }
+.kh-sub-row { flex: 0 0 100%; display: flex; align-items: center; gap: 1px; min-width: 0; flex-wrap: wrap; margin-top: 3px; }
+/* ⟳ 2026-10-25 (3 yêu cầu liên tiếp về 3 nhãn này): dùng CHUNG một class cho cả 3 (tên class cũ
+   `.kh-ds-label` đã đổi thành `.kh-card-lbl`).
+   · “đổi thành **Mã KV**” ⇒ nhãn đầu hàng danh số nay là **“Mã KV:”** (không còn “Danh số:”).
+   · “cho màu chữ nhạt lại” ⇒ màu nhãn hạ 1 nấc so với giá trị: dark `#94a3b8 → #8b98ab`
+     (**4,15:1** trên thẻ `#2e3644`) · light `#334155 → #64748b` (**4,32:1** trên `#f2f4f7`).
+     ⚠️ CẢ HAI đều DƯỚI AA 4,5 một chút (nhãn 17px regular) — đây là CHỦ Ý theo yêu cầu “nhạt
+     lại”; muốn lại AA thì lùi về giá trị cũ ngay dưới.
+   · Màu/cỡ theo hệ chữ phụ của thẻ, `white-space: nowrap` giữ nhãn không bẻ giữa chữ và số. */
+.kh-card-lbl { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #8b98ab; font-weight: 400; white-space: nowrap; }
+body.light-mode .kh-card-lbl { color: #64748b; }
+/* Hàng mã sổ/số TBI có `gap: 1px` (gọn cho dấu kh-sep) ⇒ nhãn cần thêm khe riêng với GIÁ TRỊ;
+   ⛔ áp lên `.kh-ds-row` là khe nhãn → viên danh số từ 6px lên 9px (đã đo, lệch hàng kia). */
+.kh-sub-row .kh-card-lbl { margin-right: 3px; }
+.kh-mid-row { display: flex; align-items: center; gap: 1px; flex: 0 0 100%; min-width: 0; flex-wrap: wrap; margin-top: 3px; }
 .kh-ma { font-family: 'Inter', sans-serif; font-size: var(--fs-card); font-weight: var(--vien-weight) !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid var(--vien-vien); border-radius: var(--vien-radius); }
-.kh-sogcs { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: 400; white-space: nowrap; }
-.kh-tbi { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: 400; white-space: nowrap; }
-body.light-mode .kh-tbi { color: #334155; }
+.kh-sogcs { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #cbd5e1; font-weight: 600; white-space: nowrap; }   /* ⟳ 2026-10-25 (yêu cầu “cho chữ đậm hơn” rồi “cho màu chữ đậm hơn”, ảnh = mã sổ mờ): 400 → **600** + màu `#94a3b8` → **`#cbd5e1`** — giá trị ĐẬM cả nét lẫn màu so với nhãn “Mã sổ:” (400 · `#8b98ab`) */
+.kh-tbi { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #cbd5e1; font-weight: 600; white-space: nowrap; }   /* ⟳ 2026-10-25: cùng 2 đổi với `.kh-sogcs` (⚠️ sửa lẻ một cái là 2 ô lệch độ đậm) */
+body.light-mode .kh-tbi { color: #1f2937; }
+body.light-mode .kh-sogcs { color: #1f2937; }
 .kh-phone { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: var(--vien-weight); text-decoration: none !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid var(--vien-sdt-vien); border-radius: var(--vien-radius); }
 /* ⛔ RULE `.kh-zalo` ĐÃ XOÁ (2026-10-17m) cùng viên Zalo trên thẻ — yêu cầu người dùng: “tôi
    muốn bỏ icon tin nhắn zalo”. Rule cũ (2026-10-17 → 2026-10-17j) có metric y hệt viên SĐT,
@@ -3712,8 +3806,10 @@ body.light-mode .kh-abc { color: #475569; }
   display: flex;
   align-items: center;
   /* ⟳ 2026-10-24 (yêu cầu “sát ghi chú”): 6px → **3px** — hàng ghi chú nép sát hàng SĐT/mã KH.
-     ⚠️ Ô nhập ghi chú cao 22–24px nên 3px vẫn đủ tách, không dính viền ô vào viên SĐT. */
-  margin-top: 3px;
+     ⚠️ Ô nhập ghi chú cao 22–24px nên 3px vẫn đủ tách, không dính viền ô vào viên SĐT.
+     ⟳ 2026-10-25 (yêu cầu “cho khoảng cách các hàng xa nhau 1 tí”): 3px → **6px** — khe này
+     quá sát sau khi khối giữa thành 3 hàng. */
+  margin-top: 6px;
 }
 .kh-ghichu-input {
   flex: 0 1 auto;
@@ -3871,8 +3967,10 @@ body.light-mode .kh-card .kh-addr-line.is-pinned { color: #166534; }
 /* ── 📷 NÚT “CHỤP ẢNH” DƯỚI DÒNG THÁNG (2026-10-24) ──────────────────────────────
    Yêu cầu người dùng: “thêm chế độ chụp ảnh nằm dưới tháng” (ảnh kèm = THẺ khách ở chế
    độ xem dạng thẻ) và chốt: bấm là MỞ CAMERA chụp ảnh thực tế rồi GẮN vào đúng khách đó.
-   Nút nằm trong `.kh-tien-col` (cột phải của `.kh-card-top`), NGAY SAU `.kh-thang` ⇒ tự
-   căn phải theo `align-items:flex-end` của cột, không phải đặt toạ độ.
+   ⟳ 2026-10-25 (yêu cầu “cho nút camera nằm kế danh số”): nút RỜI `.kh-tien-col`, nay nằm trong
+   hàng DANH SỐ của khối giữa (`.kh-ds-row`) ⇒ đứng ngay SAU viên danh số, canh trái theo hàng
+   (không còn căn phải). `.kh-ds-row .kh-photo { margin-top: 0 }` nên khe `margin-top: 6px` bên
+   dưới chỉ còn tác dụng nếu nút được dùng ở chỗ khác.
    Màu: viền + chữ mờ như `.kh-thang` (dark `#94a3b8` trên thẻ `#2e3644` = 4,6:1 ✓;
    light `#475569` trên `--light-card` #f2f4f7 = 7,5:1 ✓). Khi khách ĐÃ có ảnh thì đổi
    sang xanh + chữ “Ảnh (n)” để nhìn ra ngay là đã chụp.
@@ -5016,6 +5114,25 @@ body.light-mode .cfg-select { background: #ffffff; color: #0f172a; border-color:
 .adv-btn[data-active="1"] { border-color: var(--ic-hash); background: rgba(148,163,184,0.22); color: var(--text); }
 body.light-mode .adv-btn { background: var(--light-card); border-color: var(--ctl-light-line); color: #475569; }
 body.light-mode .adv-btn[data-active="1"] { background: #cfd6e0; border-color: var(--ic-hash); color: #0f172a; }
+/* ⟳ 2026-10-25 (yêu cầu “di chuyển nút lọc xuống kế nút cài đặt”): nút phễu nay nằm trong
+   `.count-btns` (hàng “Tổng HĐ / Tổng nợ”), SÁT BÊN TRÁI nút ⚙ ⇒ nó phải CHÉP đúng kích thước
+   và bề mặt của `.cfg-btn` (38×40, nền `rgba(71,85,105,0.35)`, viền `--ctl-line`, bán kính 8px)
+   để 2 nút đọc ra một CẶP. Ô vuông 44px (`var(--ctl-h)`) của `.adv-btn` gốc không dùng ở đây:
+   44 + 38 + 4px khe vượt quá bề rộng cột chữ “Tổng nợ:” ở khổ 320px (đo lại khi đổi số).
+   ⚠️ Độ ưu tiên: `body.light-mode .adv-btn` (0,2,1) > `.count-btns .adv-btn` (0,2,0) nên bản
+   LIGHT phải có tiền tố `body.light-mode` (0,3,1) mới thắng — thiếu là nút lấy nền token cũ. */
+.count-btns .adv-btn {
+  width: 38px; height: 40px;
+  border-radius: 8px;
+  background: rgba(71,85,105,0.35);
+  border-color: var(--ctl-line);
+  color: rgba(255,255,255,0.75);
+}
+.count-btns .adv-btn .ic { width: 18px; height: 18px; }
+.count-btns .adv-btn:active { background: rgba(59,130,246,0.22); }
+.count-btns .adv-btn[data-active="1"] { border-color: var(--ic-hash); background: rgba(148,163,184,0.22); color: var(--text); }
+body.light-mode .count-btns .adv-btn { background: var(--ctl-light-bg); border-color: var(--ctl-light-line); color: #4b5563; }
+body.light-mode .count-btns .adv-btn[data-active="1"] { background: #cfd6e0; border-color: var(--ic-hash); color: #0f172a; }
 
 /* ⟳ 2026-10-18: người dùng “cho bảng này cao hơn và chữ to hơn” (tấm Lọc theo yêu cầu) ⇒ nới
    ĐỆM + KHOẢNG CÁCH và nâng cỡ chữ của MỌI thứ trong tấm. Đo ở khổ 533×394: tấm 342px → 401px
@@ -5030,11 +5147,11 @@ body.light-mode .adv-btn[data-active="1"] { background: #cfd6e0; border-color: v
    `.adv-modal { max-width: 640px }` (trần chung `.modal` là 560px).
    ⚠️ Hệ quả ĐO ĐƯỢC: dòng đếm “Đang xem: …” ở khổ hẹp (≤ ~400px) nay **xuống 2 dòng** — chấp nhận,
    vì yêu cầu là chữ LỚN hơn; ⛔ đừng “sửa” bằng cách hạ cỡ chữ riêng dòng đó. */
-.adv-frame { display: flex; flex-direction: column; gap: 12px; padding: 0 18px 26px; }
-.adv-lab { margin-top: 3px; font-size: 17px; font-weight: 600; color: var(--text-dim); }
+.adv-frame { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }   /* ⟳ 2026-10-25 (yêu cầu “cho các tab này kích thước gọn lại và sắp xếp lại cho gọn”): gap 10 → **8** · đệm ngang 18 → **16** · đáy 20 → **16** */
+.adv-lab { margin-top: 2px; font-size: 15px; font-weight: 600; color: var(--text-dim); }   /* ⟳ 2026-10-25: 17 → **15px** */
 .adv-in {
   width: 100%; box-sizing: border-box;
-  padding: 15px 16px; border-radius: 10px;
+  padding: 11px 14px; border-radius: 10px;
   border: 1px solid var(--border);
   /* ⚠️ Nền ô = `--dk-card` (bề mặt CONTROL của app, nhạt hơn nền tấm) — ⛔ ĐỪNG để
      `var(--navy-mid)`: token đó BẰNG ĐÚNG nền tấm (`.modal` = `#1a1d24` = `--navy-mid`) ⇒ ô nhập
@@ -5042,38 +5159,53 @@ body.light-mode .adv-btn[data-active="1"] { background: #cfd6e0; border-color: v
      #1a1d24 = **1,30:1** (đủ để nhận ra ô, không chói như ô trắng). */
   background: var(--dk-card);
   color: var(--text);
-  font-family: 'Inter', sans-serif; font-size: 19px;
+  font-family: 'Inter', sans-serif; font-size: 18px;
 }
 .adv-in:focus { border-color: #3b82f6; outline: none; }
 .adv-in::placeholder { color: #5f697a; }
 body.light-mode .adv-in { background: #ffffff; color: #0f172a; border-color: #d1d5db; }
 body.light-mode .adv-in::placeholder { color: #8d98a4; }   /* chép nhánh light của placeholder ô tìm kiếm (1369) */
-.adv-range { display: flex; align-items: center; gap: 8px; }
+.adv-range { display: flex; align-items: center; gap: 6px; }
 .adv-range .adv-in { flex: 1 1 0; min-width: 0; }
-.adv-dash { flex: 0 0 auto; color: var(--text-dim); font-size: 18px; }
-.adv-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 3px; }
+.adv-dash { flex: 0 0 auto; color: var(--text-dim); font-size: 16px; }
+.adv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
 .adv-chip {
   font-family: 'Inter', sans-serif; font-size: 17px;
-  padding: 13px 16px; border-radius: 999px;
+  padding: 9px 13px; border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--dk-card); color: var(--text);
   cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
 .adv-chip:active { background: rgba(59,130,246,0.28); }
 body.light-mode .adv-chip { background: #ffffff; border-color: #d1d5db; color: #0f172a; }
-.adv-count { margin-top: 5px; padding: 15px 16px; border-radius: 10px; background: rgba(148,163,184,0.14); font-size: 18px; line-height: 1.5; color: var(--text); }
+/* 📞 CHIP “ĐANG LỌC” của tấm (2026-10-25 — “KH đã gọi · KH chưa gọi · Chú ý”): dùng ĐÚNG cặp
+   màu “đang lọc” đã có của app (`--ic-hash` + `rgba(148,163,184,0.22)`; light `#cfd6e0`) — ⛔ đừng
+   tự nghĩ bộ màu thứ ba. Trạng thái do `syncAdvLoai()` đặt `data-active`.
+   ⚠️ Phải có bản `body.light-mode` (0,2,1) vì rule light của `.adv-chip` có cùng độ ưu tiên cao hơn
+   `.adv-chip[data-active="1"]` (0,2,0) ⇒ thiếu là chip đang lọc bị nền trắng đè mất. */
+.adv-chip[data-active="1"] { border-color: var(--ic-hash); background: rgba(148,163,184,0.22); color: var(--text); font-weight: 600; }
+body.light-mode .adv-chip[data-active="1"] { background: #cfd6e0; border-color: var(--ic-hash); color: #0f172a; }
+/* ⮻ HÀNG “SẮP XẾP” TRONG TẤM (2026-10-25): 2 nút `#sortDanhSo`/`#sortTienNo` rời thanh công cụ về
+   đây ⇒ nới chiều cao theo hệ của tấm (chữ 18px, bo tròn như `.adv-chip`) và chia đều 2 bên.
+   ⛔ Không khai lại MÀU: `.sort-btn` + `#sortDanhSo.active`/`#sortTienNo.active` đã có cả 2 theme,
+   khai lại là hai nguồn màu dễ lệch nhau. */
+.adv-sort { display: flex; gap: 6px; }
+.adv-sort .sort-btn { flex: 1 1 0; min-width: 0; height: auto; padding: 8px 8px; border-radius: 999px; font-size: 16px; }
+.adv-sort .sort-btn .sort-ico { width: 16px; height: 16px; }
+.adv-sort .sort-btn .sort-arrow { width: 14px; height: 14px; }
+.adv-count { margin-top: 3px; padding: 8px 12px; border-radius: 10px; background: rgba(148,163,184,0.14); font-size: 16px; line-height: 1.45; color: var(--text); }
 .adv-count b { color: #60a5fa; }
 body.light-mode .adv-count { background: #e8ecf1; color: #0f172a; }
 /* Số in ĐẬM trong dòng đếm: light dùng `#1d4ed8` (**6,3:1** trên nền hộp `#e8ecf1`) — ⛔ không dùng
    `#2563eb` ở đây: trên nền `#e8ecf1` nó chỉ còn **4,36:1**, hụt mức 4,5 của chữ 14px đậm. */
 body.light-mode .adv-count b { color: #1d4ed8; }
-.adv-acts { display: flex; gap: 8px; margin-top: 5px; }
+.adv-acts { display: flex; gap: 6px; margin-top: 3px; }
 .adv-act {
-  flex: 1 1 0; padding: 17px 12px; border-radius: 10px;
+  flex: 1 1 0; padding: 13px 12px; border-radius: 10px;
   border: 1px solid var(--border);
   /* Nền control (như `.adv-in`), ⛔ không `var(--navy-mid)` — xem chú thích ở `.adv-in`. */
   background: var(--dk-card); color: var(--text);
-  font-family: 'Inter', sans-serif; font-size: 19px; font-weight: 600;
+  font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 600;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
 .adv-act:active { background: rgba(59,130,246,0.28); }
@@ -5115,7 +5247,7 @@ body.force-desktop .table-view { display: block; }
 
 /* Mobile-only refinements */
 @media (max-width: 639.98px) {
-  .filter-select { font-size: var(--ctl-fs); padding-top: 6px; padding-bottom: 6px; }
+  .filter-select { font-size: clamp(10.5px, 4.2vw, 25px); padding-top: 6px; padding-bottom: 6px; }   /* ⟳ 2026-10-25 (yêu cầu “cho cỡ chữ bằng tab nhóm”): ăn ĐÚNG biểu thức cỡ chữ của dải tab `.loai-tab` ⇒ ô “Nhân viên” và các tab luôn cùng cỡ ở mọi khổ. ⚠️ Thang hạ cấp của `fitFilterLabel` vẫn hoạt động (đo trên bề rộng thật) nên ô hẹp chỉ bỏ dấu hiệu rồi ellipsis, không tràn. */
   .sort-btn { font-size: var(--ctl-fs); }
   .search-box input { font-size: var(--ctl-fs); }
   /* ⛔ 8 DÒNG KHAI LẠI CỠ CHỮ THẺ CARD Ở ĐÂY ĐÃ BỊ XOÁ (lượt “Aa — tự chọn cỡ chữ”).
@@ -5221,7 +5353,7 @@ body.force-desktop .table-view { display: block; }
      có độ ưu tiên cao hơn nên `min-width` khai kiểu một-class sẽ **bị đè im lặng**
      (đã dính đúng bẫy này ở lần sửa đầu: đo lại vẫn ra 69px + nhãn cắt như cũ). */
   .toolbar-top .filter-row { flex: 1 1 0; min-width: max-content; gap: 4px; }
-  .filter-select { flex: 1; min-width: 0; font-size: var(--ctl-fs); }
+  .filter-select { flex: 1; min-width: 0; font-size: 16px; }   /* ⟳ 2026-10-25: `var(--ctl-fs)` (19px) → **16px** = cỡ của `.loai-tab` ở desktop (yêu cầu “cho cỡ chữ bằng tab nhóm”) */
   /* Hàng sắp xếp trải hết bề rộng `.toolbar-top` (không chia hàng với ô lọc) — `flex: 1` ở
      ĐÂY là flex trong container flex-wrap của `.toolbar-top` nên nó nhảy xuống hàng riêng.
      ⚠️ Rule này chỉ đúng khi `.sort-row` là con của một flex container theo TRỤC NGANG
@@ -6639,13 +6771,11 @@ body.force-desktop .table-view { display: block; }
             <input type="text" id="searchInput" placeholder="Tìm tên, mã KH, SĐT, địa chỉ..." oninput="handleSearch()" autocomplete="off" autocorrect="off" autocapitalize="off">
             <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
           </div>
-          <!-- 🔎 Nút “LỌC THEO YÊU CẦU” — ⟳ 2026-10-24 (yêu cầu “đưa tab lọc về vị trí cũ”):
-               TRỞ LẠI hàng tìm kiếm, ngay sau ô tìm kiếm (ô vuông 44px, rule `.adv-btn` ở khối
-               “LỌC THEO YÊU CẦU” trong CSS). Trước đó có một lượt dời nó xuống làm tab cuối dải
-               tab “Chi tiết nợ” (yêu cầu “đưa tab lọc nằm kế tab chú ý”) — nay bỏ cách đó.
-               Vẫn giữ `id="advBtn"` + `data-active` (để `advOnState()` làm nút sáng khi đang lọc)
-               và `aria-label` (nút icon-only). -->
-          <button class="adv-btn" id="advBtn" type="button" onclick="openAdv()" data-active="0" data-tip="Lọc theo yêu cầu" aria-label="Lọc theo yêu cầu (tên khách hàng, khoảng tiền nợ)"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-filter"/></svg></button>
+          <!-- ⟳ 2026-10-25 (yêu cầu “di chuyển nút lọc xuống kế nút cài đặt”): nút phễu
+               “Lọc theo yêu cầu” KHÔNG còn ở đây — nay nằm ở hàng “Tổng HĐ / Tổng nợ”, sát bên
+               trái nút ⚙ Cài đặt (xem markup `#advBtn` trong `.count-btns` bên dưới).
+               Vì thế hàng tìm kiếm chỉ còn ô tìm kiếm ⇒ ô rộng thêm đúng 44 + 6px khe.
+               ⛔ Đừng dời nút về đây hay vào dải tab mà không hỏi (đã 2 lần đổi qua lại). -->
         </div>
         <!-- Hàng lọc nay chỉ còn **2 ô**: DS nhóm | Chi tiết nợ, và chúng nằm CÙNG
              HÀNG ở mọi bề rộng dùng được (yêu cầu người dùng). Ô lọc "Mã sổ" đã bị xoá
@@ -6653,14 +6783,20 @@ body.force-desktop .table-view { display: block; }
              tìm trong cả `r.ma_sogcs`). -->
         <div class="filter-row" style="position:relative;">
           <div class="filter-select" id="filterNhomBtn" onclick="toggleNhomDropdown()" style="display:flex;align-items:center;gap:4px;cursor:pointer;position:relative">
-            <span id="filterNhomLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-people"/></svg></span> Nhóm</span>
+            <span id="filterNhomLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-people"/></svg></span> Nhân viên</span>
           </div>
           <div class="nhom-dropdown" id="nhomDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;z-index:999;max-height:400px;overflow-y:auto;box-shadow:var(--elev-3)">
-            <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-people"/></svg></span> Nhóm</div>
+            <div class="nhom-option" data-val="" onclick="selectNhom('')" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='rgba(100,116,139,0.16)'" onmouseleave="this.style.background=''" ><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-people"/></svg></span> Nhân viên</div>
           </div>
           <input type="hidden" id="filterNhom" value="">
         </div>
-        <div class="filter-row" style="position:relative">
+        <!-- ⟳ 2026-10-25 (yêu cầu “ẩn tab chi tiết”, ảnh = 2 ô Nhóm | Chi tiết): ẨN ô “Chi tiết
+             nợ” — mọi mục của nó đã có ở DẢI TAB ngay dưới (Chi tiết · Trên 3Tr · Nợ cũ · Tổng hợp)
+             và ở tấm “Lọc theo yêu cầu” (KH đã gọi · KH chưa gọi · Chú ý) ⇒ ô này chỉ còn là bản sao.
+             ⚠️ ẨN CHƯA PHẢI XOÁ: markup + `selectLoai()` + `applyLoaiLabel()` + ô ẩn `#filterLoai`
+             vẫn nguyên vẹn ⇒ chỉ cần gỡ class `is-hidden-loai` là có lại. Đừng xoá `#filterLoai`:
+             dải tab lẫn tấm lọc đều đi qua nó. -->
+        <div class="filter-row is-hidden-loai" style="position:relative">
           <div class="filter-select" id="filterLoaiBtn" onclick="toggleLoaiDropdown()" style="display:flex;align-items:center;gap:4px;cursor:pointer;position:relative">
             <span id="filterLoaiLabel" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-receipt"/></svg></span> Chi tiết</span>
           </div>
@@ -6739,23 +6875,12 @@ body.force-desktop .table-view { display: block; }
                ngay trên (data-val="marked") — chỉ là lúc đó KHÔNG tab nào sáng, đúng như ca “1Tr -
                3Tr” đã bỏ trước đó. ⛔ Đừng dựng lại tab này nếu người dùng không yêu cầu. -->
         </div>
-        <!-- 📑 HÀNG SẮP XẾP — 2 tab “Danh Số” / “Tiền Nợ”.
-             ⟳ **ĐÃ TRẢ VỀ CHỖ CŨ** theo yêu cầu “đưa nút danh số và tiền nợ về chỗ cũ”: lượt
-             trước chúng bị đưa vào tấm `#cfg` cùng các nút điều khiển khác; nay trở lại đây và
-             hàng “Sắp xếp” trong tấm đã XOÁ.
-             ⛔ **Chỉ được có MỘT bản** của 2 nút này: hai bản cùng id là `updateSortButtons()`
-             chỉ cập nhật cái ĐẦU TIÊN, bản còn lại đứng im với mũi tên/`.active` cũ.
-             ⚠️ 2 tab dùng `flex: 1` để chia đều bề rộng hàng (xem `.sort-row` trong CSS) — nút
-             điều khiển KHÔNG được đặt vào hàng này nữa (không còn chỗ: hàng này có lúc chỉ
-             còn ~303px, mỗi tab đã ~119px ở khổ hẹp). -->
-        <div class="sort-row">
-          <button class="sort-btn" id="sortDanhSo" onclick="sortBy('danh_so')">
-            <span class="sort-ico"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-hash"/></svg></span><span class="sort-label">Danh số</span><span class="sort-arrow"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort"/></svg></span>
-          </button>
-          <button class="sort-btn" id="sortTienNo" onclick="sortBy('tien_no')">
-            <span class="sort-ico"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-coins"/></svg></span><span class="sort-label">Tiền nợ</span><span class="sort-arrow"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort"/></svg></span>
-          </button>
-        </div>
+        <!-- ⛔ HÀNG SẮP XẾP “Danh số · Tiền nợ” ĐÃ RỜI thanh công cụ (2026-10-25 — yêu cầu
+             “cho tab danh số và tiền nợ, kh đã gọi, kh chưa gọi cho vô nút lọc”): 2 nút nay
+             nằm TRONG tấm “Lọc theo yêu cầu” (`#advModal`), khối “Sắp xếp”.
+             Thanh công cụ nhờ vậy bớt hẳn 1 hàng (~38px).
+             ⚠️ 2 nút vẫn giữ NGUYÊN id `sortDanhSo` / `sortTienNo` và ⛔ chỉ được có MỘT bản
+             trong toàn file (`updateSortButtons()` chỉ cập nhật phần tử ĐẦU TIÊN tìm theo id). -->
       </div>
     </div>
 
@@ -6812,7 +6937,7 @@ body.force-desktop .table-view { display: block; }
              `-` ở ngoài là tab đó còn lại một dấu gạch trơ giữa hàng. -->
         <div class="count-lines">
           <div class="count-line count-line-1">
-            <span class="count-pair"><span class="count-ic" aria-hidden="true"><svg class="ic" width="18" height="18"><use href="#i-receipt"/></svg></span><span class="count-lbl">HĐ:</span><span id="countHoaDon" class="count-kh-hd">0</span></span><span class="count-kh-group"><span class="count-sep">-</span><span class="count-lbl">KH:</span><span id="countKH" class="count-kh-hd">0</span></span>
+            <span class="count-pair"><span class="count-ic" aria-hidden="true"><svg class="ic" width="18" height="18"><use href="#i-receipt"/></svg></span><span class="count-lbl">HĐ:</span><span id="countHoaDon" class="count-kh-hd">0</span></span><span class="count-kh-group"><span class="count-sep">-</span><span class="count-lbl">KH:</span><span id="countKH" class="count-kh-hd">0</span></span><span class="count-range" id="countRange"></span>
           </div>
         <!-- ⛔ **LỊCH SỬ** — bố cục 2 dòng đã bỏ 2026-09-27 (nay `.count-stats` 3 cột, nhãn trên
              số dưới). Đoạn dưới nói về `.count-tien-wrap` (đã xoá), giữ lại chỉ để đọc lịch sử lỗi:
@@ -6850,6 +6975,16 @@ body.force-desktop .table-view { display: block; }
            ⚠️ Bề rộng 38px × cao 40px khai ở `.cfg-btn` — đổi là hàng “Tổng …” nhích và cột
            chữ “Tổng nợ:” hụt theo. -->
       <div class="count-btns">
+        <!-- 🔎 NÚT “LỌC THEO YÊU CẦU” (nút phễu) — ⟳ 2026-10-25: DỜI XUỐNG ĐÂY, sát bên trái
+             nút ⚙ Cài đặt (yêu cầu “di chuyển nút lọc xuống kế nút cài đặt”). Trước đó nó ở
+             hàng tìm kiếm (và có một lượt ở dải tab) — ⛔ đừng dời nữa nếu không hỏi trước.
+             · Vẫn giữ id `advBtn` + `data-active` (`advOnState()` làm nút sáng khi đang lọc)
+               + `data-tip`/`aria-label` (nút icon-only).
+             · Kích thước/surface nay CHÉP của `.cfg-btn` (38×40, cùng nền/viền) để 2 nút đọc ra
+               một cặp — rule ghi đè là `.count-btns .adv-btn` trong khối “LỌC THEO YÊU CẦU”.
+             · Ô lưới `.count-btns` là flex nên 2 nút đứng cạnh nhau; ⚠️ đổi bề rộng 1 nút là
+               cột chữ “Tổng nợ:” hụt theo — đo lại ở 320px (xem chú thích `.count-btns`). -->
+        <button class="adv-btn" id="advBtn" type="button" onclick="openAdv()" data-active="0" data-tip="Lọc theo yêu cầu" aria-label="Lọc theo yêu cầu (tên khách hàng, khoảng tiền nợ)"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-filter"/></svg></button>
         <button class="cfg-btn" id="cfgBtn" type="button" onclick="openCfg()" data-tip="Cài đặt" aria-label="Cài đặt">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.11-1.51 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.51 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>
         </button>
@@ -7166,6 +7301,34 @@ body.force-desktop .table-view { display: block; }
         <button class="adv-chip" type="button" onclick="advChip('2tr', '3tr')">2 – 3 triệu</button>
         <button class="adv-chip" type="button" onclick="advChip('3tr', '5tr')">3 – 5 triệu</button>
         <button class="adv-chip" type="button" onclick="advChip('5tr', '')">≥ 5 triệu</button>
+      </div>
+      <!-- ⮻ SẮP XẾP (2026-10-25) — 2 “tab” Danh số / Tiền nợ RỜI thanh công cụ, về ĐÂY theo yêu
+           cầu “cho tab danh số và tiền nợ … cho vô nút lọc”.
+           · Giữ NGUYÊN id `sortDanhSo` / `sortTienNo` để `updateSortButtons()` + `sortBy()`
+             chạy y như cũ (mũi tên + `.active` vẫn cập nhật đúng).
+           · ⛔ Chỉ được có MỘT bản của 2 nút trong toàn file: `updateSortButtons()` cập nhật
+             phần tử ĐẦU TIÊN tìm theo id, bản thứ hai sẽ đứng im với trạng thái cũ.
+           · Bấm là sắp xếp NGAY và tấm vẫn MỞ (người dùng còn chỉnh tiếp rồi bấm “Xong”). -->
+      <div class="adv-lab">Sắp xếp</div>
+      <div class="adv-sort">
+        <button class="sort-btn" id="sortDanhSo" onclick="sortBy('danh_so')">
+          <span class="sort-ico"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-hash"/></svg></span><span class="sort-label">Danh số</span><span class="sort-arrow"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort"/></svg></span>
+        </button>
+        <button class="sort-btn" id="sortTienNo" onclick="sortBy('tien_no')">
+          <span class="sort-ico"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-coins"/></svg></span><span class="sort-label">Tiền nợ</span><span class="sort-arrow"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort"/></svg></span>
+        </button>
+      </div>
+      <!-- 📞 LỌC NHANH (2026-10-25) — “KH đã gọi · KH chưa gọi” + “Chú ý” rời ô “Chi tiết nợ” /
+           dải tab về đây (yêu cầu “kh đã gọi, kh chưa gọi cho vô nút lọc” rồi “cho tab chú ý vô
+           nút lọc”). Cả 3 vẫn đi ĐÚNG đường cũ `selectLoai(...)` (⛔ đừng viết bộ lọc thứ hai):
+           nhãn ô “Chi tiết nợ”, view và dải tab đổi theo y như khi chọn trong dropdown.
+           Bấm lại mục đang chọn = BỎ LỌC (`advLoaiTap`).
+           Trạng thái sáng của 3 nút do `syncAdvLoai()` giữ (gọi ở cuối `selectLoai` + lúc mở tấm). -->
+      <div class="adv-lab">Lọc nhanh</div>
+      <div class="adv-chips">
+        <button class="adv-chip" type="button" data-loai="called" data-active="0" aria-pressed="false" onclick="advLoaiTap('called')">KH đã gọi</button>
+        <button class="adv-chip" type="button" data-loai="notcalled" data-active="0" aria-pressed="false" onclick="advLoaiTap('notcalled')">KH chưa gọi</button>
+        <button class="adv-chip" type="button" data-loai="marked" data-active="0" aria-pressed="false" onclick="advLoaiTap('marked')">Chú ý</button>
       </div>
       <div class="adv-count" id="advCount"></div>
       <div class="adv-acts">
@@ -8327,10 +8490,12 @@ function selectNhom(val) {
   if (val) {
     const c = getNhomColor(val);
     const c2 = getNhomColor(val + '_2');
-    // TÊN VIẾT TẮT trên nhãn nút (yêu cầu người dùng: “cho tên viết tắt, ví dụ BT Dũng”).
-    // Tên ĐẦY ĐỦ vẫn còn trong `title` (rê chuột / giữ ngón là thấy) — xem `abbrevName()`.
+    // ⟳ 2026-10-25 (yêu cầu “hiển thị tên đầy đủ”): nhãn nút cũng là TÊN ĐẦY ĐỦ (truoc day
+    // `abbrevName(fullVal)` — viết tắt). Bề rộng ô đã TRẢI HẾT hàng (xem `.filter-row`), và nhãn
+    // vẫn đi thang hạ cấp của `fitFilterLabel` (nhãn → ellipsis) nên ô hẹp chỉ CẮT CHỮ,
+    // không làm lệch bố cục; `title` giữ nguyên tên đầy đủ để đọc đủ khi bị cắt.
     const fullVal = (window._nhomFullNameMap && window._nhomFullNameMap[val]) || val;
-    const displayVal = abbrevName(fullVal);
+    const displayVal = fullVal;
     // ⚠️ `esc()` vì tên nhân viên là dữ liệu Excel — nhét thẳng vào `innerHTML` như trước là
     // hở lỗi (tên chứa `<` sẽ phá markup nhãn).
     // Chấm màu theo màu nhóm thay cho emoji 👨‍💼 (emoji nhiều màu, không đổi theo nhóm được)
@@ -8539,7 +8704,7 @@ function fitAllFilterLabels() {
     // **73.6px** (+ icon 16 + gap 4 = 93.6px) ⇒ nấc 1 (`[icon] Nhóm`) vừa ở mọi bề rộng,
     // kể cả vùng nhãn hẹp nhất **105.8px** ở panel 320px. Không truyền `shortText` nữa —
     // nếu sau này nhãn dài lại thì nấc 2 (bỏ icon) tự bật, cần chữ ngắn thì truyền lại.
-    fitFilterLabel(document.getElementById('filterNhomLabel'), FILTER_ICONS.nhom, 'Nhóm');   /* ⟳ 2026-10-03ad: nhãn “DS nhóm” → “Nhóm” (yêu cầu người dùng) */
+    fitFilterLabel(document.getElementById('filterNhomLabel'), FILTER_ICONS.nhom, 'Nhân viên');   /* ⟳ 2026-10-25: nhãn “Nhóm” → **“Nhân viên”** (yêu cầu người dùng) — ⚠️ đổi CẢ 4 chỗ: nhãn mặc định trong markup, hàng đầu của `#nhomDropdown` (markup + `initFilters()` dựng lại), và dòng này. */
   }
   if (!document.getElementById('filterLoai').value) {
     fitFilterLabel(document.getElementById('filterLoaiLabel'), FILTER_ICONS.loai, 'Chi tiết');   /* ⟳ 2026-10-03ad: nhãn “Chi tiết nợ” → “Chi tiết” (yêu cầu người dùng) */
@@ -8708,6 +8873,9 @@ function selectLoai(val) {
      `switchTab()` không đụng tới tab nên chỉ cần một chỗ này là đủ cho MỌI đường vào
      (bấm tab · chọn trong dropdown · `restoreUiState()` lúc mở lại app). */
   syncLoaiTabs(val);
+  /* 📞 ĐỒNG BỘ 3 CHIP “LỌC NHANH” trong tấm “Lọc theo yêu cầu” (2026-10-25) — cùng lý do: để
+     chọn từ dropdown / tab / `restoreUiState` thì chip trong tấm cũng sáng đúng mục. */
+  syncAdvLoai(val);
 }
 
 /* 🏷️ TÔ SÁNG TAB ĐANG CHỌN trong hàng tab “Chi tiết nợ” (`#loaiTabs`).
@@ -8827,7 +8995,7 @@ function initFilters() {
   const nhomSet = [...new Set(allData.map(r=>r.ma_nhom).filter(Boolean))].sort();
   const dd = document.getElementById('nhomDropdown');
   // keep the first option (Tất cả)
-  dd.innerHTML = '<div class="nhom-option" data-val="" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none" onmouseenter="this.style.background=\'rgba(100,116,139,0.16)\'" onmouseleave="this.style.background=\'\'" ><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-people"/></svg></span> Nhóm</div>';
+  dd.innerHTML = '<div class="nhom-option" data-val="" style="padding:8px 12px;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none" onmouseenter="this.style.background=\'rgba(100,116,139,0.16)\'" onmouseleave="this.style.background=\'\'" ><span style="color:var(--ic-hash);display:inline-flex;flex-shrink:0;align-items:center"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-people"/></svg></span> Nhân viên</div>';
   nhomSet.forEach(v => {
     const d = document.createElement('div');
     d.className = 'nhom-option';
@@ -8836,11 +9004,13 @@ function initFilters() {
     d.onmouseenter = function(){ this.style.background='rgba(100,116,139,0.16)'; };
     d.onmouseleave = function(){ this.style.background=''; };
     const nc = getNhomColor(v);
-    // TÊN VIẾT TẮT trong danh sách (yêu cầu người dùng) — tên đầy đủ nằm ở `title`.
+    // ⟳ 2026-10-25 (yêu cầu “hiển thị tên đầy đủ”, ảnh = danh sách chỉ có tên viết tắt):
+    // HIỂN THỊ TÊN ĐẦY ĐỦ trong danh sách nhóm (truoc day `abbrevName(displayName)`).
     // `data-val` VẪN là mã nhóm gốc (giá trị bộ lọc) — chỉ chữ hiển thị đổi.
+    // ⚠️ Tên đầy đủ là dữ liệu Excel ⇒ luôn qua `esc()` khi nhét vào `innerHTML`.
     const displayName = nhomFullNameMap[v] || v;
     d.title = displayName;
-    d.innerHTML = '<span class="nhom-dot" style="background:' + nc + '"></span> ' + esc(abbrevName(displayName));
+    d.innerHTML = '<span class="nhom-dot" style="background:' + nc + '"></span> ' + esc(displayName);
     dd.appendChild(d);
   });
 
@@ -9444,9 +9614,53 @@ function advChip(mn, mx) {
   advApply();
 }
 
+/* 📞 BẤM CHIP “LỌC NHANH” trong tấm (2026-10-25 — KH đã gọi · KH chưa gọi · Chú ý).
+   Đi ĐÚNG đường cũ `selectLoai()` (⛔ đừng viết bộ lọc thứ hai) nên nhãn ô “Chi tiết nợ”, view
+   và dải tab đổi theo y như chọn trong dropdown. Bấm LẦN NỮA vào mục đang chọn = BỎ LỌC
+   (`selectLoai('')` đưa về “Chi tiết”). Tấm KHÔNG đóng sau khi bấm — người dùng còn xem dòng đếm
+   và chỉnh tiếp rồi bấm “Xong”. */
+function advLoaiTap(val) {
+  const cur = document.getElementById('filterLoai').value;
+  selectLoai(cur === val ? '' : val);
+  advSyncCount();
+}
+
+/* TÔ SÁNG 3 chip “Lọc nhanh” theo `#filterLoai` đang có hiệu lực.
+   Gọi ở 3 chỗ: cuối `selectLoai()` (mọi đường đổi bộ lọc), `openAdv()` (mở tấm là thấy đúng
+   trạng thái hiện tại) và `advLoaiTap()` (gián tiếp qua `selectLoai`).
+   `val === undefined` ⇒ đọc từ ô ẩn `#filterLoai` — nhờ vậy lúc mở tấm không cần truyền gì. */
+function syncAdvLoai(val) {
+  const box = document.getElementById('advModal');
+  if (!box) return;
+  const hidden = document.getElementById('filterLoai');
+  const want = (val === undefined) ? ((hidden && hidden.value) || '') : (val || '');
+  box.querySelectorAll('.adv-chip[data-loai]').forEach(function (c) {
+    const on = c.dataset.loai === want;
+    c.classList.toggle('active', on);
+    c.setAttribute('data-active', on ? '1' : '0');
+    c.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+}
+
 // “Xoá lọc”: xoá HẾT ô của tấm (nút này là đường duy nhất xoá điều kiện của tấm).
 function advClear() {
   ['advQ', 'advMin', 'advMax'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  /* ⟳ 2026-10-25: tấm nay có thêm 3 chip “Lọc nhanh” ⇒ “Xoá lọc” phải xoá LUÔN mục đang chọn
+     trong số đó, nếu không thì bấm “Xoá lọc” mà danh sách vẫn ngắn hơn bình thường. CHỈ đụng 3
+     giá trị của 3 chip: một phân loại khác (Tổng hợp / Nợ cũ / Trên 3Tr / 1Tr-3Tr) do ô
+     “Chi tiết nợ” chọn thì GIỮ NGUYÊN — đó là bộ lọc của thanh công cụ, không thuộc tấm này. */
+  const lo = document.getElementById('filterLoai');
+  if (lo && ['called', 'notcalled', 'marked'].indexOf(lo.value) >= 0) selectLoai('');
+  advApply();
+}
+
+/* ✕ CỦA NHÃN `(1 - 2Tr)` Ở HÀNG “Tổng HĐ / KH” (2026-10-25 — yêu cầu “thêm dấu x xoá lọc sau
+   (1tr - 2tr)”): xoá **CHỈ 2 Ô TIỀN** của tấm, GIỮ ô tìm kiếm trong tấm + 3 chip “Lọc nhanh”.
+   Lý do không gọi `advClear()`: nhãn chỉ đại diện cho khoảng tiền, xoá cả ô tìm kiếm thì người
+   dùng đang gõ tên khách sẽ mất chữ. Gọi `advApply()` = lọc lại + in lại chính nhãn này (nút ✕
+   tự biến mất vì span rỗng). */
+function advClearRange() {
+  ['advMin', 'advMax'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
   advApply();
 }
 
@@ -9454,6 +9668,8 @@ function openAdv() {
   const ov = document.getElementById('advModal');
   if (!ov) return;
   advSyncCount();   // đổ số NGAY khi mở (tấm dựng 1 lần, không dựng lại ruột mỗi lần mở)
+  syncAdvLoai();    // 3 chip “Lọc nhanh” sáng đúng mục đang lọc (2026-10-25)
+  updateSortButtons();   // 2 nút “Sắp xếp” trong tấm khớp trạng thái sắp xếp hiện tại
   ov.classList.add('open');
   // Khoá cuộn nền như 3 tấm kia (`openKyPanel`): không khoá thì kéo trên lớp mờ là trang dưới chạy.
   document.body.style.overflow = 'hidden';
@@ -9620,6 +9836,36 @@ function applyFilters() {
   _dispRows = dispRows;   // tấm “Nợ cũ theo từng kỳ” đọc biến này (xem `periodStats`)
   document.getElementById('countKH').textContent = new Set(dispRows.map(r => r.ma_khach_hang || r.ten_khach_hang)).size.toLocaleString('vi-VN');
   document.getElementById('countHoaDon').textContent = dispRows.length.toLocaleString('vi-VN');
+  /* 🏷️ 2026-10-25 — NHÃN KHOẢNG TIỀN ĐANG LỌC + NÚT ✕ XOÁ (2 yêu cầu:
+     “khi lọc thì hiển thị thêm sau số KH (1 - 2 Tr)” rồi “đổi thành (1 - 2Tr)” + “thêm dấu x xoá lọc
+     sau (1tr - 2tr)”):
+     · Nhãn in ở **ĐƠN VỊ TRIỆU**, gắn đúng MỘT chữ “Tr” ở cuối: gõ `1tr` + `2tr` ⇒ `(1 - 2Tr)`.
+       Khi một đầu không chia hết cho 1 triệu thì ra số lẻ theo locale (`0,5`) — vẫn đọc được.
+       Gõ xong số mà máy không hiểu (`parseTienLoc` trả null) ⇒ dùng CHUỖI GỐC trong ngoặc, không
+       in số sai.
+     · Chỉ 1 đầu ⇒ `(≥5Tr)` / `(≤1Tr)` — đúng nghĩa 5 nút nhanh của tấm lọc.
+     · Nút ✕ GỌI `advClearRange()`: chỉ xoá 2 ô TIỀN (giữ nguyên ô tìm kiếm trong tấm) — nhãn hết
+       thì nút hết, không để lại khe vì span rỗng không chiếm bề rộng. */
+  (function () {
+    const el = document.getElementById('countRange');
+    if (!el) return;
+    const a = document.getElementById('advMin'), b = document.getElementById('advMax');
+    const va = a ? a.value.trim() : '', vb = b ? b.value.trim() : '';
+    if (!va && !vb) { el.textContent = ''; return; }
+    const MN = 1000000;
+    const trieu = v => {
+      const n = v / MN;
+      return Number.isInteger(n) ? String(n) : n.toLocaleString('vi-VN');
+    };
+    const pa = parseTienLoc(va), pb = parseTienLoc(vb);
+    let s;
+    if (pa != null && pb != null) s = '(' + trieu(pa) + ' - ' + trieu(pb) + 'Tr)';
+    else if (pa != null) s = '(≥' + trieu(pa) + 'Tr)';
+    else if (pb != null) s = '(≤' + trieu(pb) + 'Tr)';
+    else s = '(' + (va || vb) + ')';
+    el.innerHTML = '<span class="count-range-txt">' + esc(s) +
+      '</span><button type="button" class="count-range-x" onclick="advClearRange()" aria-label="Xoá lọc tiền" title="Xoá lọc tiền">✕</button>';
+  })();
   const tongTien = dispRows.reduce((sum, r) => sum + (r.tien_no || 0), 0);
   const elTongTien = document.getElementById('countTongTien');
   // ⚠️ Số tổng KHÔNG còn hậu tố `đ` (yêu cầu “bỏ chữ đ sau số tiền”) — đơn vị đã rõ từ nhãn
@@ -9970,12 +10216,22 @@ function pinMenuEl() {
       '<button class="lpsdt-act" data-act="unpin" type="button">' +
         '<svg class="ic" width="16" height="16" aria-hidden="true" style="vertical-align:middle">' +
         '<use href="#i-close"/></svg>Bỏ ghim vị trí</button>' +
+      /* ⟳ 2026-10-25 (yêu cầu “thêm chọn dán cập nhật vị trí được chia sẻ, thêm chia sẻ vị trí”):
+         2 nút mới, cùng hệ `.lpsdt-act` (nền trong suốt, viền + chữ xanh) như 2 nút trên. */
+      '<button class="lpsdt-act" data-act="paste" type="button">' +
+        '<svg class="ic" width="16" height="16" aria-hidden="true" style="vertical-align:middle">' +
+        '<use href="#i-copy"/></svg>Dán vị trí được chia sẻ</button>' +
+      '<button class="lpsdt-act" data-act="share" type="button">' +
+        '<svg class="ic" width="16" height="16" aria-hidden="true" style="vertical-align:middle">' +
+        '<use href="#i-share"/></svg>Chia sẻ vị trí</button>' +
       '<button class="lpcb-btn" type="button">Đóng</button>' +
     '</div>';
   ov.addEventListener('click', function (e) { if (e.target === ov) pinMenuClose(); });
   ov.querySelector('.lpcb-btn').addEventListener('click', pinMenuClose);
   ov.querySelector('[data-act="upd"]').addEventListener('click', pinMenuUpdate);
   ov.querySelector('[data-act="unpin"]').addEventListener('click', pinMenuUnpin);
+  ov.querySelector('[data-act="paste"]').addEventListener('click', pinMenuPaste);
+  ov.querySelector('[data-act="share"]').addEventListener('click', pinMenuShare);
   document.body.appendChild(ov);
   return ov;
 }
@@ -9999,6 +10255,118 @@ function pinMenuUnpin() {
   if (!ma || !pinAll()[ma]) return;
   pinApply(ma, false);
   if (typeof showToast === 'function') showToast('Đã bỏ ghim vị trí');
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════════
+   📥 / 📤 DÁN & CHIA SẺ VỊ TRÍ (2026-10-25 — yêu cầu “thêm chọn dán cập nhật vị trí được chia
+   sẻ, thêm chia sẻ vị trí”, ảnh = hộp “Vị trí khách hàng … Cập nhật vị trí mới / Đóng”).
+   Vì sao cần: nhiều khi KHÔNG đứng tại vị trí khách mà nhận được LINK vị trí do người khác chia
+   sẻ (Zalo/Google Maps) ⇒ dán vào là lưu được toạ độ, khỏi phải tới tận nơi. Chiều ngược lại:
+   gửi vị trí đã ghim cho khách/đồng nghiệp.
+   Cả 2 dùng CHUNG khoá ghim `PIN_KEY` (lat/lng) với `pinGps` ⇒ dòng địa chỉ tự tô xanh + nút ➤
+   dẫn đường dùng được ngay, ⛔ không có bản ghi toạ độ thứ hai.
+   ════════════════════════════════════════════════════════════════════════════════════ */
+
+/* Bóc toạ độ ra khỏi chuỗi được chia sẻ. Nhận CẢ 5 dạng gặp thật:
+     ① `https://www.google.com/maps/@10.776889,106.695222,17z`   (link copy trên web)
+     ② `https://maps.google.com/?q=10.776889,106.695222` · `…&query=` · `…&ll=`
+     ③ `https://www.google.com/maps/place/…/data=…!3d10.776889!4d106.695222`  (link “Chia sẻ”)
+     ④ `10.776889, 106.695222` (cặp toạ độ trần, có thể có ngoặc)
+     ⑤ chuỗi có chữ Việt xen vào (Zalo hay dán kèm lời nhắn) — chỉ cần có cặp số đúng dấu phẩy.
+   Trả về `{lat, lng}` hoặc `null`. Dùng `|` cho khoảng trắng để khỏi lệch dấu cách thật.
+   ⚠️ Kiểm BIÊN ĐỘ: vĩ độ ≤ 90, kinh độ ≤ 180 — thiếu bước này thì số điện thoại “0908,0472” cũng
+   khớp và ghim ra một toạ độ rác ở giữa đại dương. */
+function pinParseCoords(txt) {
+  const s = String(txt || '');
+  const pats = [
+    /!3d(-?\d{1,3}(?:\.\d+)?)!4d(-?\d{1,3}(?:\.\d+)?)/,
+    /[@?&](?:q|query|ll|center|destination)=?(-?\d{1,3}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)/,
+    /@(-?\d{1,3}(?:\.\d+)?),(-?\d{1,3}(?:\.\d+)?)/,
+    /(-?\d{1,3}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)/
+  ];
+  for (let i = 0; i < pats.length; i++) {
+    const m = s.match(pats[i]);
+    if (!m) continue;
+    const lat = parseFloat(m[1]), lng = parseFloat(m[2]);
+    if (isFinite(lat) && isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) {
+      return { lat: +lat.toFixed(6), lng: +lng.toFixed(6) };
+    }
+  }
+  return null;
+}
+
+/* Ghi toạ độ DÁN ĐƯỢC vào bản ghi của khách (ghim luôn nếu chưa ghim) rồi cập nhật tại chỗ.
+   ⚠️ Thứ tự BẮT BUỘC: `pinApply` TẠO LẠI bản ghi (`{ts, ten}`) ⇒ nếu ghi lat/lng TRƯỚC pinApply
+   thì toạ độ bị xoá mất. Ghi SAU, và ghi thẳng vào map trả về của `pinAll()`. */
+function pinSaveCoords(ma, ten, c) {
+  if (!ma || !c) return;
+  pinApply(ma, true, ten);
+  const map = pinAll();
+  if (!map[ma]) return;
+  map[ma].lat = c.lat;
+  map[ma].lng = c.lng;
+  map[ma].acc = 0;          // 0 = không phải GPS máy này ⇒ không in “sai số ~Nm”
+  map[ma].src = 'paste';
+  map[ma].ts = Date.now();
+  try { localStorage.setItem(PIN_KEY, JSON.stringify(map)); } catch (e) {}
+}
+
+/* “Dán vị trí được chia sẻ”: thử ĐỌC CLIPBOARD trước (nhanh nhất), không đọc được thì mở ô nhập
+   để người dùng tự dán. Clipboard API bị chặn ở webview/http ⇒ nhánh `prompt` là đường sống còn.
+   ⚠️ `prompt()` trả `null` khi bấm Cancel ⇒ thoát im lặng, ⛔ đừng báo lỗi. */
+function pinMenuPaste() {
+  const ma = _pinMenuMa, ten = _pinMenuTen;
+  pinMenuClose();
+  if (!ma) return;
+  const use = function (txt) {
+    if (txt == null) return;
+    const c = pinParseCoords(txt);
+    if (!c) {
+      if (typeof showToast === 'function') showToast('Không thấy toạ độ trong nội dung dán — cần link Google Maps hoặc cặp “vĩ độ, kinh độ”');
+      return;
+    }
+    pinSaveCoords(ma, ten, c);
+    if (typeof showToast === 'function') showToast('✓ Đã lưu vị trí dán được (' + c.lat + ', ' + c.lng + ') — bấm ➤ để dẫn đường');
+  };
+  const ask = function () {
+    let t = '';
+    try { t = window.prompt('Dán link vị trí được chia sẻ (Google Maps) hoặc cặp “vĩ độ, kinh độ”:', ''); } catch (e) { t = null; }
+    use(t);
+  };
+  if (navigator.clipboard && navigator.clipboard.readText) {
+    navigator.clipboard.readText().then(function (txt) {
+      if (pinParseCoords(txt)) use(txt);
+      else ask();       // clipboard trống / không phải toạ độ ⇒ để người dùng tự dán
+    }).catch(ask);      // bị từ chối quyền đọc clipboard
+  } else ask();
+}
+
+/* “Chia sẻ vị trí”: gửi VỊ TRÍ ĐÃ GHIM (toạ độ) qua bảng chia sẻ của máy (`navigator.share`) —
+   Zalo/Messenger/SMS đều nhận. Máy không có Web Share (hoặc lỗi) thì CHÉP LINK vào clipboard +
+   báo “✓ Đã copy”, ⛔ không im lặng. Chưa có toạ độ thì báo rõ đường cần làm trước. */
+function pinMenuShare() {
+  const ma = _pinMenuMa, ten = _pinMenuTen;
+  pinMenuClose();
+  if (!ma) return;
+  const rec = pinAll()[ma];
+  if (!rec || rec.lat == null || rec.lng == null) {
+    if (typeof showToast === 'function') showToast('Chưa có toạ độ — bấm “Cập nhật vị trí mới” hoặc “Dán vị trí được chia sẻ” trước');
+    return;
+  }
+  const url = 'https://www.google.com/maps?q=' + rec.lat + ',' + rec.lng;
+  const text = 'Vị trí khách hàng ' + (rec.ten || ten || ma) + ': ' + url;
+  if (navigator.share) {
+    navigator.share({ title: 'Vị trí khách hàng', text: text, url: url }).catch(function () {});
+    return;
+  }
+  const done = function () { if (typeof showToast === 'function') showToast('✓ Đã copy vị trí — dán vào Zalo/SMS để gửi'); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(function () {
+      if (typeof lpShowCopyBox === 'function') lpShowCopyBox(text);
+      else if (typeof showToast === 'function') showToast('Không share được trên máy này');
+    });
+  } else if (typeof lpShowCopyBox === 'function') lpShowCopyBox(text);
+  else if (typeof showToast === 'function') showToast('Không share được trên máy này');
 }
 
 /* Khuôn nhấn-giữ 0,5s trên CHỮ ĐỊA CHỈ. */
@@ -10089,28 +10457,34 @@ function renderCards(q='') {
                ⛔ KHÔNG viết dấu backtick trong chú thích NÀY — nó nằm TRONG một template literal,
                backtick sẽ đóng chuỗi sớm và cả script không parse được (đã sập đúng một lần). -->
           <div class="kh-tien pay-tap${r.tien_no >= 2000000 ? ' high' : ' low'}" onclick="event.stopPropagation();openPayPanel(this)">${fmtHtml(r.tien_no)}</div>
-          <!-- ⟳ 2026-10-24 (yêu cầu “cho chiều cao thẻ sát xuống tên”): dòng tháng + nút chụp ảnh nay
-               nằm CÙNG MỘT HÀNG (kh-thang-row, canh phải). Trước đây nút đứng riêng một hàng nên
-               cột phải cao 76px, đẩy phần danh số cách tên 56px; nay cột phải còn 49px.
+          <!-- ⟳ 2026-10-25 (yêu cầu “cho nút camera nằm kế danh số”): nút CHỤP ẢNH rời dòng
+               tháng, xuống đứng NGAY SAU DANH SỐ (xem khối kh-card-mid bên dưới) ⇒ dòng tháng
+               nay đứng MỘT MÌNH ở cột phải (cột phải vì thế thấp lại, thẻ vẫn sát tên).
                ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
           <div class="kh-thang-row">
           ${r.thang_no ? `<div class="kh-thang${r.thang_no.split(",").length >= 4 ? " multi-month" : ""}">${hi(shortMonths(r.thang_no),q)}${omShow ? ' (' + oldKind + ')' : ''}</div>` : (omShow ? `<div class="kh-thang">(${oldKind})</div>` : '')}
-          <!-- 📷 2026-10-24 (yêu cầu “thêm chế độ chụp ảnh nằm dưới tháng”): nút CHỤP ẢNH nằm
-               DƯỚI số tiền và NGAY CẠNH dòng tháng, cuối cột phải (cùng hàng với tháng để cột
-               phải thấp lại — “sát xuống tên”). Bấm ⇒ mở camera chụp ảnh gắn vào khách này
-               (xem photoTap). ⚠️ event.stopPropagation() là BẮT BUỘC: thẻ có ondblclick đánh
-               dấu — không chặn thì bấm nút cũng tính vào cú nhấn của thẻ.
-               ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
-          <button type="button" class="kh-photo${pc ? ' has-photo' : ''}" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang || '')}" data-ky="${esc(r.thang_no || '')}" onclick="event.stopPropagation();photoTap(this)" aria-label="${pc ? 'Xem ảnh của khách (' + pc + ')' : 'Chụp ảnh khách hàng'}"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-camera"/></svg><span class="kh-photo-txt">${pc ? 'Ảnh (' + pc + ')' : ''}</span></button>
           </div>
         </div>
       </div>
       <div class="kh-card-mid">
-        ${r.danh_so ? `<span class="kh-danhso"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-arrow-right"/></svg>${hi(r.danh_so,q)}</span>` : ''}
-        ${r.danh_so && r.ma_sogcs ? `<span class="kh-sep">-</span>` : ''}
-        ${r.ma_sogcs ? `<span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span>` : ''}
+        <!-- ⟳ 2026-10-25 — 3 HÀNG, mỗi hàng là flex 100% nên luôn đứng riêng:
+             (1) DANH SỐ + nút 📷 (yêu cầu “cho nút camera nằm kế danh số”);
+             (2) MÃ SỔ · SỐ TBI (yêu cầu “cho mã sổ và số tbi chuyển xuống nằm dưới danh số”);
+             (3) SĐT · mã KH (không đổi).
+             ⚠️ Nút 📷 nằm trong HÀNG 1 nên khách KHÔNG có danh số thì nó đứng đầu hàng — vẫn
+             hiện (nút chụp ảnh KHÔNG phụ thuộc danh số). Bấm ⇒ camera (xem photoTap).
+             ⚠️ event.stopPropagation() là BẮT BUỘC: thẻ có ondblclick đánh dấu — không chặn thì
+             bấm nút cũng tính vào cú nhấn của thẻ.
+             ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
+        <div class="kh-ds-row">
+        ${r.danh_so ? `<span class="kh-card-lbl">Mã KV:</span><span class="kh-danhso">${hi(r.danh_so,q)}</span>` : ''}
+        <button type="button" class="kh-photo${pc ? ' has-photo' : ''}" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang || '')}" data-ky="${esc(r.thang_no || '')}" onclick="event.stopPropagation();photoTap(this)" aria-label="${pc ? 'Xem ảnh của khách (' + pc + ')' : 'Chụp ảnh khách hàng'}"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-camera"/></svg><span class="kh-photo-txt">${pc ? 'Ảnh (' + pc + ')' : ''}</span></button>
+        </div>
+        ${(r.ma_sogcs || r.so_tbi) ? `<div class="kh-sub-row">
+        ${r.ma_sogcs ? `<span class="kh-card-lbl">Mã sổ:</span><span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span>` : ''}
         ${r.ma_sogcs && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}
-        ${r.so_tbi ? `<span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}
+        ${r.so_tbi ? `<span class="kh-card-lbl">Số TBI:</span><span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}
+        </div>` : ''}
         ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}<!-- ⛔ Viên ZALO ĐÃ BỎ HẲN (2026-10-17m — yêu cầu người dùng: “tôi muốn bỏ icon tin nhắn zalo”,
              kèm ảnh thẻ đang có viên icon bong bóng chat cạnh viên SĐT): thẻ KH nay chỉ còn
              [viên SĐT] - [viên mã KH], khe hở giữa hai viên là dấu kh-sep như trước lượt 2026-10-17g.
@@ -10139,7 +10513,7 @@ function renderCards(q='') {
            cập nhật mới”; khách CHƯA ghim thì chạm không làm gì.
            ⛔ Đừng gắn lại pinToggle cho ô chữ hay nút ghim.
            ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
-      ${r.dia_chi ? `<div class="kh-addr-line${pinHere ? ' is-pinned' : ''}" style="margin-top:3px" ondblclick="event.stopPropagation()"><span class="kh-addr-acts"><button type="button" class="kh-pin-btn${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" tabindex="-1" aria-hidden="true"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-pin"/></svg></button><button type="button" class="kh-nav-btn" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí đã ghim"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-nav"/></svg></button></span><span class="kh-addr-txt" onclick="pinTextTap(this)">${hi(trimDiaChi(r.dia_chi),q)}</span></div>` : ''}
+      ${r.dia_chi ? `<div class="kh-addr-line${pinHere ? ' is-pinned' : ''}" style="margin-top:5px" ondblclick="event.stopPropagation()"><span class="kh-addr-acts"><button type="button" class="kh-pin-btn${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" tabindex="-1" aria-hidden="true"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-pin"/></svg></button><button type="button" class="kh-nav-btn" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí đã ghim"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-nav"/></svg></button></span><span class="kh-addr-txt" onclick="pinTextTap(this)">${hi(trimDiaChi(r.dia_chi),q)}</span></div>` : ''}
     </div>`;
   }).join('');
   fitGhiChuInputs();
