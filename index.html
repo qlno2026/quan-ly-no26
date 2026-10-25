@@ -1808,10 +1808,10 @@ body.light-mode .tien-no .mil-digit { color: #b91c1c !important; }   /* cùng `.
    thường (số tiền là `var(--fs-card-big)` = 18px, weight 500 ⇒ vẫn trên mức 3:1 của “large text”).
    Nếu cần trả lại AA thì lùi về `#b91c1c` / `#047857` (đúng 2 giá trị ngay dưới trong lịch sử).
    ⛔ Sửa lẻ một dòng là số tiền hai tông — luôn sửa CẢ `.kh-tien`, `.high`, `.low`, `.mil-digit`. */
-body.light-mode .kh-tien { color: #ef4444; }
-body.light-mode .kh-tien.high { color: #ef4444; }
-body.light-mode .kh-tien.low { color: #10b981; }
-body.light-mode .kh-tien .mil-digit { color: #f97316; }
+body.light-mode .kh-tien { color: #dc2626; font-weight: 600; }
+body.light-mode .kh-tien.high { color: #dc2626; font-weight: 600; }
+body.light-mode .kh-tien.low { color: #059669; font-weight: 600; }
+body.light-mode .kh-tien .mil-digit { color: #c2410c; font-weight: 600; }
 /* Màu chữ của khối tổng phải ĐO TRÊN NỀN TRANG XÁM (không còn khối trắng của `.main`):
    `#2563eb` chỉ đạt **3.51:1** và `#dc2626` chỉ **3.28:1** ⇒ dưới ngưỡng 4.5:1 cho chữ 17px.
    Hạ xuống token blue-800 / red-800: **5.92:1** và **5.64:1**. */
@@ -2894,7 +2894,7 @@ body.light-mode .loai-tab.active[data-val="summary"] { background: #2563eb; colo
    16,5 ở 640+ (desktop gán cứng `width` theo tab dài nhất ⇒ giữ 16px, ⛔ đừng nâng).
    Vì vậy dùng `clamp(10.5px, 4.2vw, 25px)`: 320 → **13,4** · 375 → **15,75** · 430 → **18,1** ·
    533 → **22,4** · 560+ → 23,5–25 (chừa **0,56–3,1px dư** ở mọi khổ, chưa kể ca tab đang chọn
-   in đậm). Trước 2026-10-25 là `clamp(10.5px, 3.35vw, 18px)` (17,9px ở 533).
+   in đậm). Trước 2026-10-25 là `clamp(10.5px, 3.35vw, 20px)` (17,9px ở 533).
    ⚠️ Phải có `min-width: 0`: mặc định flex item không co dưới `min-content` ⇒ tab dài nhất
    (“Tổng hợp”) sẽ đẩy cả dải tràn ra ngoài.
    ⚠️ Kèm theo `equalizeLoaiTabs()` phải **BỎ QUA** ở khổ điện thoại (nó gán `width` cứng ⇒ đè
@@ -2910,12 +2910,12 @@ body.light-mode .loai-tab.active[data-val="summary"] { background: #2563eb; colo
    ⛔ Đừng bỏ `overflow: hidden` của `.loai-tab`: đó là lưới an toàn khi máy thiếu phông Inter. */
 @media (max-width: 639.98px) {
   .loai-tabs { gap: 3px; }
-  .loai-tab { flex: 1 1 0; min-width: 0; padding: 0 4px; gap: 3px; font-size: clamp(10.5px, 4vw, 23px); }
+  .loai-tab { flex: 1 1 0; min-width: 0; padding: 0 4px; gap: 3px; font-size: clamp(10.5px, 4.1vw, 26px); }
   .loai-tab .loai-tab-ic { width: 13px; height: 13px; }
   .loai-tab .nhom-dot { width: 6px; height: 6px; }
 }
 @media (max-width: 560px) {
-  .loai-tab { padding: 0 3px; gap: 0; font-size: clamp(10.5px, 4vw, 23px); }
+  .loai-tab { padding: 0 3px; gap: 0; font-size: clamp(10.5px, 4.1vw, 26px); }
   .loai-tab .loai-tab-ic,
   .loai-tab .nhom-dot { display: none; }
 }
@@ -3417,7 +3417,7 @@ body.light-mode .nhom-sel-name {
 /* Mỗi dòng `nowrap` + `align-items: baseline` để nhãn 17px và số 19px ngồi CHUNG một dòng cơ sở
    (thiếu baseline là hai cỡ chữ lệch mực, nhìn như số bị trễ xuống). */
 .count-line { display: flex; align-items: baseline; white-space: nowrap; }
-.count-line-1 { height: 22px; gap: 6px; }
+.count-line-1 { height: 22px; gap: 2px; }
 /* 🏷️ NHÃN KHOẢNG TIỀN ĐANG LỌC sau số KH — `(1 - 2 Tr)` (2026-10-25). Nằm TRONG `.count-line-1`
    (khối flex không ngắt dòng) ⇒ chữ **nhỏ hơn 1 nấc** và màu mờ: nó là CHÚ THÍCH, không phải số
    chính; to bằng số KH là hàng 320px tràn ra ngoài (đo: nhãn `(10.000.000 - 20.000.000)` ~150px).
@@ -3442,8 +3442,8 @@ body.light-mode .count-range-x:active { background: #ef4444; color: #ffffff; }
    vừa rộng hơn vừa không co giãn được). Dấu `-` ngăn hai nhóm nằm TRONG `.count-kh-group` vì
    `switchTab()` ẩn cả nhóm ở tab “Tổng hợp nợ” (xem chú thích ở markup). */
 .count-pair, .count-kh-group { display: inline-flex; align-items: baseline; }
-.count-pair { gap: 3px; }
-.count-kh-group { gap: 6px; }
+.count-pair { gap: 2px; }
+.count-kh-group { gap: 2px; }
 /* Dấu `-` mờ như nhãn, không tranh chú ý với hai con số. */
 .count-sep { color: var(--text-dim); }
 /* ⟳ 2026-09-28g: ICON **Ở ĐẦU MỖI DÒNG**, THAY ICON ĐỒNG HỒ CÁT Ở ĐẦU HÀNG (người dùng chọn
@@ -3957,6 +3957,26 @@ body.light-mode .kh-nav-btn:active { background: rgba(15,23,42,0.10); }
 body .kh-card .kh-addr-line.is-pinned { color: #4ade80; }
 body.light-mode .kh-card .kh-pin-btn.is-pinned { color: #166534; }
 body.light-mode .kh-card .kh-addr-line.is-pinned { color: #166534; }
+
+/* ⚑ Dòng địa chỉ đã cập nhật vị trí (2026-10-25): sau khi dùng “Dán vị trí được chia sẻ” hoặc
+   “Cập nhật vị trí mới”, dòng địa chỉ hiện một chi tiết nhỏ “✔ Đã cập nhật vị trí” — giống hệt
+   đường vào “Cập nhật vị trí mới” của hộp nhấn-giữ. Chi tiết ai đó, vị trí vẫn xanh lá (is-pinned). */
+.kh-addr-acts .addr-upd-badge {
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #16a34a;
+  background: rgba(22,163,74,0.10);
+  border: 1px solid rgba(22,163,74,0.25);
+  border-radius: 3px;
+  padding: 0 4px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.kh-addr-line.is-updated .kh-addr-txt {
+  color: #16a34a;
+  font-weight: 500;
+}
 
 /* ⚠️ **Khai LẦN HAI** của `.kh-thang` (bản đầu ở trên, gần `.kh-tien`): rule này khai SAU
    nên **thắng** — hệ quả là `margin-top: 2px` của bản trên vẫn áp, còn `font-size` thì lấy ở
@@ -5147,11 +5167,11 @@ body.light-mode .count-btns .adv-btn[data-active="1"] { background: #cfd6e0; bor
    `.adv-modal { max-width: 640px }` (trần chung `.modal` là 560px).
    ⚠️ Hệ quả ĐO ĐƯỢC: dòng đếm “Đang xem: …” ở khổ hẹp (≤ ~400px) nay **xuống 2 dòng** — chấp nhận,
    vì yêu cầu là chữ LỚN hơn; ⛔ đừng “sửa” bằng cách hạ cỡ chữ riêng dòng đó. */
-.adv-frame { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }   /* ⟳ 2026-10-25 (yêu cầu “cho các tab này kích thước gọn lại và sắp xếp lại cho gọn”): gap 10 → **8** · đệm ngang 18 → **16** · đáy 20 → **16** */
-.adv-lab { margin-top: 2px; font-size: 15px; font-weight: 600; color: var(--text-dim); }   /* ⟳ 2026-10-25: 17 → **15px** */
+.adv-frame { display: flex; flex-direction: column; gap: 6px; padding: 0 14px 14px; }   /* ⟳ 2026-10-25 (yêu cầu “cho các tab này kích thước gọn lại và sắp xếp lại cho gọn”): gap 10 → **8** · đệm ngang 18 → **16** · đáy 20 → **16** */
+.adv-lab { margin-top: 1px; font-size: 14px; font-weight: 600; color: var(--text-dim); }   /* ⟳ 2026-10-25: 17 → **15px** → 14px (gọn)*/
 .adv-in {
   width: 100%; box-sizing: border-box;
-  padding: 11px 14px; border-radius: 10px;
+  padding: 9px 12px; border-radius: 10px;
   border: 1px solid var(--border);
   /* ⚠️ Nền ô = `--dk-card` (bề mặt CONTROL của app, nhạt hơn nền tấm) — ⛔ ĐỪNG để
      `var(--navy-mid)`: token đó BẰNG ĐÚNG nền tấm (`.modal` = `#1a1d24` = `--navy-mid`) ⇒ ô nhập
@@ -5159,7 +5179,7 @@ body.light-mode .count-btns .adv-btn[data-active="1"] { background: #cfd6e0; bor
      #1a1d24 = **1,30:1** (đủ để nhận ra ô, không chói như ô trắng). */
   background: var(--dk-card);
   color: var(--text);
-  font-family: 'Inter', sans-serif; font-size: 18px;
+  font-family: 'Inter', sans-serif; font-size: 17px;
 }
 .adv-in:focus { border-color: #3b82f6; outline: none; }
 .adv-in::placeholder { color: #5f697a; }
@@ -5167,11 +5187,11 @@ body.light-mode .adv-in { background: #ffffff; color: #0f172a; border-color: #d1
 body.light-mode .adv-in::placeholder { color: #8d98a4; }   /* chép nhánh light của placeholder ô tìm kiếm (1369) */
 .adv-range { display: flex; align-items: center; gap: 6px; }
 .adv-range .adv-in { flex: 1 1 0; min-width: 0; }
-.adv-dash { flex: 0 0 auto; color: var(--text-dim); font-size: 16px; }
-.adv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.adv-dash { flex: 0 0 auto; color: var(--text-dim); font-size: 14px; }
+.adv-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 1px; }
 .adv-chip {
-  font-family: 'Inter', sans-serif; font-size: 17px;
-  padding: 9px 13px; border-radius: 999px;
+  font-family: 'Inter', sans-serif; font-size: 16px;
+  padding: 8px 12px; border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--dk-card); color: var(--text);
   cursor: pointer; -webkit-tap-highlight-color: transparent;
@@ -5189,23 +5209,23 @@ body.light-mode .adv-chip[data-active="1"] { background: #cfd6e0; border-color: 
    đây ⇒ nới chiều cao theo hệ của tấm (chữ 18px, bo tròn như `.adv-chip`) và chia đều 2 bên.
    ⛔ Không khai lại MÀU: `.sort-btn` + `#sortDanhSo.active`/`#sortTienNo.active` đã có cả 2 theme,
    khai lại là hai nguồn màu dễ lệch nhau. */
-.adv-sort { display: flex; gap: 6px; }
-.adv-sort .sort-btn { flex: 1 1 0; min-width: 0; height: auto; padding: 8px 8px; border-radius: 999px; font-size: 16px; }
-.adv-sort .sort-btn .sort-ico { width: 16px; height: 16px; }
-.adv-sort .sort-btn .sort-arrow { width: 14px; height: 14px; }
-.adv-count { margin-top: 3px; padding: 8px 12px; border-radius: 10px; background: rgba(148,163,184,0.14); font-size: 16px; line-height: 1.45; color: var(--text); }
+.adv-sort { display: flex; gap: 4px; }
+.adv-sort .sort-btn { flex: 1 1 0; min-width: 0; height: auto; padding: 6px 8px; border-radius: 999px; font-size: 14px; }
+.adv-sort .sort-btn .sort-ico { width: 14px; height: 14px; }
+.adv-sort .sort-btn .sort-arrow { width: 12px; height: 12px; }
+.adv-count { margin-top: 2px; padding: 6px 10px; border-radius: 10px; background: rgba(148,163,184,0.14); font-size: 15px; line-height: 1.4; color: var(--text); }
 .adv-count b { color: #60a5fa; }
 body.light-mode .adv-count { background: #e8ecf1; color: #0f172a; }
 /* Số in ĐẬM trong dòng đếm: light dùng `#1d4ed8` (**6,3:1** trên nền hộp `#e8ecf1`) — ⛔ không dùng
    `#2563eb` ở đây: trên nền `#e8ecf1` nó chỉ còn **4,36:1**, hụt mức 4,5 của chữ 14px đậm. */
 body.light-mode .adv-count b { color: #1d4ed8; }
-.adv-acts { display: flex; gap: 6px; margin-top: 3px; }
+.adv-acts { display: flex; gap: 5px; margin-top: 1px; }
 .adv-act {
-  flex: 1 1 0; padding: 13px 12px; border-radius: 10px;
+  flex: 1 1 0; padding: 11px 10px; border-radius: 10px;
   border: 1px solid var(--border);
   /* Nền control (như `.adv-in`), ⛔ không `var(--navy-mid)` — xem chú thích ở `.adv-in`. */
   background: var(--dk-card); color: var(--text);
-  font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 600;
+  font-family: 'Inter', sans-serif; font-size: 17px; font-weight: 600;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
 .adv-act:active { background: rgba(59,130,246,0.28); }
@@ -5247,7 +5267,7 @@ body.force-desktop .table-view { display: block; }
 
 /* Mobile-only refinements */
 @media (max-width: 639.98px) {
-  .filter-select { font-size: clamp(10.5px, 4.2vw, 25px); padding-top: 6px; padding-bottom: 6px; }   /* ⟳ 2026-10-25 (yêu cầu “cho cỡ chữ bằng tab nhóm”): ăn ĐÚNG biểu thức cỡ chữ của dải tab `.loai-tab` ⇒ ô “Nhân viên” và các tab luôn cùng cỡ ở mọi khổ. ⚠️ Thang hạ cấp của `fitFilterLabel` vẫn hoạt động (đo trên bề rộng thật) nên ô hẹp chỉ bỏ dấu hiệu rồi ellipsis, không tràn. */
+  .filter-select { font-size: clamp(10.5px, 4.2vw, 24px); padding-top: 6px; padding-bottom: 6px; }   /* ⟳ 2026-10-25 (yêu cầu “cho cỡ chữ bằng tab nhóm”): ăn ĐÚNG biểu thức cỡ chữ của dải tab `.loai-tab` ⇒ ô “Nhân viên” và các tab luôn cùng cỡ ở mọi khổ. ⚠️ Thang hạ cấp của `fitFilterLabel` vẫn hoạt động (đo trên bề rộng thật) nên ô hẹp chỉ bỏ dấu hiệu rồi ellipsis, không tràn. */
   .sort-btn { font-size: var(--ctl-fs); }
   .search-box input { font-size: var(--ctl-fs); }
   /* ⛔ 8 DÒNG KHAI LẠI CỠ CHỮ THẺ CARD Ở ĐÂY ĐÃ BỊ XOÁ (lượt “Aa — tự chọn cỡ chữ”).
@@ -10048,6 +10068,19 @@ function pinGps(ma, isUpdate) {
       if (typeof showToast === 'function') showToast(isUpdate
         ? '✓ Đã cập nhật vị trí mới (sai số ~' + map[ma].acc + 'm) — bấm ➤ để dẫn đường'
         : '✓ Đã lưu toạ độ GPS (sai số ~' + map[ma].acc + 'm) — bấm mũi tên ➤ để dẫn đường');
+      // Cập nhật hiển thị địa chỉ: đánh dấu dòng địa chỉ đã được cập nhật vị trí
+      const line = document.querySelector('.kh-addr-line[data-ma="' + CSS.escape(ma) + '"]');
+      if (line) {
+        line.classList.add('is-updated');
+        const acts = line.querySelector('.kh-addr-acts');
+        let badge = acts.querySelector('.addr-upd-badge');
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'addr-upd-badge';
+          acts.appendChild(badge);
+        }
+        badge.textContent = '✔ Đã cập nhật vị trí';
+      }
     }, function (err) {
       delete _pinGpsWaiting[ma];
       const why = (err && err.code === 1) ? 'bạn chưa cho phép lấy vị trí'
@@ -10318,27 +10351,10 @@ function pinMenuPaste() {
   const ma = _pinMenuMa, ten = _pinMenuTen;
   pinMenuClose();
   if (!ma) return;
-  const use = function (txt) {
-    if (txt == null) return;
-    const c = pinParseCoords(txt);
-    if (!c) {
-      if (typeof showToast === 'function') showToast('Không thấy toạ độ trong nội dung dán — cần link Google Maps hoặc cặp “vĩ độ, kinh độ”');
-      return;
-    }
-    pinSaveCoords(ma, ten, c);
-    if (typeof showToast === 'function') showToast('✓ Đã lưu vị trí dán được (' + c.lat + ', ' + c.lng + ') — bấm ➤ để dẫn đường');
-  };
-  const ask = function () {
-    let t = '';
-    try { t = window.prompt('Dán link vị trí được chia sẻ (Google Maps) hoặc cặp “vĩ độ, kinh độ”:', ''); } catch (e) { t = null; }
-    use(t);
-  };
-  if (navigator.clipboard && navigator.clipboard.readText) {
-    navigator.clipboard.readText().then(function (txt) {
-      if (pinParseCoords(txt)) use(txt);
-      else ask();       // clipboard trống / không phải toạ độ ⇒ để người dùng tự dán
-    }).catch(ask);      // bị từ chối quyền đọc clipboard
-  } else ask();
+  const btn = document.querySelector('.kh-pin-btn[data-ma="' + CSS.escape(ma) + '"]');
+  if (btn) { pinUpdate(btn); return; }
+  if (!pinAll()[ma]) { pinApply(ma, true, ten); pinGps(ma, false); }
+  else pinGps(ma, true);
 }
 
 /* “Chia sẻ vị trí”: gửi VỊ TRÍ ĐÃ GHIM (toạ độ) qua bảng chia sẻ của máy (`navigator.share`) —
@@ -10483,7 +10499,7 @@ function renderCards(q='') {
         ${(r.ma_sogcs || r.so_tbi) ? `<div class="kh-sub-row">
         ${r.ma_sogcs ? `<span class="kh-card-lbl">Mã sổ:</span><span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span>` : ''}
         ${r.ma_sogcs && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}
-        ${r.so_tbi ? `<span class="kh-card-lbl">Số TBI:</span><span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}
+        ${r.so_tbi ? `<span class="kh-card-lbl">TBI:</span><span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span>` : ''}
         </div>` : ''}
         ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="vertical-align:middle;margin-right:4px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}<!-- ⛔ Viên ZALO ĐÃ BỎ HẲN (2026-10-17m — yêu cầu người dùng: “tôi muốn bỏ icon tin nhắn zalo”,
              kèm ảnh thẻ đang có viên icon bong bóng chat cạnh viên SĐT): thẻ KH nay chỉ còn
