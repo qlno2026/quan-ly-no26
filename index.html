@@ -470,8 +470,12 @@
      **“nền sđt ở dark nhạt hơn”**)**: alpha **0,13 → 0,34 → 0,18 → `0,12`** — 0,34 ra nâu cam ĐẬM,
      0,18 vẫn còn rõ vệt nâu; 0,12 ghép với thẻ “Chuẩn” `#1a1f28` ⇒ ≈ `rgb(53,41,38)`: hầu như hoà
      vào thẻ, chỉ còn hơi ấm ⇒ “cam” nay do **CHỮ `#fdba74`** gánh (chữ trên nền mới **≈ 8,4:1** ✓ AA).
-     Light KHÔNG đụng (`#fde7d3` = cam nhạt, xem token `--vien-sdt-bg`). */
-  --vien-sdt-bg-dark: rgba(249,115,22,0.12);
+     ⟳ **2026-10-26 “cho màu nền và màu chữ sdt NHẠT THÊM ở cả light mode và dark mode”**: alpha
+     **0,12 → `0,08`** ⇒ ghép thẻ “Chuẩn” `#1a1f28` ra ≈ `rgb(44,38,39)`: gần như không còn “ô cam”,
+     chỉ còn hơi ấm dưới chữ (đúng ý “nhạt thêm”; light cũng nhạt theo — xem `--vien-sdt-bg` ở khối
+     `body.light-mode`). Chữ đổi kèm `#fdba74` → **`#fed7aa`** (orange-200) ở rule
+     `body:not(.light-mode) .kh-phone` ⇒ **10,98:1** ✓ AA. */
+  --vien-sdt-bg-dark: rgba(249,115,22,0.08);
   --vien-sdt-fg-dark: #ff9b9b;
   --vien-sdt-vien-dark: rgba(255,120,120,0.50);
   /* ⛔ 3 TOKEN VIÊN “ZALO” ĐÃ XOÁ (2026-10-17m) cùng viên Zalo trên thẻ (xem chú thích ở khối
@@ -826,9 +830,13 @@ body.light-mode {
                            (lùi đúng 1 nấc, trả về giá trị trước lượt “đậm thêm 1 tí”). */
   --vien-fg: #1e3a8a;
   --vien-vien: #93b8e8;
-  --vien-sdt-bg: #fde7d3;   /* ⟳ 2026-10-26 (“đổi sdt sang nền cam”): #fde3e3 (hồng) → **#fde7d3** (cam);
-                               ⟳ trước đó “nhạt xuống 1 nấc”: #fccccc → #fde3e3. Lịch sử: #fef2f2 → #fde3e3 →
-                               #fccccc → #fde3e3 → **#fde7d3**. Chữ navy `#1e3a8a` trên nền cam nhạt **≈9:1** ✓. */
+  --vien-sdt-bg: #fde7d3;   /* ⟳ 2026-10-26 (“đổi sdt sang nền cam”): #fde3e3 (hồng) → #fde7d3 (cam).
+                               Lịch sử: #fef2f2 → #fde3e3 → #fccccc → #fde3e3 → #fde7d3 → #fef6ec → **#fde7d3**.
+                               ⟳ “nền + chữ sdt NHẠT THÊM (cả 2 theme)” đã hạ nền xuống `#fef6ec` (cam sữa),
+                               ⟳ rồi **“cho màu nền sdt ĐẬM THÊM 1 NẤC ở light mode”** ⇒ quay lại ĐÚNG nấc
+                               trước **`#fde7d3`** (cam đào nhạt, tách khỏi nền thẻ `#f2f4f7` = 1,09:1).
+                               ⚠️ CHỮ GIỮ NGUYÊN `#c7500c` (yêu cầu chỉ nói “màu nền”) ⇒ tương phản trên nền
+                               đậm hơn này **4,86:1** ✓ AA (trên `#fef6ec` là 4,28). */
   --vien-sdt-vien: rgba(239,68,68,0.30);
   /* ⟳ 2026-10-26 (yêu cầu “cho nền sđt như dark mode”, ảnh = viên SĐT light đang nền xanh nhạt):
      nền `#f0f6ff` → **`#fee2e2`** = ĐÚNG nền tab “Từ 3Tr” ở light; viền `#93b8e8` → đỏ alpha.
@@ -993,8 +1001,16 @@ body.light-mode .kh-danhso .ic { color: #1d4ed8; }
   /* ⟳ 2026-10-03k: thêm lớp `--hdr-inset` (vạch sáng đỉnh/đáy + bóng trong) để header navy có
      chiều sâu. Vẫn KHÔNG gradient (xem chú thích `:root`).
      ⟳ 2026-10-03o: bóng đổ nay lấy từ THANG CHUNG `--elev-2` (thay `--hdr-shadow`) — header vào
-     cùng ngôn ngữ nổi khối với toolbar/tấm nổi. `--hdr-shadow` từ đây KHÔNG còn ai dùng. */
-  box-shadow: var(--elev-2), var(--hdr-inset);
+     cùng ngôn ngữ nổi khối với toolbar/tấm nổi. `--hdr-shadow` từ đây KHÔNG còn ai dùng.
+     ⟳ **2026-10-26 (yêu cầu “bỏ đổ bóng nền bảng header”; ảnh = header xanh có quầng tối loang
+     xuống trang)**: BỎ `var(--elev-2)` (bóng đổ `0 4px 12px`) ⇒ header hết đổ bóng xuống nội dung,
+     CHỈ còn lớp `--hdr-inset` (2 vạch sáng mảnh ở đỉnh/đáy + bóng trong đáy rất nhẹ) giữ chiều sâu.
+     ⚠️ PHẢI sửa CẢ `body.light-mode .header` (**~1418**) — rule đó khai LẠI đủ cặp shadow, để nguyên
+     là light mode vẫn còn bóng (lỗi y như vụ `background-image`/`--hdr-grad` ngay trên).
+     ℹ️ Muốn bỏ LUÔN quầng tối trong đáy header thì xoá số hạng `inset 0 -14px 18px -12px
+     rgba(0,0,0,0.62)` khỏi token `--hdr-inset` (**159**) — ⛔ hỏi trước, đó là “bóng TRONG” chứ
+     không phải “đổ bóng”. */
+  box-shadow: var(--hdr-inset);
   height: calc(var(--header-h) + env(safe-area-inset-top, 0px));
   /* ⟳ LỀ PHẢI `0 → 8px` (yêu cầu “tôi muốn đồng hồ và ngày tháng xích vô 1 tí”).
      Trước đây khối đồng hồ kết thúc ở `x = 403,6` — NGOÀI đường thẳng hàng của cả app:
@@ -1411,7 +1427,7 @@ body.light-mode .header {
   background: var(--hdr-bg);
   background-image: var(--hdr-grad);
   border-bottom-color: var(--hdr-line);
-  box-shadow: var(--elev-2), var(--hdr-inset);
+  box-shadow: var(--hdr-inset);   /* ⟳ 2026-10-26 “bỏ đổ bóng header” — xem chú thích ở `.header` (~1001): bỏ `var(--elev-2)`, phải giữ KHỚP với rule gốc, thiếu là light mode vẫn đổ bóng */
 }
 /* ⛔ ĐỪNG thêm lại `body.light-mode .header-title/.header-sub/.clock-box { color:#ffffff }`:
    cả 3 đã dùng `--hdr-text`/`--hdr-sub` (và `.clock-box` không cần override nền/border vì
@@ -1599,7 +1615,7 @@ body.light-mode .kh-sogcs { color: #334155; }
    = **`#1e3a8a` ĐÚNG màu chữ viên MÃ KH** ở light (yêu cầu sau: “cho màu chữ giống mã kh light mode”).
    Dùng TOKEN chứ không chép hex ⇒ sau này đổi `--vien-fg` thì SĐT tự đổi theo, không lệch tông.
    Nền `#fef2f2` + viền `0,30` GIỮ NGUYÊN. Tương phản `#1e3a8a` trên `#fef2f2` ≈ **9,4:1** ✓ dư AA. */
-body.light-mode .kh-phone { color: #b93f0c !important; background: var(--vien-sdt-bg); }   /* ⟳ 2026-10-26 “chữ cam”: var(--vien-fg) navy → **#b93f0c** (cam đậm), **4,64:1** trên nền cam nhạt #fde7d3 ✓ AA (bản #c2410c chỉ 4,33 — trượt nhẹ); ⛔ KHÔNG đổi token --vien-fg (viên MÃ KH còn dùng) */
+body.light-mode .kh-phone { color: #c7500c !important; background: var(--vien-sdt-bg); }   /* ⟳ 2026-10-26 “chữ cam”: var(--vien-fg) navy → #b93f0c; ⟳ “chữ sdt NHẠT THÊM”: → **#c7500c** (cam sáng hơn 1 nấc). ⚠️ Nền đã ĐẬM LẠI 1 nấc (`#fef6ec` → `#fde7d3`, xem token `--vien-sdt-bg` **833**) ⇒ tương phản nay **4,86:1** ✓ AA (khi nền còn `#fef6ec` là 4,28). Chữ KHÔNG đổi vì yêu cầu chỉ nói “màu nền”. ⛔ KHÔNG đổi token --vien-fg (viên MÃ KH còn dùng) */
 /* ⟳ 2026-10-26: icon điện thoại ở light đang ăn `--vien-sdt-fg-dark` `#ff9b9b` (hồng nhạt — gần
    như chìm trên nền `#fee2e2` mới) ⇒ dùng `--ic-red` `#ef4444` (3,4:1 với nền viên = đủ cho đồ hoạ). */
 body.light-mode .kh-card .kh-phone .ic { color: var(--ic-red); }
@@ -1645,7 +1661,7 @@ body:not(.light-mode) .kh-danhso { color: #e2e8f0 !important; background: var(--
    viền 1px vẫn phải giữ để hàng “SĐT · mã KH” cao đúng 22,58px như viên mã KH — bỏ hẳn là ô SĐT
    thấp hơn viên mã 2px). Light mode KHÔNG đụng (vẫn viền đỏ `0,30`; nền `#fef2f2` gần nền thẻ
    `#f2f4f7` nên ở light viền là thứ giữ hình ô). */
-body:not(.light-mode) .kh-phone { color: #fdba74 !important; background: var(--vien-sdt-bg-dark); border-color: transparent; }   /* ⟳ 2026-10-26 “chữ cam”: #ffd9d9 (hồng nhạt) → #fdba74 (orange-300) = chữ CAM, **≈7,6:1** trên nền viên rgba(249,115,22,0.18) ghép thẻ “Chuẩn” ✓ AA */
+body:not(.light-mode) .kh-phone { color: #fed7aa !important; background: var(--vien-sdt-bg-dark); border-color: transparent; }   /* ⟳ 2026-10-26 “chữ sdt NHẠT THÊM”: #fdba74 (orange-300) → **#fed7aa** (orange-200, nhạt hơn 1 nấc) trên nền rgba(249,115,22,0.08) ghép thẻ “Chuẩn” ⇒ **10,98:1** ✓ AA (trước 8,32) */
 body.light-mode .kh-thang { color: #334155; }
 body.light-mode .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #3b82f6; text-underline-offset: 3px; text-decoration-thickness: 2px; }
 body.light-mode .badge-blue { background: rgba(37,99,235,0.15); color: #1e40af !important; }
@@ -11411,17 +11427,61 @@ function saoLuuDuLieu() {
    XOÁ; hàm `moAppEVNHCMC` thì 2026-10-18 được DỰNG LẠI (chỉ để nút “Mở app EVNHCMC” của hộp
    NHẤN-GIỮ mã KH gọi) rồi ⟳ **CÙNG NGÀY LẠI XOÁ** khi nút đó bị gỡ — ⛔ hàm đó KHÔNG BAO GIỜ được
    gọi ở đây. */
+/* ── NHÁY NỀN XANH KHI COPY — DÙNG CHUNG cho viên MÃ KH **và** ô TÊN KH ──────────────────────
+   ⟳ 2026-10-26 (yêu cầu “khi chạm vô tên kh để copy cũng hiển thị màu giống màu chạm vô mã kh để
+   copy”): tách phần “nháy nền” ra khỏi `copyMaKH()` thành hàm dùng chung, để ô TÊN KH
+   (`lpTenTap`, cả THẺ lẫn BẢNG) nháy ĐÚNG một màu `rgba(34,197,94,0.3)` như viên MÃ KH.
+   ⛔ Chỉ đổi `style.background` của ĐÚNG ô vừa chạm — ⛔ KHÔNG thay `textContent` (sẽ làm mất icon
+   🏷 của viên mã KH và mất thẻ `<mark>` tô sáng từ khoá tìm kiếm).
+   ⚠️ Nhớ `background` GỐC ở `el._copyBg` và chỉ đọc MỘT LẦN (lúc ô còn chưa nháy): bản cũ đọc lại
+   mỗi lần chạm ⇒ chạm 2 lần trong 1,2s thì lần 2 “nhớ” nhầm màu XANH và ô bị xanh vĩnh viễn.
+   ⚠️ `border-radius` cũng phải nhớ/trả lại như `background` (ô `.kh-name`/`.cell-tenkh` không bo góc).
+   ⟳ **2026-10-26 “cho màu vừa bằng với tên”** (ảnh = dải xanh chạy HẾT bề ngang thẻ, chữ nằm lọt
+   bên trái): ô tên (`.kh-name`, `.cell-tenkh`) là khối `display: block` rộng bằng cả cột
+   (đo: chữ **80,28px** mà ô **350,87px**) ⇒ tô `background` là ra dải dài. Nên khi `fitText = true`
+   ta ĐO BỀ RỘNG CHỮ bằng `Range` rồi tô bằng **`background-image` gradient + `background-size`**
+   ⇒ dải xanh chỉ dài đúng bằng chữ (+6px đệm phải cho khỏi sát nét), KHÔNG đổi layout
+   (⛔ không dùng `display: inline-block`: `.cell-tenkh` là ô `td` của lưới, đổi `display` là vỡ hàng).
+   Viên MÃ KH vẫn gọi kiểu cũ (nó là viên bo tròn ôm sẵn chữ nên `background` đã “vừa bằng chữ”). */
+const COPY_FLASH_BG = 'rgba(34,197,94,0.3)';
+function copyFlash(el, ms, fitText) {
+  if (!el || !el.style) return;
+  if (el._copyTimer) { clearTimeout(el._copyTimer); el._copyTimer = null; }
+  if (el._copyBg === undefined) {
+    el._copyBg = el.style.background;   el._copyBr = el.style.borderRadius;
+    el._copyBgImg = el.style.backgroundImage; el._copyBgSize = el.style.backgroundSize;
+    el._copyBgRep = el.style.backgroundRepeat; el._copyBgPos = el.style.backgroundPosition;
+  }
+  let w = 0;
+  if (fitText) {
+    try { const rg = document.createRange(); rg.selectNodeContents(el); w = rg.getBoundingClientRect().width; } catch (e) { w = 0; }
+    if (w > 0) {
+      el.style.background = 'transparent';
+      el.style.backgroundImage = 'linear-gradient(' + COPY_FLASH_BG + ',' + COPY_FLASH_BG + ')';
+      el.style.backgroundRepeat = 'no-repeat';
+      el.style.backgroundSize = (w + 6) + 'px 100%';
+      el.style.backgroundPosition = 'left center';
+    } else {
+      el.style.background = COPY_FLASH_BG;   // không đo được chữ (ô rỗng) ⇒ tô như cũ
+    }
+  } else {
+    el.style.background = COPY_FLASH_BG;
+  }
+  el.style.borderRadius = '4px';
+  el._copyTimer = setTimeout(() => {
+    el.style.background = el._copyBg || '';
+    el.style.backgroundImage = el._copyBgImg || '';
+    el.style.backgroundSize = el._copyBgSize || '';
+    el.style.backgroundRepeat = el._copyBgRep || '';
+    el.style.backgroundPosition = el._copyBgPos || '';
+    el.style.borderRadius = el._copyBr || '';
+    el._copyTimer = null;
+  }, ms || 1200);
+}
 function copyMaKH(e, el) {
   e.stopPropagation();
   const txt = ((el && el.textContent) || '').trim();
-  const nhay = () => {      // nháy nền xanh tại ô vừa chạm — KHÔNG đụng DOM con (icon, <mark>)
-    if (!el) return;
-    if (el._copyTimer) { clearTimeout(el._copyTimer); el._copyTimer = null; }
-    const bgCu = el.style.background;
-    el.style.background = 'rgba(34,197,94,0.3)';
-    el.style.borderRadius = '4px';
-    el._copyTimer = setTimeout(() => { el.style.background = bgCu; el._copyTimer = null; }, 1200);
-  };
+  const nhay = () => copyFlash(el, 1200);   // nháy nền xanh tại ô vừa chạm — KHÔNG đụng DOM con (icon, mark)
   const xong = () => { nhay(); showToast('✓ Đã copy mã KH: ' + txt); };   // 2026-10-17l: CHỈ copy, không mở app
   if (lpCopyFallback(txt)) { xong(); return; }                                   // (1) đồng bộ
   if (navigator.clipboard && navigator.clipboard.writeText) {                    // (2) bất đồng bộ
@@ -11487,7 +11547,12 @@ function lpTenTarget(t) { return (t && t.closest) ? t.closest('.kh-name, .cell-t
    ⛔ KHÔNG `stopPropagation()` (xem lý do ở chú thích dài ngay trên). */
 function lpTenTap(el) {
   const row = (el && el.closest) ? el.closest('.kh-card[data-ma], .table-view tbody tr[data-ma]') : null;
-  if (row) lpCopy(row);   // `lpCopy` → `lpCopyText` lấy tên ở `.kh-name`/`.cell-tenkh` (data-ten)
+  if (!row) return;
+  /* ⟳ 2026-10-26: NHÁY NỀN XANH y hệt lúc chạm viên MÃ KH (dùng chung `copyFlash`) — yêu cầu
+     “chạm vô tên kh để copy cũng hiển thị màu giống màu chạm vô mã kh để copy”. Nháy NGAY lúc chạm
+     (không chờ clipboard) để phản hồi tức thì; màu tự trả lại sau 1,2s. */
+  copyFlash(el, 1200, true);   // ⟳ “cho màu vừa bằng với tên”: dải xanh chỉ dài bằng CHỮ (đo bằng Range)
+  lpCopy(row);            // `lpCopy` → `lpCopyText` lấy tên ở `.kh-name`/`.cell-tenkh` (data-ten)
 }
 /* Nuốt cú `click` bắn ngay sau khi một cử chỉ NHẤN-GIỮ đã chạy xong — cũng ở pha capture nên chạy
    trước `ondblclick` của thẻ/hàng.
