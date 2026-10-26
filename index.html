@@ -109,7 +109,13 @@
      `#e2e8f0` trên `#12233f` vẫn ~11,9:1 ✓. ⛔ Vẫn LỆCH TOKEN — đừng trả về `--ctl-solid`.
      ⟳ 2026-10-03r: NGƯỜI DÙNG CHỌN “NAVY THÉP” `#12233f` → **`#1e3a5f`** (so 6 sắc ở
      `.freebuff/hdr-pick.svg`). Xanh rõ hơn nhưng vẫn TỐI ⇒ chữ/phụ đề sáng giữ nguyên. */
-  --hdr-bg: #1e3a5f;
+  --hdr-bg: #1D4ED8;
+  /* ⟳ 2026-10-26: `#1e3a5f` → **`#1D4ED8`** = ĐÚNG màu inline do `HEADER_FIXED_BG` đặt (blue-700).
+     Vì sao phải đổi cả TOKEN: token chính là màu header **khi CHƯA có dữ liệu / trước khi JS chạy**
+     (`updateHeaderDebtColor` chỉ được gọi trong `updateStats`) ⇒ trước đây mở app ra thấy header navy
+     `#1e3a5f` rồi “nhảy” sang xanh khi dữ liệu nạp xong (đúng ảnh người dùng gửi: header navy + nhãn
+     “Chưa có dữ liệu”). Nay màu đồng bộ **ngay từ khung hình đầu** ở cả 2 theme.
+     ⚠️ Sửa hằng `HEADER_FIXED_BG` thì PHẢI sửa luôn token này (+ bản `body.light-mode` **1370**). */
   --hdr-text: #e2e8f0;
   /* ⟳ 2026-10-16k/l: `#94a3b8` → **`#cbd5e1`** (yêu cầu “bớt màu đen lại” ở nền header đổi-màu-
      theo-nợ). Vì sao phải sáng theo: nền header nay là màu mức **trộn 10% đen** (xem
@@ -1366,8 +1372,10 @@ body.light-mode {
   /* ⟳ 2026-10-03e: nền header LIGHT = navy `#12233f` (người dùng chọn “cả hai theme”). Tách khỏi
      `--ctl-light-bg` (tab/thẻ vẫn dùng token đó) — ⛔ đừng “sửa lại cho khớp control”.
      ⟳ 2026-10-03h: SÁNG LÊN MỘT NẤC `#12233f` → **`#12233f`** (yêu cầu “màu hơi tối”).
-     ⟳ 2026-10-03r: “navy thép” `#12233f` → **`#1e3a5f`** (ĐỒNG BỘ với chế độ tối). */
-  --hdr-bg: #1e3a5f;
+     ⟳ 2026-10-03r: “navy thép” `#12233f` → **`#1e3a5f`** (ĐỒNG BỘ với chế độ tối).
+     ⟳ 2026-10-26: **`#1e3a5f` → `#1D4ED8`** — đồng bộ với `:root` + hằng `HEADER_FIXED_BG` ⇒ lúc CHƯA
+     có dữ liệu (ảnh người dùng: header navy + nhãn “Chưa có dữ liệu”) header cũng ra đúng màu xanh. */
+  --hdr-bg: #1D4ED8;
   /* ⟳ 2026-10-03e: chữ header LIGHT nay là màu SÁNG `#e2e8f0` (nền đã thành navy `#12233f`) —
      BẮT BUỘC, chữ `#000000` cũ sẽ VÔ HÌNH trên nền navy. Dùng CHUNG cho tiêu đề + đồng hồ.
      ĐO LIVE trên `#12233f`: chữ `#e2e8f0` **~13,9:1** ✓ · phụ đề `#a8b6cc` **~7,4:1** ✓. */
@@ -9954,20 +9962,26 @@ function mixBlack(hex, ratio) {
    ⚠️ MUỐN QUAY LẠI kiểu “ăn theo mức nợ”: chỉ cần trả lại đúng 1 dòng cũ (mọi thứ còn nguyên):
      hd.style.setProperty('--hdr-bg', mixBlack(HEADER_DEBT_COLORS[debtTier(total)], HEADER_DEBT_BLACK));
    (`HEADER_DEBT_COLORS`, `HEADER_DEBT_BLACK`, `debtTier`, `mixBlack` GIỮ NGUYÊN, chưa xoá.) */
-const HEADER_FIXED_BG = '#2E56C8';   /* ⟳ 2026-10-26 “giống màu này nhưng ĐỪNG SÁNG QUÁ” (ảnh mẫu): #1F7AA3 → **#2E56C8** (xanh dương, tối hơn mẫu 1 nấc) */
+const HEADER_FIXED_BG = '#1D4ED8';   /* ⟳ 2026-10-26 “cho nền bảng header TỐI HƠN” ⇒ #2563EB (blue-600) → **#1D4ED8** (blue-700, đúng 1 nấc tối hơn, cùng hue) */
 /* ⟳ 2026-10-26: người dùng chỉ định MÃ MÀU cụ thể `#2E86AB` (xanh ngọc đậm pha xanh dương) ⇒ navy cũ
    `#17336e` → `#2E86AB`; rồi gửi ảnh mẫu màu (không kèm mã) “giống màu này” ⇒ `#2E86AB` → `#1F7AA3`;
-   rồi gửi ảnh mẫu THỨ HAI (bong bóng chat xanh dương rất tươi ≈ `#3B6EF7`) kèm “giống màu này NHƯNG
-   ĐỪNG SÁNG QUÁ” ⇒ **`#2E56C8`** (cùng hue ≈ 224° với mẫu nhưng tối đi ~1/4 độ sáng).
-   ⚠️ Ảnh mẫu KHÔNG kèm mã hex và ảnh đính kèm không lưu ra đĩa (không đọc được pixel) ⇒ 3 mã này đều
-   ĐỌC BẰNG MẮT; nếu lệch thì chỉ cần đổi đúng hằng này (1 chỗ, ăn cả 2 theme).
-   ĐO LẠI tương phản trên `#2E56C8` (độ sáng ≈ 0,114 — TỐI HƠN hẳn `#1F7AA3` 0,169):
-     · `--hdr-text` `#e2e8f0` = **5,20:1** ✓ AA (trước 3,90 ✗)
-     · `--hdr-sub`  `#cbd5e1` = **4,32:1** ≈ sát ngưỡng 4,5 (dòng phụ 13px; ⛔ chưa đổi chữ)
-     · tách khỏi nền trang = **2,94:1** (thấp hơn `#1F7AA3` 4,05 vì nền tối lại; vẫn hơn navy cũ 1,55)
-   ⛔ Người dùng CHỈ yêu cầu đổi NỀN ⇒ luôn KHÔNG đụng `--hdr-text`/`--hdr-sub`. Muốn chữ phụ đạt AA
-   tuyệt đối thì phải HỎI TRƯỚC (chữ TRẮNG `#ffffff` = **6,48:1** cho cả 2 dòng) — đừng tự đổi vì màu
-   chữ là yêu cầu riêng của người dùng. */
+   rồi ảnh mẫu THỨ HAI (bong bóng chat xanh dương rất tươi ≈ `#3B6EF7`) + “giống màu này NHƯNG ĐỪNG SÁNG
+   QUÁ” ⇒ `#2E56C8`; rồi ảnh THỨ BA (viên “Chi tiết” xanh dương + chữ trắng) “giống màu nền trong ảnh”
+   ⇒ `#2563EB` = ĐÚNG màu viên tab đang chọn (`.loai-tab.active` dòng 2979, so sánh `sameAsTab: true`);
+   cuối cùng “**cho nền bảng header TỐI HƠN**” ⇒ **`#1D4ED8`** = blue-700 (đúng 1 nấc tối hơn blue-600
+   `#2563EB`, cùng hue ≈ 224°) — mã đang dùng.
+   Đo live (533×394, light + dark): `--hdr-bg` = `rgb(29, 78, 216)`, `overX 0`.
+   ⚠️ Ba mã `#2E86AB` / `#1F7AA3` / `#2E56C8` ĐỌC BẰNG MẮT từ ảnh (ảnh đính kèm không lưu ra đĩa ⇒ không
+   đọc được pixel); `#2563EB` chép thẳng từ token CSS; `#1D4ED8` hạ đúng 1 nấc thang blue. Nếu vẫn lệch
+   thì chỉ cần đổi đúng hằng này (1 chỗ, ăn cả 2 theme) — ⛔ đừng đi tìm “công thức pha màu”.
+   ĐO TƯƠNG PHẢN sau khi tối (độ sáng nền ≈ 0,132, trước là 0,162):
+     · `--hdr-text` `#e2e8f0` = **5,44:1** ✓ AA   (trên `#2563EB` chỉ 4,19 ✗ · `#1F7AA3` 3,90 ✗)
+     · `--hdr-sub`  `#cbd5e1` = **4,51:1** ✓ AA   (trên `#2563EB` 3,48 ✗ · `#2E56C8` 4,32 ≈)
+     · tách khỏi nền trang = **2,90:1** (thấy rõ nhờ viền + bóng dưới header)
+   ⇒ Nền tối hơn KHÔNG chỉ “đậm cho đẹp” mà **cứu luôn tương phản chữ**: cả 2 dòng đạt AA mà KHÔNG phải
+   đụng `--hdr-text`/`--hdr-sub` (đúng ý “chỉ đổi nền”).
+   ⛔ Muốn tối/sáng thêm thì đi tiếp 1 nấc thang blue (`#1E40AF` blue-800 · `#1E3A8A` blue-900) hoặc lùi
+   `#2563EB`; ⛔ đừng tự đổi màu chữ vì màu chữ là yêu cầu riêng của người dùng. */
 function updateHeaderDebtColor(total) {
   const hd = document.querySelector('.header');
   if (!hd) return;
