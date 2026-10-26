@@ -3091,12 +3091,19 @@ body.light-mode .loai-tab.active[data-val="tren5tr"] { background: #2563eb; colo
      ngoài khung và **lướt ngang** (dải đã có `overflow-x: auto`).
      ⚠️ Đệm ngang 2px (bản 4 tab đã đo): rộng hơn là chữ “Tổng hợp” in đậm bị cắt.
      ⚠️ Bề rộng do JS gán nên KHÔNG dùng `flex: 1 1 0` nữa (nó đè `width` ⇒ dải tràn). */
-  .loai-tab { flex: 0 0 auto; min-width: 0; padding: 0 2px; gap: 3px; font-size: clamp(10.5px, calc(5.52vw - 3.2px), 24px); }
+  /* ⟳ 2026-10-26 (yêu cầu “cho cỡ chữ các tab này bằng nhau”, ảnh = ô tìm kiếm · “Nhân viên” · dải tab):
+     MỌI control của thanh công cụ ở khổ điện thoại nay dùng CHUNG một biểu thức cỡ chữ
+     `clamp(10.5px, calc(5.52vw - 3.2px), 19px)` ⇒ 3 thứ luôn BẰNG NHAU ở mọi bề rộng:
+     472/533px ⇒ **19px** · 375 ⇒ **17,5** · 320 ⇒ **14,5**. Trần hạ 24 → **19px** (đúng `--ctl-fs`
+     của ô tìm kiếm) vì người dùng muốn cỡ “bình thường”. ⚠️ GIỮ ĐƯỜNG `vw` chứ không cứng 19px:
+     4 tab đầu mỗi tab chỉ rộng `strip/4` (~68px ở 320) nên cứng 19px là “Tổng hợp” bị CẮT chữ.
+     ⇒ 3 nơi phải cùng biểu thức: rule này · `.filter-select` · `.search-box input` (xem 2 khối @media). */
+  .loai-tab { flex: 0 0 auto; min-width: 0; padding: 0 2px; gap: 3px; font-size: clamp(10.5px, calc(5.52vw - 3.2px), 19px); }
   /* 2 nút sắp xếp trong dải ăn ĐÚNG hệ cỡ chữ của tab (chúng là “tab” thứ 11/12 của hàng).
      ⚠️ Selector phải là (0,3,0) `.loai-tabs .sort-btn.loai-sort-btn`: rule gốc 16px nằm SAU khối
      `@media` này trong file (khối `.adv-*` dùng chung) ⇒ cùng độ ưu tiên là rule gốc ĐÈ, nút đứng
      ở 16px trong khi tab 24px (đã đo và bắt được đúng lỗi này). */
-  .loai-tabs .sort-btn.loai-sort-btn { padding: 0 6px; gap: 3px; font-size: clamp(10.5px, calc(5.52vw - 3.2px), 24px); }
+  .loai-tabs .sort-btn.loai-sort-btn { padding: 0 6px; gap: 3px; font-size: clamp(10.5px, calc(5.52vw - 3.2px), 19px); }
   .loai-tabs .sort-btn .sort-ico { width: 13px; height: 13px; }
   .loai-tabs .sort-btn .sort-arrow { width: 12px; height: 12px; }
   .loai-tab .loai-tab-ic { width: 13px; height: 13px; }
@@ -3129,8 +3136,8 @@ body.light-mode .loai-tab.active[data-val="tren5tr"] { background: #2563eb; colo
    `4,6 × cỡ chữ`) ⇒ dùng lại đường thẳng `calc(5.52vw - 3.2px)`: 375px → 17,5 · 320px → 14,5.
    ⚠️ Ngưỡng 490 là điểm 24px bắt đầu vừa — ⛔ đừng hạ xuống. */
 @media (max-width: 415px) {
-  .filter-select { font-size: 24px; }   /* ⟳ 2026-10-26 (yêu cầu “chữ ở tab nhân viên khi xem trên điện thoại bị nhỏ”): BỎ clamp theo `vw` — ô “Nhân viên” nay chiếm CẢ HÀNG (ô “Chi tiết nợ” đã ẩn, 2 tab sắp xếp đã vào dải tab) nên KHÔNG phải co chữ để vừa khung như dải tab ⇒ giữ thẳng **24px** = đúng trần của tab. Đo: 375px trước **17,5px** → nay 24; 320px trước **14,5px** → nay 24. “Nhân viên” 24px ≈ 96px + icon 16 + khe 4 ⇒ vẫn thừa chỗ ở 320px (ô rộng ~288px); tên dài thì `fitFilterLabel` tự bỏ icon / ellipsis. */
-  .loai-tab { font-size: clamp(10.5px, calc(5.52vw - 3.2px), 24px); }
+  .filter-select { font-size: clamp(10.5px, calc(5.52vw - 3.2px), 19px); }   /* ⟳ 2026-10-26 (yêu cầu “cho cỡ chữ các tab này bằng nhau”): ĐỔI TỪ `var(--ctl-fs)` cứng 19px sang ĐÚNG biểu thức của `.loai-tab`/ô tìm kiếm ⇒ 3 thứ bằng nhau ở mọi khổ (dưới 415px thì co cùng nhịp: 375 → 17,5 · 320 → 14,5). */
+  .loai-tab { font-size: clamp(10.5px, calc(5.52vw - 3.2px), 19px); }
 }
 
 /* ── NÚT “Nền”: BA MỨC — MỖI THEME MỘT BỘ RIÊNG ───────────────────────────────
@@ -5735,9 +5742,9 @@ body.force-desktop .table-view { display: block; }
 
 /* Mobile-only refinements */
 @media (max-width: 639.98px) {
-  .filter-select { font-size: 24px; padding-top: 6px; padding-bottom: 6px; }   /* ⟳ 2026-10-26 (yêu cầu “chữ ở tab nhân viên khi xem trên điện thoại bị nhỏ”): `clamp(10.5px, calc(5.52vw - 3.2px), 24px)` → **24px CỐ ĐỊNH**. Lý do: ô “Nhân viên” nằm MỘT MÌNH cả hàng (ô “Chi tiết nợ” ẩn, 2 nút sắp xếp đã dời vào dải tab) nên không cần co chữ cho vừa nửa hàng như thười còn 2 ô — co theo `vw` chỉ làm chữ nhỏ đi trên máy hẹp (375px 17,5 · 320px 14,5). Trần 24px y hệt trần của tab ⇒ hai thứ cùng cỡ ở mọi khổ ≥488px. */
-  .sort-btn { font-size: var(--ctl-fs); }
-  .search-box input { font-size: var(--ctl-fs); }
+  .filter-select { font-size: clamp(10.5px, calc(5.52vw - 3.2px), 19px); padding-top: 6px; padding-bottom: 6px; }   /* ⟳ 2026-10-26 (yêu cầu “cho cỡ chữ các tab này bằng nhau”): `var(--ctl-fs)` (19px cứng) → CÙNG biểu thức với `.loai-tab` + ô tìm kiếm ⇒ 3 thứ luôn bằng nhau (472/533: 19px · 375: 17,5 · 320: 14,5). */
+  .sort-btn { font-size: clamp(10.5px, calc(5.52vw - 3.2px), 19px); }
+  .search-box input { font-size: clamp(10.5px, calc(5.52vw - 3.2px), 19px); }   /* ⟳ 2026-10-26: cùng biểu thức — trước là `var(--ctl-fs)` 19px cứng, lệch cỡ với dải tab khi màn hẹp hơn 490px. */
   /* ⛔ 8 DÒNG KHAI LẠI CỠ CHỮ THẺ CARD Ở ĐÂY ĐÃ BỊ XOÁ (lượt “Aa — tự chọn cỡ chữ”).
      Lý do: chúng khai lại ĐÚNG giá trị của khối nền nên chỉ tạo ra cái bẫy “sửa một nơi,
      mobile không đổi”. Nay cả 3 mức nằm ở token `--fs-card-big` / `--fs-card` (xem `:root`)
