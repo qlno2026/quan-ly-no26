@@ -9956,17 +9956,18 @@ function mixBlack(hex, ratio) {
    (`HEADER_DEBT_COLORS`, `HEADER_DEBT_BLACK`, `debtTier`, `mixBlack` GIỮ NGUYÊN, chưa xoá.) */
 const HEADER_FIXED_BG = '#2E56C8';   /* ⟳ 2026-10-26 “giống màu này nhưng ĐỪNG SÁNG QUÁ” (ảnh mẫu): #1F7AA3 → **#2E56C8** (xanh dương, tối hơn mẫu 1 nấc) */
 /* ⟳ 2026-10-26: người dùng chỉ định MÃ MÀU cụ thể `#2E86AB` (xanh ngọc đậm pha xanh dương) ⇒ navy cũ
-   `#17336e` → `#2E86AB`; rồi NGAY SAU đó gửi ảnh mẫu màu (không kèm mã) và yêu cầu “giống màu này” ⇒
-   `#2E86AB` → **`#1F7AA3`** (đọc từ ảnh mẫu: xanh ngọc đậm hơn `#2E86AB` 1 nấc, cùng hue ~197°).
-   ⚠️ Ảnh mẫu KHÔNG kèm mã hex và ảnh đính kèm không lưu ra đĩa (không đọc được pixel) ⇒ `#1F7AA3` là
-   màu ĐỌC BẰNG MẮT; nếu lệch thì chỉ cần đổi đúng hằng này (1 chỗ, ăn cả 2 theme).
-   ĐO LẠI tương phản trên `#1F7AA3` (độ sáng ≈ 0,169):
-     · `--hdr-text` `#e2e8f0` = **3,90:1** ✗ (dưới AA 4,5:1)
-     · `--hdr-sub`  `#cbd5e1` = **3,24:1** ✗ (dòng phụ 13px ⇒ cần 4,5:1)
-     · tách khỏi nền trang = **4,05:1** ✓ (header vẫn nổi rõ so với navy cũ 1,55:1)
-   ⛔ Người dùng CHỈ yêu cầu đổi NỀN ⇒ lượt này KHÔNG đụng `--hdr-text`/`--hdr-sub`. Muốn chữ đạt AA
-   trên nền mới thì phải HỎI TRƯỚC (chữ TRẮNG `#ffffff` cho 2 dòng = **4,49 / 4,49:1** ≈ sát ngưỡng,
-   hoặc dìm nền về `#1a6a8e`) — đừng tự đổi vì màu chữ là yêu cầu riêng của người dùng. */
+   `#17336e` → `#2E86AB`; rồi gửi ảnh mẫu màu (không kèm mã) “giống màu này” ⇒ `#2E86AB` → `#1F7AA3`;
+   rồi gửi ảnh mẫu THỨ HAI (bong bóng chat xanh dương rất tươi ≈ `#3B6EF7`) kèm “giống màu này NHƯNG
+   ĐỪNG SÁNG QUÁ” ⇒ **`#2E56C8`** (cùng hue ≈ 224° với mẫu nhưng tối đi ~1/4 độ sáng).
+   ⚠️ Ảnh mẫu KHÔNG kèm mã hex và ảnh đính kèm không lưu ra đĩa (không đọc được pixel) ⇒ 3 mã này đều
+   ĐỌC BẰNG MẮT; nếu lệch thì chỉ cần đổi đúng hằng này (1 chỗ, ăn cả 2 theme).
+   ĐO LẠI tương phản trên `#2E56C8` (độ sáng ≈ 0,114 — TỐI HƠN hẳn `#1F7AA3` 0,169):
+     · `--hdr-text` `#e2e8f0` = **5,20:1** ✓ AA (trước 3,90 ✗)
+     · `--hdr-sub`  `#cbd5e1` = **4,32:1** ≈ sát ngưỡng 4,5 (dòng phụ 13px; ⛔ chưa đổi chữ)
+     · tách khỏi nền trang = **2,94:1** (thấp hơn `#1F7AA3` 4,05 vì nền tối lại; vẫn hơn navy cũ 1,55)
+   ⛔ Người dùng CHỈ yêu cầu đổi NỀN ⇒ luôn KHÔNG đụng `--hdr-text`/`--hdr-sub`. Muốn chữ phụ đạt AA
+   tuyệt đối thì phải HỎI TRƯỚC (chữ TRẮNG `#ffffff` = **6,48:1** cho cả 2 dòng) — đừng tự đổi vì màu
+   chữ là yêu cầu riêng của người dùng. */
 function updateHeaderDebtColor(total) {
   const hd = document.querySelector('.header');
   if (!hd) return;
