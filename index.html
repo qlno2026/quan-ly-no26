@@ -1671,7 +1671,7 @@ body:not(.light-mode) .kh-phone { color: #fed7aa !important; background: var(--v
 body.light-mode .kh-thang { color: #334155; }
 body.light-mode .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #3b82f6; text-underline-offset: 3px; text-decoration-thickness: 2px; }
 body.light-mode .badge-blue { background: rgba(37,99,235,0.15); color: #1e40af !important; }
-body.light-mode .kh-addr-line { color: #334155; }
+body.light-mode .kh-addr-line { color: #475569; }   /* ⟳ 2026-10-26 (yêu cầu “cho chữ hàng địa chỉ ở light mode màu nhạt hơn”): #334155 (slate-700) → **#475569** (slate-600). Đo trên nền trang trắng: **7,42:1** · trên thẻ #f8fafc **7,00:1** ✓ AA (nên “nhạt” mà vẫn đọc tốt). ⛔ Đừng hạ tiếp xuống #64748b (5,0:1 — bắt đầu mờ ở cỡ 17px). ⛔ Chỉ LIGHT: dark giữ #94a3b8 theo mức nền của nó. */
 /* ⟳ Nền hàng “Tổng …” = ĐÚNG nền thẻ card (yêu cầu “màu nền giống màu nền thẻ card”). Dùng
    CHUNG token `--light-card` với `body.light-mode .kh-card` ở dòng ~1146 ⇒ không thể lệch màu,
    và tự theo cả 3 mức “Nền” (`[data-surface="sang"|"diu"]` ghi đè `--light-card`). */
@@ -3843,6 +3843,11 @@ body.light-mode .count-range-x:active { background: #ef4444; color: #ffffff; }
      Viền + bóng đổ là thứ tách thẻ khỏi nền trang ⇒ ⛔ đừng gỡ chúng, và đừng hạ “Dịu” nữa. */
   border: 1px solid rgba(255,255,255,0.34);
   box-shadow: var(--elev-1);   /* ⟳ 2026-10-03o: vào THANG CHUNG (light = `none`, xem `body.light-mode`) */
+  /* ⟳ 2026-10-26 (yêu cầu “bo tròn các góc viền thẻ như lúc đầu”): BO GÓC trả về **10px**.
+     Trước đó (lượt “bo góc viền”) đã hạ xuống 0 để khối nền không bị khoét cong; nay khối
+     tiêu đề màu coban đã trải HẾT bề ngang thẻ nên bo góc thẻ = bo góc khối nền — đúng kiểu
+     “như lúc đầu” người dùng muốn. `overflow: hidden` vẫn cắt theo ĐÚNG đường bo này.
+     ⛔ Bảng (`.table-view`) không đụng — yêu cầu chỉ nói “thẻ”. */
   border-radius: 10px;
   /* `overflow: hidden` là thứ làm MỌI thứ vẽ tràn trong thẻ bị CẮT theo đúng đường bo
      cong của viền thẻ — không có nó thì vạch `multi-hd` (và mọi nền/vạch khác) sẽ thò
@@ -3907,6 +3912,11 @@ body.light-mode .count-range-x:active { background: #ef4444; color: #ffffff; }
   width: var(--multi-hd-h);
   background: var(--multi-hd);
   pointer-events: none;
+  /* ⟳ 2026-10-26: `z-index: 2` để vệt xanh LÁ nằm TRÊN dải nền ngọc của `.kh-card-top`
+     (`::before` mặc định vẽ TRƯỚC nội dung ⇒ dải nền đục của hàng đầu sẽ che mất vệt ở
+     đúng đoạn thẻ mà người dùng nhìn đầu tiên). Vệt chỉ rộng 5px ở mép trái, chữ bắt đầu
+     ở 8px ⇒ không đè lên chữ nào. ⛔ Đừng bỏ `pointer-events: none`. */
+  z-index: 2;
 }
 /* Nền thẻ đánh dấu phải ĐỤC (không dùng rgba): trước đây `rgba(251,191,110,0.03/.08)`
    bị pha với nền TRANG chứ không phải nền thẻ, nên ở light mode thẻ "Chú ý" thành xám
@@ -3931,6 +3941,147 @@ body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color:
 
 
 .kh-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }   /* ⟳ 2026-10-25 (yêu cầu “cho khoảng cách các hàng xa nhau 1 tí”): 2px → 4px */
+/* ── DẢI NỀN XANH NGỌC ĐẬM **CHỈ SAU Ô TÊN** CỦA THẺ (2026-10-26) ───────────────────────
+   Lịch sử trong cùng ngày (đừng đọc nhầm là một yêu cầu):
+   · lượt 1 — “hàng tên, số tiền tháng nợ có nền xanh ngọc đậm”: dải phủ CẢ `.kh-card-top`
+     (tên + số tiền + tháng), chữ của 3 ô đều đổi sang tông sáng.
+   · lượt 2 — “bo góc viền, cho hàng số tiền và tháng nợ có nền đồng bộ với nền thẻ”:
+     ⇒ dải CHỈ còn sau Ô TÊN · cột phải (số tiền + tháng) trở về NỀN THẺ như mọi hàng khác
+       ⇒ mọi rule “chữ sáng trên dải” của `.kh-tien`/`.kh-thang` đã GỠ, chúng đọc màu theo
+       theme như trước (⛔ đừng trả lại #ffe4e6/#d1fae5/#ccfbf1 — đó là pallet cho nền tối).
+     ⇒ GÓC VUÔNG: thẻ bỏ bo `10px` (`border-radius: 0` ngay dưới), nếu không thì góc trên-trái
+       của dải vẫn bị `overflow:hidden` + bo góc cắt cong (đúng cái người dùng thấy trong ảnh).
+   · NỀN `#1e40af` (blue-800) dùng CHUNG 2 theme — nền thẻ tối (`--dk-card` ~#1a1f28) và sáng
+     (`--light-card` #f8fafc) đều tách khỏi tông này nên không cần override theo theme.
+   · Dải trải từ MÉP THẺ (lề âm 8px = đệm thẻ) và cao BẰNG CẢ HÀNG nhờ `align-self: stretch`
+     ⇒ nó là một KHỐI TIÊU ĐỀ chữ nhật, không phải một viên bo góc.
+   · Chỉ chữ TÊN đổi sang trắng (**5,47:1** trên `#1e40af` ✓ AA). `!important` là CỐ Ý: app có
+     các rule màu tên theo mức nền / thẻ đánh dấu với specificity cao hơn hẳn
+     (`[data-surface] .kh-name`, `.kh-card.highlighted .kh-name`) — thiếu nó là tên tối lại
+     trên nền ngọc mỗi lần đổi “Mức nền” hoặc đánh dấu thẻ.
+   · IN: `@media print` trả dải về trắng + chữ đen (chữ trắng không in được, nền đậm tốn mực). */
+/* (khối comment cũ của lượt 1 — giữ lại phần ĐO ĐẠC để đối chiếu, chỉ đọc khi cần)
+   Yêu cầu người dùng: “tôi muốn hàng tên, số tiền tháng nợ có nền màu xanh ngọc đậm”.
+   Yêu cầu người dùng: “tôi muốn hàng tên, số tiền tháng nợ có nền màu xanh ngọc đậm”.
+   Hàng đó = `.kh-card-top` (ô TÊN `.kh-name` + cột phải `.kh-tien-col` chứa `.kh-tien` và
+   dòng tháng `.kh-thang-row`). ⛔ Đừng gắn nền này vào `.kh-card-mid` (danh số/SĐT) hay
+   `.kh-ghichu-row` — người dùng chỉ nói 3 thứ ở hàng đầu.
+   · NỀN `#1e40af` (blue-800) dùng CHUNG 2 theme: nền thẻ tối (`--dk-card` ~#1a1f28) và nền
+     thẻ sáng (`--light-card` #f8fafc) đều tách khỏi tông này, nên không cần override theo theme.
+   · DẢI TRÀN tới mép thẻ bằng lề âm ĐÚNG BẰNG đệm thẻ (`8px`, xem `.kh-card`); `overflow:
+     hidden` của thẻ tự cắt theo đường bo 10px ⇒ ⛔ không thêm `border-radius` ở đây (bo tay
+     sẽ lệch đường cong, đúng cái bẫy đã ghi ở vệt `multi-hd`). Đệm trong của dải cũng `8px`
+     ⇒ mọi chữ vẫn bắt đầu ở ĐÚNG mốc cũ, bề rộng chữ không đổi (không sinh xuống dòng mới).
+   · ⚠️ NỀN ĐẬM ⇒ MỌI CHỮ TRONG DẢI PHẢI ĐỔI SANG TÔNG SÁNG. Giữ nguyên màu cũ thì chữ
+     xanh dương `.kh-name` #1d4ed8 / đỏ `#dc2626` / xanh lá `#059669` chìm hẳn trên nền ngọc
+     (~1,5–2,5:1). Số đo tương phản trên `#1e40af`: tên **#ffffff 5,47** · tháng **#ccfbf1
+     4,87** · tiền nợ ≥ 2Tr **#ffe4e6 4,56** · tiền nợ nhỏ **#d1fae5 4,83** · `.mid` **#fef3c7
+     4,94** · `.mil-digit` **#ffedd5 4,84** — TẤT CẢ ≥ AA 4,5. Giữ ĐÚNG hệ màu (đỏ = nợ lớn,
+     xanh = nợ nhỏ), chỉ hạ độ bão hoà cho đủ sáng; ⛔ đừng trả về #dc2626/#059669.
+   · Thẻ ĐÁNH DẤU (`.highlighted` vàng · `.highlighted-purple` xanh) VẪN giữ dải — nhưng khối
+     đánh dấu có 2 rule `!important` (chữ đỏ #b91c1c, tên nâu #422006) nên phải đè lại, xem
+     khối “THẺ ĐÁNH DẤU TRÊN DẢI NGỌC” ngay dưới.
+   · IN: `@media print` ép dải về trắng (chữ trắng không in được, nền đậm tốn mực). */
+/* ⟳ 2026-10-26 (yêu cầu “cho sdt và mã kh nằm cùng hàng”): `.kh-card-top` nay `flex-wrap` ⇒
+   hàng SĐT + mã KH (`.kh-mid-row`, `flex: 0 0 100%`) rơi xuống DÒNG 2 và rộng HẾT thẻ ⇒ hai
+   viên nằm cùng một hàng ở 375px (đo: cần ~315px, cột trái một hàng chỉ ~230px nên không thể
+   nhét vào cột tên). Hai viên vẫn đeo nền riêng trên dải coban. */
+/* ══ KHỐI ĐẦU THẺ màu XANH DƯƠNG ĐẬM #1e40af (2026-10-26) ═══════════════════════════════════
+   Yêu cầu cuối cùng của chuỗi: “đổi nền sang màu xanh coban” → rồi **“cho nền này màu xanh ngọc
+   đậm”** (đổi lại `#0047AB` → **#1e40af**; sửa màu thì sửa Ở ĐÂY và 2 chỗ `.kh-card-top` /
+   `.kh-mid-row` bên dưới) · “cho sđt và mã kh nằm cùng
+   hàng” · “cho số tiền và tháng nợ quay lại vị trí cũ” · “bo góc tròn phía dưới nền xanh” ·
+   “nền xanh chưa ra hết viền thẻ”.
+   ⇒ Bố cục: MỘT dải coban TRẢI HẾT BỀ NGANG THẺ (trừ 1px viền), gồm
+       dòng 1: TÊN (trái) + SỐ TIỀN / THÁNG NỢ (phải)      ← .kh-card-top
+       dòng 2: 📞 SĐT + 🏷️ mã KH (cùng một hàng)              ← .kh-mid-row (con của .kh-card)
+     Hai dòng cùng nền coban, dính liền; ĐÁY dải coban bo **10px** (góc tròn phía dưới), góc
+     TRÊN bo theo thẻ nhờ overflow:hidden.
+   · Vì sao tách 2 phần tử: dòng SĐT + mã KH cần RỘNG HẾT THẺ (cần ~315px ở 375px) trong khi
+     cột tên chỉ còn ~230px khi đứng cạnh cột tiền ⇒ nếu nhét chung cột thì 2 viên buộc phải
+     xuống 2 dòng. Dòng đó vì thế là con TRỰC TIẾP của .kh-card.
+   · Lề âm 8px = ĐÚNG đệm thẻ (.kh-card padding: 8px) ⇒ nền chạm tới sát viền thẻ.
+   · Chữ trên coban đổi sang tông SÁNG (tên trắng 8,18:1 · tháng #cfe0ff ~7,9 · tiền
+     #ffe4e6/#d1fae5/#ffedd5 6,9–7,3) — tất cả ≫ AA 4,5. ⛔ Trên coban ⛔ TUYỆT ĐỐI không để
+     lại màu chữ của theme (#1d4ed8/#dc2626/#059669): chỉ ~1,5–2,5:1.
+   · !important là CỐ Ý — có các rule màu theo “Mức nền” và theo thẻ đánh dấu với specificity
+     cao hơn (body[data-surface] .kh-name / .kh-card.highlighted .kh-tien).
+   · :has() chỉ dùng cho trường hợp KHÔNG có SĐT lẫn mã KH (không có dải dòng 2) để bo đáy khối
+     trên; trình duyệt không hỗ trợ :has() thì khối đó chỉ vuông đáy — không sai bố cục. */
+.kh-card-top { background: #1e3a8a; margin: -8px -8px 0 -8px; padding: 6px 8px 4px; gap: 8px; flex-wrap: nowrap; }
+.kh-idcol { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; align-items: stretch; margin: 0; padding: 0; background: transparent; }
+.kh-idcol .kh-name { margin: 0; padding: 0; background: transparent; color: #ffffff !important; }
+body.light-mode .kh-card.highlighted .kh-idcol .kh-name,
+body.light-mode .kh-card.highlighted-purple .kh-idcol .kh-name { color: #ffffff !important; }
+.kh-card-top .kh-tien-col { align-self: stretch; margin: 0; padding: 0 0 0 8px; background: transparent; }
+/* ⟳ 2026-10-26 (yêu cầu “cho nền số tiền màu trắng”): ở LIGHT, cột SỐ TIỀN + THÁNG có nền
+   **#ffffff** trải tới mép trên + mép phải thẻ (lề âm đúng bằng đệm của `.kh-card-top`), và
+   chữ trả về màu theme trên nền trắng (#dc2626 4,83:1 · #059669 3,36 · #c2410c 4,41).
+   ⇒ Khối ngọc chỉ còn sau TÊN và sau dải SĐT + mã KH; ô tiền là một “cửa số” trắng.
+   ⚠️ Mọi rule pallet sáng ở trên (#ffe4e6/#d1fae5/#ffedd5/#cfe0ff) vẫn dùng cho DARK; ở light
+   chúng bị đè lại ngay dưới đây ⇒ đừng xoá nhóm rule đó khi dọn. */
+/* ⛔ Ô TIỀN NỀN TRẮNG Ở LIGHT ĐÃ GỠ (2026-10-26 — yêu cầu sau đó: “cho tất cả nền xanh
+   dương đậm”): cột tiền trở lại cùng một màu với cả khối đầu thẻ, chữ dùng pallet SÁNG phía
+   trên (#ffe4e6/#d1fae5/#ffedd5/#cfe0ff). ⛔ Đừng dựng lại nền trắng ở light khi chưa hỏi:
+   người dùng đã đổi ý 3 lần cho đúng ô này. */
+.kh-card-top .kh-tien { align-self: stretch; margin: 0; padding: 0; background: transparent; text-align: right; }
+.kh-card-top .kh-tien, .kh-card-top .kh-tien.high { color: #ffe4e6 !important; }
+.kh-card-top .kh-tien.low { color: #d1fae5 !important; }
+.kh-card-top .kh-tien.mid { color: #fef3c7 !important; }
+.kh-card-top .kh-tien .mil-digit { color: #ffedd5 !important; }
+.kh-card-top .kh-thang { color: #cfe0ff !important; }
+.kh-card-top .kh-thang.multi-month { text-decoration-color: #cfe0ff !important; }
+/* ⟳ 2026-10-26 (yêu cầu “cho hàng ghi chú ngắn lại”): ô ghi chú trước đây được
+   `fitGhiChuInputs()` kéo dài cho mép phải thẳng cột với viên mã KH — mà viên mã KH nay nằm
+   trong KHỐI ĐẦU THẺ nên ô bị kéo gần hết chiều ngang thẻ. Cắt trần **62%** bề ngang thẻ
+   (`max-width` vẫn thắng `style.width` inline do hàm đặt). ⛔ Đừng bỏ dòng này mà không sửa
+   `fitGhiChuInputs()` trước. */
+.kh-ghichu-row .kh-ghichu-input { max-width: 62%; }
+/* ghi chú: ô nhập không còn bị canh theo viên mã KH ở khối đầu thẻ */
+.kh-card > .kh-mid-row {
+  flex: 0 0 100%;
+  margin: 0 -8px 4px -8px;
+  padding: 0 8px 6px;
+  background: #1e3a8a;
+  /* ⟳ 2026-10-26 (yêu cầu “cho sdt nằm hàng dưới mã kh”): 2 viên về lại 2 DÒNG, mã KH TRƯỚC
+     (DOM đã đổi thứ tự ở lượt trước), SĐT dưới ⇒ cột thay vì hàng. Đệm đáy 6px giữ nguyên. */
+  flex-direction: column;
+  align-items: flex-start;
+  /* ⟳ 2026-10-26 (yêu cầu “cho sdt và mã kh khoảng cách hơi xa nhau”): khe 2 → **6px**. */
+  gap: 6px;
+  /* ⟳ 2026-10-26 (yêu cầu “bo tròn góc phía dưới nền xanh” — lần 3 cho ô này): ĐÁY dải nền
+     bo **10px** để khép cùng đường bo của thẻ. ⚠️ Đã có lúc bị yêu cầu bỏ bo — đây là trạng
+     thái MỚI NHẤT; đổi thì sửa đúng 1 dòng này. */
+  border-radius: 0 0 10px 10px;
+}
+/* ⟳ 2026-10-26 (yêu cầu “cho 3 hàng này thẳng hàng” rồi “cho hàng này / hàng danh số xích ra 1 tí”):
+   BA GIÁ TRỊ của 3 hàng giữa thẻ — Mã KV · Mã sổ · Số TBI — phải bắt đầu ở CÙNG một mốc x.
+   Mỗi hàng là một flex riêng nên trước đây mốc do BỀ RỘNG NHÃN quyết định: “Mã KV:” 78,67 ·
+   “Mã sổ:” 75,75 · “Số TBI:” 79,44 (đo ở 17px) ⇒ 3 giá trị lệch nhau tới ~3,7px.
+   Cách chữa: mọi nhãn nhận `min-width` = nhãn RỘNG NHẤT, do `fitLabelCols()` đo bằng
+   `getBoundingClientRect` (chỉ đo 3 nhãn của THẺ ĐẦU TIÊN — cùng cỡ chữ, cùng nội dung) rồi ghi
+   vào biến `--lbl-w` trên `:root`. ⛔ Đừng hard-code px: cỡ chữ trong thẻ đổi theo breakpoint và
+   theo “Cỡ chữ” ở Cài đặt ⇒ số cứng sẽ lệch ngay. Hàm được gọi ở cuối `renderCards()`, trong
+   `applyFontSize()` và khi `resize`.
+   ⚠️ Chỉ áp cho `.kh-card` (không đụng bảng / modal). */
+.kh-card .kh-card-lbl { min-width: var(--lbl-w, 0px); }
+
+/* ── HÀNG “SĐT + 📷” TRONG KHỐI ĐẦU THẺ (2026-10-26) ───────────────────────────────────────
+   Yêu cầu người dùng: “cho camera nằm cùng hàng với sdt” (ảnh = 📷 đang đứng lẻ dưới dòng tháng
+   ở cột phải). Nút 📷 đã rời `.kh-tien-col` ⇒ nay nằm TRONG `.kh-contact-row`, ngay SAU viên
+   SĐT, nên hai thứ luôn cùng một dòng và cùng tâm dọc.
+   · `.kh-mid-row` vẫn là CỘT (mã KH ở trên, hàng SĐT ở dưới) ⇒ cần lớp bọc này để 📷 không
+     rơi xuống dòng thứ ba.
+   · Khách KHÔNG có SĐT thì 📷 vẫn đứng một mình ở hàng dưới — nút chụp ảnh không phụ thuộc SĐT.
+   · `margin-top: 0` để đè `margin-top: 6px` của `.kh-photo` gốc (trong flex row nó sẽ lệch tâm).
+   ⛔ Bỏ `.kh-contact-row` là 📷 nhảy về dòng riêng ngay. */
+/* ⟳ 2026-10-26 (yêu cầu “cho icon camera xích ra góc”): hàng này RỘNG HẾT bề ngang dải
+   (align-self: stretch — .kh-mid-row là cột align-items: flex-start nên mặc định nó co lại bằng
+   SĐT) và nút 📷 bị đẩy sang mép PHẢI bằng margin-left: auto ⇒ 📷 nằm ở góc phải của dải xanh,
+   cùng dòng với viên SĐT. ⚠️ Không dùng toạ độ cứng: mép phải đổi theo bề rộng thẻ. */
+.kh-contact-row { display: flex; align-items: center; gap: 4px; min-width: 0; flex-wrap: wrap; align-self: stretch; width: 100%; }
+.kh-contact-row .kh-photo { margin-top: 0; margin-left: auto; transform: translateY(-1px); }   /* ⟳ 2026-10-26 (yêu cầu “cho icon camera xích lên 1 tí”): đo được 📷 thấp hơn tâm viên SĐT **0,74px** ⇒ kéo lên **1px** bằng transform (KHÔNG dùng margin: sẽ đổi chiều cao hàng). */
+/* Khối trắng Bo góc VUÔNG (theo yêu cầu “bo góc viền” của lượt trước) — không border-radius. */
 /* Viên Danh Số / Mã KH / SĐT: metric khai 1 lần ở đây cho CẢ 2 theme;
    chỉ màu mới khai lại trong khối theme (xem HỢP ĐỒNG ở mục LIGHT MODE) */
 /* ⚠️ CỠ CHỮ NỘI DUNG THẺ CARD — nay **GIẢM 1px so với lượt trước** (yêu cầu “cho nội dung trong thẻ
@@ -4027,14 +4178,21 @@ body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color:
    · hàng 3 `.kh-mid-row`: KHÔNG có icon dẫn đầu ⇒ đệm trái 20px để thẳng cột với GIÁ TRỊ.
    ⟳ 2026-10-25z (yêu cầu “chỉnh hàng SĐT xích ra đầu”): hàng 3 nay GỠ đệm trái, bám mép thẻ
    (16,7px) ⇒ thẳng cột với ICON dẫn đầu của hàng 1/2. Mốc 36,7 chỉ còn áp cho 2 hàng trên. */
-.kh-sub-row { flex: 0 0 100%; display: flex; align-items: center; gap: 1px; min-width: 0; flex-wrap: wrap; margin-top: 3px; }
+/* ⟳ 2026-10-26 (yêu cầu “cho số tbi nằm dưới mã sổ”): hàng “mã sổ · số TBI” → **CỘT 2 DÒNG**
+   (`.kh-sub-line` mỗi dòng một cặp nhãn + giá trị). Vì thế: bỏ `flex-wrap`/`gap` ngang của
+   hàng và BỎ dấu `-` phân cách giữa 2 ô (markup renderCards) — dấu `-` chỉ có nghĩa khi 2 thứ
+   nằm CÙNG DÒNG. `margin-top: 3px` giữ nguyên để khe so với hàng danh số ở trên.
+   ⚠️ `fitTbiAlign()` trước đây đẩy cụm TBI sang phải cho thẳng cột với viên mã KH — nay TBI
+   đứng riêng một dòng nên hàm tự bỏ qua (cần `.kh-sep` mới chạy, xem hàm đó). */
+.kh-sub-row { flex: 0 0 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 0; min-width: 0; margin-top: 3px; }
+.kh-sub-line { display: flex; align-items: center; gap: 1px; min-width: 0; }
 /* ⟳ 2026-10-26 (yêu cầu “đẩy hàng số TBI ra ngang với mã KH” — người dùng chốt: **canh phải,
    mép trái cụm ⚡số TBI thẳng cột với mép trái viên mã KH** ở hàng dưới):
    Cụm “⚡ + số TBI” gói trong một flex item riêng để `fitTbiAlign()` đẩy được CẢ CỤM (icon đi
    cùng số, không lệch như khi chỉ đệm mỗi ô số). Vị trí chính xác do JS đo — CSS ở đây chỉ giữ
    cụm là một khối canh giữa theo chiều dọc. ⛔ Đừng thay bằng `margin-left` cứng: bề rộng viên
    SĐT đổi theo cỡ chữ nên mốc “mã KH” xê mỗi lần đổi cỡ. */
-.kh-tbi-cluster { display: inline-flex; align-items: center; min-width: 0; }
+.kh-tbi-cluster { display: inline-flex; align-items: center; gap: 1px; min-width: 0; }   /* ⟳ 2026-10-26 (yêu cầu “cho 3 hàng này thẳng hàng”): `gap: 1px` = ĐÚNG khe của 2 hàng trên (label ↔ value) — thiếu nó số TBI lệch trái 1px so với mã sổ/danh số (đo: 96,64 vs 97,64) vì cụm này là một flex item riêng. */
 /* ⟳ 2026-10-25 (3 yêu cầu liên tiếp về 3 nhãn này): dùng CHUNG một class cho cả 3 (tên class cũ
    `.kh-ds-label` đã đổi thành `.kh-card-lbl`).
    · “đổi thành **Mã KV**” ⇒ nhãn đầu hàng danh số nay là **“Mã KV:”** (không còn “Danh số:”).
@@ -4043,7 +4201,7 @@ body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color:
      ⚠️ CẢ HAI đều DƯỚI AA 4,5 một chút (nhãn 17px regular) — đây là CHỦ Ý theo yêu cầu “nhạt
      lại”; muốn lại AA thì lùi về giá trị cũ ngay dưới.
    · Màu/cỡ theo hệ chữ phụ của thẻ, `white-space: nowrap` giữ nhãn không bẻ giữa chữ và số. */
-.kh-card-lbl { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #8b98ab; font-weight: 400; white-space: nowrap; }
+.kh-card-lbl { display: inline-flex; align-items: center; font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #8b98ab; font-weight: 400; white-space: nowrap; }   /* display/align-items: icon ↔ chữ thẳng tâm dòng (xem khối `.em` bên dưới) */
 /* ⟳ 2026-10-25j (yêu cầu “cho icon trước mã sổ, mã kv”): icon NHỎ đứng trước 2 nhãn đó.
    Màu = `currentColor` (ăn theo màu nhãn: dark #8b98ab · light #64748b) — ⛔ đừng gán màu riêng,
    hai nhãn này là chữ PHỤ nên icon cũng phải cùng độ đạm. `vertical-align:-1px` cho icon nằm giữa
@@ -4059,7 +4217,41 @@ body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color:
    `vertical-align` -3 → **-3,5px** để icon 17px vẫn nằm giữa dòng chữ 17px (tăng 1px thì tâm icon
    lệch lên 0,5px ⇒ bù 0,5px xuống). ⚠️ Nút 📷 KHÔNG đổi (vẫn 22px — người dùng đã 2 lần yêu cầu
    “cho icon camera to hơn” nên nó đứng ngoài lệnh “tất cả icon”, đúng như lượt “tất cả icon 16px”). */
-.kh-card-lbl .lbl-ic { width: 17px; height: 17px; vertical-align: -3.5px; margin-right: 2px; }
+/* ⟳ 2026-10-26 (yêu cầu “đổi các icon ở thẻ thành emoji”): 4 nhãn của thẻ nay dùng EMOJI
+   (`<span class="lbl-ic em">`) thay `<svg>`. Emoji là GLYPH nên `width/height` của SVG không còn
+   tác dụng với phần tử inline ⇒ thêm `display:inline-block` + `line-height` = đúng 17px +
+   `text-align:center` để giữ NGUYÊN ô 17×17px của icon cũ (mốc canh cột 36,7px và 2 hàm
+   `fitTbiAlign`/`fitAbcAlign` đo theo mép trái nên không được để bề rộng xê).
+   `font-size:15px` cho glyph 17px không tràn dòng chữ 17px; `vertical-align` -3,5px như cũ. */
+.kh-card-lbl .lbl-ic { display: inline-block; width: 17px; height: 17px; line-height: 17px; text-align: center; font-size: 15px; font-style: normal; vertical-align: -3.5px; margin-right: 2px; }
+/* Emoji DÙNG CHUNG cho các icon còn lại của thẻ (SĐT/mã KH/bút/ABC/📷/📌/🧭): cùng ô 17px như
+   `.lbl-ic`, chỉ khác cỡ chữ. ⚠️ Emoji màu (📞 🏷️ 🧭 …) KHÔNG ăn `color` — các class màu cũ
+   (`.kh-ma .ic`, `.kh-abc-ico`) vẫn giữ để không gãy rule nào đang trỏ vào chúng. */
+/* ⟳ 2026-10-26 (yêu cầu “cho tất cả emoji ở thẻ màu nhạt lại”): `opacity: .75` — emoji là
+   GLYPH MÀU nên `color` không làm nhạt được; `opacity` cho chúng chìm vào nền thẻ mà không
+   mất hình. ⚠️ Áp cho MỌI emoji của thẻ (4 nhãn + 📞 🏷️ ✏️ 🔠 📷 📌 🧭) vì chúng đều mang
+   class `.em`; ⛔ đừng hạ xuống dưới ~0.6: 📞/🏷️ sẽ thành vệt xám khó nhận. */
+/* ⟳ 2026-10-26 (yêu cầu “cho icon và chữ thẳng hàng”): emoji không có "baseline" như chữ nên
+   khi đặt cạnh text (bằng `vertical-align` px) tâm glyph lệch lên/xuống tuỳ font hệ thống của
+   từng máy. Cách chắc ăn: cho Ô ICON tự căn giữa bằng flex (`inline-flex` + `align-items:
+   center` + `line-height: 1`) rồi cho nhãn/chữ cũng là flex (`align-items: center`) ⇒ tâm icon
+   và tâm dòng chữ trùng nhau ở MỌI cỡ chữ, không phụ thuộc metric của font emoji.
+   ⛔ Đừng quay lại `vertical-align: -2px` của bản đầu: đó là con số đo được trên Chromium của
+   một máy, sẽ lệch ở máy dùng font emoji khác. */
+.em { display: inline-flex; align-items: center; justify-content: center; width: 17px; height: 17px; line-height: 1; font-size: 15px; font-style: normal; vertical-align: middle; opacity: .6; }   /* ⟳ 2026-10-26 “cho các emoji mờ thêm”: .75 → **.6** (⛔ đừng xuống dưới .5: 📞/🏷️ thành vệt xám khó nhận) */
+/* 📷 là nút to nhất của thẻ (trước đây SVG 22px — người dùng 2 lần yêu cầu “to hơn”) ⇒ emoji 18px. */
+/* ⟳ 2026-10-26 (yêu cầu “cho icon camera to hơn”): 18 → **24px** (đã 3 lần yêu cầu “to hơn” ở
+   các lượt trước với SVG). Đệm dọc của nút chỉ-có-icon là 1px nên nút cao ~26px = y mốc cũ;
+   nếu phải nới đệm thì thẻ sẽ cao thêm ⇒ ưu tiên tăng cỡ glyph. */
+.kh-photo .em { width: auto; font-size: 26px; line-height: 1; vertical-align: -2px; opacity: 1; }   /* ⟳ 2026-10-26 “cho icon camera đậm hơn”: emoji 📷 KHÔNG dùng opacity .6 của lệnh “emoji mờ thêm” — nó là nút bấm nên phải đặc, rõ hơn hẳn các icon trang trí.
+   ⟳ 2026-10-26 (yêu cầu “cho icon camera to hơn” rồi chốt “26px”): 24 → **26px**. Nút chỉ còn nội dung là glyph
+   này (chưa có ảnh thì nhãn chữ bị ẩn) nên nút cao ~**34px** (30 + 2×1 đệm dọc + 2×1 viền) —
+   vẫn thấp hơn chiều cao hàng SĐT của khối đầu thẻ nên không đẩy thẻ cao thêm đáng kể.
+   ⚠️ Nút có viền TRONG SUỐT 1px: đừng đổi thành `border: 0` (nút sẽ thấp đi 2px và lệch tâm dọc
+   so với viên SĐT khi nằm cùng hàng). */
+/* 📌 / 🧭 ở dòng địa chỉ: ô 17px, emoji 14px cho khỏi chạm dòng chữ bên cạnh. */
+.kh-pin-btn .em, .kh-nav-btn .em { width: auto; font-size: 14px; line-height: 1; vertical-align: -2px; }
+.kh-abc-ico.em { width: auto; font-size: 15px; }
 /* ⟳ 2026-10-25k (yêu cầu “cho icon mã kv và mã sổ có màu”): 2 icon nay lấy MÀU CỦA HỆ ICON
    (`--ic-*` ⇒ tự đổi theo theme + mức nền), ⛔ không còn ăn `currentColor` của nhãn xám.
    · “Mã KV” = `--ic-hash` (đúng tông xanh của dải tab) · “Mã sổ” = `--ic-green`.
@@ -4139,6 +4331,34 @@ body.light-mode .kh-card-lbl { color: #64748b; }
 /* Hàng mã sổ/số TBI có `gap: 1px` (gọn cho dấu kh-sep) ⇒ nhãn cần thêm khe riêng với GIÁ TRỊ;
    ⛔ áp lên `.kh-ds-row` là khe nhãn → viên danh số từ 6px lên 9px (đã đo, lệch hàng kia). */
 .kh-sub-row .kh-card-lbl { margin-right: 1px; }   /* ⟳ 2026-10-25w: 3 → 1px (nhãn không còn chữ ⇒ chỉ cần 1px tách icon khỏi giá trị) */
+/* ⟳ 2026-10-26 (yêu cầu “cho chữ Mã KV: trước danh số, chữ TBI: trước số TBI, chữ Mã KH: trước
+   mã KH, chữ Mã sổ: trước mã sổ”): 4 nhãn của thẻ trở lại CÓ CHỮ, đứng NGAY SAU icon (icon giữ
+   nguyên 17px + màu của các lượt trước — ⛔ đừng bỏ icon). Nhãn vẫn là chữ PHỤ (400 · dark
+   `#8b98ab` / light `#64748b`) để không tranh độ đạm với GIÁ TRỊ (600), đúng quan hệ đã dùng
+   trước lượt 2026-10-25y (lượt bỏ chữ đi).
+   Khe nhãn → giá trị = 3px ở đây + 1px `gap` của hàng = **4px** — ĐO lại ở khổ 328 để không
+   đẩy hàng “mã sổ · số TBI” xuống dòng chỉ vì thêm chữ.
+   ⚠️ `.lbl-txt` nằm TRONG `.kh-card-lbl` nên thừa hưởng font/cỡ/màu của nhãn, không khai lại.
+   ⛔ Đừng thêm margin cho `.kh-card-lbl` của hàng danh số: hàng đó `gap: 1px` đã tính sẵn. */
+.kh-card-lbl .lbl-txt { margin-right: 3px; }
+/* Nhãn “Mã KH:” đứng NGOÀI viên mã KH (markup renderCards) ⇒ cần khe riêng vì `.kh-mid-row` chỉ
+   có `gap: 1px`. Viên mã KH vẫn giữ icon 🏷 BÊN TRONG (màu `--ic-amber`, `fitAbcAlign` bám vào
+   chính icon đó) — ⛔ đừng dời icon ra ngoài. */
+/* ⟳ 2026-10-26 (yêu cầu lặp lại “cho chữ Mã KH: trước mã khh” — lần đầu đặt nhãn NGOÀI viên
+   nên khi hàng hẹp nó bị đẩy xuống dòng, tách khỏi mã KH): nhãn nay nằm **TRONG viên mã KH**,
+   ngay sau icon 🏷️ ⇒ luôn dính liền với giá trị, không bao giờ bị xuống dòng riêng. Nhãn dùng
+   `opacity: .7` thay cho khai màu riêng để tự khớp mọi theme/mức nền của viên (chữ viên đổi
+   màu theo theme), nét 400 để không tranh độ đạm với mã (`.vien-weight`). */
+.kh-ma-lbl { opacity: .7; font-weight: 400; margin-right: 4px; }
+/* ⟳ 2026-10-26: dấu `-` và viên mã KH đi THÀNH MỘT KHỐI khi hàng phải xuống dòng — trước đó
+   dấu `-` ở lại cuối dòng 1 (đọc như lỗi “0909152332 -”) còn viên rơi xuống dòng 2.
+   `.kh-mid-row` vẫn `flex-wrap` nên khối này rơi xuống NGUYÊN CỤM (không bao giờ tách dấu khỏi mã). */
+.kh-ma-group { display: inline-flex; align-items: center; gap: 1px; min-width: 0; }
+/* ⟳ 2026-10-26: khi nhãn CÓ CHỮ, dấu `-` của hàng “mã sổ · số TBI” phải hở ra 2 bên — `.kh-sogcs`
+   còn mang `margin-right: -1px` (mẹo giữ chiều cao của lượt 2026-10-26) nên 2 bên dấu chỉ còn
+   ~2px và chữ dính vào dấu (“PS-0472-”). 1px → **3px** cho khớp khe 4px của nhãn.
+   ⚠️ `fitTbiAlign()` đọc `margin-left` của dấu này lúc chạy (base) nên KHÔNG bị lệch mốc. */
+.kh-sub-row .kh-sep { margin: 0 3px; }
 /* ⟳ 2026-10-25z (yêu cầu “chỉnh hàng SĐT xích ra đầu”, ảnh = hàng SĐT đang bị thụt vào trong): GỠ
    `padding-left: 20px` của lượt 25y ⇒ viên SĐT bám mép TRÁI của thẻ (đo: 36,7 → **16,7px**), cùng
    mốc với 3 icon dẫn đầu của 2 hàng trên. ⚠️ Đảo lại một phần của 25y — người dùng muốn hàng SĐT
@@ -4149,7 +4369,7 @@ body.light-mode .kh-card-lbl { color: #64748b; }
    cao **22,58px** y hệt viên SĐT (hàng “SĐT · mã KH” đã đo là không lệch). Token `--vien-vien`
    (dark `rgba(191,219,254,0.35)` · light `#93b8e8`) nay KHÔNG còn chỗ đọc — GIỮ LẠI để dựng lại
    viền nhanh, đừng xoá. */
-.kh-ma { font-family: 'Inter', sans-serif; font-size: var(--fs-card); font-weight: var(--vien-weight) !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid transparent; border-radius: var(--vien-radius); }
+.kh-ma { display: inline-flex; align-items: center; font-family: 'Inter', sans-serif; font-size: var(--fs-card); font-weight: var(--vien-weight) !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid transparent; border-radius: var(--vien-radius); }
 /* ⟳ 2026-10-25x (yêu cầu “cho chữ nhạt lại”, ảnh = hàng mã sổ + số TBI): màu `#cbd5e1` → **`#94a3b8`**
    (dark, `--text-dim`, 5,2:1 trên thẻ “Chuẩn”) · light `#1f2937` → **`#334155`**. Giữ nét 600 như cũ
    — “nhạt” là đổi MÀU, không phải bớt đậm (nét 400 đã từng bị chính người dùng trả lại).
@@ -4171,7 +4391,21 @@ body.light-mode .kh-sogcs { color: #334155; }
    Vì đây là rule GỐC nên ăn CẢ 2 theme; rule dark (`body:not(.light-mode) .kh-phone`) vẫn khai
    `border-color: transparent` (thừa nhưng vô hại). Token `--vien-sdt-vien` / `-vien-dark` nay
    KHÔNG còn chỗ đọc (giữ lại để dựng lại viền nhanh — đừng xoá). */
-.kh-phone { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: var(--vien-weight); text-decoration: none !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid transparent; border-radius: var(--vien-radius); }
+.kh-phone { display: inline-flex; align-items: center; font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: var(--vien-weight); text-decoration: none !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid transparent; border-radius: var(--vien-radius); }
+/* ⟳ 2026-10-26 (yêu cầu “cho màu nền và chữ sdt giống với mã kh”): viên SĐT bỏ cặp màu CAM
+   riêng (`--vien-sdt-bg` / `--vien-sdt-bg-dark`) → dùng ĐÚNG cặp của viên mã KH
+   (`--vien-bg` + `--vien-fg`). Rule phải đứng SAU 2 rule `body.light-mode .kh-phone` /
+   `body:not(.light-mode) .kh-phone` (dòng ~1624/1670) nên đặt ở đây (sau `.kh-phone` gốc) và
+   dùng `!important` cho `color` vì 2 rule kia cũng `!important`. */
+.kh-phone, body.light-mode .kh-phone, body:not(.light-mode) .kh-phone {
+  background: var(--vien-bg) !important;
+  color: var(--vien-fg) !important;
+}
+/* ⟳ 2026-10-26 (yêu cầu “cho icon camera nằm dưới tháng nợ”): nút 📷 nay nằm trong
+   `.kh-tien-col` (markup `renderCards`) ngay DƯỚI dòng tháng, canh phải theo `align-items:
+   flex-end` của cột. Khe 4px để không dính dòng tháng. ⚠️ `.kh-ds-row .kh-photo` cũ vẫn còn
+   trong CSS nhưng không còn phần tử nào khớp. */
+.kh-tien-col .kh-photo { margin-top: 4px; }
 /* ⛔ RULE `.kh-zalo` ĐÃ XOÁ (2026-10-17m) cùng viên Zalo trên thẻ — yêu cầu người dùng: “tôi
    muốn bỏ icon tin nhắn zalo”. Rule cũ (2026-10-17 → 2026-10-17j) có metric y hệt viên SĐT,
    nền `--vien-zalo-bg`, màu icon `--vien-zalo-fg`, viền `--vien-zalo-vien`. Cả 3 token đó CŨNG
@@ -4227,6 +4461,22 @@ body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
 .ghi-chu-input:focus { border-color: #60a5fa; }
 
 .kh-addr-line { font-size: var(--fs-card); color: #94a3b8; font-weight: 400; margin-bottom: 0; white-space: normal; word-wrap: break-word; } /* địa chỉ TRONG THẺ CARD — +1px, xem chú thích “CỠ CHỮ NỘI DUNG THẺ CARD”. ⟳ 2026-10-24: nay là HÀNG CUỐI của thẻ (dưới ghi chú) ⇒ margin-bottom 0, khe trên do inline margin-top 3px */
+/* ── NHỊP DỌC ĐỀU CHO MỌI HÀNG TRONG THẺ (2026-10-26, yêu cầu “cho khoảng cách các hàng đều nhau”) ──
+   Trước đây mỗi hàng tự khai khe riêng nên mắt đọc thấy so le: danh số **3px** · mã sổ/TBI **3px**
+   (và 2 dòng mã sổ↔TBI dính nhau vì `gap: 0`) · ghi chú **6px** · địa chỉ **5px** (inline).
+   Nay TẤT CẢ cùng một nhịp `--row-gap` = **5px**, kể cả giữa 2 dòng mã sổ / số TBI.
+   · Đặt ở ĐÂY (sau các rule gốc) vì rule gốc khai `margin-top: 3/6px` không `!important` —
+     muốn đổi nhịp thì sửa ĐÚNG 1 biến này.
+   · ⚠️ Dòng địa chỉ mang `style="margin-top:5px"` INLINE (trong `renderCards`) — inline thắng
+     CSS, nên đổi `--row-gap` phải sửa CẢ chỗ đó, hoặc để nguyên 5px cho khớp.
+   · ⛔ Không áp cho `.kh-card-top` / `.kh-mid-row` (chúng là dải nền coban liền khối, khe do
+     padding của chính dải quyết định). */
+.kh-card { --row-gap: 5px; }
+.kh-card > .kh-card-mid > .kh-ds-row,
+.kh-card > .kh-card-mid > .kh-sub-row,
+.kh-card > .kh-ghichu-row,
+.kh-card > .kh-addr-line { margin-top: var(--row-gap); }
+.kh-card .kh-sub-line + .kh-sub-line { margin-top: var(--row-gap); }
 /* ── 📍 GHIM “VỊ TRÍ MỚI” Ở DÒNG ĐỊA CHỈ (2026-10-24) ─────────────────────────────
    Yêu cầu người dùng: “chọn vào địa chỉ ghim vị trí mới… hiển thị màu xanh lá để phân biệt
    kh có vị trí mới và kh chưa ghi vị trí mới” + “cho thêm icon nhỏ bên cạnh”.
@@ -4457,6 +4707,24 @@ body.light-mode .kh-card .kh-addr-line.is-pinned .kh-addr-txt { text-decoration-
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
+/* ── BO GÓC TRÒN CỦA MỌI THỨ TRONG THẺ → **0** (2026-10-26, yêu cầu “bo góc tròn”) ────────────
+   Cùng ý với lượt “bo góc viền” của thẻ: toàn bộ hình khối trong thẻ dùng góc VUÔNG — 5 viên
+   (danh số `-01030` · mã KH · SĐT · mã sổ · số TBI — tất cả ăn token `--vien-radius`) + nút 📷 +
+   2 nút 📌/🧭 + ô ghi chú. ⛔ KHÔNG đụng `.kh-card` (đã 0 từ lượt trước) và KHÔNG đụng bảng /
+   tấm Cài đặt (ngoài yêu cầu “ở thẻ”).
+   ⚠️ Khối này phải đứng SAU các rule khai `border-radius` của từng thành phần (nó đứng ngay đây,
+   sau `.kh-photo`), nếu không chỉ riêng 2 nút 📷/📌 hoặc ô ghi chú vẫn bo.
+   ℹ️ Token `--vien-radius` trong `:root` GIỮ là 5px — nó còn được ghi trong AGENTS.md là nơi khai
+   metric của viên; muốn đổi cả app thì sửa token RỒI xoá khối này. */
+/* ⛔ KHỐI “BO GÓC = 0” ĐÃ GỠ (2026-10-26 — yêu cầu sau đó: “bo tròn các góc viền thẻ như lúc
+   đầu” + “bo cong nền viền”): viên SĐT/mã KH/danh số/mã sổ/TBI về lại `--vien-radius` (5px),
+   nút 📷 7px, nút 📌/🧭 6px, ô ghi chú 5px — tức ĐÚNG bo góc của bản gốc. ⛔ Đừng dựng lại
+   block "border-radius: 0" cho cả loạt: người dùng đã đổi ý hai lần trong cùng lượt. */
+/* ⟳ 2026-10-26 (yêu cầu “bỏ viền camera”): viền `1px solid rgba(255,255,255,0.22)`
+   → **transparent**. Giữ đúng 1px (⛔ KHÔNG `border: 0`) để nút không thấp đi 2px — cùng lý do
+   đã ghi ở viên SĐT/mã KH. Rule gốc cho CẢ 2 theme nên light (`#94a3b8`) cũng bị đè ở đây;
+   khai riêng `body.light-mode` thêm một lần cho chắc (rule light có specificity cao hơn). */
+.kh-photo, body.light-mode .kh-photo { border-color: transparent; }
 .kh-photo:active { background: rgba(255,255,255,0.12); }
 /* ⟳ 2026-10-24 (yêu cầu “bỏ chữ chụp ảnh”, ảnh = nút đang có chữ Chụp ảnh):
    khách CHƯA có ảnh ⇒ nút CHỈ CÒN ICON MÁY ẢNH (bỏ hẳn nhãn chữ, thu về ô vuông nhỏ);
@@ -4477,6 +4745,12 @@ body.light-mode .kh-card .kh-addr-line.is-pinned .kh-addr-txt { text-decoration-
 body.light-mode .kh-photo { border-color: #94a3b8; color: #475569; }
 body.light-mode .kh-photo:active { background: rgba(15,23,42,0.08); }
 body.light-mode .kh-photo.has-photo { border-color: #2563eb; color: #1d4ed8; }
+/* ⟳ 2026-10-26 (yêu cầu lặp lại “bỏ viền quanh icon camera” — lần đầu đặt rule TRƯỚC các rule
+   `body.light-mode .kh-photo` nên bị chúng đè lại): đặt Ở ĐÂY, SAU tất cả rule viền của nút 📷
+   ⇒ viền trong suốt ở CẢ 2 theme, kể cả trạng thái `.has-photo`. Giữ độ dày 1px (nút không
+   thấp đi 2px). */
+.kh-photo, .kh-photo.has-photo,
+body.light-mode .kh-photo, body.light-mode .kh-photo.has-photo { border-color: transparent; }
 
 /* ── TẤM XEM ẢNH CỦA KHÁCH (`#photoModal`) ────────────────────────────────────────
    Dùng lại `.modal-overlay`/`.modal` + đầu tấm `.ky-hd`/`.ky-title`/`.pay-x` (đã theo
@@ -6896,7 +7170,13 @@ body.force-desktop .table-view { display: block; }
   }
   .table-scroll, .table-wrap { overflow: visible !important; }
   /* Vạch đánh dấu (`::before`, 3px ở mép trái hàng): in ra là tốn mực mà không thêm dữ liệu nào.
-     ⟳ 2026-10-20: dải nền `::after` (hàng “tên + tiền”) ĐÃ GỠ HẲN ⇒ không cần ẩn nữa. */
+     ⟳ 2026-10-20: dải nền `::after` (hàng “tên + tiền”) ĐÃ GỠ HẲN ⇒ không cần ẩn nữa.
+     ⟳ 2026-10-26: dải nền ngọc của `.kh-card-top` (hàng “tên + số tiền + tháng”) nay CÓ
+     THẬT ⇒ in ra phải trả về trắng + chữ đen, nếu không cả hàng đầu mất chữ trên giấy trắng. */
+  .kh-card-top, .kh-card > .kh-mid-row { background: #ffffff !important; border-radius: 0 !important; }
+  .kh-idcol .kh-name, .kh-card-top .kh-tien, .kh-card-top .kh-tien.high,
+  .kh-card-top .kh-tien.low, .kh-card-top .kh-tien.mid, .kh-card-top .kh-tien .mil-digit,
+  .kh-card-top .kh-thang { color: #000000 !important; }
   tbody tr::before { display: none !important; }
   /* ⟳ 2026-10-20: bỏ KHUNG “THẺ” của bảng điện thoại khi in (giấy không cần bo góc/khe hở;
      xem rule `margin-bottom: 4px` + `border: 0` + `border-radius: 10px` trong
@@ -8826,6 +9106,7 @@ function applyFontSize() {
   // Cỡ chữ đổi ⇒ đo lại hàng “Tổng …”: bậc “Rất lớn” là bậc rộng nhất nên đây chính là lúc hệ
   // số thu `--count-fit` cần được tính lại (xem `fitCountRow()`).
   fitCountRow();
+  fitLabelCols();  // 2026-10-26: cỡ chữ đổi ⇒ nhãn Mã KV/Mã sổ/Số TBI rộng ra/hẹp lại ⇒ đo lại `--lbl-w`
   fitTbiAlign();   // 2026-10-26: viên SĐT rộng ra/hẹp lại theo cỡ chữ ⇒ mốc viên mã KH xê ⇒ đo lại
   fitAbcAlign();   // 2026-10-26: cỡ chữ đổi ⇒ bề rộng ô ghi chú đổi ⇒ icon 🏷 ABC phải canh lại
 }
@@ -11122,7 +11403,9 @@ function renderCards(q='') {
              vừa copy vừa đánh dấu; muốn đánh dấu “sạch” thì nhấn 2 lần ở chỗ khác trên thẻ.
              ⛔ KHÔNG dùng dấu backtick trong chú thích NÀY: nó nằm TRONG một template literal,
              backtick sẽ đóng chuỗi sớm và cả script không parse được. -->
+        <div class="kh-idcol">
         <div class="kh-name" style="cursor:pointer" onclick="lpTenTap(this)">${hi(r.ten_khach_hang,q)||'—'}</div>
+        </div>
         <div class="kh-tien-col">
           <!-- ⚠️ LỚP pay-tap + onclick = CHẠM VÀO SỐ TIỀN LÀ MỞ TẤM “Thanh toán cho điểm dùng điện”
                (yêu cầu người dùng). event.stopPropagation() để cú chạm không lọt lên thẻ card
@@ -11138,8 +11421,22 @@ function renderCards(q='') {
           <div class="kh-thang-row">
           ${r.thang_no ? `<div class="kh-thang${r.thang_no.split(",").length >= 4 ? " multi-month" : ""}">${hi(shortMonths(r.thang_no),q)}${omShow ? ' (' + oldKind + ')' : ''}</div>` : (omShow ? `<div class="kh-thang">(${oldKind})</div>` : '')}
           </div>
+          <!-- ⟳ 2026-10-26 (yêu cầu “cho camera nằm cùng hàng với sdt”): nút CHỤP ẢNH đã RỜI cột
+               phải, nay nằm NGAY CẠNH viên SĐT trong khối .kh-contact-row của dải đầu thẻ (markup
+               .kh-mid-row ngay dưới). Cột phải chỉ còn SỐ TIỀN + THÁNG. Đừng dựng lại nút ở đây.
+               ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
         </div>
       </div>
+        <span class="kh-mid-row">${r.ma_khach_hang ? `<span class="kh-ma-group"><span class="kh-ma" onclick="copyMaKH(event,this)" style="cursor:pointer"><span class="em" aria-hidden="true" style="margin-right:1px">🏷️</span>${hi(r.ma_khach_hang,q)}</span></span>` : ''}<span class="kh-contact-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><span class="em" aria-hidden="true" style="margin-right:1px">📞</span>${hi(phone,q)}</a>` : ''}<button type="button" class="kh-photo${pc ? ' has-photo' : ''}" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang || '')}" data-ky="${esc(r.thang_no || '')}" onclick="event.stopPropagation();photoTap(this)" aria-label="${pc ? 'Xem ảnh của khách (' + pc + ')' : 'Chụp ảnh khách hàng'}"><span class="em" aria-hidden="true">📷</span><span class="kh-photo-txt">${pc ? 'Ảnh (' + pc + ')' : ''}</span></button></span><!-- ⛔ Viên ZALO ĐÃ BỎ HẲN (2026-10-17m — yêu cầu người dùng: “tôi muốn bỏ icon tin nhắn zalo”,
+             kèm ảnh thẻ đang có viên icon bong bóng chat cạnh viên SĐT): thẻ KH nay chỉ còn
+             [viên SĐT] - [viên mã KH], khe hở giữa hai viên là dấu kh-sep như trước lượt 2026-10-17g.
+             ⛔ Hàm zaloHref() và rule .kh-zalo cũng ĐÃ XOÁ — ĐỪNG dựng lại viên này.
+             ⟳ 2026-10-26 (yêu cầu “bỏ các dấu - ở thẻ”): DẤU kh-sep GIỮA SĐT VÀ MÃ KH ĐÃ GỠ
+             (trước đây nó là thứ ngăn “số điện thoại dính liền mã khách hàng”). Thay bằng: nhãn
+             chữ “Mã KH:” NẰM TRONG viên mã KH (có nền --vien-bg) ⇒ vẫn tách bạch rõ mà không
+             cần dấu, và hàng “SĐT · mã KH” vừa đủ 1 dòng ở 375px. Dấu thứ hai (giữa mã sổ và
+             số TBI) cũng đã gỡ — số TBI nay xuống dòng riêng. ⛔ Đừng dựng lại dấu nào.
+             ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). --></span>
       <div class="kh-card-mid">
         <!-- ⟳ 2026-10-25 — 3 HÀNG, mỗi hàng là flex 100% nên luôn đứng riêng:
              (1) DANH SỐ + nút 📷 (yêu cầu “cho nút camera nằm kế danh số”);
@@ -11151,26 +11448,18 @@ function renderCards(q='') {
              bấm nút cũng tính vào cú nhấn của thẻ.
              ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
         <div class="kh-ds-row">
-        ${r.danh_so ? `<span class="kh-card-lbl" aria-label="Mã KV"><svg class="ic lbl-ic lbl-tbi" width="17" height="17" role="img" aria-label="Mã KV"><use href="#i-bolt"/></svg></span><span class="kh-danhso">${hi(r.danh_so,q)}</span>` : ''}
-        <button type="button" class="kh-photo${pc ? ' has-photo' : ''}" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang || '')}" data-ky="${esc(r.thang_no || '')}" onclick="event.stopPropagation();photoTap(this)" aria-label="${pc ? 'Xem ảnh của khách (' + pc + ')' : 'Chụp ảnh khách hàng'}"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-camera"/></svg><span class="kh-photo-txt">${pc ? 'Ảnh (' + pc + ')' : ''}</span></button>
+        ${r.danh_so ? `<span class="kh-card-lbl" aria-label="Mã KV"><span class="lbl-ic em lbl-tbi" role="img" aria-label="Mã KV">⚡</span><span class="lbl-txt">Mã KV:</span></span><span class="kh-danhso">${hi(r.danh_so,q)}</span>` : ''}
+        
         </div>
         ${(r.ma_sogcs || r.so_tbi) ? `<div class="kh-sub-row">
-        ${r.ma_sogcs ? `<span class="kh-card-lbl" aria-label="Mã sổ"><svg class="ic lbl-ic lbl-so" width="17" height="17" role="img" aria-label="Mã sổ"><use href="#i-notebook"/></svg></span><span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span>` : ''}
-        ${r.ma_sogcs && r.so_tbi ? `<span class="kh-sep">-</span>` : ''}
-        ${r.so_tbi ? `<span class="kh-tbi-cluster"><span class="kh-card-lbl" aria-label="Số TBI"><svg class="ic lbl-ic lbl-so" width="17" height="17" role="img" aria-label="Số TBI"><use href="#i-gauge"/></svg></span><span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span></span>` : ''}
+        ${r.ma_sogcs ? `<div class="kh-sub-line"><span class="kh-card-lbl" aria-label="Mã sổ"><span class="lbl-ic em lbl-so" role="img" aria-label="Mã sổ">📒</span><span class="lbl-txt">Mã sổ:</span></span><span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span></div>` : ''}
+        ${r.so_tbi ? `<div class="kh-sub-line"><span class="kh-tbi-cluster"><span class="kh-card-lbl" aria-label="Số TBI"><span class="lbl-ic em lbl-so" role="img" aria-label="Số TBI">⏲️</span><span class="lbl-txt">Số TBI:</span></span><span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span></span></div>` : ''}
         </div>` : ''}
-        ${(phone || r.ma_khach_hang) ? `<span class="kh-mid-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="17" height="17" aria-hidden="true" style="vertical-align:middle;margin-right:1px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}<!-- ⛔ Viên ZALO ĐÃ BỎ HẲN (2026-10-17m — yêu cầu người dùng: “tôi muốn bỏ icon tin nhắn zalo”,
-             kèm ảnh thẻ đang có viên icon bong bóng chat cạnh viên SĐT): thẻ KH nay chỉ còn
-             [viên SĐT] - [viên mã KH], khe hở giữa hai viên là dấu kh-sep như trước lượt 2026-10-17g.
-             ⛔ Hàm zaloHref() và rule .kh-zalo cũng ĐÃ XOÁ — ĐỪNG dựng lại viên này.
-             ⚠️ Dấu kh-sep giữa SĐT và mã KH KHÔNG được gỡ: nó vốn có từ trước viên Zalo và
-             chính là thứ ngăn “số điện thoại dính liền mã khách hàng”.
-             ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->${phone && r.ma_khach_hang ? `<span class="kh-sep">-</span>` : ''}${r.ma_khach_hang ? `<span class="kh-ma" onclick="copyMaKH(event,this)" style="cursor:pointer"><svg class="ic" width="17" height="17" aria-hidden="true" style="vertical-align:middle;margin-right:1px"><use href="#i-tag"/></svg>${hi(r.ma_khach_hang,q)}</span>` : ''}</span>` : ''}
       </div>
       <div class="kh-ghichu-row">
-        <svg class="ic" width="17" height="17" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><use href="#i-pencil"/></svg>
+        <span class="em" aria-hidden="true" style="margin-right:6px">✏️</span>
         <input type="text" class="kh-ghichu-input" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" oninput="saveGhiChu(this)" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()" onpointerdown="event.stopPropagation()" onpointerup="event.stopPropagation()">
-        ${r.abc ? `<span class="kh-abc-wrap" style="margin-left:8px;display:flex;align-items:center;gap:4px;flex-shrink:0;min-width:0"><svg class="ic kh-abc-ico" width="17" height="17" aria-hidden="true" style="vertical-align:middle"><use href="#i-tag"/></svg><span class="kh-abc" style="font-size:var(--fs-card)">${hi(r.abc,q)}</span></span>` : ''}
+        ${r.abc ? `<span class="kh-abc-wrap" style="margin-left:8px;display:flex;align-items:center;gap:4px;flex-shrink:0;min-width:0"><span class="em kh-abc-ico" aria-hidden="true">🔠</span><span class="kh-abc" style="font-size:var(--fs-card)">${hi(r.abc,q)}</span></span>` : ''}
       </div>
       <!-- ⟳ 2026-10-24 (yêu cầu: “dời hàng địa chỉ xuống dưới ghi chú”): dòng ĐỊA CHỈ rời khỏi
            khối giữa (kh-card-mid) và xuống CUỐI THẺ, ngay dưới hàng ghi chú. Vì thẻ là khối
@@ -11187,10 +11476,11 @@ function renderCards(q='') {
            cập nhật mới”; khách CHƯA ghim thì chạm không làm gì.
            ⛔ Đừng gắn lại pinToggle cho ô chữ hay nút ghim.
            ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
-      ${r.dia_chi ? `<div class="kh-addr-line${pinHere ? ' is-pinned' : ''}" style="margin-top:5px" ondblclick="event.stopPropagation()"><span class="kh-addr-acts"><button type="button" class="kh-pin-btn${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" tabindex="-1" aria-hidden="true"><svg class="ic" width="17" height="17" aria-hidden="true"><use href="#i-pin"/></svg></button><button type="button" class="kh-nav-btn" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí đã ghim"><svg class="ic" width="17" height="17" aria-hidden="true"><use href="#i-nav"/></svg></button></span><span class="kh-addr-txt" onclick="pinTextTap(this)">${hi(trimDiaChi(r.dia_chi),q)}</span></div>` : ''}
+      ${r.dia_chi ? `<div class="kh-addr-line${pinHere ? ' is-pinned' : ''}" style="margin-top:5px" ondblclick="event.stopPropagation()"><span class="kh-addr-acts"><button type="button" class="kh-pin-btn${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" tabindex="-1" aria-hidden="true"><span class="em" aria-hidden="true">📌</span></button><button type="button" class="kh-nav-btn" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí đã ghim"><span class="em" aria-hidden="true">🧭</span></button></span><span class="kh-addr-txt" onclick="pinTextTap(this)">${hi(trimDiaChi(r.dia_chi),q)}</span></div>` : ''}
     </div>`;
   }).join('');
   fitGhiChuInputs();
+  fitLabelCols();  // 2026-10-26: 3 giá trị Mã KV / Mã sổ / Số TBI thẳng một cột (xem `fitLabelCols`)
   fitTbiAlign();   // 2026-10-26: cụm ⚡số TBI thẳng cột với viên mã KH (xem `fitTbiAlign`)
   fitAbcAlign();   // 2026-10-26: icon 🏷 hàng ABC thẳng cột với icon 🏷 viên mã KH (xem `fitAbcAlign`)
 }
@@ -13048,6 +13338,34 @@ window.addEventListener('resize', fitGhiChuInputs);
    · Không có cả hai ⇒ bỏ qua, phần đuôi đứng nguyên chỗ cũ.
    · Nếu đẩy tới mức vượt mép phải của hàng (khổ hẹp, hàng đã xuống dòng) ⇒ GIỮ NGUYÊN, tránh tràn.
    ⚠️ Gọi ở 3 nơi: cuối `renderCards()` (vẽ xong), `applyFontSize()` (đổi cỡ chữ) và `resize`. */
+/* ── CANH CỘT GIÁ TRỊ CỦA 3 HÀNG GIỮA THẺ (2026-10-26) ─────────────────────────────────────
+   Yêu cầu người dùng: “cho 3 hàng này thẳng hàng” → “cho hàng này xích ra 1 tí”.
+   Ba hàng Mã KV / Mã sổ / Số TBI là 3 flex CONTAINER riêng, mỗi hàng có nhãn chữ khác nhau
+   (“Mã KV:” · “Mã sổ:” · “Số TBI:”) ⇒ mốc bắt đầu của GIÁ TRỊ = mép trái + bề rộng nhãn, nên 3
+   giá trị lệch nhau ~3,7px (đo được: giá trị danh số 96,31 · mã sổ 93,39 · TBI 96,08).
+   Cách chữa: đo nhãn RỘNG NHẤT rồi ghi vào `--lbl-w` (CSS `.kh-card .kh-card-lbl` dùng làm
+   `min-width`) ⇒ mọi nhãn cùng bề rộng ⇒ 3 giá trị thẳng một cột.
+   · CHỈ ĐO 3 NHÃN CỦA THẺ ĐẦU TIÊN: cùng cỡ chữ và cùng nội dung với mọi thẻ khác ⇒ đo 2100 thẻ
+     là phí (layout thrash mỗi lần vẽ lại danh sách).
+   · ⛔ Đừng hard-code px: cỡ chữ thẻ đổi theo breakpoint + “Cỡ chữ” ở Cài đặt.
+   · Gọi ở cuối `renderCards()`, trong `applyFontSize()` và khi `resize` (giống `fitTbiAlign`). */
+function fitLabelCols() {
+  const root = document.documentElement;
+  root.style.removeProperty('--lbl-w');
+  const card = document.querySelector('.kh-card');
+  if (!card) return;
+  const lbls = card.querySelectorAll('.kh-card-lbl');
+  let mx = 0;
+  for (let i = 0; i < lbls.length; i++) {
+    const w = lbls[i].getBoundingClientRect().width;
+    if (w > mx) mx = w;
+  }
+  /* Làm tròn LÊN + 1px: `min-width` không bao giờ thu nhỏ được nhãn có bề rộng TỰ NHIÊN lớn hơn,
+     nên phải nhích lên 1px cho MỌI nhãn cùng rộng (đo được: lệch 0,3px khi dùng đúng số đo). */
+  if (mx > 0) root.style.setProperty('--lbl-w', (Math.ceil(mx) + 1) + 'px');
+}
+window.addEventListener('resize', fitLabelCols);
+
 function fitTbiAlign() {
   const cards = document.querySelectorAll('.kh-card');
   for (let i = 0; i < cards.length; i++) {
@@ -13058,6 +13376,11 @@ function fitTbiAlign() {
     const cluster = sub.querySelector('.kh-tbi-cluster');
     if (sep) sep.style.marginLeft = '';
     if (cluster) cluster.style.marginLeft = '';
+    /* ⟳ 2026-10-26 (yêu cầu “cho số tbi nằm dưới mã sổ”): hàng “mã sổ · số TBI” nay là 2 DÒNG
+       riêng và KHÔNG còn dấu `-` ⇒ không có gì để đẩy ngang: cụm TBI đứng ngay dưới icon 📒,
+       đúng cột icon của hàng trên. Giữ hàm (và 2 dòng xoá đệm ở trên) để nếu sau này có lại
+       `.kh-sep` trong hàng thì logic canh cột vẫn chạy như cũ. */
+    if (!sep) continue;
     const head = sep || cluster;                        // đẩy từ dấu `-`; không có dấu thì đẩy cụm TBI
     const midRow = cards[i].querySelector('.kh-mid-row');
     const midSep = midRow ? midRow.querySelector('.kh-sep') : null;
@@ -13093,7 +13416,9 @@ function fitAbcAlign() {
     if (!wrap) continue;
     wrap.style.marginLeft = '';                       // đo lại từ mốc tự nhiên mỗi lượt
     const ico = wrap.querySelector('.kh-abc-ico');
-    const maIco = cards[i].querySelector('.kh-ma .ic') || cards[i].querySelector('.kh-ma');
+    /* ⟳ 2026-10-26 (icon → emoji): mốc phải là EMOJI 🏷️ của viên mã KH (`.kh-ma .em`), không
+       còn `<svg class="ic">` ⇒ thiếu nhánh đầu là hàm bám vào mép viên và lệch ~1 ký tự. */
+    const maIco = cards[i].querySelector('.kh-ma .em') || cards[i].querySelector('.kh-ma');
     if (!ico || !maIco) continue;
     const base = parseFloat(getComputedStyle(wrap).marginLeft) || 0;
     const need = maIco.getBoundingClientRect().left - ico.getBoundingClientRect().left;
