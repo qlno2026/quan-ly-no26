@@ -427,7 +427,10 @@
   --header-h: 56px;
 
   /* ── Viên (pill) trên card: mã KH, danh số, SĐT — dark mode mặc định ── */
-  --vien-bg: #0f2438;
+  /* ⟳ 2026-10-26 (yêu cầu “cho màu nền đậm hơn 1 tí ở 2 chế độ”, ảnh = hàng SĐT · mã KH):
+     nền mã KH **`#0f2438` → `#12314c`** (xanh navy đậm/rõ hơn 1 nấc). Chữ `#bfdbfe` vẫn
+     **≈ 10,9:1** trên nền mới ✓ dư AA. */
+  --vien-bg: #12314c;
   --vien-fg: #bfdbfe;
   --vien-vien: rgba(191,219,254,0.35);
   --vien-sdt-bg: rgba(239,68,68,0.14);   /* SĐT nền đỏ nhạt (alpha — dùng chung 2 theme, parallels `--danhso-bg`) */
@@ -445,7 +448,16 @@
      alpha **0,18 → 0,11** ⇒ nền đỏ pha loãng hơn hẳn, gần nền thẻ hơn nhưng vẫn đủ để nhận ra
      “ô SĐT màu đỏ”. Chữ `#ff9b9b` trên nền mới (rgb ≈ 50,35,43 khi thẻ “Chuẩn” `#1a1f28`) vẫn
      **≈ 7,4:1** ✓ AA. ⛔ Đừng nâng lại 0,18 nếu không được yêu cầu (đó là bản “bằng tab Từ 3Tr”).
-     ⚠️ Viền `--vien-sdt-vien-dark` GIỮ NGUYÊN 0,50 — nền nhạt đi thì viền là thứ giữ hình ô. */
+     ⚠️ Viền `--vien-sdt-vien-dark` GIỮ NGUYÊN 0,50 — nền nhạt đi thì viền là thứ giữ hình ô.
+     ⟳ **cuối 2026-10-26 (yêu cầu “cho màu nền sdt và màu chữ nhạt hơn”)**: alpha **0,11 → 0,07**
+     ⇒ nền đỏ chỉ còn phảng phất (ghép với thẻ “Chuẩn” `#1a1f28` ra ≈ `rgb(41,34,42)`); chữ đổi kèm
+     ở rule `body:not(.light-mode) .kh-phone` (trắng → hồng nhạt `#ffd9d9`).
+     ⟳ **tiếp: “bỏ viền ở cả 2 chế độ”** ⇒ viền nằm ở rule GỐC `.kh-phone` (**4036**) nay là
+     `1px solid transparent`; `--vien-sdt-vien-dark` **KHÔNG còn chỗ đọc** (giữ token để dựng lại).
+     ⟳ **2026-10-26 (yêu cầu “cho màu nền đậm hơn 1 tí ở 2 chế độ”)**: alpha **0,07 → 0,11** — đi
+     CÙNG LƯỢT với viên MÃ KH (dark `#0f2438 → #12314c`, light `#f0f6ff → #e0ebfd`) và viên SĐT
+     light (`#fef2f2 → #fde3e3`) ⇒ **2 viên cùng đậm lên 1 nấc** ở cả 2 theme. Chữ `#ffd9d9` trên
+     nền mới vẫn **>10:1** ✓. */
   --vien-sdt-bg-dark: rgba(239,68,68,0.11);
   --vien-sdt-fg-dark: #ff9b9b;
   --vien-sdt-vien-dark: rgba(255,120,120,0.50);
@@ -477,8 +489,17 @@
      **~1,36 / 1,41 / 1,43** (Sáng/Chuẩn/Dịu) — khớp độ nổi của 3 mức bên LIGHT (1,25–1,32).
      ⚠️ MŨI TÊN `--ic-blue-soft` `#60a5fa` trên viên mới = **3,51 / 4,04 / 4,55** ✓ — mức Sáng là
      chỗ SÁT NGƯỠNG NHẤT (3,51 > 3,0) ⇒ ⛔ đừng nâng alpha thêm mà không đo lại mũi tên.
-     Chữ viên `#d1d5db` giữ **>6:1** ✓. */
-  --danhso-bg: rgba(59,130,246,0.26);
+     Chữ viên `#d1d5db` giữ **>6:1** ✓.
+     ⟳ **2026-10-26 (yêu cầu “bỏ nền danh số”, ảnh = viên `-00380` nền xanh lam)**:
+     `rgba(59,130,246,0.26)` → **`transparent`** ⇒ viên danh số KHÔNG còn nền ở CẢ 2 THEME (viên này
+     vốn đã `border: none`, xem rule `.kh-danhso`, nên nay nó là CHỮ TRƠ như mã sổ/TBI).
+     · Đệm `--vien-pad-x: 6px` **GIỮ NGUYÊN** ⇒ chữ không xê ngang, mọi khe/canh lề cũ y nguyên.
+     · Chữ vẫn đọc tốt vì nền thẻ sáng/tối đều tương phản cao: dark `#e2e8f0` trên `#1a1f28`
+       **≈12:1** · light `#172554` trên `#f2f4f7` **≈13:1** (dư AA 4,5).
+     · ⚠️ MŨI TÊN `body.light-mode .kh-danhso .ic` `#1d4ed8` nay nằm trên nền THẺ `#f2f4f7`
+       (**≈7,4:1** ✓) — trước đây nó phải hạ tông để nổi trên viên xanh nhạt, nay không còn ràng buộc.
+     ⛔ Muốn dựng lại viên: chỉ cần đổi token này về `rgba(59,130,246,0.26)` (1 chỗ, ăn cả 2 theme). */
+  --danhso-bg: transparent;
   --vien-pad-x: 6px;
   --vien-radius: 5px;
   --vien-weight: 400;
@@ -788,10 +809,12 @@ body.light-mode {
      và 2 ô lọc `.filter-select[data-active="1"]`, ở CẢ HAI theme ⇒ đổi nó là đổi cả icon lẫn
      viền (3 chỗ) — đừng tách token mới trừ khi muốn chúng khác màu nhau. */
   --ic-hash: #2563eb;
-  --vien-bg: #f0f6ff;
+  --vien-bg: #e0ebfd;   /* ⟳ 2026-10-26 (“cho màu nền **nhạt xuống 1 nấc** light mode”): #cfe0fb → **#e0ebfd**
+                           (lùi đúng 1 nấc, trả về giá trị trước lượt “đậm thêm 1 tí”). */
   --vien-fg: #1e3a8a;
   --vien-vien: #93b8e8;
-  --vien-sdt-bg: #fef2f2;
+  --vien-sdt-bg: #fde3e3;   /* ⟳ 2026-10-26 (“nhạt xuống 1 nấc”): #fccccc → **#fde3e3** (lùi đúng 1 nấc;
+                               lịch sử: #fef2f2 → #fde3e3 → #fccccc → #fde3e3). */
   --vien-sdt-vien: rgba(239,68,68,0.30);
   /* ⟳ 2026-10-26 (yêu cầu “cho nền sđt như dark mode”, ảnh = viên SĐT light đang nền xanh nhạt):
      nền `#f0f6ff` → **`#fee2e2`** = ĐÚNG nền tab “Từ 3Tr” ở light; viền `#93b8e8` → đỏ alpha.
@@ -799,8 +822,9 @@ body.light-mode {
      viền xanh + chữ navy nằm trên nền hồng = lệch tông).
      ⟳ **cuối 2026-10-26 (yêu cầu “cho màu nền và sđt nhạt hơn”)**: nền `#fee2e2` → **`#fef2f2`**
      (red-50, hồng rất nhạt) và viền `0,40` → **`0,30`**; chữ `.kh-phone` light `#b91c1c` → **`#dc2626`**
-     (xem rule `body.light-mode .kh-phone`). ⚠️ Viền **giữ lại** (dù mảnh) vì nền nhạt gần nền thẻ
-     `#f2f4f7` — bỏ viền là ô SĐT gần như biến mất. */
+     (xem rule `body.light-mode .kh-phone`).
+     ⟳ **tiếp: “bỏ viền ở cả 2 chế độ”** ⇒ rule GỐC `.kh-phone` (**4036**) nay `1px solid transparent`
+     ⇒ token `--vien-sdt-vien` này **KHÔNG còn chỗ đọc** ở light (giữ lại để dựng lại viền nhanh). */
   /* ⛔ 3 token viên “Zalo” của CHẾ ĐỘ SÁNG đã XOÁ (2026-10-17m) cùng viên Zalo trên thẻ:
      `--vien-zalo-bg: #f0f6ff` · `--vien-zalo-fg: #0055d4` · `--vien-zalo-vien: #7fb0f0`.
      Đừng dựng lại (khối chú thích đầy đủ ở `:root`). */
@@ -1598,8 +1622,14 @@ body:not(.light-mode) .kh-danhso { color: #e2e8f0 !important; background: var(--
 /* ⟳ 2026-10-26 (yêu cầu “cho chữ màu trắng ở dark mode, giữ nguyên màu nền”): chữ viên SĐT
    `--vien-sdt-fg-dark` `#ff9b9b` → **`#ffffff`** đích danh Ở ĐÂY (⛔ không đổi token: token còn
    tô ICON điện thoại, muốn icon trắng thì mới đổi token — hiện icon giữ đỏ hồng).
-   Nền + viền GIỮ NGUYÊN (`rgba(239,68,68,0.11)` / `rgba(255,120,120,0.50)`). */
-body:not(.light-mode) .kh-phone { color: #ffffff !important; background: var(--vien-sdt-bg-dark); border-color: var(--vien-sdt-vien-dark); }
+   ⟳ **yêu cầu tiếp “cho màu nền sdt và màu chữ nhạt hơn”**: chữ `#ffffff` → **`#ffd9d9`** (trắng
+   pha hồng rất nhạt — nhìn dịu hơn hẳn mà vẫn **≈ 12:1** trên nền viên mới `rgba(239,68,68,0.07)`
+   ghép thẻ `#1a1f28` ✓). Nền viên cũng nhạt đi (token `--vien-sdt-bg-dark` 0,11 → 0,07).
+   ⟳ **yêu cầu tiếp “bỏ viền sđt”**: `border-color` → **`transparent`** (⛔ KHÔNG dùng `border: none`:
+   viền 1px vẫn phải giữ để hàng “SĐT · mã KH” cao đúng 22,58px như viên mã KH — bỏ hẳn là ô SĐT
+   thấp hơn viên mã 2px). Light mode KHÔNG đụng (vẫn viền đỏ `0,30`; nền `#fef2f2` gần nền thẻ
+   `#f2f4f7` nên ở light viền là thứ giữ hình ô). */
+body:not(.light-mode) .kh-phone { color: #ffd9d9 !important; background: var(--vien-sdt-bg-dark); border-color: transparent; }
 body.light-mode .kh-thang { color: #334155; }
 body.light-mode .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #3b82f6; text-underline-offset: 3px; text-decoration-thickness: 2px; }
 body.light-mode .badge-blue { background: rgba(37,99,235,0.15); color: #1e40af !important; }
@@ -2687,9 +2717,10 @@ body:not(.light-mode) .filter-select[data-active="1"] { background-color: var(--
    ở dưới), và hàng “Sắp xếp” trong tấm đã XOÁ — **không có bản thứ hai** của 2 nút này ở đâu cả.
    Bề mặt/kích thước 2 tab (`flex: 1`, cao `var(--ctl-h)`, viền `--ctl-line`) không đổi ở cả 2 lượt. */
 /* ⛔ 2026-10-25: KHÔNG còn phần tử nào mang class `sort-row` — hàng “Danh số · Tiền nợ” đã rời
-   thanh công cụ, 2 nút nằm trong tấm “Lọc theo yêu cầu” (`.adv-sort`, xem khối `.adv-*`).
-   Rule giữ lại làm mốc lịch sử + để dựng lại hàng cũ nếu người dùng đổi ý; ⛔ đừng gắn lại
-   `flex: 1` ở `@media (min-width: 640px)` cho `.sort-row` nếu không có phần tử dùng nó. */
+   thanh công cụ. ⟳ 2026-10-26: 2 nút nay nằm TRONG dải tab “Chi tiết nợ” (`#loaiTabs`, xem khối
+   `.loai-tabs .sort-btn` ở phần `.adv-*`/`@media`) — ⛔ không còn ở tấm “Lọc theo yêu cầu” nữa.
+   Rule `.sort-row` giữ lại làm mốc lịch sử + để dựng lại hàng cũ nếu người dùng đổi ý; ⛔ đừng gắn
+   lại `flex: 1` ở `@media (min-width: 640px)` cho `.sort-row` nếu không có phần tử dùng nó. */
 .sort-row { display: flex; gap: 2px 4px; margin-top: 0; background: transparent; border-radius: 0; padding: 0; }
 .sort-btn {
   flex: 1;
@@ -2925,6 +2956,12 @@ body:not(.light-mode) .filter-select[data-active="1"] { background-color: var(--
 .loai-tab[data-val="1-2tr"]     { background: rgba(250,204,21,0.14); color: #fde047; }
 .loai-tab[data-val="2-3tr"]     { background: rgba(245,158,11,0.18); color: #fcd34d; }
 .loai-tab[data-val="marked"]    { background: rgba(180,83,9,0.22);   color: #fdba74; }
+/* ⟳ 2026-10-26 (cùng lượt “5 chip tiền nợ lên dải tab”): 3 tab khoảng tiền CÒN LẠI — xanh lá
+   (≤ 1Tr) · cam (3-5Tr) · đỏ (≥ 5Tr), cùng hệ alpha của dark. Đang chọn vẫn dùng chung cặp
+   `#2563eb` + chữ trắng của `.loai-tab.active`. */
+.loai-tab[data-val="duoi1tr"]   { background: rgba(34,197,94,0.16);  color: #86efac; }
+.loai-tab[data-val="3-5tr"]     { background: rgba(249,115,22,0.20); color: #fdba74; }
+.loai-tab[data-val="tren5tr"]   { background: rgba(239,68,68,0.20);  color: #fca5a5; }
 /* Đang chọn ⇒ NỀN XANH ĐƯƠNG + CHỮ TRẮNG (yêu cầu 2026-10-25 “khi chọn tab nào thì hiển thị nền
    xanh chữ trắng”). CẢ 4 TAB dùng CÙNG một cặp màu này — không còn “nền đậm hơn theo hue”.
    Đo (dark): nền `#2563eb` với chữ trắng **5,17:1** ✓ AA — chính cặp đã dùng cho nút “Xong”. */
@@ -2940,6 +2977,10 @@ body.light-mode .loai-tab[data-val="summary"] { background: #dbeafe; color: #1d4
 body.light-mode .loai-tab[data-val="1-2tr"] { background: #fef9c3; color: #a16207; }
 body.light-mode .loai-tab[data-val="2-3tr"] { background: #fef3c7; color: #b45309; }
 body.light-mode .loai-tab[data-val="marked"] { background: #fde68a; color: #92400e; }
+/* ⟳ cùng lượt: 3 tab khoảng tiền còn lại (≤ 1Tr · 3-5Tr · ≥ 5Tr) — nền đặc, chữ cùng hue đậm. */
+body.light-mode .loai-tab[data-val="duoi1tr"] { background: #dcfce7; color: #15803d; }
+body.light-mode .loai-tab[data-val="3-5tr"]   { background: #ffedd5; color: #c2410c; }
+body.light-mode .loai-tab[data-val="tren5tr"] { background: #fee2e2; color: #b91c1c; }
 /* ⚠️ PHẢI Ở SAU 4 RULE TRÊN (2026-10-25, yêu cầu “khi chọn tab nào thì hiển thị nền xanh chữ
    trắng như ở dark mode”): cả 2 đều có độ ưu tiên **(0,3,1)** mà rule `.loai-tab[data-val=…]`
    nằm SAU thắng. Bản đầu đặt `body.light-mode .loai-tab.active` TRƯỚC ⇒ bị 4 rule kia ĐÈ, ô đang
@@ -2949,7 +2990,9 @@ body.light-mode .loai-tab[data-val="marked"] { background: #fde68a; color: #9240
 body.light-mode .loai-tab.active, body.light-mode .loai-tab.active[data-val=""],
 body.light-mode .loai-tab.active[data-val="old"], body.light-mode .loai-tab.active[data-val="oldky"],
 body.light-mode .loai-tab.active[data-val="summary"], body.light-mode .loai-tab.active[data-val="1-2tr"],
-body.light-mode .loai-tab.active[data-val="2-3tr"], body.light-mode .loai-tab.active[data-val="marked"] { background: #2563eb; color: #ffffff; }
+body.light-mode .loai-tab.active[data-val="2-3tr"], body.light-mode .loai-tab.active[data-val="marked"],
+body.light-mode .loai-tab.active[data-val="duoi1tr"], body.light-mode .loai-tab.active[data-val="3-5tr"],
+body.light-mode .loai-tab.active[data-val="tren5tr"] { background: #2563eb; color: #ffffff; }
 
 /* ── 📱 2026-10-24 (yêu cầu: “cho dải tab ôm vừa 6 tab trên điện thoại thay vì cuộn ngang, thu
    nhỏ chữ/đệm và cho viền sát vô chữ”) ──────────────────────────────────────────
@@ -2993,21 +3036,30 @@ body.light-mode .loai-tab.active[data-val="2-3tr"], body.light-mode .loai-tab.ac
    ⚠️ Muốn 28px thì phải bỏ “4 tab bằng nhau” (xem ghi chú cùng ngày trong AGENTS.md). */
 @media (max-width: 639.98px) {
   .loai-tabs { gap: 4px; }
-  /* ⟳ 2026-10-26 (yêu cầu “cho tất cả kích thước tab ở hàng này bằng nhau, hiển thị đủ 4 tab không
-     cần lướt khi xem trên điện thoại”): dải trở lại **4 TAB** ⇒ **`flex: 1 1 0`** (4 tab RỘNG BẰNG
-     NHAU, lấp đầy dải, KHÔNG cuộn ngang) — bản “7 tab + `flex: 0 0 auto`” của cùng ngày đã gỡ.
-     Đệm ngang **2px** (bản 4 tab đã đo ngày 2026-10-25b): rộng hơn là chữ “Tổng hợp” in đậm bị cắt
-     ở 375px — công thức cỡ chữ lớn nhất còn vừa là `f ≤ 5.52vw − (9 + 2×đệm)/4,53`.
-     ⚠️ Phải có `min-width: 0`: mặc định flex item không co dưới `min-content` ⇒ tab dài nhất
-     (“Tổng hợp”) đẩy cả dải tràn.
-     ⚠️ Nếu sau này thêm/bớt tab thì phải ĐO LẠI (`clamp` dưới đây tính cho 4 tab). */
-  .loai-tab { flex: 1 1 0; min-width: 0; padding: 0 2px; gap: 3px; font-size: clamp(10.5px, calc(5.52vw - 3.2px), 24px); }
+  /* ⟳ 2026-10-26 (yêu cầu “5 chip tiền nợ … nằm cùng hàng với tab tổng hợp”): dải nay có **10 tab**
+     ⇒ 4 tab đầu vẫn LẤP ĐẦY khung nhìn nhưng KHÔNG còn dùng `flex: 1 1 0` (10 tab chia đều sẽ bóp
+     mỗi tab còn ~47px = cắt chữ). Nay `flex: 0 0 auto` + **JS gán bề rộng = đúng 1/4 dải**
+     (`equalizeLoaiTabs`) cho MỌI tab ⇒ 4 tab đầu rộng bằng nhau, y hệt bản 4 tab; 6 tab sau nằm
+     ngoài khung và **lướt ngang** (dải đã có `overflow-x: auto`).
+     ⚠️ Đệm ngang 2px (bản 4 tab đã đo): rộng hơn là chữ “Tổng hợp” in đậm bị cắt.
+     ⚠️ Bề rộng do JS gán nên KHÔNG dùng `flex: 1 1 0` nữa (nó đè `width` ⇒ dải tràn). */
+  .loai-tab { flex: 0 0 auto; min-width: 0; padding: 0 2px; gap: 3px; font-size: clamp(10.5px, calc(5.52vw - 3.2px), 24px); }
+  /* 2 nút sắp xếp trong dải ăn ĐÚNG hệ cỡ chữ của tab (chúng là “tab” thứ 11/12 của hàng).
+     ⚠️ Selector phải là (0,3,0) `.loai-tabs .sort-btn.loai-sort-btn`: rule gốc 16px nằm SAU khối
+     `@media` này trong file (khối `.adv-*` dùng chung) ⇒ cùng độ ưu tiên là rule gốc ĐÈ, nút đứng
+     ở 16px trong khi tab 24px (đã đo và bắt được đúng lỗi này). */
+  .loai-tabs .sort-btn.loai-sort-btn { padding: 0 6px; gap: 3px; font-size: clamp(10.5px, calc(5.52vw - 3.2px), 24px); }
+  .loai-tabs .sort-btn .sort-ico { width: 13px; height: 13px; }
+  .loai-tabs .sort-btn .sort-arrow { width: 12px; height: 12px; }
   .loai-tab .loai-tab-ic { width: 13px; height: 13px; }
   .loai-tab .nhom-dot { width: 6px; height: 6px; }
 }
 @media (max-width: 560px) {
   .loai-tab { padding: 0 2px; gap: 0; }
   .loai-tab .loai-tab-ic, .loai-tab .nhom-dot { display: none; }
+  /* 2 nút sắp xếp: bỏ icon đầu như tab (giữ mũi tên sắp xếp — đó là thông tin trạng thái) */
+  .loai-tabs .sort-btn { gap: 0; padding: 0 4px; }
+  .loai-tabs .sort-btn .sort-ico { display: none; }
 }
 /* ⟳ 2026-10-25u (yêu cầu “bỏ icon các tab khi xem trên máy tính”, ảnh = 4 tab đang có icon biên
    lai + chấm màu): ẩn LUÔN ở khổ MÁY TÍNH (≥560px). Dưới 560px đã ẩn từ trước (khối ngay trên)
@@ -3975,7 +4027,7 @@ body.light-mode .kh-card-lbl .lbl-so { color: #22a06b; }
 body.light-mode .kh-card .kh-pin-btn { color: #7c3aed; }
 /* ⟳ 2026-10-26 (yêu cầu “cho icon lại màu xanh như địa chỉ đã ghi” — đảo lại lượt đỏ ngay trước đó):
    nút mũi tên dẫn đường dùng **ĐÚNG màu chữ địa chỉ đã ghim** ⇒ light `#16a34a` (khớp rule
-   `body.light-mode .kh-card .kh-addr-line.is-pinned` bên dưới), dark `#77e6a0` (rule
+   `body.light-mode .kh-card .kh-addr-line.is-pinned` bên dưới), dark `#b3f1ca` (rule
    `body:not(.light-mode) …` phía dưới). ⚠️ Đổi màu địa chỉ thì PHẢI đổi cả 2 chỗ này cho khớp. */
 body.light-mode .kh-card .kh-nav-btn { color: #16a34a; }
 /* ⟳ 2026-10-25p (yêu cầu “tăng độ sáng màu các icon trên thẻ khi ở dark mode để nhìn rõ hơn”):
@@ -3995,10 +4047,11 @@ body:not(.light-mode) .kh-card .kh-ma .ic { color: #ffbf4d; }
 body:not(.light-mode) .kh-card .kh-ghichu-row > .ic,
 body:not(.light-mode) .kh-card .kh-abc-ico { color: #7db4ff; }
 /* Cùng lượt 25q — dark: 📌 TÍM `#a78bfa` (4,47 trên nền thẻ sáng nhất `#2e3644`, 6,07 trên “Chuẩn”)
-   · ➤ XANH LÁ **`#77e6a0`** (⟳ 2026-10-26: `#4ade80` → nhạt hơn 1 nấc, **đúng** màu chữ địa chỉ
-   đã ghim ở dark — xem rule `.kh-addr-line.is-pinned`). */
+   · ➤ XANH LÁ **`#b3f1ca`** (⟳ 2026-10-26: `#4ade80` → `#77e6a0` → `#99ecb8` → **`#b3f1ca`**, 3 nấc
+   nhạt dần theo 3 yêu cầu; **đúng** màu chữ địa chỉ đã ghim ở dark — xem rule `.kh-addr-line.is-pinned`).
+   ⛔ Đổi màu thì phải đổi CẢ 3 chỗ (📌 · dòng địa chỉ · ➤). */
 body:not(.light-mode) .kh-card .kh-pin-btn:not(.is-pinned) { color: #a78bfa; }
-body:not(.light-mode) .kh-card .kh-nav-btn { color: #77e6a0; }
+body:not(.light-mode) .kh-card .kh-nav-btn { color: #b3f1ca; }
 body.light-mode .kh-card-lbl { color: #64748b; }
 /* Hàng mã sổ/số TBI có `gap: 1px` (gọn cho dấu kh-sep) ⇒ nhãn cần thêm khe riêng với GIÁ TRỊ;
    ⛔ áp lên `.kh-ds-row` là khe nhãn → viên danh số từ 6px lên 9px (đã đo, lệch hàng kia). */
@@ -4008,7 +4061,12 @@ body.light-mode .kh-card-lbl { color: #64748b; }
    mốc với 3 icon dẫn đầu của 2 hàng trên. ⚠️ Đảo lại một phần của 25y — người dùng muốn hàng SĐT
    thẳng với CỘT ICON (mép trái), không phải với cột GIÁ TRỊ. */
 .kh-mid-row { display: flex; align-items: center; gap: 1px; flex: 0 0 100%; min-width: 0; flex-wrap: wrap; margin-top: 3px; }
-.kh-ma { font-family: 'Inter', sans-serif; font-size: var(--fs-card); font-weight: var(--vien-weight) !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid var(--vien-vien); border-radius: var(--vien-radius); }
+/* ⟳ 2026-10-26 (yêu cầu “bỏ viền cả 2 chế độ”, ảnh = viên MÃ KH ở dark): viền `--vien-vien` →
+   **`transparent`** ở CẢ 2 theme. ⛔ KHÔNG dùng `border: 0`: phải giữ đúng **1px** để viên mã KH
+   cao **22,58px** y hệt viên SĐT (hàng “SĐT · mã KH” đã đo là không lệch). Token `--vien-vien`
+   (dark `rgba(191,219,254,0.35)` · light `#93b8e8`) nay KHÔNG còn chỗ đọc — GIỮ LẠI để dựng lại
+   viền nhanh, đừng xoá. */
+.kh-ma { font-family: 'Inter', sans-serif; font-size: var(--fs-card); font-weight: var(--vien-weight) !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid transparent; border-radius: var(--vien-radius); }
 /* ⟳ 2026-10-25x (yêu cầu “cho chữ nhạt lại”, ảnh = hàng mã sổ + số TBI): màu `#cbd5e1` → **`#94a3b8`**
    (dark, `--text-dim`, 5,2:1 trên thẻ “Chuẩn”) · light `#1f2937` → **`#334155`**. Giữ nét 600 như cũ
    — “nhạt” là đổi MÀU, không phải bớt đậm (nét 400 đã từng bị chính người dùng trả lại).
@@ -4024,7 +4082,13 @@ body.light-mode .kh-sogcs { color: #334155; }
    ⚠️ Đừng dùng `line-height` cứng: cỡ chữ đổi theo nút “Cỡ chữ” ⇒ chiều cao sẽ lệch viên mã KH.
    ⚠️ Đừng bỏ margin âm: viền cộng 2px bề rộng ⇒ dấu `-` và ô bên cạnh bị đẩy 1px. */
 .kh-sogcs, .kh-tbi { border: 1px solid transparent; border-radius: var(--vien-radius); margin-left: -1px; margin-right: -1px; }
-.kh-phone { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: var(--vien-weight); text-decoration: none !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid var(--vien-sdt-vien); border-radius: var(--vien-radius); }
+/* ⟳ 2026-10-26 (yêu cầu “bỏ viền ở cả 2 chế độ”): viền `1px solid var(--vien-sdt-vien)` →
+   **`1px solid transparent`**. ⛔ KHÔNG dùng `border: none` — phải giữ 1px để ô SĐT cao đúng
+   **22,58px** bằng viên mã KH (hàng “SĐT · mã KH” không bị lệch/thấp hơn 2px).
+   Vì đây là rule GỐC nên ăn CẢ 2 theme; rule dark (`body:not(.light-mode) .kh-phone`) vẫn khai
+   `border-color: transparent` (thừa nhưng vô hại). Token `--vien-sdt-vien` / `-vien-dark` nay
+   KHÔNG còn chỗ đọc (giữ lại để dựng lại viền nhanh — đừng xoá). */
+.kh-phone { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: var(--vien-weight); text-decoration: none !important; white-space: nowrap; padding: 0 var(--vien-pad-x); border: 1px solid transparent; border-radius: var(--vien-radius); }
 /* ⛔ RULE `.kh-zalo` ĐÃ XOÁ (2026-10-17m) cùng viên Zalo trên thẻ — yêu cầu người dùng: “tôi
    muốn bỏ icon tin nhắn zalo”. Rule cũ (2026-10-17 → 2026-10-17j) có metric y hệt viên SĐT,
    nền `--vien-zalo-bg`, màu icon `--vien-zalo-fg`, viền `--vien-zalo-vien`. Cả 3 token đó CŨNG
@@ -4192,9 +4256,17 @@ body.light-mode .kh-nav-btn:active { background: rgba(15,23,42,0.10); }
    (green-400, khá rực) → **`#77e6a0`** = #4ade80 pha 25% trắng ⇒ nhạt + sáng hơn một nấc,
    bớt gắt mà vẫn **10,7:1** trên nền thẻ “Chuẩn” `#1a1f28`. Đổi CÙNG LÚC 3 chỗ (nút 📌 khi đã
    ghim · dòng địa chỉ · nút ➤ ở dòng 3988) để ba chỗ không lệch tông; gạch chân ăn `currentColor`
-   nên tự theo màu mới. Light mode KHÔNG đụng (vẫn `#16a34a`, xem rule `body.light-mode` bên dưới). */
-.kh-card .kh-pin-btn.is-pinned { color: #77e6a0; }
-body .kh-card .kh-addr-line.is-pinned { color: #77e6a0; }
+   nên tự theo màu mới. Light mode KHÔNG đụng (vẫn `#16a34a`, xem rule `body.light-mode` bên dưới).
+   ⟳ **tiếp (yêu cầu “cho màu khi ghim vị trí nhạt thêm ở dark mode”)**: `#77e6a0` → **`#99ecb8`**
+   (pha thêm 25% trắng nữa) ⇒ xanh lá pha sữa, dịu hẳn mà vẫn **≈13,7:1** trên thẻ “Chuẩn”
+   `#1a1f28` ✓ dư AA. ⚠️ Vẫn đổi ĐỦ 3 chỗ (📌 · dòng địa chỉ · ➤) — lệch một chỗ là ba tông khác nhau;
+   gạch chân dùng `currentColor` nên tự nhạt theo, ⛔ không khai màu kẻ riêng.
+   ⟳ **tiếp nữa (yêu cầu “cho màu khi ghim vị trí nhạt hơn ở dark mode”)**: `#99ecb8` → **`#b3f1ca`**
+   (lại pha thêm 25% trắng) ⇒ mint rất nhạt, **≈16,2:1** trên thẻ “Chuẩn” `#1a1f28` ✓ dư AA.
+   ⚠️ Ba nấc đã đi: `#4ade80` → `#77e6a0` → `#99ecb8` → **`#b3f1ca`**; nhạt nữa thì mất “xanh lá”,
+   chỉ còn trắng-xanh ⇒ muốn nhạt hơn nữa phải HỎI. */
+.kh-card .kh-pin-btn.is-pinned { color: #b3f1ca; }
+body .kh-card .kh-addr-line.is-pinned { color: #b3f1ca; }
 /* ⟳ 2026-10-26 (yêu cầu “cho màu đã ghi vị trí **sáng và đậm** để nhìn cho rõ ở light mode”):
    `#166534` → **`#15803d`** (lượt trước) → **`#16a34a`** (green-600, sáng/rực hơn hẳn) + chữ
    địa chỉ **weight 600** (đậm = nét dày hơn, không phải màu tối hơn).
@@ -4208,7 +4280,7 @@ body.light-mode .kh-card .kh-addr-line.is-pinned { color: #16a34a; }
 body.light-mode .kh-card .kh-addr-line.is-pinned .kh-addr-txt { font-weight: 600; }
 /* ⟳ 2026-10-26 (yêu cầu “thêm đường kẻ cùng màu dưới địa chỉ đã ghi, cả 2 chế độ”): gạch chân
    bằng `text-decoration` + `currentColor` ⇒ đường kẻ LUÔN cùng màu chữ địa chỉ đang dùng
-   (dark `#77e6a0`, light `#16a34a`), tự xuống dòng theo câu, không phải khai màu lần thứ hai.
+   (dark `#b3f1ca`, light `#16a34a`), tự xuống dòng theo câu, không phải khai màu lần thứ hai.
    ⚠️ `text-underline-offset` 3px để kẻ không dính chân chữ (dấu tiếng Việt nặng/ngã nhìn rõ);
    `text-decoration-thickness` 1,5px cho thấy rõ trên nền sáng. ⛔ Đừng đổi sang `border-bottom`
    trên `.kh-addr-line`: kẻ sẽ chạy HẾT bề rộng thẻ (vượt qua cả icon) chứ không chỉ dưới địa chỉ. */
@@ -5496,14 +5568,18 @@ body.light-mode .adv-chip { background: #ffffff; border-color: #d1d5db; color: #
    ⚠️ Vẫn phải khai bản `body.light-mode` (0,2,1 > 0,2,0) — thiếu là light mode trả về nền trắng. */
 .adv-chip[data-active="1"] { border-color: #2563eb; background: #2563eb; color: #ffffff; font-weight: 600; }
 body.light-mode .adv-chip[data-active="1"] { background: #2563eb; border-color: #2563eb; color: #ffffff; }
-/* ⮻ HÀNG “SẮP XẾP” TRONG TẤM (2026-10-25): 2 nút `#sortDanhSo`/`#sortTienNo` rời thanh công cụ về
-   đây ⇒ nới chiều cao theo hệ của tấm (chữ 18px, bo tròn như `.adv-chip`) và chia đều 2 bên.
-   ⛔ Không khai lại MÀU: `.sort-btn` + `#sortDanhSo.active`/`#sortTienNo.active` đã có cả 2 theme,
-   khai lại là hai nguồn màu dễ lệch nhau. */
-.adv-sort { display: flex; gap: 4px; }
-.adv-sort .sort-btn { flex: 0 1 auto; min-width: 0; height: 44px; padding: 0 16px; border-radius: 999px; font-size: 18px; }
-.adv-sort .sort-btn .sort-ico { width: 18px; height: 18px; }
-.adv-sort .sort-btn .sort-arrow { width: 16px; height: 16px; }
+/* ⮻ 2 NÚT “DANH SỐ / TIỀN NỢ” NẰM TRONG DẢI TAB (2026-10-26 — yêu cầu “cho 2 tab này ra nằm cùng
+   với hàng tab chú ý”): trước đó chúng ở tấm lọc (`.adv-sort` 44px / chữ 18px). Nay cùng hàng
+   `.loai-tab` ⇒ phải **cao 34px, bo 999px, chữ 16px, đệm 11px** cho thẳng hàng với các tab.
+   · `flex: 0 0 auto`: `.sort-btn` gốc là `flex: 1` (chia đều hàng `.sort-row` cũ) — để nguyên là
+     nút GIÃN hết nửa dải và đẩy 10 tab ra ngoài khung nhìn.
+   · ⛔ Không khai lại MÀU: `.sort-btn` + `#sortDanhSo.active`/`#sortTienNo.active` đã có đủ 2 theme,
+     khai lại là hai nguồn màu dễ lệch nhau.
+   · ⚠️ KHÔNG gắn class `loai-tab` cho 2 nút này: `syncLoaiTabs()`/`equalizeLoaiTabs()` quét
+     `.loai-tab` để tô sáng + gán bề rộng 1/4 dải; dính vào là nút sắp xếp bị coi là tab. */
+.loai-tabs .sort-btn { flex: 0 0 auto; min-width: 0; height: 34px; padding: 0 11px; gap: 5px; border-radius: 999px; font-size: 16px; }
+.loai-tabs .sort-btn .sort-ico { width: 15px; height: 15px; }
+.loai-tabs .sort-btn .sort-arrow { width: 14px; height: 14px; }
 .adv-count { margin-top: 2px; padding: 5px 9px; border-radius: 9px; background: rgba(148,163,184,0.14); font-size: 15px; line-height: 1.35; color: var(--text); }   /* ⟳ 2026-10-25n: nhóm “Sắp xếp” 13 → **15px** (icon 14/12 → 16/14) · dòng đếm 13 → **15px** */
 .adv-count b { color: #60a5fa; }
 body.light-mode .adv-count { background: #e8ecf1; color: #0f172a; }
@@ -7184,13 +7260,40 @@ body.force-desktop .table-view { display: block; }
           <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="old" onclick="selectLoai('old')"><span class="nhom-dot" style="background:#ef4444"></span><span>Từ 3Tr</span></button>
           <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="oldky" onclick="selectLoai('oldky')"><span class="nhom-dot" style="background:#8b5cf6"></span><span>Nợ cũ</span></button>
           <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="summary" onclick="selectLoai('summary')"><span class="nhom-dot" style="background:#3b82f6"></span><span>Tổng hợp</span></button>
-          <!-- ⛔ 2026-10-26 (yêu cầu “cho tất cả kích thước tab ở hàng này bằng nhau, hiển thị đủ 4 tab
-               không cần lướt khi xem trên điện thoại”): **BỎ 3 TAB “1-2Tr · 2-3Tr · Chú ý” KHỎI DẢI**
-               (chúng thêm ở cùng ngày để dải lướt ngang). Dải trở lại **ĐÚNG 4 TAB** ⇒ chia đều
-               `flex: 1 1 0` được, không sinh cuộn ngang.
-               ⛔ KHÔNG xoá 2 giá trị lọc `1-2tr`/`2-3tr` khỏi JS (`LOAI_RANGE` + `loaiNames`) và khỏi
-               `#loaiDropdown` / tấm lọc: người dùng vẫn chọn được ở ô “Chi tiết nợ” và chip “Chú ý”.
-               ⇒ Đừng dựng lại 3 nút này trong dải mà không hỏi trước (vùng này đã đảo chiều ~10 lần). -->
+          <!-- 💰 2026-10-26 (yêu cầu “5 chip tiền nợ (≤1 triệu … ≥5 triệu) + Chú ý, nằm cùng hàng với
+               tab tổng hợp”): 5 nút khoảng tiền + “Chú ý” RỜI tấm “Lọc theo yêu cầu”, lên làm TAB
+               ngay sau “Tổng hợp”. Mọi tab đi CHUNG `selectLoai(val)` ⇒ khoảng tiền do
+               `LOAI_RANGE` lo (đầu dưới bao gồm, đầu trên không) — ⛔ đừng viết bộ lọc thứ hai.
+               ⚠️ Nhãn RÚT GỌN cho vừa tab (tên đầy đủ ở `loaiNames` + nhãn ô “Chi tiết nợ”)
+               — cùng kiểu “Từ 3Tr” / “Nợ cũ”. -->
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="duoi1tr" onclick="selectLoai('duoi1tr')"><span class="nhom-dot" style="background:#22c55e"></span><span>≤ 1Tr</span></button>
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="1-2tr" onclick="selectLoai('1-2tr')"><span class="nhom-dot" style="background:#facc15"></span><span>1-2Tr</span></button>
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="2-3tr" onclick="selectLoai('2-3tr')"><span class="nhom-dot" style="background:#f59e0b"></span><span>2-3Tr</span></button>
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="3-5tr" onclick="selectLoai('3-5tr')"><span class="nhom-dot" style="background:#f97316"></span><span>3-5Tr</span></button>
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="tren5tr" onclick="selectLoai('tren5tr')"><span class="nhom-dot" style="background:#ef4444"></span><span>≥ 5Tr</span></button>
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="marked" onclick="selectLoai('marked')"><span class="nhom-dot" style="background:#b45309"></span><span>Chú ý</span></button>
+          <!-- ⮻ 2026-10-26 (yêu cầu “cho 2 tab này ra nằm cùng với hàng tab chú ý”): 2 nút
+               **“Danh số / Tiền nợ”** RỜI tấm “Lọc theo yêu cầu” ⇒ về ĐÂY, NGAY SAU tab “Chú ý”
+               và nằm TRONG `#loaiTabs` ⇒ cùng hàng, cùng lướt ngang với các tab, không tốn thêm
+               hàng nào của thanh công cụ.
+               · Giữ NGUYÊN id `sortDanhSo` / `sortTienNo` ⇒ `sortBy()` + `updateSortButtons()`
+                 (mũi tên + `.active`) chạy y như cũ, ⛔ không sửa 1 dòng JS nào.
+               · ⛔ Chỉ được có MỘT bản của 2 nút trong toàn file: `updateSortButtons()` lấy phần tử
+                 ĐẦU TIÊN theo id, bản thứ hai sẽ đứng im với trạng thái cũ.
+               · Chúng KHÔNG mang class `loai-tab` ⇒ `syncLoaiTabs()`/`equalizeLoaiTabs()` (chỉ quét
+                 `.loai-tab`) không tô sáng / không gán bề rộng cho chúng; bề rộng theo chữ.
+               · Bấm là sắp xếp NGAY tại chỗ (không mở tấm lọc). -->
+          <button class="sort-btn loai-sort-btn" type="button" id="sortDanhSo" onclick="sortBy('danh_so')" aria-label="Sắp xếp theo danh số">
+            <span class="sort-ico"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-hash"/></svg></span><span class="sort-label">Danh số</span><span class="sort-arrow"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort"/></svg></span>
+          </button>
+          <button class="sort-btn loai-sort-btn" type="button" id="sortTienNo" onclick="sortBy('tien_no')" aria-label="Sắp xếp theo tiền nợ">
+            <span class="sort-ico"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-coins"/></svg></span><span class="sort-label">Tiền nợ</span><span class="sort-arrow"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort"/></svg></span>
+          </button>
+          <!-- ⚠️ Dải nay có 10 tab (4 tab cũ + 5 khoảng tiền + Chú ý) ⇒ trên điện thoại **4 tab đầu
+               vẫn lấp đầy khung nhìn** (JS gán bề rộng = 1/4 dải cho MỌI tab), 6 tab sau nằm ngoài
+               và LƯỚT NGANG. `syncLoaiTabs()` tự đưa tab đang chọn vào khung nhìn.
+               ⛔ Đừng xoá 3 giá trị `1-2tr`/`2-3tr`/`marked` khỏi JS: tấm lọc vẫn dùng
+               `advLoaiTap` cho “KH đã gọi / KH chưa gọi”, và ô “Chi tiết nợ” đọc `loaiNames`. -->
           <!-- ⟳ 2026-10-25: nhãn tab nợ ≥3Tr đổi **“Trên 3Tr” → “Từ 3Tr”** (yêu cầu người dùng).
                Giá trị lọc vẫn là `old`, ⛔ không đổi. -->
           <!-- ⛔ TAB “CHÚ Ý” ĐÃ BỊ BỎ (2026-10-24 — yêu cầu “bỏ tab chú ý”). Dải nay còn **4 TAB**:
@@ -7618,44 +7721,30 @@ body.force-desktop .table-view { display: block; }
         <span class="adv-dash" aria-hidden="true">→</span>
         <input type="text" id="advMax" class="adv-in" placeholder="Đến (VD 3tr)" autocomplete="off" autocorrect="off" oninput="advApply()">
       </div>
-      <div class="adv-chips">
-        <!-- ⟳ 2026-10-25m (yêu cầu “khi chọn tab nào thì tab đó hiển thị màu xanh”): 5 nút nhanh
-             nay có `data-min`/`data-max` để `syncAdvChips()` tô XANH đúng nút đang có hiệu lực
-             (so với 2 ô Từ/Đến) — trước đây bấm nút xong KHÔNG có dấu hiệu nào cho biết đang chọn
-             nút nào. ⚠️ Sửa khoảng tiền ở đây thì phải sửa cả 2 tham số trong `onclick`. -->
-        <button class="adv-chip" type="button" data-min="" data-max="1tr" onclick="advChip('', '1tr')">≤ 1 triệu</button>
-        <button class="adv-chip" type="button" data-min="1tr" data-max="2tr" onclick="advChip('1tr', '2tr')">1 – 2 triệu</button>
-        <button class="adv-chip" type="button" data-min="2tr" data-max="3tr" onclick="advChip('2tr', '3tr')">2 – 3 triệu</button>
-        <button class="adv-chip" type="button" data-min="3tr" data-max="5tr" onclick="advChip('3tr', '5tr')">3 – 5 triệu</button>
-        <button class="adv-chip" type="button" data-min="5tr" data-max="" onclick="advChip('5tr', '')">≥ 5 triệu</button>
-      </div>
-      <!-- ⮻ SẮP XẾP (2026-10-25) — 2 “tab” Danh số / Tiền nợ RỜI thanh công cụ, về ĐÂY theo yêu
-           cầu “cho tab danh số và tiền nợ … cho vô nút lọc”.
-           · Giữ NGUYÊN id `sortDanhSo` / `sortTienNo` để `updateSortButtons()` + `sortBy()`
-             chạy y như cũ (mũi tên + `.active` vẫn cập nhật đúng).
-           · ⛔ Chỉ được có MỘT bản của 2 nút trong toàn file: `updateSortButtons()` cập nhật
-             phần tử ĐẦU TIÊN tìm theo id, bản thứ hai sẽ đứng im với trạng thái cũ.
-           · Bấm là sắp xếp NGAY và tấm vẫn MỞ (người dùng còn chỉnh tiếp rồi bấm “Xong”). -->
-      <div class="adv-lab">Sắp xếp</div>
-      <div class="adv-sort">
-        <button class="sort-btn" id="sortDanhSo" onclick="sortBy('danh_so')">
-          <span class="sort-ico"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-hash"/></svg></span><span class="sort-label">Danh số</span><span class="sort-arrow"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort"/></svg></span>
-        </button>
-        <button class="sort-btn" id="sortTienNo" onclick="sortBy('tien_no')">
-          <span class="sort-ico"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-coins"/></svg></span><span class="sort-label">Tiền nợ</span><span class="sort-arrow"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort"/></svg></span>
-        </button>
-      </div>
-      <!-- 📞 LỌC NHANH (2026-10-25) — “KH đã gọi · KH chưa gọi” + “Chú ý” rời ô “Chi tiết nợ” /
-           dải tab về đây (yêu cầu “kh đã gọi, kh chưa gọi cho vô nút lọc” rồi “cho tab chú ý vô
-           nút lọc”). Cả 3 vẫn đi ĐÚNG đường cũ `selectLoai(...)` (⛔ đừng viết bộ lọc thứ hai):
+      <!-- ⛔ 2026-10-26: 5 nút khoảng tiền (≤ 1 triệu … ≥ 5 triệu) ĐÃ RỜI tấm này — nay là 5 TAB
+           ở dải “Chi tiết nợ” (ngay sau “Tổng hợp”), theo yêu cầu “nằm cùng hàng với tab tổng
+           hợp”. Ô “Từ / Đến” ở trên VẪN giữ nguyên (gõ khoảng tuỳ ý). Đừng dựng lại 5 nút này ở
+           đây kẻo có hai chỗ cùng lọc một thứ mà trạng thái sáng không đồng bộ. -->
+
+      <!-- ⛔ 2026-10-26 (yêu cầu “cho 2 tab này ra nằm cùng với hàng tab chú ý”): khối “Sắp xếp”
+           (nhãn `.adv-lab` + khung `.adv-sort` + 2 nút `#sortDanhSo`/`#sortTienNo`) ĐÃ RỜI tấm
+           này ⇒ nằm trong dải tab “Chi tiết nợ” (`#loaiTabs`, ngay sau tab “Chú ý”).
+           ⛔ Đừng dựng lại 2 nút ở đây: id phải DUY NHẤT (updateSortButtons() lấy bản đầu tiên). -->
+      <!-- 📞 LỌC NHANH (2026-10-25) — “KH đã gọi · KH chưa gọi” (+ “Chú ý” tới 2026-10-26) rời ô
+           “Chi tiết nợ” / dải tab về đây (yêu cầu “kh đã gọi, kh chưa gọi cho vô nút lọc”).
+           ⟳ 2026-10-26: **“Chú ý” đã rời tấm** ⇒ lên làm TAB cuối của dải “Chi tiết nợ” (cùng
+           lượt với 5 khoảng tiền) — 2 chip dưới đây GIỮ NGUYÊN.
+           Cả 2 vẫn đi ĐÚNG đường cũ `selectLoai(...)` (⛔ đừng viết bộ lọc thứ hai):
            nhãn ô “Chi tiết nợ”, view và dải tab đổi theo y như khi chọn trong dropdown.
            Bấm lại mục đang chọn = BỎ LỌC (`advLoaiTap`).
-           Trạng thái sáng của 3 nút do `syncAdvLoai()` giữ (gọi ở cuối `selectLoai` + lúc mở tấm). -->
+           Trạng thái sáng của 2 nút do `syncAdvLoai()` giữ (gọi ở cuối `selectLoai` + lúc mở tấm). -->
       <div class="adv-lab">Lọc nhanh</div>
       <div class="adv-chips">
         <button class="adv-chip" type="button" data-loai="called" data-active="0" aria-pressed="false" onclick="advLoaiTap('called')">KH đã gọi</button>
         <button class="adv-chip" type="button" data-loai="notcalled" data-active="0" aria-pressed="false" onclick="advLoaiTap('notcalled')">KH chưa gọi</button>
-        <button class="adv-chip" type="button" data-loai="marked" data-active="0" aria-pressed="false" onclick="advLoaiTap('marked')">Chú ý</button>
+        <!-- ⛔ 2026-10-26: chip “Chú ý” ĐÃ RỜI tấm — nay là TAB cuối của dải “Chi tiết nợ”
+             (yêu cầu “+ Chú ý, nằm cùng hàng với tab tổng hợp”). Vẫn đi chung `selectLoai('marked')`
+             nên nhãn ô “Chi tiết nợ” + view + tab sáng y như trước. -->
       </div>
       <div class="adv-count" id="advCount"></div>
       <div class="adv-acts">
@@ -8510,9 +8599,17 @@ let currentTab = 'detail';
    (lọc theo TỔNG nợ của khách) · `renderCards`/`renderTable` (chọn danh sách nợ cũ) đều đọc
    bảng này ⇒ thêm tab mới chỉ cần thêm 1 dòng ở đây, ⛔ đừng rải điều kiện `=== '1tr'` khắp file. */
 const LOAI_RANGE = {
-  '1tr':   [1000000, 3000000],
-  '1-2tr': [1000000, 2000000],
-  '2-3tr': [2000000, 3000000]
+  '1tr':      [1000000, 3000000],
+  '1-2tr':    [1000000, 2000000],
+  '2-3tr':    [2000000, 3000000],
+  /* ⟳ 2026-10-26 (yêu cầu “5 chip tiền nợ … nằm cùng hàng với tab tổng hợp”): 5 nút khoảng tiền
+     trong tấm “Lọc theo yêu cầu” RỜI tấm, lên thành TAB của dải “Chi tiết nợ”. Dùng CHUNG bảng
+     này (⛔ không viết bộ lọc thứ hai) — đầu dưới BAO GỒM, đầu trên KHÔNG (`>= min && < max`).
+     `duoi1tr` lấy `0` làm sàn (khách nợ 0 vốn không có); `tren5tr` dùng `Infinity` để điều kiện
+     `tien_no < max` luôn đúng. */
+  'duoi1tr':  [0, 1000000],
+  '3-5tr':    [3000000, 5000000],
+  'tren5tr':  [5000000, Infinity]
 };
 function loaiRange(v) { return LOAI_RANGE[v] || null; }
 function switchTab(tab) {
@@ -8879,7 +8976,7 @@ function toggleLoaiDropdown() {
     });
   }
 }
-const loaiNames = { oldky: 'Nợ cũ, nhiều kỳ', old: 'Nợ ≥ 3Tr', '1tr': 'Nợ 1Tr đến 3Tr', '1-2tr': 'Nợ 1Tr đến 2Tr', '2-3tr': 'Nợ 2Tr đến 3Tr', summary: 'Tổng hợp nợ', marked: 'Chú ý', called: 'KH đã gọi', notcalled: 'KH chưa gọi' };
+const loaiNames = { oldky: 'Nợ cũ, nhiều kỳ', old: 'Nợ ≥ 3Tr', '1tr': 'Nợ 1Tr đến 3Tr', '1-2tr': 'Nợ 1Tr đến 2Tr', '2-3tr': 'Nợ 2Tr đến 3Tr', 'duoi1tr': 'Nợ dưới 1Tr', '3-5tr': 'Nợ 3Tr đến 5Tr', 'tren5tr': 'Nợ từ 5Tr trở lên', summary: 'Tổng hợp nợ', marked: 'Chú ý', called: 'KH đã gọi', notcalled: 'KH chưa gọi' };
 /* ✂️ TÊN VIẾT TẮT cho ô lọc nhóm — **ĐÃ ĐƯA TRỞ LẠI** theo yêu cầu người dùng:
    “cho tên viết tắt, ví dụ BT Dũng”.
 
@@ -9255,11 +9352,11 @@ function syncLoaiTabs(val) {
    Cách làm: **đo rồi gán** — xoá `width` đã gán, đọc bề rộng TỰ NHIÊN của từng tab
    (chữ + đệm + viền), lấy số LỚN NHẤT, rồi gán đúng số đó cho cả 5 tab (nút phễu nằm
    NGOÀI `#loaiTabs` nên hàm không đụng tới).
-   📱 **ĐIỆN THOẠI (< 640px) BỎ QUA HÀM NÀY** (2026-10-24, yêu cầu “cho dải tab ôm vừa
-   trên điện thoại thay vì cuộn ngang”): ở đó CSS dùng `flex: 1 1 0` + `min-width: 0` (xem khối
-   `@media` sau `.loai-tab.active`) ⇒ các tab chia đều đúng bề rộng dải, luôn vừa, không cuộn
-   ngang. Nếu vẫn gán `width` cứng thì nó đè `flex-basis` ⇒ dải tràn ra ngoài. Vì vậy hàm PHẢI
-   gỡ hết `width` cũ (do lần đo trên desktop để lại khi xoay/đổi cỡ cửa sổ) rồi thoát.
+   📱 **ĐIỆN THOẠI (< 640px) KHÔNG dùng `flex: 1 1 0` nữa** (2026-10-26, sau khi 5 nút khoảng tiền
+   lên dải ⇒ **10 tab**): chia đều 10 tab thì mỗi tab còn ~47px, chữ bị cắt. Nay CSS để
+   `flex: 0 0 auto` và **hàm này gán bề rộng = `(clientWidth − 3×gap) / 4`** cho MỌI tab ⇒ 4 tab
+   đầu rộng bằng nhau và lấp đầy khung nhìn (y hệt bản 4 tab), 6 tab sau nằm ngoài và dải
+   **lướt ngang**. `_loaiTabW` giữ số đã gán để `ResizeObserver` không lặp vô hạn.
    · Vì sao không viết cứng `width: 110px`: bề rộng phụ thuộc PHÔNG (Inter tải từ
      Google Fonts; máy offline rơi về phông hệ thống RỘNG HƠN) ⇒ số cứng là cắt chữ.
    · Vì sao desktop vẫn KHÔNG dùng `flex: 1 1 0`: màn rộng thì các tab chia đều sẽ rất dài,
@@ -9275,10 +9372,13 @@ function equalizeLoaiTabs() {
   const tabs = Array.from(box.querySelectorAll('.loai-tab'));
   if (!tabs.length) return;
   if (window.innerWidth < 640) {
-    /* 📱 CSS lo phần chia đều (flex) — chỉ cần dọn `width` cũ để không đè `flex-basis`. */
-    if (_loaiTabW !== 0 || tabs.some(t => t.style.width)) {
-      tabs.forEach(t => { t.style.width = ''; });
-      _loaiTabW = 0;
+    /* 📱 2026-10-26: 10 tab ⇒ gán bề rộng = 1/4 dải cho MỌI tab (4 tab đầu lấp đầy khung nhìn,
+       6 tab sau lướt ngang). `Math.floor` để KHÔNG bao giờ tràn (dư ≤3px bên phải). */
+    const gapM = parseFloat(getComputedStyle(box).columnGap) || 0;
+    const wM = Math.floor((box.clientWidth - gapM * 3) / 4);
+    if (wM > 0 && (_loaiTabW !== wM || tabs.some(t => t.style.width !== wM + 'px'))) {
+      tabs.forEach(t => { t.style.width = wM + 'px'; });
+      _loaiTabW = wM;
     }
     return;
   }
@@ -9960,8 +10060,10 @@ function advSyncCount() {
 // Gõ trong tấm ⇒ lọc LẠI NGAY (cùng nhịp với ô tìm kiếm).
 function advApply() { applyFilters(); if (typeof syncAdvChips === 'function') syncAdvChips(); }
 
-// Nút nhanh: đổ vào 2 ô tiền rồi lọc. Hai đầu MÚT ĐỀU BAO GỒM (≤1tr · 1–2tr · …) — xem chú thích
-// dài ở khối lọc tiền trong `applyFilters`.
+/* ⛔ 2026-10-26: 5 NÚT KHOẢNG TIỀN ĐÃ RỜI TẤM “Lọc theo yêu cầu” — nay là 5 TAB của dải
+   “Chi tiết nợ” (`data-val` = duoi1tr · 1-2tr · 2-3tr · 3-5tr · tren5tr, lọc bằng `LOAI_RANGE`).
+   Hàm này GIỮ LẠI (không còn `onclick` nào gọi) để nếu người dùng muốn trả 5 nút về tấm thì chỉ
+   cần dựng lại markup — ⛔ đừng xoá: `applyFilters` vẫn đọc 2 ô Từ/Đến mà hàm này đổ giá trị vào. */
 function advChip(mn, mx) {
   const a = document.getElementById('advMin'), b = document.getElementById('advMax');
   if (a) a.value = mn;
@@ -9972,7 +10074,9 @@ function advChip(mn, mx) {
 /* 🔵 TÔ XANH NÚT NHANH ĐANG CÓ HIỆU LỰC (2026-10-25m — yêu cầu “khi chọn tab nào thì tab đó
    hiển thị màu xanh”): so 2 ô Từ/Đến với `data-min`/`data-max` của từng nút ⇒ bấm nút nào thì
    nút đó sáng xanh (`.adv-chip[data-active="1"]`), gõ tay đúng khoảng đó cũng sáng theo.
-   Gọi ở cuối `advApply()` (mọi đường đổi bộ lọc đều đi qua đây) và trong `openAdv()`. */
+   Gọi ở cuối `advApply()` (mọi đường đổi bộ lọc đều đi qua đây) và trong `openAdv()`.
+   ℹ️ 2026-10-26: 5 nút khoảng tiền đã lên dải tab ⇒ tấm KHÔNG còn `.adv-chip[data-min]` nào,
+   vòng lặp dưới đây chạy 0 lần (vô hại). Giữ hàm vì `advApply()`/`openAdv()` vẫn gọi. */
 function syncAdvChips() {
   const box = document.getElementById('advModal');
   if (!box) return;
