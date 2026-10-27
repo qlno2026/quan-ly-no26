@@ -1636,11 +1636,11 @@ body.light-mode .kh-ma { color: var(--vien-fg) !important; background: var(--vie
    nên đọc ra mờ; `#172554` = **9,17** trên viên “Chuẩn” (8,95–9,63 trên cả ba mức) ⇒ số nét hơn.
    ⚠️ ĐỔI RIÊNG `.kh-danhso`, KHÔNG đụng `--vien-fg`: token đó dùng chung với viên Mã KH + SĐT
    (chúng có nền khác) — chỉ viên danh số được yêu cầu. */
-body.light-mode .kh-danhso { color: #172554 !important; background: var(--danhso-bg); }
+body.light-mode .kh-danhso { color: #334155 !important; background: var(--danhso-bg); }   /* ⟳ 2026-10-27g: #172554 → #1e3a8a · ⟳ 2026-10-27i (yêu cầu “3 hàng này màu chữ đen xám light mode”): → **#334155** (đen xám, trùng màu số TBI light — CẢ 3 ô danh số/mã sổ/TBI nay cùng #334155) */
 /* ⟳ 2026-10-27 (yêu cầu “cho mã sổ màu nhạt hơn light mode”): `#334155` → **`#475569`**
    (slate-700 → slate-600, nhạt 1 nấc). ⚠️ Có HAI rule light cho `.kh-sogcs` (chỗ này + khối
    `.kh-sogcs`/`.kh-tbi` phía dưới) — đổi lẻ một cái là rule thắng cuộc vẫn ra màu cũ. */
-body.light-mode .kh-sogcs { color: #64748b; }   /* ⟳ 2026-10-27: “nhạt như chữ mã kv” = ĐÚNG màu nhãn 
+body.light-mode .kh-sogcs { color: #334155; }   /* ⟳ 2026-10-27i: #64748b → **#334155** (đen xám, cùng 2 ô kia); trước: “nhạt như chữ mã kv” = ĐÚNG màu nhãn 
    “Mã KV:” ở light (`.lbl-txt` đo được `rgb(100,116,139)` = `#64748b`). */
 /* ⟳ 2026-10-26: `#dc2626` → `#000000` (yêu cầu “chữ màu đen ở light mode”) → **`var(--vien-fg)`**
    = **`#1e3a8a` ĐÚNG màu chữ viên MÃ KH** ở light (yêu cầu sau: “cho màu chữ giống mã kh light mode”).
@@ -1673,7 +1673,10 @@ body:not(.light-mode) .kh-card .kh-phone { color: #93c5fd !important; }
    → **`#e2e8f0`** = ĐÚNG màu chữ viên danh số ở dark (`body:not(.light-mode) .kh-danhso`).
    ⚠️ Phải bỏ `.kh-tbi` khỏi khối `[data-surface-dark="ratsang"]` bên dưới, không thì ở mức “Rất
    sáng” nó bị kéo về `#a8b6c9` và hết giống danh số. ⛔ Light KHÔNG đụng (`#334155`, 8,79:1). */
-body:not(.light-mode) .kh-card .kh-tbi { color: #e2e8f0; }
+body:not(.light-mode) .kh-card .kh-tbi { color: #cbd5e1; }   /* ⟳ 2026-10-27i (yêu cầu “mã sổ và số tbi màu giống danh số dark mode”): #e2e8f0 → **#cbd5e1** = ĐÚNG màu `.kh-danhso` dark (cùng 1 nấc với mã sổ — xem rule ngay dưới) */
+/* ⟳ 2026-10-27i: mã sổ dark cùng màu danh số — trước là `#94a3b8` (base rule `.kh-sogcs`).
+   ⚠️ CẢ 3 ô (danh số · mã sổ · số TBI) phải cùng màu; sửa lẻ 1 ô là 2 ô lệch. */
+body:not(.light-mode) .kh-card .kh-sogcs { color: #cbd5e1; }
 /* ⟳ 2026-10-27 (yêu cầu “cho màu icon camera trắng hơn”): `#7c8b9e` → **`#ffffff`**. Rule này
    đè `.kh-mid-row .kh-photo { color: ... }` vì nó nhắm thẳng vào `.ic` (rule trước chỉ đặt màu
    ở nút, icon ăn `currentColor` nhưng bị rule này chặn). */
@@ -1708,7 +1711,7 @@ body:not(.light-mode) .kh-card .kh-photo .ic { color: #ffffff; }
    (trắng hơi xám — đúng `--text` của dark). Đo: **9,37 / 8,33 / 6,96** trên viên mức Sáng/Chuẩn/Rất sáng
    — vẫn dư xa AA 4,5; mắt vẫn đọc là “chữ sáng” nhưng bớt chói. Chế độ SÁNG KHÔNG đụng
    (vẫn chữ navy `#172554`, 9,17). */
-body:not(.light-mode) .kh-danhso { color: #e2e8f0 !important; background: var(--danhso-bg); }
+body:not(.light-mode) .kh-danhso { color: #cbd5e1 !important; background: var(--danhso-bg); }   /* ⟳ 2026-10-27g (yêu cầu “màu chữ danh số nhạt xuống 1 tí”): #e2e8f0 → **#cbd5e1** (slate-300 — 1 nấc nhạt hơn, vẫn > 8:1 trên thẻ dark) */
 /* ⟳ 2026-10-26 (yêu cầu “cho chữ màu trắng ở dark mode, giữ nguyên màu nền”): chữ viên SĐT
    `--vien-sdt-fg-dark` `#ff9b9b` → **`#ffffff`** đích danh Ở ĐÂY (⛔ không đổi token: token còn
    tô ICON điện thoại, muốn icon trắng thì mới đổi token — hiện icon giữ đỏ hồng).
@@ -4389,7 +4392,7 @@ body.light-mode .kh-card .kh-mid-row .kh-photo { color: #ffffff; }
    và tâm dòng chữ trùng nhau ở MỌI cỡ chữ, không phụ thuộc metric của font emoji.
    ⛔ Đừng quay lại `vertical-align: -2px` của bản đầu: đó là con số đo được trên Chromium của
    một máy, sẽ lệch ở máy dùng font emoji khác. */
-.em { display: inline-flex; align-items: center; justify-content: center; width: 17px; height: 17px; line-height: 1; font-size: 15px; font-style: normal; vertical-align: middle; opacity: .6; }   /* ⟳ 2026-10-26 “cho các emoji mờ thêm”: .75 → **.6** (⛔ đừng xuống dưới .5: 📞/🏷️ thành vệt xám khó nhận) */
+.em { display: inline-flex; align-items: center; justify-content: center; width: 17px; height: 17px; line-height: 1; font-size: 15px; font-style: normal; vertical-align: middle; opacity: .5; }   /* ⟳ 2026-10-26 “cho các emoji mờ thêm”: .75 → .6 · ⟳ 2026-10-27g (yêu cầu “cho các icon trong ảnh nhạt thêm 1 nấc”): .6 → **.5** (⛔ .5 là SỐNG DƯỚI CÙNG: dưới nữa 📞/🏷️/⚡ thành vệt xám khó nhận — muốn nhạt hơn nữa thì phải đổi sang SVG đặt màu thay emoji) */
 /* 📷 là nút to nhất của thẻ (trước đây SVG 22px — người dùng 2 lần yêu cầu “to hơn”) ⇒ emoji 18px. */
 /* ⟳ 2026-10-26 (yêu cầu “cho icon camera to hơn”): 18 → **24px** (đã 3 lần yêu cầu “to hơn” ở
    các lượt trước với SVG). Đệm dọc của nút chỉ-có-icon là 1px nên nút cao ~26px = y mốc cũ;
@@ -4405,7 +4408,10 @@ body.light-mode .kh-card .kh-mid-row .kh-photo { color: #ffffff; }
    nền thẻ #f8fafc = **7,5:1** ✓ · dark `#94a3b8` trên `#1a1f28` ✓).
    ⛔ Trước đó icon được hard-code `#f4f8ff` cho hợp dải xanh — nếu dời nút trở lại dải xanh thì
    phải trả lại màu sáng, không thì icon gần như vô hình. */
-.kh-photo .ic { width: 22px; height: 22px; display: block; color: currentColor; }
+/* ⟳ 2026-10-27e (yêu cầu “cho icon camera to thêm 1 nấc”): SVG 22 → **24px**, đệm `1px 5px` →
+   **`0 4px`** ⇒ nút GIỮ NGUYÊN **34×26px** (24 + 0×2 + 2×1 viền) ⇒ chiều cao thẻ không đổi;
+   glyph lớn hơn chứ nút không lớn hơn. Nếu nới đệm theo thì thẻ cao thêm 2px mỗi hàng. */
+.kh-photo .ic { width: 24px; height: 24px; display: block; color: currentColor; }
 /* ⟳ 2026-10-27b: đã GỠ rule ép chữ nút 📷 sang `#f4f8ff` — nút không còn nằm trên dải xanh nên
    trả về đúng hệ màu theme (light `#475569`, đã có ảnh `#1d4ed8`; dark `#94a3b8` / `#3b82f6`). */
 .kh-photo .em { width: auto; font-size: 26px; line-height: 1; vertical-align: -2px; opacity: 1; }   /* ⟳ 2026-10-26 “cho icon camera đậm hơn”: emoji 📷 KHÔNG dùng opacity .6 của lệnh “emoji mờ thêm” — nó là nút bấm nên phải đặc, rõ hơn hẳn các icon trang trí.
@@ -4545,7 +4551,7 @@ body.light-mode .kh-card-lbl { color: #64748b; }
 .kh-sogcs { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: 600; white-space: nowrap; }   /* ⟳ 2026-10-25 (yêu cầu “cho chữ đậm hơn” rồi “cho màu chữ đậm hơn”, ảnh = mã sổ mờ): 400 → **600** + màu `#94a3b8` → **`#cbd5e1`** — giá trị ĐẬM cả nét lẫn màu so với nhãn “Mã sổ:” (400 · `#8b98ab`) */
 .kh-tbi { font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #94a3b8; font-weight: 600; white-space: nowrap; }   /* ⟳ 2026-10-25: cùng 2 đổi với `.kh-sogcs` (⚠️ sửa lẻ một cái là 2 ô lệch độ đậm) */
 body.light-mode .kh-tbi { color: #334155; }
-body.light-mode .kh-sogcs { color: #64748b; }   /* ⟳ 2026-10-27: “mã sổ nhạt hơn light mode” rồi “nhạt như chữ mã kv” — ĐÚNG màu nhãn “Mã KV:” (`#64748b`); xem chú thích ở rule light phía trên. ⚠️ Đây là rule THẮNG CUỘC (đứng sau) ⇒ đổi cả hai chỗ mới ăn. */
+body.light-mode .kh-sogcs { color: #334155; }   /* ⟳ 2026-10-27: #64748b (như nhãn “Mã KV:”) · ⟳ 2026-10-27i (yêu cầu “3 hàng này màu chữ đen xám light mode”): → **#334155** = ĐÚNG màu số TBI light. ⚠️ Rule THẮNG CUỘC (đứng sau) ⇒ phải đổi CẢ rule light ở dòng ~1643 mới ăn. */
 /* ⟳ 2026-10-26 (yêu cầu “cho hàng số tbi bằng với mã kh”): hàng MÃ SỔ · SỐ TBI cao BẰNG hàng
    SĐT · mã KH. Viên mã KH cao = chữ + 2 viền 1px (đo 22,58px) còn 2 ô chữ trơn chỉ 20,66px ⇒
    thêm **viền TRONG SUỐT 1px** cho 2 ô (ăn đúng +2px) rồi bù bằng **margin âm 1px mỗi bên** để
@@ -4620,15 +4626,16 @@ body.light-mode .kh-abc { color: #475569; }
      quá sát sau khi khối giữa thành 3 hàng. */
   margin-top: 3px;   /* ⟳ 2026-10-27 (yêu cầu “khoảng cách tất cả các hàng ở thẻ là 3px”): 6 → 3px */
 }
-/* ⟳ 2026-10-27 (yêu cầu “đường kẻ ghi chú NGẮN LẠI 1 NỬA”): kẻ bằng `::after` dài **50%** hàng
-   (trước là `border-bottom` = 100%). Đặt Ở BÊN TRÁI, đúng mốc chữ của thẻ. ⚠️ Đừng trả về
-   `border-bottom` (nó luôn chạy hết bề ngang). */
+/* ⟳ 2026-10-27 (yêu cầu “đường kẻ ngang ghi chú NGẮN LẠI 1 NỬA”): kẻ bằng `::after` dài 50%
+   hàng. ⟳ 2026-10-27i (yêu cầu “cho đường kẻ ngang ghi chú dài tới cuối hàng”): 50% → **100%**
+   (về lại đúng bề ngang hàng — `left:0` + `width:100%` = chạy hết tới mép phải).
+   ⚠️ Vẫn là `::after` chứ KHÔNG phải `border-bottom` (muốn ẩn/hiện riêng thì `::after` tiện hơn). */
 .kh-ghichu-row::after {
   content: '';
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 50%;
+  width: 100%;
   height: 1px;
   background: rgba(148,163,184,0.35);
 }
@@ -4908,7 +4915,7 @@ body.light-mode .kh-card .kh-addr-line.is-pinned .kh-addr-txt { text-decoration-
   /* ⟳ 2026-10-25t (yêu cầu “cho nút camera to hơn”): glyph 18 → **22px**, đệm thu lại **2px 8px → 1px 5px**
      ⇒ nút icon-only chỉ cao thêm **~0,1px** (26,04 → 26,0) nên hàng danh số / chiều cao thẻ KHÔNG đổi,
      bề rộng 29,9 → **34px**. Tăng đệm theo là thẻ cao thêm ~5px ⇒ chỉ tăng đệm nếu người dùng chấp nhận. */
-  padding: 1px 5px;
+  padding: 0 4px;   /* ⟳ 2026-10-27e: 1px 5px → 0 4px để bù cỡ icon 22 → 24px, nút vẫn 34×26 */
   border: 1px solid rgba(255,255,255,0.22);
   border-radius: 7px;
   background: transparent;
@@ -4953,7 +4960,7 @@ body.light-mode .kh-card .kh-addr-line.is-pinned .kh-addr-txt { text-decoration-
 /* ⟳ 2026-10-25t (yêu cầu “cho nút camera to hơn”): icon 18 → **22px**, đệm dọc của trạng thái
    chỉ-có-icon **3 → 1px** ⇒ nút **29,4 × 29,4 → 33,4 × 26,0px**: glyph to hơn 4px nhưng nút THẤP
    hơn bản cũ 3px nên hàng danh số (và chiều cao thẻ) không phình thêm. Giữ đệm ngang 5px. */
-.kh-photo:not(.has-photo) { padding: 1px 5px; gap: 0; }
+.kh-photo:not(.has-photo) { padding: 0 4px; gap: 0; }   /* ⟳ 2026-10-27e: 1px 5px → 0 4px (bù icon 22 → 24px, nút vẫn ~34×26) */
 .kh-photo.has-photo { border-color: #3b82f6; color: #93c5fd; }
 body.light-mode .kh-photo { border-color: #94a3b8; color: #475569; }
 body.light-mode .kh-photo:active { background: rgba(15,23,42,0.08); }
@@ -6387,9 +6394,12 @@ body.force-desktop .table-view { display: block; }
 
 /* Tất cả chữ trên card: nét 400 (light & dark) */
 .kh-card * { font-weight: 400 !important; }
-/* Exclude Danh Số & Mã KH — giữ đậm */
-.kh-card .kh-danhso { font-weight: 400 !important; }
-.kh-card .kh-ma { font-weight: 400 !important; }
+/* Exclude Mã KH · Danh Số · SĐT — nét 600 (yêu cầu “cho mã kh, sdt, danh số nét chữ dày hơn”)
+   ⟳ 2026-10-27k (yêu cầu “cho nét chữ danh số, sdt, mã kh nét mỏng hơn 1 tí”): 600 → **500**
+   (1 nấc mỏng hơn; 400 = mỏng nhất, đã từng là giá trị cũ trước yêu cầu “dày hơn”). */
+.kh-card .kh-danhso { font-weight: 500 !important; }
+.kh-card .kh-ma { font-weight: 500 !important; }
+.kh-card .kh-phone { font-weight: 500 !important; }
 /* Tên KH đậm nét 500 bằng dòng "Tổng ... KH" ở trên (cả light & dark) */
 .kh-card .kh-name { font-weight: 500 !important; }
 
@@ -7435,7 +7445,43 @@ body:not(.light-mode) .kh-card-top .kh-tien.low { color: #86efac; }
 /* ══ 2026-10-27 (yêu cầu “chữ trên nền xanh ở dark mode nhạt lại, nhìn bị chói”) ══════════
    Tên KH trên dải teal: trắng `#ffffff` → **`#e6f0f4`** (dịu hơn, bớt chói; ≈3,9:1 trên
    `#2E86AA` — tên 19px in đậm nên vẫn đạt ngưỡng chữ lớn 3:1). Chỉ DARK. */
-body:not(.light-mode) .kh-card-top .kh-name { color: #e6f0f4 !important; }
+/* ⟳ 2026-10-27f (yêu cầu “cho tên KH màu trắng xám nhẹ”): `#e6f0f4` (trắng hơi XANH) →
+   **`#e2e8f0`** (slate-200 = trắng ngả XÁM nhẹ, đúng nghĩa “trắng xám”); trên dải `#2E86AA`
+   ≈ **3,34:1** — vẫn ≥ ngưỡng 3:1 cho chữ lớn 19px weight 500. Chỉ DARK, chỉ dải đầu thẻ. */
+body:not(.light-mode) .kh-card-top .kh-name { color: #e2e8f0 !important; }
+/* ⟳ 2026-10-27f (yêu cầu “cho tên KH màu trắng xám nhẹ”): LIGHT cũng đổi — tên đang màu
+   TRẮNG tinh (`#ffffff` của rule `.kh-idcol .kh-name`) ⇒ **`#e2e8f0`** (slate-200 = trắng ngả
+   XÁM nhẹ) như dark. Nền dải đầu thẻ #2E86AA ở CẢ 2 theme ⇒ cùng độ đọc ~3,3:1 (chữ 19px
+   weight 500, đạt ngưỡng chữ lớn 3:1). Specificity phải ngang rule `.kh-idcol .kh-name`
+   (`!important` 0,2,0) nên giữ `body.light-mode .kh-card-top .kh-name` + `!important` (0,3,1). */
+body.light-mode .kh-card-top .kh-name { color: #e2e8f0 !important; }
+/* ══ 2026-10-27g → 2026-10-27i (yêu cầu “sdt nền cam chữ cam nhạt” rồi “nền cam thật nhạt và
+   chữ màu cam” rồi “chữ cam nhạt hơn ở sdt light + dark”) ═══════════════════════════════════
+   TRƯỚC ĐÓ 2 nền viên SĐT đã bị rule “bỏ nền 2 viên” (`… .kh-card .kh-phone { background:
+   transparent !important }`) cắt mất ⇒ chữ xanh trên nền thẻ. Nay TRẢ LẠI NỀN CAM THẬT NHẠT +
+   CHỮ CAM ở CẢ 2 THEME, đặt Ở ĐÂY (sau mọi rule màu/nền của viên) nên thắng bằng cả
+   `!important` lẫn số thứ tự. Icon 📞 ăn `currentColor` ⇒ tự theo chữ (và “nhạt” theo yêu cầu
+   “các icon trong ảnh nhạt thêm 1 nấc”).
+   · light: nền `#ffedd5` (orange-100) + chữ `#f97316` (orange-500) ≈ 2,5:1
+   · dark:  nền cam mờ `rgba(249,115,22,0.16)` + chữ `#fdba74` (orange-300) ≈ 6:1 ✓
+   ⚠️ Light dưới AA 4,5 là CỐ Ý theo yêu cầu; muốn AA thì chữ `#c2410c` (≈4,5 trên nền này).
+   ⟳ 2026-10-27j (yêu cầu “chữ màu cam nhạt thêm 2 nấc ở sdt light mode và dark mode”):
+   light `#f97316` → **`#fdba74`** (orange-500 → 300) · dark `#fdba74` → **`#ffedd5`** (300 → 100).
+   Thang cam đang dùng: `#ea580c` → `#f97316` → `#fb923c` → `#fdba74` → `#fed7aa` → `#ffedd5`.
+   ⚠️ Light chữ 300 trên nền 100 ≈ **1,9:1** — rất nhạt (đúng ý “nhạt thêm 2 nấc”) nhưng gần
+   hết đọc được; muốn đọc rõ hơn thì lùi 1 nấc về `#fb923c` (≈2,3) hoặc hạ nền.
+   Icon 📞 ăn `currentColor` nên tự nhạt theo. */
+/* ══ 2026-10-27k (yêu cầu “tôi muốn đổi màu sdt như tab NỢ CŨ light mode dark mode”) ════════
+   Đổi viên SĐT sang ĐÚNG cặp màu của tab “Nợ cũ” (`.loai-tab[data-val="oldky"]`):
+   · light: nền **`#fff7ed`** + chữ **`#c2410c`** (≈ 5,4:1 ✓ AA — đọc rõ hơn hẳn bản cam trước)
+   · dark:  nền **`rgba(249,115,22,0.11)`** + chữ **`#fdba74`** (≈ 6:1 ✓)
+   (Lịch sử trước đó: cam đặc → cam thật nhạt → chữ nhạt 1 → nhạt 2 nấc — xem chú thích
+   phía trên; bản NÀY thay toàn bộ.) Icon 📞 vẫn ăn `currentColor` ⇒ tự theo chữ.
+   Đặt Ở ĐÂY (sau mọi rule màu/nền của viên) nên thắng cả bằng `!important` lẫn số thứ tự. */
+body.light-mode .kh-card .kh-phone-row .kh-phone { background: #fff7ed !important; color: #c2410c !important; border-color: transparent !important; }
+body:not(.light-mode) .kh-card .kh-phone-row .kh-phone { background: rgba(249,115,22,0.11) !important; color: #fdba74 !important; border-color: transparent !important; }
+body.light-mode .kh-card .kh-phone-row .kh-phone .ic,
+body:not(.light-mode) .kh-card .kh-phone-row .kh-phone .ic { color: currentColor !important; }
 </style>
 </head>
 <body>
@@ -11710,12 +11756,11 @@ function renderCards(q='') {
         <div class="kh-ds-row">
         ${r.danh_so ? `<span class="kh-card-lbl" aria-label="Mã KV"><span class="lbl-ic em lbl-tbi" role="img" aria-label="Mã KV">⚡</span><span class="lbl-txt">Mã KV:</span></span><span class="kh-danhso">${hi(r.danh_so,q)}</span>` : ''}
         
-        <!-- ⟳ 2026-10-27 (yêu cầu “cho mã sổ nằm sau danh số, và bỏ chữ mã sổ”): mã sổ ở CÙNG
-             hàng với danh số, ngay SAU nó, và KHÔNG còn nhãn chữ (chỉ icon 📒 + giá trị).
-             Cụm .kh-ds-so cố ý KHÔNG mang class .kh-card-lbl ⇒ fitLabelCols() không ép
-             min-width lên icon. Hàng .kh-sub-row bên dưới giờ chỉ còn Số TBI.
+        <!-- ⟳ 2026-10-27h (yêu cầu “cho mã sổ nằm dưới hàng danh số và thêm chữ Mã sổ:”):
+             mã sổ đã RỜI hàng danh số, xuống dòng riêng ở .kh-sub-row bên dưới (dòng ĐẦU TIÊN,
+             trên dòng Số TBI) và có lại nhãn “Mã sổ:” như 2 nhãn kia ⇒ fitLabelCols() đo cả 3
+             (“Mã KV:” · “Mã sổ:” · “Số TBI:”) ⇒ 3 giá trị thẳng 1 cột.
              ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG một template literal). -->
-        ${r.ma_sogcs ? `<span class="kh-ds-so"><span class="em" role="img" aria-label="Mã sổ">📒</span><span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span></span>` : ''}
         </div>
         <!-- ⟳ 2026-10-27 (yêu cầu “cho camera nằm cùng với hàng số tbi”): nút 📷 RỜI dải xanh
              (.kh-mid-row), nay nằm CUỐI hàng Số TBI và bị đẩy sang mép phải. Hàng này LUÔN
@@ -11724,15 +11769,18 @@ function renderCards(q='') {
              chức năng chứ không chỉ xấu.
              ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG một template literal). -->
         <div class="kh-sub-row">
+        <div class="kh-sub-line">${r.ma_sogcs ? `<span class="kh-sogcs-cluster"><span class="kh-card-lbl" aria-label="Mã sổ"><span class="lbl-ic em" role="img" aria-label="Mã sổ">📒</span><span class="lbl-txt">Mã sổ:</span></span><span class="kh-sogcs">${hi(r.ma_sogcs,q)}</span></span>` : ''}</div>
         <div class="kh-sub-line">${r.so_tbi ? `<span class="kh-tbi-cluster"><span class="kh-card-lbl" aria-label="Số TBI"><span class="lbl-ic em lbl-so" role="img" aria-label="Số TBI">⏲️</span><span class="lbl-txt">Số TBI:</span></span><span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span></span>` : ''}</div>
         </div>
       </div>
-      <!-- ⟳ 2026-10-27 (yêu cầu “dời sđt xuống nằm dưới hàng số tbi, KHÔNG dời mã kh”): SĐT rời
-           dải xanh (nơi mã KH + nút 📷 ở lại), xuống một hàng riêng NGAY DƯỚI khối giữa
-           (hàng “Mã KV” + hàng “Số TBI”) và TRÊN hàng ghi chú. Hàng này nằm trên nền THẺ nên
-           chữ SĐT phải theo màu theme (trước là chữ trắng của dải xanh) — xem rule kh-phone-row.
+      <!-- ⟳ 2026-10-27k (yêu cầu “đổi vị trí sđt và địa chỉ cho nhau” + “đổi sang icon dẫn đường”):
+           ĐỊA CHỈ lên đứng NGAY SAU khối giữa (chỗ SĐT cũ) ⇒ thứ tự MỚI:
+           [khối giữa: Mã KV / Mã sổ / Số TBI] → [ĐỊA CHỈ] → [GHI CHÚ] → [SĐT].
+           Nút ghim nay dùng emoji **🧭** (cùng icon với nút dẫn đường — 2 nút LUÔN LUỸ XEN:
+           khách CHƯA ghim thấy nút ghim, khách ĐÃ ghim thấy nút dẫn đường ⇒ không bao giờ
+           hiện 2 icon song song). Chức năng ghim/nhấn-giữ/SĐT bấm gọi GIỮ NGUYÊN.
            ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
-      <div class="kh-phone-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="margin-right:2px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}</div>
+      ${r.dia_chi ? `<div class="kh-addr-line${pinHere ? ' is-pinned' : ''}" style="margin-top:5px" ondblclick="event.stopPropagation()"><span class="kh-addr-acts"><button type="button" class="kh-pin-btn${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" tabindex="-1" aria-hidden="true"><span class="em" aria-hidden="true">🧭</span></button><button type="button" class="kh-nav-btn" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí đã ghim"><span class="em" aria-hidden="true">🧭</span></button></span><span class="kh-addr-txt" onclick="pinTextTap(this)">${hi(trimDiaChi(r.dia_chi),q)}</span></div>` : ''}
       <div class="kh-ghichu-row">
         <span class="em" aria-hidden="true" style="margin-right:6px">✏️</span>
         <input type="text" class="kh-ghichu-input" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" oninput="saveGhiChu(this)" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()" onpointerdown="event.stopPropagation()" onpointerup="event.stopPropagation()">
@@ -11752,8 +11800,12 @@ function renderCards(q='') {
            đường (pinTextTap → pinNav) — yêu cầu “khi dẫn đường thì nhấn chọn hàng địa chỉ đã được
            cập nhật mới”; khách CHƯA ghim thì chạm không làm gì.
            ⛔ Đừng gắn lại pinToggle cho ô chữ hay nút ghim.
+           ⟳ 2026-10-27k (yêu cầu “đổi vị trí sđt và địa chỉ cho nhau”): SĐT NAY LÀ HÀNG CUỐI
+           của thẻ (chỗ địa chỉ cũ); ĐỊA CHỈ đã lên đứng ngay sau khối giữa — xem chú thích ở
+           ngay trên khối địa chỉ phía trên. ⚠️ Chú thích cũ nói “địa chỉ = hàng cuối” đã LỖI
+           THỜI — hàng cuối nay là SĐT.
            ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
-      ${r.dia_chi ? `<div class="kh-addr-line${pinHere ? ' is-pinned' : ''}" style="margin-top:5px" ondblclick="event.stopPropagation()"><span class="kh-addr-acts"><button type="button" class="kh-pin-btn${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" tabindex="-1" aria-hidden="true"><span class="em" aria-hidden="true">📌</span></button><button type="button" class="kh-nav-btn" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí đã ghim"><span class="em" aria-hidden="true">🧭</span></button></span><span class="kh-addr-txt" onclick="pinTextTap(this)">${hi(trimDiaChi(r.dia_chi),q)}</span></div>` : ''}
+      <div class="kh-phone-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="margin-right:2px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}</div>
     </div>`;
   }).join('');
   fitGhiChuInputs();
