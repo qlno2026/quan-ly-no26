@@ -1674,7 +1674,10 @@ body:not(.light-mode) .kh-card .kh-phone { color: #93c5fd !important; }
    ⚠️ Phải bỏ `.kh-tbi` khỏi khối `[data-surface-dark="ratsang"]` bên dưới, không thì ở mức “Rất
    sáng” nó bị kéo về `#a8b6c9` và hết giống danh số. ⛔ Light KHÔNG đụng (`#334155`, 8,79:1). */
 body:not(.light-mode) .kh-card .kh-tbi { color: #e2e8f0; }
-body:not(.light-mode) .kh-card .kh-photo .ic { color: #7c8b9e; }
+/* ⟳ 2026-10-27 (yêu cầu “cho màu icon camera trắng hơn”): `#7c8b9e` → **`#ffffff`**. Rule này
+   đè `.kh-mid-row .kh-photo { color: ... }` vì nó nhắm thẳng vào `.ic` (rule trước chỉ đặt màu
+   ở nút, icon ăn `currentColor` nhưng bị rule này chặn). */
+body:not(.light-mode) .kh-card .kh-photo .ic { color: #ffffff; }
 /* ⟳ 2026-10-03x: màu chữ viên danh số DARK `#d1d5db` → `#f1f5f9` (viên đã đậm lên ở 2026-10-03w).
    ⟳ 2026-10-03af: `#f1f5f9` → **`#e2e8f0`** — yêu cầu “cho danh số bớt trắng ở dark mode”. Chọt ĐÚNG
    màu `--text` của dark (xám-xanh nhạt, đã có sẵn trong palette) thay vì gần-trắng:
@@ -4638,9 +4641,9 @@ body.light-mode .kh-ghichu-row::after { background: #d7e0ec; }   /* ⟳ 2026-10-
   font-family: 'Inter', sans-serif;
   font-size: var(--fs-card);                 /* theo mức cỡ người dùng chọn — xem chú thích “CỠ CHỮ NỘI DUNG THẺ CARD” */
   color: #60a5fa;
-  /* ⟳ 2026-10-27 (yêu cầu “cho ghi chú có gạch ngang”): gạch ngang chữ trong ô ghi chú — ăn cả
-     hai theme (yêu cầu không nói theme nào). Chỉ gạch nội dung đã nhập; `::placeholder` để trơn. */
-  text-decoration: line-through;
+  /* ⟳ 2026-10-27 (yêu cầu “bỏ gạch ngang chữ ở ghi chú”): GẮT `text-decoration: line-through`
+     đã dựng ở lượt trước (yêu cầu “cho ghi chú có gạch ngang”) — người dùng đổi ý. */
+  text-decoration: none;
   /* ⟳ 2026-10-27 (yêu cầu “bỏ viền ghi chú, cho nền ghi chú cùng màu với nền thẻ”): nền ô
      ghi chú = **ĐÚNG token nền THẺ** (`.kh-card` dùng `var(--dk-card)`), nên nó tự khớp cả 5
      mức “Nền” của dark mode; ⛔ không hard-code `#1a1f28` (mức “Chuẩn”) kẻo lệch 4 mức kia. */
@@ -7424,9 +7427,15 @@ body.force-desktop .table-view { display: block; }
    vàng `#fde68a` → **`#fde9b0`**, xanh `#86efac` → **`#a7f3d0`**, kể cả chữ số triệu
    (`.mil-digit`). Light + bảng KHÔNG đụng. */
 body:not(.light-mode) .kh-card-top .kh-tien.high,
-body:not(.light-mode) .kh-card-top .kh-tien .mil-digit { color: #ffa0a0; }
-body:not(.light-mode) .kh-card-top .kh-tien.mid { color: #fde9b0; }
-body:not(.light-mode) .kh-card-top .kh-tien.low { color: #a7f3d0; }
+body:not(.light-mode) .kh-card-top .kh-tien .mil-digit { color: #ff8888; }
+body:not(.light-mode) .kh-card-top .kh-tien.mid { color: #fde68a; }
+body:not(.light-mode) .kh-card-top .kh-tien.low { color: #86efac; }
+/* ⟳ 2026-10-27 (yêu cầu “màu tiền ở dark mode ĐẬM HƠN 1 nấc”): trả lại bộ màu gốc — `#ffa0a0`
+   → **`#ff8888`**, `#fde9b0` → `#fde68a`, `#a7f3d0` → `#86efac` (đúng 1 nấc đậm hơn bản nhạt). */
+/* ══ 2026-10-27 (yêu cầu “chữ trên nền xanh ở dark mode nhạt lại, nhìn bị chói”) ══════════
+   Tên KH trên dải teal: trắng `#ffffff` → **`#e6f0f4`** (dịu hơn, bớt chói; ≈3,9:1 trên
+   `#2E86AA` — tên 19px in đậm nên vẫn đạt ngưỡng chữ lớn 3:1). Chỉ DARK. */
+body:not(.light-mode) .kh-card-top .kh-name { color: #e6f0f4 !important; }
 </style>
 </head>
 <body>
