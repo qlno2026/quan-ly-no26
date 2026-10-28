@@ -5346,24 +5346,29 @@ body.light-mode th:hover .th-resizer::after { background: rgba(15,23,42,0.4); }
    ⛔ Đây là **CHÙM 5 RULE phải đổi CÙNG NHAU** (thiếu một rule là đúng một ô vẫn lệch tông):
        1. `.ma-kh` (rule này)          · 2–4. `td:nth-child(5/6/10).cell-dim` (mã sổ · danh số · mã kh)
        · 5. `td:nth-child(7) .badge` (tháng nợ, trong khối mobile).
-       ⟳ 2026-10-28: **riêng ô MÃ KH ở DARK đã TÁCH khỏi chùm** (`#94a3b8` → `#e2e8f0`, rule ngay
-         dưới) theo yêu cầu “cho màu chữ mã kh ở dark mode màu trắng xám”; 4 ô còn lại GIỮ `#94a3b8`.
+       ⟳ 2026-10-28: ô MÃ KH ở DARK từng TÁCH khỏi chùm (`#94a3b8` → `#e2e8f0`) theo yêu cầu “cho
+         màu chữ mã kh ở dark mode màu trắng xám”; ⟳ **CÙNG NGÀY, ĐÃ NHẬP LẠI CHÙM** theo yêu cầu
+         “cho mã kh cùng màu với số tbi khi xem dạng bảng” ⇒ mã KH ở dark lại = `var(--text-dim)`
+         = `#94a3b8` = ĐÚNG màu số TBI (rule `#e2e8f0` đã gỡ — xem ghi chú ngay dưới).
    ⚠️ SỐ TIỀN nay LÀ `#b91c1c` — đổi ở lượt “DẢI NỀN ĐẬM HƠN”, **không phải** lượt màu xám này:
       dải nền light 14% làm `#dc2626` xuống **4,11:1** (dưới AA) nên buộc hạ 1 nấc; trên nền
       trắng `#b91c1c` = **6,6:1**, trên dải = **5,51:1** ✓.
    ⛔ Đừng “trả lại” `#dc2626` cho đẹp mắt: nó chỉ an toàn khi dải nền light ≤ 5%.
    ℹ️ Muốn nhạt HƠN `#475569` nữa thì bậc kế tiếp là `#64748b` (slate-500, **4,76:1** — vẫn AA nhưng sát ngưỡng). */
 body.light-mode .table-view .ma-kh { color: #475569; }
-/* ⟳ 2026-10-28 — MÃ KH Ở DARK = **TRẮNG XÁM `#e2e8f0`** (yêu cầu “cho màu chữ mã kh ở dark mode
-   màu trắng xám”): chép ĐÚNG màu chữ viên mã KH trên THẺ (`body:not(.light-mode) .kh-card .kh-ma`,
-   ~1664) ⇒ xem cùng một khách ở BẢNG hay THẺ đều cùng một tông — đúng hướng các lượt “bảng máy
-   tính = thẻ” của số tiền. Trước đó ô này ăn `var(--text-dim)` = `#94a3b8` (xám, không “trắng”).
-   ⇒ Tương phản trên nền bảng dark (`#141820`): **≈14:1**, dư AA rất xa.
-   ⚠️ CHỈ DARK; light vẫn `#475569` theo rule ngay trên (người dùng chỉ nói dark mode).
-   ⚠️ Áp cho CẢ bảng 14 cột VÀ bảng 4 hàng điện thoại (cùng `.table-view`) — KHÔNG đụng modal
-   (`.i-makh .ma-kh` = `#c8d0dc`) và KHÔNG đụng danh số / mã sổ / tháng nợ (vẫn `#94a3b8`).
-   Độ cụ thể (0,3,1) > `.table-view .ma-kh` (0,2,0) ⇒ **không cần `!important`**. */
-body:not(.light-mode) .table-view .ma-kh { color: #e2e8f0; }
+/* ⟳ 2026-10-28 (tiếp 10) — MÃ KH Ở DARK **TRỞ LẠI CÙNG MÀU SỐ TBI** (yêu cầu “cho mã kh cùng màu với
+   số tbi khi xem dạng bảng”; ảnh crop = hàng “202020120108” xám nhạt ở trên và “PB15020062992” trắng
+   xám ở dưới ⇒ hai ô lệch tông).
+   ⇒ **ĐÃ GỠ** rule `body:not(.light-mode) .table-view .ma-kh { color: #e2e8f0; }` (thêm sáng nay theo
+   yêu cầu “cho màu chữ mã kh ở dark mode màu trắng xám”). Nay ô mã KH ăn lại `.table-view .ma-kh`
+   = `var(--text-dim)` = **`#94a3b8`** = ĐÚNG màu số TBI (`td:nth-child(10)`, cũng `var(--text-dim)`)
+   và cùng màu danh số / mã sổ / tháng nợ ⇒ cả 5 ô xám về một chùm như trước 2026-10-28.
+   Đo live (533px, 50 khách thật): dark mã KH = số TBI = `rgb(148,163,184)`; light mã KH = số TBI =
+   `#475569` (`rgb(71,85,105)`) — light vốn đã trùng từ trước, lượt này **chỉ đổi dark**.
+   ⚠️ Ảnh hưởng: bảng 14 cột (≥640px) VÀ bảng 4 hàng điện thoại (cùng `.table-view`). KHÔNG đụng THẺ
+   (`.kh-card .kh-ma` dark vẫn `#e2e8f0`) và modal (`.i-makh .ma-kh` = `#c8d0dc`).
+   ⟳ Muốn quay lại “trắng xám” thì dựng lại ĐÚNG dòng này (đừng đổi màu số TBI!):
+   {{ body:not(.light-mode) .table-view .ma-kh { color: #e2e8f0; } }} */
 /* ⚠️ `.ma-kh` là rule theo **ELEMENT** (0,1,0) nên nó **THẮNG KẾ THỪA** font-size 19px của
    `.info-value`: trong bảng modal, mã KH **chỉ** đúng cỡ nhờ rule `.i-makh .ma-kh` ở dưới
    (0,2,0). Sai/thiếu lớp `i-makh` là mã KH lặng lẽ về **15px** trong khi mọi hàng khác vẫn
@@ -6719,11 +6724,27 @@ body.force-desktop .table-view { display: block; }
        ⇒ hàng dưới không còn cột 1 cho mã sổ. Mỗi vùng chỉ MỘT ô (xem ghi chú cũ ngay trên).
        ⚠️ Số TBI (`td:nth-child(10)`) TRƯỚC ĐÂY bị `display: none` ở khổ điện thoại — nay hiện ra
        (rule riêng nằm ngay dưới rule ô SĐT). */
+    /* ⟳ **2026-10-28 (tiếp 7) — HÀNG 4 ĐỔI CHỖ SĐT ↔ MÃ KH; (tiếp 9) — MÃ KH THẲNG CỘT VỚI SỐ TBI**
+       (yêu cầu: “cho hàng sdt và mã kh xích ra khi xem dạng bảng, đổi vị trí sdt và mã kh khi xem
+       dạng bảng”; ảnh crop = hàng “PB15020062992 · 0846313484”):
+         TRƯỚC: cột 1 = mã kh (trái) · cột 2 = SĐT (trái) ⇒ hàng chỉ dùng 2/3 bề ngang, phần
+                cột 3 + cột 4 (~117px ở khổ 533) TRỐNG.
+         NAY  : cột 1 = **SĐT** (canh trái, thẳng cột chữ với danh số/mã sổ ở trên) · mã kh TRẢI
+                cột 2–4 và **canh TRÁI** ⇒ dấu chấm + chữ mã kh trùng ĐÚNG cột với **số TBI** ở hàng
+                trên (yêu cầu “cho mã kh nằm thẳng hàng với số tbi”). ⛔ Đừng canh PHẢI như bản đầu
+                “tiếp 7” — bản đó làm mã kh bám mép phải, lệch với số TBI 161px.
+       ⚠️ Đổi bằng `grid-template-areas` + `text-align`, ⛔ **KHÔNG đảo thứ tự `<td>`** trong
+       `renderTable()`: DOM giữ nguyên (ô 2 = mã kh, ô 9 = SĐT) nên mọi `nth-child` khác (14 cột
+       của bảng máy tính, ô ghi chú, nút…) không bị ảnh hưởng.
+       ⚠️ Dấu chấm tròn phải đi theo ô ĐỨNG SAU — nay là ô **mã kh** (`td:nth-child(2)`), xem khối
+       “DẤU GIỮA HAI Ô” bên dưới.
+       ⚠️ Mã kh trải 3 track nên sàn `min-width: max-content` của nó KHÔNG làm cột phình: ở 533px
+       ba track đó đã ~308px, còn bề rộng mã kh chỉ ~121px. */
     grid-template-areas:
       "ten    ten   ten   tien"
       "danhso .     .     thang"
       "sogcs  tbi   .     ."
-      "makh   sdt   .     .";
+      "sdt    makh  makh  makh";
     /* ── LƯỢT “GỌN + HẾT VUỐT NGANG” (mới nhất): `6px → 4px` ─────────────────────
        Khe cột là một phần của "chrome" ngang: `chrome = 2 × lề hàng + 3 × khe cột`.
        Chrome cũ **34px** (2×8 + 3×6) quá dày ⇒ cùng lúc không thể vừa đủ chỗ vừa giữ cỡ chữ.
@@ -7049,6 +7070,13 @@ body.force-desktop .table-view { display: block; }
   body.force-desktop .table-view tbody td:nth-child(3) { display: block; grid-area: ten; }
   body.force-desktop .table-view tbody td:nth-child(6) { display: block; grid-area: danhso; text-align: left; }
   body.force-desktop .table-view tbody td:nth-child(8) { display: block; grid-area: tien;  text-align: right; }
+  /* ⟳ 2026-10-28 (tiếp 9): **canh TRÁI** — người dùng yêu cầu “cho mã kh nằm thẳng hàng với số tbi”
+     (ảnh crop = hàng “B1BDTA1ZA • 202020120108” ở trên và “0846313484 • PB15020062992” ở dưới, hai
+     dấu chấm lệch nhau ~161px). Canh trái ⇒ dấu chấm + chữ của mã kh trùng ĐÚNG cột với số TBI
+     (`td:nth-child(10)`, cũng canh trái, cùng vào từ cột 2).
+     Đo live 533px: ô mã kh bắt đầu 204,62 · chữ **217,62 → 367,24** = y hệt số TBI **217,62 → 351,10**
+     (chữ mã kh dài hơn 12 số nên đuôi dài hơn 16px — hai ĐẦU dòng thẳng cột, phần đuôi thò ra phải).
+     ⚠️ Ô này vẫn là `td:nth-child(2)` (mã kh) — ⛔ đừng đổi sang `nth-child(9)`. */
   body.force-desktop .table-view tbody td:nth-child(2) { display: block; grid-area: makh;   text-align: left; }
   body.force-desktop .table-view tbody td:nth-child(5) { display: block; grid-area: sogcs;  text-align: left; }
   /* ⟳ 2026-10-18: ô **SĐT** (`td:nth-child(9)`, chứa `.phone`) LẦN ĐẦU hiện ở bảng 3 hàng —
@@ -7121,8 +7149,11 @@ body.force-desktop .table-view { display: block; }
      thấp hơn tâm chữ ~1px). `margin-right` `4px → 7px` vì chấm to hơn nên phải thở rộng ra.
      ⚠️ Chấm là `inline-block` ⇒ bề rộng ô (cột 2) tăng ~5px (6px + 7 − dấu cũ ~8px) — đã đo lại
      ở 320/360/375/430px, ⛔ không tràn ngang. */
+  /* ⟳ 2026-10-28 (tiếp 7): dấu của HÀNG 4 dời từ ô SĐT (`nth-child(9)`) sang ô **MÃ KH**
+     (`nth-child(2)`) — vì hàng 4 đã đổi chỗ: SĐT đứng TRƯỚC, mã kh đứng SAU (xem
+     `grid-template-areas` ~6722). Quy tắc cũ vẫn giữ: dấu là `::before` của ô ĐỨNG SAU. */
   body.force-desktop .table-view tbody td:nth-child(10)::before,
-  body.force-desktop .table-view tbody td:nth-child(9)::before {
+  body.force-desktop .table-view tbody td:nth-child(2)::before {
     content: '';
     display: inline-block;
     width: 6px; height: 6px;
@@ -7132,7 +7163,7 @@ body.force-desktop .table-view { display: block; }
     margin-right: 7px;
   }
   body.light-mode.force-desktop .table-view tbody td:nth-child(10)::before,
-  body.light-mode.force-desktop .table-view tbody td:nth-child(9)::before { background: #111827; }
+  body.light-mode.force-desktop .table-view tbody td:nth-child(2)::before { background: #111827; }
   body.force-desktop .table-view tbody td:nth-child(7) { display: block; grid-area: thang; text-align: right; }
 
   /* ── CỠ CHỮ BẢNG 2 DÒNG: **TỰ CO THEO BỀ RỘNG KHUNG** ────────────────────────
@@ -7847,13 +7878,23 @@ body .kh-card.kh-card::before, body .kh-card.kh-card::after { display: none; }
   /* Ô TÊN: đậm + màu chữ chính (ảnh mẫu tên đen đậm, không phải xanh). */
   body.force-desktop .table-view tbody td.cell-tenkh { color: #0f172a !important; font-weight: 600; }
   body:not(.light-mode).force-desktop .table-view tbody td.cell-tenkh { color: #e2e8f0 !important; }
-  /* SỐ TIỀN: viên thuốc nền nhạt + chữ đậm cùng tông (ảnh mẫu). */
+  /* SỐ TIỀN: viên thuốc nền nhạt + chữ đậm cùng tông (ảnh mẫu).
+     ⟳ **2026-10-28 (tiếp 8) — MÀU SỐ TIỀN Ở BẢNG ĐIỆN THOẠI CHÉP ĐÚNG MÀU Ở THẺ**
+     (yêu cầu nguyên văn: “cho màu sô tiền khi xem dạng bảng đồng bộ màu với số tiền khi xem dạng
+     điện thoại”). Trước lượt này bảng đi trước/đi sau thẻ ở từng nấc nên hai chỗ lệch tông:
+       light — thẻ `#10b981` trên `#ecfdf5` · bảng CŨ `#16a34a` trên `#f0fdf4`  ⇒ nay **giống thẻ**.
+       dark  — thẻ `#86efac` trên `rgba(74,222,128,0.12)` · bảng CŨ `#bbf7d0` trên `rgba(16,185,129,0.10)`
+               ⇒ nay **giống thẻ**.
+     ⚠️ Nguồn chân lý là 2 khối ở TRÊN, sửa màu ở đó thì phải sửa luôn 4 rule dưới:
+        `body.light-mode .kh-tien*` (~2013–2016) + `body.light-mode .kh-card .kh-card-top .kh-tien*` (~7692–7694)
+        `body:not(.light-mode) .kh-tien*` (~4337–4340) + `body:not(.light-mode) .kh-card … .kh-tien*` (~7695–7697)
+     ⛔ Đừng “trả AA” riêng ở bảng: sẽ lệch màu với thẻ ngay (đúng lỗi lượt này vừa sửa). */
   body.force-desktop .table-view tbody tr .tien-no {
     display: inline-block;
     padding: 0 4px;
     border-radius: 999px;
-    background: #f0fdf4;   /* ⟳ 2026-10-28 (yêu cầu “cho màu nền số tiền nhạt xuống 1 nấc”): green-100 `#dcfce7` → **green-50 `#f0fdf4`**. */
-    color: #16a34a !important;   /* ⟳ 2026-10-28 (yêu cầu “cho màu số tiền nhạt xuống 1 nấc light mode và dark mode”): green-700 `#15803d` → **green-600 `#16a34a`**. ⚠️ Đo trên nền viên `#f0fdf4`: **3,24:1** — DƯỚI AA 4,5 cho chữ thường (bản cũ 4,7:1 ✓). Người dùng đã chọn nhạt hơn; muốn quay lại AA thì trả `#15803d`. */
+    background: #ecfdf5;   /* ⟳ 2026-10-28 (tiếp 8): `#f0fdf4` → **`#ecfdf5`** = ĐÚNG nền viên của thẻ light (~7692). */
+    color: #10b981 !important;   /* ⟳ 2026-10-28 (tiếp 8): `#16a34a` (green-600) → **`#10b981`** = ĐÚNG màu chữ số tiền thẻ light (~2015). ⚠️ Đo trên nền `#ecfdf5`: **2,43:1** — dưới AA, y hệt thẻ (muốn cả hai cùng đạt AA thì phải đổi Ở THẺ trước, rồi chép xuống đây). */
     font-weight: 600;
     /* ⚠️ ĐO THẬT Ở 412px: cột tiền chỉ **88,99px** (bề rộng CỐ ĐỊNH trong `grid-template-columns`),
        mà “613.384.466” ở 19px đã ~97px ⇒ phải HẠ CỠ mới nhét vừa viên: 0,85em ≈ 16,2px ⇒ chuỗi
@@ -7868,9 +7909,12 @@ body .kh-card.kh-card::before, body .kh-card.kh-card::after { display: none; }
     font-size: 0.85em !important;
     line-height: 1.55;
   }
-  body.force-desktop .table-view tbody tr .tien-no.high { background: #fef2f2; color: #dc2626 !important; }   /* ⟳ 2026-10-28 (cùng yêu cầu “màu số tiền nhạt xuống 1 nấc”): red-700 `#b91c1c` → **red-600 `#dc2626`** (4,63:1 trên `#fef2f2` — vẫn AA). */   /* red-100 → **red-50** (nhạt 1 nấc). */
-  body:not(.light-mode).force-desktop .table-view tbody tr .tien-no { background: rgba(16,185,129,0.10); color: #bbf7d0 !important; }   /* ⟳ 2026-10-28: green-300 `#86efac` → **green-200 `#bbf7d0`** (nhạt 1 nấc, cùng lượt với bản sáng). */   /* alpha 0,16 → **0,10** (nhạt 1 nấc). */
-  body:not(.light-mode).force-desktop .table-view tbody tr .tien-no.high { background: rgba(239,68,68,0.12); color: #fecaca !important; }   /* ⟳ 2026-10-28: red-300 `#fca5a5` → **red-200 `#fecaca`** (nhạt 1 nấc). */   /* alpha 0,18 → **0,12**. */
+  /* ⟳ 2026-10-28 (tiếp 8): nền `.high` giữ `#fef2f2`, chữ `#dc2626` → **`#ef4444`** = ĐÚNG thẻ light (~2014). Đo trên `#fef2f2`: **3,44:1** (dưới AA, y hệt thẻ). */
+  body.force-desktop .table-view tbody tr .tien-no.high { background: #fef2f2; color: #ef4444 !important; }
+  /* ⟳ 2026-10-28 (tiếp 8): dark chép ĐÚNG thẻ — nền `rgba(74,222,128,0.12)`, chữ **`#86efac`** (~7695 + `.kh-tien.low` ~4338/7569). Đo trên nền thẻ `#1a1f28` đã pha: **≈9,0:1** ✓ AA. */
+  body:not(.light-mode).force-desktop .table-view tbody tr .tien-no { background: rgba(74,222,128,0.12); color: #86efac !important; }
+  /* ⟳ 2026-10-28 (tiếp 8): nền `rgba(248,113,113,0.12)` + chữ **`#ff8888`** = ĐÚNG thẻ dark (~7696 + ~4339). Đo trên `#1a1f28` đã pha: **≈6,0:1** ✓ AA. */
+  body:not(.light-mode).force-desktop .table-view tbody tr .tien-no.high { background: rgba(248,113,113,0.12); color: #ff8888 !important; }
 }
 
 /* 7b) MÀU 3 THANH DỌC (vệt trái) Ở LIGHT MODE NHẠT THÊM 1 NẤC — 2026-10-28 (tiếp).
