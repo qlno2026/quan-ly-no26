@@ -804,7 +804,7 @@ body.light-mode {
       thích ngay trên cấm để hẹp lại. `#0e9352` = **3,49** trên nền mới ⇒ biên còn RỘNG HƠN cả bản cũ.
       ⚠️ Vẫn là họ vàng-lục (lam 82) — KHÔNG phải `#059669` (lam 105, ngả teal/xỉn) mà chú thích
       trên đã loại. Số cũ `3,51` trong bảng trên là đo trên nền thẻ TRẮNG, đừng đối chiếu trực tiếp. */
-   --multi-hd: #8b5cf6;   /* ⟳ 2026-10-28 (yêu cầu “màu ở thanh này nhạt xuống 1 tí đừng chói quá khi xem trên điện thoại và cả dạng bảng”): violet-600 `#7c3aed` → **violet-500 `#8b5cf6`** (1 nấc nhạt). Vẫn **4,1:1** trên nền thẻ sáng — dư ngưỡng 3:1 của biên (WCAG 1.4.11). ⛔ Đừng xuống `#a78bfa`: chỉ còn ~2,9:1, hụt ngưỡng biên. */
+   --multi-hd: #a78bfa;   /* ⟳ 2026-10-28 (tiếp, yêu cầu “màu của các thanh này nhạt thêm 1 nấc”): violet-500 `#8b5cf6` → **violet-400 `#a78bfa`**. ⚠️ Đo lại: **2,47:1** trên nền thẻ `#f2f4f7` ⇒ DƯỚI ngưỡng 3:1 của biên (WCAG 1.4.11) — người dùng đã xem bản cũ và chốt nhạt hơn. Muốn trả ngưỡng biên thì lùi `#8b5cf6` (4,1:1). */
 
   /* ── BẢNG MÀU ICON TINH CHỈNH RIÊNG CHO LIGHT MODE ────────────────────────
      Bảng `--ic-*` gốc ở `:root` vốn được chọn cho NỀN TỐI. Trên bề mặt control sáng
@@ -1964,11 +1964,41 @@ body.light-mode .tien-no { color: #166534 !important; }
    — nền sáng hơn lượt 7 nên cả 3 đều nhích lên so với số cũ 4,39/3,72/3,40 của nền dải cũ).
    ⛔ Đừng lên nữa (`#dc2626` chỉ **4,38:1** ✗ · `#059669` **2,87:1** ✗) — muốn rực hơn thì
    phải HỎI + chấp nhận dưới AA. */
-body.light-mode .tien-no { color: #166534 !important; }
-body.light-mode .tien-no.high { color: #b91c1c !important; }
-body.light-mode .tien-no.low { color: #047857 !important; }
-body.light-mode .tien-no.mid { color: #15803d !important; }
-body.light-mode .tien-no .mil-digit { color: #b91c1c !important; }   /* cùng `.high` — sửa LẺ rule này là số tiền hai tông */
+/* ⟳ 2026-10-28 (yêu cầu “màu chữ số tiền khi xem trên máy tính cùng màu chữ như xem trên điện
+   thoại”, ảnh = cùng một khách xem ở 2 chế độ): BẢNG máy tính (`.tien-no`) nay CHÉP ĐÚNG bộ màu
+   của THẺ (`.kh-tien`, rule ngay dưới): `.high` `#b91c1c` → **`#dc2626`** · `.low` `#047857` →
+   **`#059669`** · mặc định `#166534` và `.mid` `#15803d` → **`#dc2626`** (đo live: `.kh-tien`
+   không có mức nợ và `.kh-tien.mid` đều ra `rgb(220,38,38)`).
+   ⚠️ `.mil-digit` của bảng đổi sang **`color: inherit !important`** — trước đây nó LUÔN đỏ `#b91c1c`
+   nên số tiền xanh `1.365.984` bị chữ “1” đỏ (hai tông trong MỘT số tiền). `inherit` cho chữ số
+   triệu tự theo màu của đúng hàng (đỏ/xanh) ⇒ khỏi phải khai 2 rule riêng cho `.high`/`.low`.
+   ⚠️ Tương phản trên thẻ `#f2f4f7`: `#dc2626` **4,38:1** · `#059669` **3,42:1** — DƯỚI AA 4,5 của
+   chữ thường, nhưng ĐÚNG BẰNG thẻ (số tiền 18px weight 500) và người dùng đã chốt “giống điện thoại”.
+   ⛔ Đừng “sửa cho đạt AA” riêng bảng — sẽ lệch màu với thẻ lần nữa.
+   ⟳ 2026-10-28 (tiếp): lùi tiếp ĐÚNG 1 nấc — đỏ `#dc2626 → #ef4444`, xanh `#059669 → #10b981`
+   (theo yêu cầu “màu chữ số tiền nhạt thêm 1 nấc”); xem khối “NHẠT THÊM 1 NẤC” ở cuối style. */
+body.light-mode .tien-no { color: #ef4444 !important; }
+body.light-mode .tien-no.high { color: #ef4444 !important; }
+body.light-mode .tien-no.low { color: #10b981 !important; }
+body.light-mode .tien-no.mid { color: #ef4444 !important; }
+body.light-mode .tien-no .mil-digit { color: inherit !important; }   /* theo màu đúng hàng — xem chú thích trên */
+/* Cùng lỗi ở DARK: `.mil-digit` toàn cục (dòng ~4320) là `#ff8888` nên số xanh `1.365.984` trong BẢNG
+   có chữ “1” ĐỎ, còn THẺ dark thì xanh đều (`#86efac`). Cho bảng ăn `inherit` y như light.
+   ⚠️ Chỉ chữ GIỐNG theme kia, KHÔNG đổi `.mil-digit` toàn cục (ngoài bảng nó vẫn là màu chủ ý). */
+body:not(.light-mode) .tien-no .mil-digit { color: inherit !important; }
+/* ⟳ 2026-10-28 (yêu cầu “cho màu nền số tiền khi xem trên máy tính cùng màu nền như xem trên điện
+   thoại”): BẢNG máy tính nay có VIÊN NỀN y hệt THẺ (`.kh-tien`, ~7642–7647) —
+   light: nợ nhỏ `#ecfdf5` · nợ lớn `#fef2f2` · mức giữa `#fffbeb`; bo `999px`, đệm ngang `5px`.
+   dark : nợ nhỏ `rgba(74,222,128,0.12)` · nợ lớn `rgba(248,113,113,0.12)` · giữa `rgba(251,191,36,0.14)`.
+   ⚠️ Đệm DỌC = **0** (thẻ dùng 2px) để hàng bảng KHÔNG cao thêm — đo live hàng vẫn **32,16px**.
+   ⛔ Bảng ĐIỆN THOẠI (`body.force-desktop … .tien-no`, ~7822–7844) đã có viên riêng với đặc hiệu
+   cao hơn (0,4,3) ⇒ không bị rule này đè (màu viên ở đó nhạt hơn 1 nấc, giữ nguyên). */
+body.light-mode .table-view .tien-no { background: #ecfdf5; border-radius: 999px; padding: 0 5px; }
+body.light-mode .table-view .tien-no.high { background: #fef2f2; }
+body.light-mode .table-view .tien-no.mid { background: #fffbeb; }
+body:not(.light-mode) .table-view .tien-no { background: rgba(74,222,128,0.12); border-radius: 999px; padding: 0 5px; }
+body:not(.light-mode) .table-view .tien-no.high { background: rgba(248,113,113,0.12); }
+body:not(.light-mode) .table-view .tien-no.mid { background: rgba(251,191,36,0.14); }
 /* ⟳ 2026-10-25 (yêu cầu “cho màu số tiền ở thẻ light mode sáng hơn”, ảnh = thẻ sáng có số xanh
    1.088.100): nâng CẢ 3 tông lên một nấc rực hơn — đỏ `#b91c1c` (red-700) → **`#dc2626`**
    (red-600) · xanh `#047857` (emerald-700) → **`#059669`** (emerald-600) · số lẻ `#9a3412` →
@@ -1977,11 +2007,13 @@ body.light-mode .tien-no .mil-digit { color: #b91c1c !important; }   /* cùng `.
    ⚠️ ĐO trên nền thẻ sáng `#f2f4f7`: đỏ **4,38:1** · xanh **3,42:1** — DƯỚI mức AA 4,5 của chữ
    thường (số tiền là `var(--fs-card-big)` = 18px, weight 500 ⇒ vẫn trên mức 3:1 của “large text”).
    Nếu cần trả lại AA thì lùi về `#b91c1c` / `#047857` (đúng 2 giá trị ngay dưới trong lịch sử).
+   ⟳ 2026-10-28 (tiếp): lùi tiếp ĐÚNG 1 nấc — đỏ `#dc2626 → #ef4444`, xanh `#059669 → #10b981`,
+   số lẻ `#c2410c → #ea580c` (yêu cầu “màu chữ số tiền nhạt thêm 1 nấc”; xem khối ở cuối style).
    ⛔ Sửa lẻ một dòng là số tiền hai tông — luôn sửa CẢ `.kh-tien`, `.high`, `.low`, `.mil-digit`. */
-body.light-mode .kh-tien { color: #dc2626; font-weight: 600; }
-body.light-mode .kh-tien.high { color: #dc2626; font-weight: 600; }
-body.light-mode .kh-tien.low { color: #059669; font-weight: 600; }
-body.light-mode .kh-tien .mil-digit { color: #c2410c; font-weight: 600; }
+body.light-mode .kh-tien { color: #ef4444; font-weight: 600; }
+body.light-mode .kh-tien.high { color: #ef4444; font-weight: 600; }
+body.light-mode .kh-tien.low { color: #10b981; font-weight: 600; }
+body.light-mode .kh-tien .mil-digit { color: #ea580c; font-weight: 600; }
 /* Màu chữ của khối tổng phải ĐO TRÊN NỀN TRANG XÁM (không còn khối trắng của `.main`):
    `#2563eb` chỉ đạt **3.51:1** và `#dc2626` chỉ **3.28:1** ⇒ dưới ngưỡng 4.5:1 cho chữ 17px.
    Hạ xuống token blue-800 / red-800: **5.92:1** và **5.64:1**. */
@@ -3162,19 +3194,19 @@ body.light-mode .loai-tab.active[data-val="tren5tr"] { background: #dbeafe; colo
    ⚠️ Muốn 28px thì phải bỏ “4 tab bằng nhau” (xem ghi chú cùng ngày trong AGENTS.md). */
 @media (max-width: 639.98px) {
   .loai-tabs { gap: 4px; }
-  /* ⟳ 2026-10-26 (yêu cầu “5 chip tiền nợ … nằm cùng hàng với tab tổng hợp”): dải nay có **10 tab**
-     ⇒ 4 tab đầu vẫn LẤP ĐẦY khung nhìn nhưng KHÔNG còn dùng `flex: 1 1 0` (10 tab chia đều sẽ bóp
-     mỗi tab còn ~47px = cắt chữ). Nay `flex: 0 0 auto` + **JS gán bề rộng = đúng 1/4 dải**
-     (`equalizeLoaiTabs`) cho MỌI tab ⇒ 4 tab đầu rộng bằng nhau, y hệt bản 4 tab; 6 tab sau nằm
-     ngoài khung và **lướt ngang** (dải đã có `overflow-x: auto`).
-     ⚠️ Đệm ngang 2px (bản 4 tab đã đo): rộng hơn là chữ “Tổng hợp” in đậm bị cắt.
-     ⚠️ Bề rộng do JS gán nên KHÔNG dùng `flex: 1 1 0` nữa (nó đè `width` ⇒ dải tràn). */
+  /* ⟳ 2026-10-28 (yêu cầu “cho các tab kích thước này bằng nhau”): dải **10 tab** ⇒ MỌI tab
+     CÙNG một bề rộng = bề rộng TỰ NHIÊN của tab dài nhất (`equalizeLoaiTabs` gán `width`, chạy ở
+     MỌI khổ). 10 tab + 2 nút sắp xếp không vừa khung điện thoại ⇒ phần còn lại **lướt ngang**
+     (dải đã có `overflow-x: auto`); khung rộng (máy tính) thì vừa trọn.
+     ⛔ KHÔNG dùng `flex: 1 1 0`: chia đều 10 tab ở 533px còn ~47px/tab ⇒ cắt chữ.
+     ⛔ KHÔNG gán `width` cố định cho 3 tab đầu như bản 2026-10-26 (1/3 dải = 169px) — làm vậy
+     3 tab đó to gấp rưỡi các tab còn lại, trái yêu cầu “bằng nhau”. */
   /* ⟳ 2026-10-26 (yêu cầu “cho chữ các tab này lớn hơn 1 nấc”, ảnh = ô tìm kiếm + ô “Nhân viên”):
      trần `19 → **20px**` (Đúng 1 nấc; 472/533 ⇒ 20px · 375 ⇒ 17,5 · 320 ⇒ 14,5).
-     ⚠️ GIỮ đường `vw` chứ không cứng 20px: 4 tab đầu mỗi tab chỉ rộng `strip/4` (~68px ở 320) nên
-     cứng 20px là “Tổng hợp” bị CẮT chữ. ĐÃ ĐO LẠI ở 420px (nơi 5.52vw − 3.2 mới chạm 20px):
-     tab 420px = **20px**, “Tổng hợp” in đậm **97px** < tab 100px ⇒ không cắt, `scrollWidth = clientWidth`.
-     ⇒ 3 nơi phải cùng biểu thức: rule này · `.filter-select` · `.search-box input` (xem 2 khối @media). */
+     ⚠️ GIỮ đường `vw` chứ không cứng 20px: cỡ chữ tab co theo bề rộng màn hình, mà bề rộng
+     TỰ NHIÊN (thứ `equalizeLoaiTabs` đo) do cỡ chữ quyết định ⇒ cứng 20px là “Tổng hợp” bị CẮT
+     ở khổ hẹp. ⇒ 3 nơi phải cùng biểu thức: rule này · `.filter-select` · `.search-box input`
+     (xem 2 khối @media). */
   .loai-tab { flex: 0 0 auto; min-width: 0; padding: 0 2px; gap: 3px; font-size: clamp(10.5px, calc(5.52vw - 2.2px), 21px); }   /* ⟳ 2026-10-27 (yêu cầu “chữ các tab to hơn 1 nấc”): `- 3.2px / trần 20` → `- 2.2px / trần 21` (+1px ở mọi khổ; 355px: 16,4 → 17,4). An toàn vì tab nay `flex: 0 0 auto` (dải lướt ngang, chữ dài không bị cắt). */
   /* 2 nút sắp xếp trong dải ăn ĐÚNG hệ cỡ chữ của tab (chúng là “tab” thứ 11/12 của hàng).
      ⚠️ Selector phải là (0,3,0) `.loai-tabs .sort-btn.loai-sort-btn`: rule gốc 16px nằm SAU khối
@@ -3311,7 +3343,7 @@ body.light-mode[data-surface="chuan"]   { --light-surface: #ffffff; --light-card
 body.light-mode[data-surface="sang"]    { --light-surface: #ffffff; --light-card: #fdfefe; --row1-bg: #d3deeb; }
 body.light-mode[data-surface="diu"]     { --light-surface: #f7f9fc; --light-card: #f2f4f7; --row1-bg: #c3cede; }
 body.light-mode[data-surface="ratsang"] { --light-surface: #ffffff; --light-card: #ffffff; --row1-bg: #dce6f2; }
-body.light-mode[data-surface="ratdiu"]  { --light-surface: #edf2f8; --light-card: #dee3ea; --multi-hd: #7c3aed;   /* mức “Rất dịu”: nhạt theo 1 nấc, vẫn đủ 3:1 trên nền thẻ tối nhất. */ --row1-bg: #b9c5d4; --text-dim: #4f5b6b; }
+body.light-mode[data-surface="ratdiu"]  { --light-surface: #edf2f8; --light-card: #dee3ea; --multi-hd: #8b5cf6;   /* ⟳ 2026-10-28 (tiếp, “nhạt thêm 1 nấc”): violet-600 `#7c3aed` → **violet-500 `#8b5cf6`** — mức “Rất dịu” luôn NHẠT HƠN mức “Chuẩn” 1 bậc cho khớp thang nền. */ --row1-bg: #b9c5d4; --text-dim: #4f5b6b; }
 body.light-mode[data-surface="ratdiu"] .kh-name { color: #1d4ed8; }   /* thẻ “Rất dịu” nay = #dee3ea (thẻ của “Dịu” cũ) ⇒ dùng ĐÚNG cặp màu của mức đó; #1e40af chỉ cần cho #d2d9e2 đã bỏ */
 /* ⟳ 2026-10-03ag: 3 mức → **5 MỨC** (yêu cầu “thêm mức rất dịu, rất sáng”). Hai mức mới là
    hai ĐẦU của thang; “Chuẩn” (giữa) vẫn rơi về token gốc ⇒ hai rule dưới ghi 2 mức còn lại.
@@ -5314,12 +5346,24 @@ body.light-mode th:hover .th-resizer::after { background: rgba(15,23,42,0.4); }
    ⛔ Đây là **CHÙM 5 RULE phải đổi CÙNG NHAU** (thiếu một rule là đúng một ô vẫn lệch tông):
        1. `.ma-kh` (rule này)          · 2–4. `td:nth-child(5/6/10).cell-dim` (mã sổ · danh số · mã kh)
        · 5. `td:nth-child(7) .badge` (tháng nợ, trong khối mobile).
+       ⟳ 2026-10-28: **riêng ô MÃ KH ở DARK đã TÁCH khỏi chùm** (`#94a3b8` → `#e2e8f0`, rule ngay
+         dưới) theo yêu cầu “cho màu chữ mã kh ở dark mode màu trắng xám”; 4 ô còn lại GIỮ `#94a3b8`.
    ⚠️ SỐ TIỀN nay LÀ `#b91c1c` — đổi ở lượt “DẢI NỀN ĐẬM HƠN”, **không phải** lượt màu xám này:
       dải nền light 14% làm `#dc2626` xuống **4,11:1** (dưới AA) nên buộc hạ 1 nấc; trên nền
       trắng `#b91c1c` = **6,6:1**, trên dải = **5,51:1** ✓.
    ⛔ Đừng “trả lại” `#dc2626` cho đẹp mắt: nó chỉ an toàn khi dải nền light ≤ 5%.
    ℹ️ Muốn nhạt HƠN `#475569` nữa thì bậc kế tiếp là `#64748b` (slate-500, **4,76:1** — vẫn AA nhưng sát ngưỡng). */
 body.light-mode .table-view .ma-kh { color: #475569; }
+/* ⟳ 2026-10-28 — MÃ KH Ở DARK = **TRẮNG XÁM `#e2e8f0`** (yêu cầu “cho màu chữ mã kh ở dark mode
+   màu trắng xám”): chép ĐÚNG màu chữ viên mã KH trên THẺ (`body:not(.light-mode) .kh-card .kh-ma`,
+   ~1664) ⇒ xem cùng một khách ở BẢNG hay THẺ đều cùng một tông — đúng hướng các lượt “bảng máy
+   tính = thẻ” của số tiền. Trước đó ô này ăn `var(--text-dim)` = `#94a3b8` (xám, không “trắng”).
+   ⇒ Tương phản trên nền bảng dark (`#141820`): **≈14:1**, dư AA rất xa.
+   ⚠️ CHỈ DARK; light vẫn `#475569` theo rule ngay trên (người dùng chỉ nói dark mode).
+   ⚠️ Áp cho CẢ bảng 14 cột VÀ bảng 4 hàng điện thoại (cùng `.table-view`) — KHÔNG đụng modal
+   (`.i-makh .ma-kh` = `#c8d0dc`) và KHÔNG đụng danh số / mã sổ / tháng nợ (vẫn `#94a3b8`).
+   Độ cụ thể (0,3,1) > `.table-view .ma-kh` (0,2,0) ⇒ **không cần `!important`**. */
+body:not(.light-mode) .table-view .ma-kh { color: #e2e8f0; }
 /* ⚠️ `.ma-kh` là rule theo **ELEMENT** (0,1,0) nên nó **THẮNG KẾ THỪA** font-size 19px của
    `.info-value`: trong bảng modal, mã KH **chỉ** đúng cỡ nhờ rule `.i-makh .ma-kh` ở dưới
    (0,2,0). Sai/thiếu lớp `i-makh` là mã KH lặng lẽ về **15px** trong khi mọi hàng khác vẫn
@@ -7639,7 +7683,7 @@ body:not(.light-mode) .kh-card .kh-card-top .kh-tien.mid { background: rgba(251,
    ⛔ KHÔNG đụng BẢNG (`.tien-no`): ở đó chữ số triệu vẫn tô theo màu số tiền, giữ nguyên.
    ⛔ Thẻ ĐÁNH DẤU vẫn đỏ: rule `body.light-mode .kh-card.highlighted … .mil-digit` (đầu file) có
    `!important` ⇒ thắng rule này, đúng ý “thẻ đánh dấu một màu đỏ”. */
-body.light-mode .kh-card .kh-tien.low .mil-digit { color: #059669; }
+body.light-mode .kh-card .kh-tien.low .mil-digit { color: #10b981; }
 body:not(.light-mode) .kh-card .kh-tien.low .mil-digit { color: #86efac; }
 
 /* 5) DÒNG THÁNG: màu chữ phụ theo theme + icon lịch 14px đứng trước. */
@@ -7828,6 +7872,24 @@ body .kh-card.kh-card::before, body .kh-card.kh-card::after { display: none; }
   body:not(.light-mode).force-desktop .table-view tbody tr .tien-no { background: rgba(16,185,129,0.10); color: #bbf7d0 !important; }   /* ⟳ 2026-10-28: green-300 `#86efac` → **green-200 `#bbf7d0`** (nhạt 1 nấc, cùng lượt với bản sáng). */   /* alpha 0,16 → **0,10** (nhạt 1 nấc). */
   body:not(.light-mode).force-desktop .table-view tbody tr .tien-no.high { background: rgba(239,68,68,0.12); color: #fecaca !important; }   /* ⟳ 2026-10-28: red-300 `#fca5a5` → **red-200 `#fecaca`** (nhạt 1 nấc). */   /* alpha 0,18 → **0,12**. */
 }
+
+/* 7b) MÀU 3 THANH DỌC (vệt trái) Ở LIGHT MODE NHẠT THÊM 1 NẤC — 2026-10-28 (tiếp).
+   Yêu cầu: “cho màu của các thanh này nhạt thêm 1 nấc” (ảnh = thẻ sáng có thanh xanh lá + thanh tím).
+   Đây là NHẠT ĐI ĐÚNG 1 BẬC Tailwind, chỉ ở theme SÁNG:
+     · nợ thấp (xanh)  `#10b981` emerald-500 → **`#34d399`** emerald-400
+     · nợ cao (đỏ)     `#ef4444` red-500     → **`#f87171`** red-400
+     · ≥2 hoá đơn (tím) dùng token `--multi-hd` → xem khối `body.light-mode` (~807): `#a78bfa`
+   ⚠️ VÌ SAO phải khai LẠI ở đây thay vì sửa 3 dòng gốc (~7605–7608): 3 dòng đó là token DÙNG CHUNG
+   với dark mode ⇒ sửa tại chỗ là dark cũng nhạt theo (yêu cầu này chỉ nói bản sáng).
+   ⚠️ Độ ưu tiên: `body.light-mode .kh-card` (0,2,1) ĐÈ `.kh-card.tier-high` (0,2,0) ⇒ phải khai riêng
+   `.tier-high` / `.tier-low` bên dưới, nếu không MỌI thẻ sáng đều ra xanh.
+   ⚠️ ĐO LẠI trên nền thẻ `#f2f4f7`: `#34d399` **1,74:1** · `#f87171` **2,51:1** — cả hai DƯỚI ngưỡng
+   3:1 của đường biên (WCAG 1.4.11). Người dùng đã xem bản đậm hơn và chốt nhạt hơn; muốn trả ngưỡng
+   biên thì lùi `#10b981` (2,30:1) / `#ef4444` (3,42:1).
+   ⛔ KHÔNG đụng màu thanh của thẻ ĐÁNH DẤU (cam/tím) — chúng đặt `border-left-color` riêng. */
+body.light-mode .kh-card          { --card-accent: #34d399; }
+body.light-mode .kh-card.tier-high { --card-accent: #f87171; }
+body.light-mode .kh-card.tier-low  { --card-accent: #34d399; }
 
 /* 8) IN: vệt màu / chevron / icon lịch không mang dữ liệu ⇒ bỏ khi in; viên tiền về trắng. */
 @media print {
@@ -10435,72 +10497,39 @@ function syncLoaiTabs(val) {
   }
 }
 
-/* ⚖️ MỌI TAB “CHI TIẾT NỢ” RỘNG BẰNG NHAU (yêu cầu 2026-10-24: “cho các tab chiều
-   ngang bằng nhau”).
+/* ⚖️ MỌI TAB “CHI TIẾT NỢ” CÙNG MỘT BỀ RỘNG — Ở MỌI KHỔ MÀN HÌNH (yêu cầu 2026-10-24:
+   “cho các tab chiều ngang bằng nhau”; ⟳ 2026-10-28: “cho các tab kích thước này bằng nhau”,
+   ảnh = dải **10 tab + 2 nút sắp xếp** có bề rộng so le 58 → 96px).
    Cách làm: **đo rồi gán** — xoá `width` đã gán, đọc bề rộng TỰ NHIÊN của từng tab
-   (chữ + đệm + viền), lấy số LỚN NHẤT, rồi gán đúng số đó cho cả 5 tab (nút phễu nằm
-   NGOÀI `#loaiTabs` nên hàm không đụng tới).
-   📱 **ĐIỆN THOẠI (< 640px) KHÔNG dùng `flex: 1 1 0` nữa** (2026-10-26, sau khi 5 nút khoảng tiền
-   lên dải ⇒ **10 tab**): chia đều 10 tab thì mỗi tab còn ~47px, chữ bị cắt. Nay CSS để
-   `flex: 0 0 auto` và **hàm này gán bề rộng = `(clientWidth − 3×gap) / 4`** cho MỌI tab ⇒ 4 tab
-   đầu rộng bằng nhau và lấp đầy khung nhìn (y hệt bản 4 tab), 6 tab sau nằm ngoài và dải
-   **lướt ngang**. `_loaiTabW` giữ số đã gán để `ResizeObserver` không lặp vô hạn.
+   (chữ + đệm + viền), lấy số LỚN NHẤT, rồi gán đúng số đó cho CẢ 10 tab. 2 nút sắp xếp
+   (`.sort-btn`) ⛔ KHÔNG bị gán: chúng là nút, không phải tab.
+   · Vì sao lấy bề rộng tab DÀI NHẤT: hẹp hơn là cắt chữ (“Tổng hợp” là nhãn rộng nhất) —
+     muốn 10 tab + 2 nút vừa một khung 1.000px thì mỗi tab chỉ còn ~65px ⇒ cỡ chữ phải hạ
+     xuống ~9px, không đọc được. Vì vậy dải **lướt ngang** (`.loai-tabs` đã có
+     `overflow-x: auto` + ẩn thanh cuộn) khi không đủ chỗ; khung rộng thì mọi thứ vẫn vừa.
    · Vì sao không viết cứng `width: 110px`: bề rộng phụ thuộc PHÔNG (Inter tải từ
-     Google Fonts; máy offline rơi về phông hệ thống RỘNG HƠN) ⇒ số cứng là cắt chữ.
-   · Vì sao desktop vẫn KHÔNG dùng `flex: 1 1 0`: màn rộng thì các tab chia đều sẽ rất dài,
-     dải phình ra vô ích; “vừa đủ chữ + đều nhau” mới đúng ý.
+     Google Fonts; máy offline rơi về phông hệ thống RỘNG HƠN) + cỡ chữ đổi theo khổ
+     (`clamp(...vw...)` dưới 640px) ⇒ số cứng là cắt chữ ở khổ này hay thừa ở khổ khác.
+   · Vì sao không dùng `flex: 1 1 0`: 10 tab chia đều khung 533px = ~47px/tab ⇒ cắt chữ.
    · Đo lúc dải còn ẨN (`#dataView` display:none — chưa nạp dữ liệu) thì mọi bề rộng = 0
      ⇒ thoát sớm, giữ nguyên; `ResizeObserver` bên dưới gọi lại ngay khi dải hiện ra.
    · `_loaiTabW` + phép so `style.width` là chốt chống lặp: đặt width làm dải đổi kích
-     thước ⇒ `ResizeObserver` bắn lại; lần 2 thấy y hệt là thoát, không sửa DOM nữa. */
+     thước ⇒ `ResizeObserver` bắn lại; lần 2 thấy y hệt là thoát, không sửa DOM nữa.
+   · ⚠️ PHẢI xoá `_loaiTabW` khi cửa sổ đổi bề rộng (xem listener `resize` bên dưới): cỡ chữ
+     của tab tính bằng `vw` nên bề rộng TỰ NHIÊN đổi theo khổ; giữ số cũ là tab bị cắt chữ
+     (thu nhỏ cửa sổ) hoặc hụt chỗ (phóng to). */
 let _loaiTabW = 0;
 function equalizeLoaiTabs() {
   const box = document.getElementById('loaiTabs');
   if (!box || !box.clientWidth) return;
   const tabs = Array.from(box.querySelectorAll('.loai-tab'));
   if (!tabs.length) return;
-  if (window.innerWidth < 640) {
-    /* 📱 2026-10-26: 10 tab ⇒ gán bề rộng = 1/4 dải cho MỌI tab (4 tab đầu lấp đầy khung nhìn,
-       6 tab sau lướt ngang). `Math.floor` để KHÔNG bao giờ tràn (dư ≤3px bên phải). */
-    /* ⟳ 2026-10-28 (yêu cầu “chỉ hiển thị 3 tab Chi tiết / Từ 3Tr / Nợ cũ, các tab kia vuốt ngang”):
-       chia dải cho **3** tab đầu (2 khe) thay vì 4 (3 khe); các tab từ thứ 4 trở đi giữ bề rộng
-       TỰ NHIÊN để phần vuốt ngang không bị mỗi tab chiếm 1/3 màn hình. */
-    const gapM = parseFloat(getComputedStyle(box).columnGap) || 0;
-    const wM = Math.floor((box.clientWidth - gapM * 2) / 3);
-    if (wM > 0) {
-      /* ⟳ 2026-10-27 (sửa lỗi CẮT CHỮ sau khi tăng cỡ tab): bề rộng mỗi tab = `max(1/4 dải,
-         bề rộng TỰ NHIÊN của nhãn)`. Trước đây gán cứng `1/4 dải` cho MỌI tab ⇒ "Tổng hợp"
-         (nhãn dài nhất) bị cắt 3px khi cỡ chữ +1. Đo tự nhiên bằng cách tạm bỏ `width` rồi trả
-         lại, nên không gây layout nhảy. Ghi khi KHÁC giá trị cũ để ResizeObserver không lặp. */
-      const natural = tabs.map(t => {
-        const prev = t.style.width;
-        t.style.width = '';
-        const w = Math.ceil(t.getBoundingClientRect().width);
-        t.style.width = prev;
-        return w;
-      });
-      const desired = natural.map((w, i) => i < 3 ? Math.max(wM, w) : w);
-      if (tabs.some((t, i) => t.style.width !== desired[i] + 'px')) {
-        tabs.forEach((t, i) => { t.style.width = desired[i] + 'px'; });
-      }
-    }
-    return;
-  }
-  if (_loaiTabW === -1 && tabs.every(t => !t.style.width)) return;
   if (_loaiTabW > 0 && tabs.every(t => t.style.width === _loaiTabW + 'px')) return;
   tabs.forEach(t => { t.style.width = ''; });
   let max = 0;
   tabs.forEach(t => { const w = t.getBoundingClientRect().width; if (w > max) max = w; });
   if (!max) return;
-  /* 📐 Khổ hẹp (máy tính bảng nhỏ / cửa sổ hẹp) mà KHÔNG đủ chỗ cho các tab đều nhau
-     (n tab × bề rộng tab dài nhất + khe > dải) ⇒ gán bề rộng đều là dải phải cuộn ngang.
-     Chi bằng GIỮ BỀ RỘNG TỰ NHIÊN; `-1` là cờ “đã xét, đừng làm lại”
-     để `ResizeObserver` không lặp vô hạn. */
-  const __n = tabs.length;
-  const __gap = parseFloat(getComputedStyle(box).columnGap) || 0;
-  const __fit = Math.floor((box.clientWidth - __gap * (__n - 1)) / __n);
-  if (Math.ceil(max) > __fit) { _loaiTabW = -1; return; }
-  const w = Math.ceil(max);
+  const w = Math.ceil(max);   /* ceil: làm tròn LÊN để không tab nào bị cắt chữ */
   _loaiTabW = w;
   tabs.forEach(t => { t.style.width = w + 'px'; });
 }
@@ -10509,7 +10538,7 @@ if (typeof ResizeObserver !== 'undefined') {
   const __tabBox = document.getElementById('loaiTabs');
   if (__tabBox) new ResizeObserver(() => equalizeLoaiTabs()).observe(__tabBox);
 }
-window.addEventListener('resize', equalizeLoaiTabs);
+window.addEventListener('resize', () => { _loaiTabW = 0; equalizeLoaiTabs(); });
 /* Phông Inter tải xong có thể RỘNG KHÁC phông dự phòng đã đo lúc đầu ⇒ đo lại 1 lần. */
 if (document.fonts && document.fonts.ready) {
   document.fonts.ready.then(() => { _loaiTabW = 0; equalizeLoaiTabs(); });
