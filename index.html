@@ -1661,7 +1661,7 @@ body:not(.light-mode) .kh-ma { color: var(--vien-fg) !important; background: var
    ⚠️ Đừng hạ `#7c8b9e` tiếp: #6f7d90 chỉ còn ~4,1:1 — dưới AA cho chữ 17px. */
 /* ⟳ 2026-10-27 (yêu cầu “màu chữ mã kh ở dark mode giống light mode”): `#93c5fd` → **`#dbeafe`**
    = ĐÚNG màu chữ viên mã KH ở light. Dải nền 2 theme nay cùng `#2E86AA` nên màu chữ cũng nên cùng. */
-body:not(.light-mode) .kh-card .kh-ma { color: #e2e8f0 !important; }   /* ⟳ 2026-10-28 (yêu cầu “cho màu chữ mã kh màu trắng xám dark mode”): bỏ tông xanh — về **slate-200 `#e2e8f0`** (trắng ngả xám, ~13,1:1 trên thẻ `#1a1f28`). Lịch sử: `#dbeafe` → `#eff6ff` → **`#e2e8f0`**. */
+body:not(.light-mode) .kh-card .kh-ma { color: #cbd5e1 !important; }   /* ⟳ 2026-10-28 (yêu cầu “cho màu chữ mã kh như tên kh”): **`#e2e8f0` → `#cbd5e1`** = ĐÚNG màu chữ TÊN KH ở dark (rule `body:not(.light-mode) .kh-card .kh-idcol .kh-name` ngay dưới, ~7744) ⇒ viên mã KH và tên cùng một tông, chỉ khác nền viên. Vẫn **~8,9:1** trên thẻ “Chuẩn” `#1a1f28` ✓ AA. Lịch sử chữ: `#dbeafe` → `#eff6ff` → `#e2e8f0` → **`#cbd5e1`**. ⚠️ Tên KH ở dark là MỘT màu cho mọi trạng thái (không có biến thể `highlighted`) ⇒ dark chỉ cần rule này. */
 /* ⟳ 2026-10-27d (yêu cầu “cho chữ viên SĐT ở dark mode cùng tông nhạt với mã KH”): hai viên
    nằm CẠNH NHAU trên cùng một hàng của dải xanh ⇒ lệch tông là thấy ngay. Nay cùng **#93c5fd**.
    ⚠️ Rule gốc `.kh-phone { color: var(--vien-fg) !important }` có specificity (0,2,1) nên rule này
@@ -1849,13 +1849,15 @@ body.light-mode .table-view td.cell-old-ky { color: #c2410c !important; }
    `--light-surface`** như bảng chính và thẻ khách hàng (yêu cầu “bảng Tổng hợp nợ cũng hạ
    nền cho đồng bộ với bảng chính”) ⇒ không còn là bề mặt TRẮNG sót lại, và cũng ăn theo nút
    “Nền” (Trắng/Chuẩn/Dịu).
-   ⚠️ PHẠM VI: nền này chỉ là vùng **BAO QUANH** bảng — các Ô của bảng có nền RIÊNG và đặc
-   nên **KHÔNG** đổi theo token. ⟳ **Từ lượt “hạ tông cả các ô”, bốn tầng nền ô đã TỐI ĐI một
-   nấc**: `#d2dae6` thân ô · `#b0b9c5` ô đầu + header · `#c2cad5` ô “Nhóm” · `#bcc6d4` tfoot
-   (trước là `#e2e8f0`/`#c8cdd4`/`#dee2e6`/`#cbd5e1`). Chúng vẫn **KHÔNG** ăn theo mức nền
-   — nhưng nay TỐI HƠN MỌI mức của nút “Nền” (mức tối nhất là `#e3e9f0`), nên bảng Tổng hợp
-   không bị “phẳng” ở bất cứ mức nào. ⛔ Nếu sau này thêm mức nền TỐI hơn `#d2dae6` thì phải
-   cho các ô ăn theo token, không thì chúng sẽ sáng hơn cả vùng bao quanh.
+   ⚠️ PHẠM VI: nền này chỉ là vùng **BAO QUANH** bảng. ⟳ **2026-10-28 (yêu cầu “nền ô của bảng
+   Tổng hợp giống nền thẻ” rồi “cho màu nền trong ảnh sáng hơn”, ảnh = cột NHÓM + header + dòng
+   TỔNG): THÂN Ô nay ăn TOKEN `var(--light-card)`** = ĐÚNG nền thẻ khách (mức “Chuẩn” `#f8fafc`)
+   ⇒ tự đổi theo 5 mức “Mức nền” như thẻ. Ba tầng “khung” còn lại (header + cột NHÓM · ô “Nhóm” ·
+   dòng TỔNG) **GIỮ NỀN ĐẶC nhưng SÁNG HƠN 2 NẤC**: `#b0b9c5 → #e2e8f0` (slate-200) và
+   `#bcc6d4 → #e2e8f0` — trước đây chúng tối hơn MỌI mức nền (`#e3e9f0` là mức tối nhất) nên bảng
+   đọc thành một khối xám nặng; nay cả 3 tầng dùng CHUNG một xám nhạt, tách khỏi thân ô gần-trắng
+   chỉ bằng **2 đường kẻ `#8a93a0`** (dưới header + vách dọc cột NHÓM). ⛔ Đừng trả lại `#b0b9c5`/
+   `#bcc6d4`: người dùng đã 2 lần yêu cầu nhạt/sáng hơn.
    ⇒ Tương phản chữ TRONG bảng không phụ thuộc mức nền đang chọn; vùng bao quanh chỉ có chữ
    khi bảng RỖNG (xem mục “🩶 BẢNG TỔNG HỢP NỢ”). */
 body.light-mode .summary-wrap { background: var(--light-surface); border-color: var(--light-edge); }
@@ -1888,31 +1890,35 @@ body.light-mode .main { background: transparent; }
    `body.light-mode[data-surface=…]` ghi đè chính `--light-card`. */
 body.light-mode .table-wrap { background: var(--light-card); border-color: var(--light-edge); }
 
-/* ── BẢNG TỔNG HỢP (light mode): 4 TẦNG NỀN Ô — HẠ TÔNG 1 NẤC (2026-09-26) ─────────────
-   Yêu cầu: “Hạ tông luôn cả các ô của bảng Tổng hợp (thân ô, header, dòng TỔNG) cho tối hơn”.
-   Bốn tầng nền ĐẶC (lý do chúng không đi theo token `--light-surface` như vùng bao quanh —
-   xem chú thích ở `body.light-mode .summary-wrap`). Cả 4 TỐI ĐI một nấc, giữ nguyên thứ tự tầng
-   (thân ô sáng nhất → header tối nhất):
-     thân ô `#e2e8f0` → **`#d2dae6`** · header + cột tên `#c8cdd4` → **`#b0b9c5`**
-     ô “Nhóm” `#dee2e6` → **`#c2cad5`** · dòng TỔNG `#cbd5e1` → **`#bcc6d4`**
-   ⚠️ ĐO ĐƯỢC: ô “Nhóm” **thực tế vẽ bằng `#b0b9c5`** (rule `thead th:first-child` ở dưới có độ cụ thể
-   (0,3,3) > (0,3,2) nên thắng rule `th:first-child`) — `#c2cad5` chỉ là giá trị DỰ PHÒNG nếu sau này
-   gỡ rule `thead`; vẫn đổi cho đồng bộ, đừng tưởng nó đang hiển thị.
-   ⚠️ Nền tối đi thì chữ đậm trên nó TỤT ⇒ 2 màu chữ phải hạ theo (đo live, run.md có bảng đầy đủ):
-     · chữ th `#475569` → **`#334155`** (giữ nguyên thì chỉ còn 3,82 ✗)
-     · “ĐÃ TT” `#065f46` → **`#064e3b`** (giữ nguyên thì 3,88 ✗)
-     · “MỚI” `#7c2d12` **GIỮ NGUYÊN** (4,72 ✓ trên header mới) · “CŨ” `#1e3a8a` giữ (5,22 ✓)
-   ⚠️ Đường kẻ phải hạ theo (không thì mất hút trên nền tối hơn): kẻ dưới header `#b0b5bc` →
-   `#8a93a0` · vách dọc cột tên `#94a3b8` → `#8a93a0`.
-   ⚠️ Mũi tên sắp xếp `.sa-sum` (`--text-dim` `#5b6777`) trên header MỚI chỉ còn **2,90 ✗** (dưới
-   cả ngưỡng 3:1 của biểu tượng) ⇒ `#334155` = **5,22 ✓**; và trạng thái “đang sắp xếp”
-   (`--accent-glow` `#60a5fa`) vốn đã **1,59 ✗** trên header CŨ (lỗi có sẵn) ⇒ nay `#1e3a8a`.
-   ⛔ Hover hàng `#bfdbfe` GIỮ NGUYÊN (vẫn lệch khỏi nền ô mới nên vẫn thấy) · ⛔ dark mode
-   KHÔNG đụng: mọi rule ở khối này đều nằm trong `body.light-mode`. */
-body.light-mode .summary-table th { background: #b0b9c5 !important; color: #334155 !important; }
-body.light-mode .summary-table thead th { background: #b0b9c5 !important; }
-body.light-mode .summary-table thead th:first-child { background: #b0b9c5 !important; }
-body.light-mode .summary-table th:first-child { background: #c2cad5 !important; color: #000000; }
+/* ── BẢNG TỔNG HỢP (light mode): THÂN Ô THEO TOKEN · KHUNG XÁM NHẠT (2026-10-28) ─────────────
+   ⟳ Yêu cầu 1: “nền ô của bảng Tổng hợp giống nền thẻ khách” ⇒ **thân ô = `var(--light-card)`**
+   (mức “Chuẩn” `#f8fafc`, đo live = nền `.kh-card`). ⟳ Yêu cầu 2 (cùng ngày, ảnh = cột NHÓM +
+   header + dòng TỔNG): “cho màu nền trong ảnh sáng hơn” ⇒ 3 tầng khung về **`#e2e8f0`**:
+     · thân ô ……………… `var(--light-card)` (đo `#f8fafc` ở mức “Chuẩn”)
+     · header + cột tên + ô “Nhóm” + dòng TỔNG …… **`#e2e8f0`** (slate-200)
+   (bộ cũ `#d2dae6` · `#b0b9c5` · `#c2cad5` · `#bcc6d4` — đã tối đi 1 nấc ở lượt 2026-09-26, nay
+   SÁNG HƠN 2 NẤC theo yêu cầu). ⛔ Đừng quay lại bộ cũ: chúng tối hơn cả mức nền “Rất dịu”.
+   ⚠️ ĐO ĐƯỢC ở bản cũ: ô “Nhóm” **thực tế vẽ bằng đúng màu của header** vì rule `thead th`
+   (0,3,3) > `th:first-child` (0,3,2) — nay cả hai đều `#e2e8f0` nên không còn lệch.
+   ⚠️ Nền SÁNG hơn ⇒ chữ đậm trên nó chỉ DƯ tương phản, 3 màu chữ GIỮ NGUYÊN vẫn ✓ AA:
+     · chữ th `#334155` trên `#e2e8f0` ≈ **8,6:1** (trước 5,22 trên `#b0b9c5`)
+     · “MỚI” `#7c2d12` · “CŨ” `#1e3a8a` · “ĐÃ TT” `#064e3b` — đều TĂNG so với nền cũ
+   ⚠️ Hai đường kẻ `#8a93a0` (dưới header + vách dọc cột NHÓM) nay là thứ DUY NHẤT phân tách khung
+   với thân ô gần-trắng ⇒ ⛔ đừng bỏ kẻ mà không nói trước (mất luôn hình bảng).
+   ⚠️ Mũi tên sắp xếp `.sa-sum` `#334155` trên header mới ≈ **8,6:1** ✓ — giữ nguyên.
+    ⟳ 2026-10-28 (yêu cầu “cho số trong ảnh sáng hơn 1 nấc light mode”, ảnh = các cột số): 3 MÀU SỐ
+    của THÂN Ô + DÒNG TỔNG nhạt đi ĐÚNG 1 nấc trong cùng họ màu —
+      · MỚI `#7c2d12` (orange-900)    → **`#9a3412`** (orange-800)   ≈ **7,0:1** trên `--light-card`
+      · CŨ  `#1e3a8a` (blue-900)      → **`#1e40af`** (blue-800)     ≈ **8,4:1**
+      · ĐÃ TT `#064e3b` (emerald-900) → **`#065f46`** (emerald-800)  ≈ **7,4:1**
+    ⛔ **NHÃN header** `MỚI / CŨ / ĐÃ TT` (3 rule `thead tr:first-child th:nth-child(2..4)` bên dưới)
+    GIỮ NGUYÊN màu đậm — người dùng nói “số”, và nhãn đậm hơn thân ô là đúng vai trò tiêu đề nhóm.
+   ⛔ Hover hàng `#bfdbfe` GIỮ NGUYÊN · ⛔ dark mode KHÔNG đụng: mọi rule ở khối này đều nằm trong
+   `body.light-mode`. */
+body.light-mode .summary-table th { background: #e2e8f0 !important; color: #334155 !important; }
+body.light-mode .summary-table thead th { background: #e2e8f0 !important; }
+body.light-mode .summary-table thead th:first-child { background: #e2e8f0 !important; }
+body.light-mode .summary-table th:first-child { background: #e2e8f0 !important; color: #000000; }
 body.light-mode .summary-table th.sorted:first-child { color: #000000 !important; }
 body.light-mode .summary-table th.sorted:first-child .sa-sum { color: #000000 !important; }
 body:not(.light-mode) .summary-table th.sorted:first-child { color: #ffffff !important; }
@@ -1921,16 +1927,16 @@ body.light-mode .summary-table thead tr:first-child { border-bottom: 1px solid #
 body.light-mode .summary-table thead tr:first-child th:nth-child(2) { color: #7c2d12 !important; }
 body.light-mode .summary-table thead tr:first-child th:nth-child(3) { color: #1e3a8a !important; }
 body.light-mode .summary-table thead tr:first-child th:nth-child(4) { color: #064e3b !important; }
-body.light-mode .summary-table td:first-child { background: #b0b9c5 !important; color: #1e293b; border-bottom: none !important; border-right: 1px solid #8a93a0 !important; }
-body.light-mode .summary-table .ten-nv-cell { background: #b0b9c5 !important; color: #334155; border-right: 1px solid #8a93a0 !important; border-bottom: none !important; }
-body.light-mode .summary-table tfoot td:first-child { background: #bcc6d4 !important; color: #000000 !important; }
-body.light-mode .summary-table td { color: #000000; border-bottom: none; background: #d2dae6 !important; }
-body.light-mode .summary-table td:nth-child(2), body.light-mode .summary-table td:nth-child(3), body.light-mode .summary-table td:nth-child(4) { color: #7c2d12 !important; background: #d2dae6 !important; }
-body.light-mode .summary-table td:nth-child(5), body.light-mode .summary-table td:nth-child(6), body.light-mode .summary-table td:nth-child(7) { color: #1e3a8a !important; background: #d2dae6 !important; }
-body.light-mode .summary-table td:nth-child(8), body.light-mode .summary-table td:nth-child(9), body.light-mode .summary-table td:nth-child(10) { color: #064e3b !important; background: #d2dae6 !important; }
+body.light-mode .summary-table td:first-child { background: #e2e8f0 !important; color: #1e293b; border-bottom: none !important; border-right: 1px solid #8a93a0 !important; }
+body.light-mode .summary-table .ten-nv-cell { background: #e2e8f0 !important; color: #334155; border-right: 1px solid #8a93a0 !important; border-bottom: none !important; }
+body.light-mode .summary-table tfoot td:first-child { background: #e2e8f0 !important; color: #000000 !important; }
+body.light-mode .summary-table td { color: #000000; border-bottom: none; background: var(--light-card) !important; }
+body.light-mode .summary-table td:nth-child(2), body.light-mode .summary-table td:nth-child(3), body.light-mode .summary-table td:nth-child(4) { color: #9a3412 !important; background: var(--light-card) !important; }
+body.light-mode .summary-table td:nth-child(5), body.light-mode .summary-table td:nth-child(6), body.light-mode .summary-table td:nth-child(7) { color: #1e40af !important; background: var(--light-card) !important; }
+body.light-mode .summary-table td:nth-child(8), body.light-mode .summary-table td:nth-child(9), body.light-mode .summary-table td:nth-child(10) { color: #065f46 !important; background: var(--light-card) !important; }
 body.light-mode .summary-table tr:hover { background: #bfdbfe; }
-body.light-mode .summary-table tfoot td:nth-child(n) { color: #000000; background: #bcc6d4 !important; border-bottom: none !important; }
-body.light-mode .summary-table .tien-no-cell { color: #7c2d12; background: #d2dae6 !important; }
+body.light-mode .summary-table tfoot td:nth-child(n) { color: #000000; background: #e2e8f0 !important; border-bottom: none !important; }
+body.light-mode .summary-table .tien-no-cell { color: #9a3412; background: var(--light-card) !important; }
 /* Mũi tên ↕ (11px, `.sa-sum`) trên header mới + trạng thái đang sắp xếp của nó — xem chú thích ở
    khối trên. Đo live: chưa sắp xếp **5,22 ✓** · đang sắp xếp **5,22 ✓** (dark: **6,93 / 6,99 ✓**).
    ⛔ KHÔNG cần rule `th:hover` cho light: nhãn `th` đã bị `color … !important` ở trên giữ `#334155`
@@ -3081,13 +3087,13 @@ body:not(.light-mode) .filter-select[data-active="1"] { background-color: var(--
 /* ⟳ 2026-10-26 (yêu cầu “cho màu nền các tab nhạt xuống 1 nấc”, ảnh = dải tab ở dark): HẠ ALPHA
    nền của MỌI tab THƯỜNG một nấc (−0,04; tab đã nhạt sẵn 0,14 thì −0,03) — nền tab cũ quá gắt
    so với nền tối nên dải đọc thành một hàng khối màu. ⛔ Nền tab ĐANG CHỌN (`.loai-tab.active`
-   `#2563eb`) KHÔNG đổi — đó là DẤU HIỆU trạng thái “đang lọc” (chữ trắng, 5,17:1), làm nhạt đi là
+   `#1d4ed8` ở bản hiện tại) KHÔNG đổi — đó là DẤU HIỆU trạng thái “đang lọc” (chữ trắng, 6,70:1), làm nhạt đi là
    mất phân biệt. Chữ của tab không đổi (hạ alpha chỉ làm nền nhạt đi ⇒ tương phản TĂNG).
    Light mode không đụng (nền là màu ĐẶC, không alpha).
    ⚠️ Lịch sử alpha (dark): 0,18 → **0,14** · 0,22 → 0,18 · 0,16 → 0,13 · 0,20 → 0,16 · 0,14 → 0,11. */
 /* ⟳ 2026-10-27 (yêu cầu “cho màu các tab này nhạt hơn”, ảnh = 4 tab đầu ở dark): hạ alpha nền
    THÊM MỘT NẤC (−0,03) cho MỌI tab thường ⇒ dải tab bớt “khối màu”, gần với nền thanh công cụ.
-   ⛔ Tab ĐANG CHỌN (`.loai-tab.active` `#2563eb`) KHÔNG đổi — vẫn là dấu hiệu “đang lọc”.
+   ⛔ Tab ĐANG CHỌN (`.loai-tab.active` `#1d4ed8`) KHÔNG đổi — vẫn là dấu hiệu “đang lọc”.
    ⛔ Chữ của tab KHÔNG đổi (nền nhạt đi ⇒ tương phản chữ chỉ TĂNG).
    Lịch sử alpha (dark): 0,18 → 0,14 → **0,11** · 0,22 → 0,18 → **0,14** (Chú ý) ·
    0,16 → 0,13 → 0,10 · 0,20 → 0,16 → **0,12** · 0,14 → 0,11 → **0,08** · 0,13 → 0,10. */
@@ -3113,13 +3119,15 @@ body:not(.light-mode) .filter-select[data-active="1"] { background-color: var(--
    Đo (dark): nền `#2563eb` với chữ trắng **5,17:1** ✓ AA — chính cặp đã dùng cho nút “Xong”. */
 /* ⟳ 2026-10-28 (yêu cầu “cho màu chữ và nền các tab này nhạt xuống 1 nấc dark mode”, ảnh =
    dải lọc “Chi tiết · Từ 3Tr · Nộ cũ”): 3 tab ĐANG THẤY trong ảnh được nhạt đúng 1 nấc —
-   chữ lùi 1 bậc sáng hơn + nền alpha lùi 0,11 → 0,08; riêng tab ĐANG CHỌN thì xanh `#2563eb`
-   → **`#3b82f6`** (blue-500). ⚠️ Tất cả đều `body:not(.light-mode)` nên light mode KHÔNG đổi. */
+   chữ lùi 1 bậc sáng hơn + nền alpha lùi 0,11 → 0,08. ⟳ Cùng ngày, yêu cầu “cho màu xanh đậm 1 tí”:
+   lúc đó tab ĐANG CHỌN bị hạ xuống `#3b82f6` (blue-500) ⇒ nay **TRẢ VỀ `#2563eb`** (blue-600,
+   chữ trắng 5,17:1 ✓ AA) — xem rule `.active` bên dưới. ⚠️ Tất cả vẫn `body:not(.light-mode)`
+   nên light mode KHÔNG đổi (light dùng rule riêng, cũng `#2563eb`). */
 body:not(.light-mode) .loai-tab[data-val="old"]   { background: rgba(239,68,68,0.08); color: #fecaca; }
 body:not(.light-mode) .loai-tab[data-val="oldky"] { background: rgba(249,115,22,0.08); color: #fed7aa; }
 body:not(.light-mode) .loai-tab.active,
-body:not(.light-mode) .loai-tab.active[data-val] { background: #3b82f6; color: #ffffff; }   /* ⚠️ Phải có cả biến thể `[data-val]` (0,4,0) — giống bài học ở light mode: tab ĐANG CHỌN mà mang `data-val` thì bị 3 rule màu ở trên đè nếu thiếu. */
-.loai-tab.active { background: #2563eb; color: #ffffff; }
+body:not(.light-mode) .loai-tab.active[data-val] { background: #1d4ed8; color: #ffffff; }   /* ⚠️ Phải có cả biến thể `[data-val]` (0,4,0) — giống bài học ở light mode: tab ĐANG CHỌN mà mang `data-val` thì bị 3 rule màu ở trên đè nếu thiếu. ⟳ 2026-10-28 (yêu cầu “cho màu xanh đậm 1 tí”, ảnh = viên tab đang chọn): `#3b82f6` (blue-500, 3,68:1) → `#2563eb` (blue-600, 5,17:1) → **`#1d4ed8`** (blue-700, chữ trắng **6,70:1** ✓ AA) theo yêu cầu tiếp “cho màu đậm thêm 1 nấc”; `#1d4ed8` = ĐÚNG `HEADER_FIXED_BG`/`--hdr-bg` của header nên không sinh mã mới. ⚠️ phải đổi CẢ rule light (0,3,1) bên dưới để 2 theme cùng một mã. */
+.loai-tab.active { background: #1d4ed8; color: #ffffff; }
 /* Light mode: nền màu ĐẬC (không alpha — alpha ghép lên toolbar trắng ra màu bẩn) + chữ CÙNG HUE
    đậm hơn 2 nấc để đọc được trên nền nhạt. Đo tương phản trên nền tab ghép:
    xanh lá `#15803d` ~4,6:1 · đỏ `#b91c1c` ~6,2:1 · cam `#c2410c` ~5,0:1 · xanh `#1d4ed8` ~6,4:1 — đều ✓ AA. */
@@ -3150,7 +3158,33 @@ body.light-mode .loai-tab.active[data-val="old"], body.light-mode .loai-tab.acti
 body.light-mode .loai-tab.active[data-val="summary"], body.light-mode .loai-tab.active[data-val="1-2tr"],
 body.light-mode .loai-tab.active[data-val="2-3tr"], body.light-mode .loai-tab.active[data-val="marked"],
 body.light-mode .loai-tab.active[data-val="duoi1tr"], body.light-mode .loai-tab.active[data-val="3-5tr"],
-body.light-mode .loai-tab.active[data-val="tren5tr"] { background: #dbeafe; color: #2563eb; }   /* ⟳ 2026-10-28 (ảnh mẫu): tab ĐANG CHỌN ở light đổi từ **nền xanh đặc + chữ trắng** sang **nền xanh nhạt `#dbeafe` + chữ xanh `#2563eb`** — đúng kiểu viên “đang chọn” trong ảnh (5,0:1 ✓ AA). ⚠️ Nền nhạt hơn `#eff6ff` của tab “Tổng hợp” nên vẫn PHÂN BIỆT được tab đang lọc. */
+body.light-mode .loai-tab.active[data-val="tren5tr"] { background: #1d4ed8; color: #ffffff; }   /* ⟳ 2026-10-28 (yêu cầu “khi chọn tab nào hiện màu xanh như dark mode”): TRẢ LẠI **nền XANH ĐẶC + chữ TRẮNG**, và dùng ĐÚNG màu của dark (rule `body:not(.light-mode) .loai-tab.active` ngay trên) thay cho cặp pastel `#dbeafe` + `#2563eb` của lượt trước — người dùng đã xem bản pastel và muốn giống dark. ⟳ Cùng ngày (yêu cầu “cho màu xanh đậm 1 tí”): `#3b82f6` → `#2563eb` → (yêu cầu tiếp “cho màu đậm thêm 1 nấc”) **`#1d4ed8`** = blue-700, chữ trắng **6,70:1** ✓ AA (blue-600 được 5,17:1). ⚠️ Đổi ở CẢ 3 chỗ (rule này + `body:not(.light-mode) .loai-tab.active` + `.loai-tab.active` gốc) để 2 theme cùng một mã. */
+
+/* ══ ⟳ 2026-10-28 (tiếp 11) — NỀN MỌI TAB = **NỀN THẺ KHÁCH** ══════════════════════════════════
+   Yêu cầu: “cho các tab này màu nền giống với màu nền thẻ” (ảnh = 4 tab ở dark: “Từ 3Tr” nền
+   đỏ mận, “Nợ cũ” nền nâu cam, “Tổng hợp” nền xanh navy; “Chi tiết” đang chọn nền xanh dương).
+   ⇒ Bỏ hết NỀN TINT theo hue của 13 tab thường, thay bằng ĐÚNG token nền thẻ khách:
+     · dark  = **`var(--dk-card)`** (mức “Chuẩn” đo được `#1a1f28` = `rgb(26,31,40)` = nền `.kh-card`)
+     · light = **`var(--light-card)`** (đo `#f8fafc` ở mức đang dùng = nền `.kh-card`)
+   Dùng TOKEN (⛔ không chép hex) để tab tự đổi theo 5 mức “Mức nền” như thẻ.
+   ⟳ CÙNG NGÀY (yêu cầu “cho viền các tab và màu chữ như tên nhân viên”): thêm **VIỀN + MÀU CHỮ**
+   chép ĐÚNG cặp của ô lọc “Nhân viên” (`.filter-select` — ô hiện TÊN NHÂN VIÊN đang chọn):
+     · dark  = `border: var(--ctl-line)` (alpha 0,8) + `color: #cbd5e1`   ← chép `.filter-select`
+     · light = `border: var(--ctl-light-line)` (`#64748b`) + `color: #1e293b`
+   ⇒ tab thường nay đọc ra như một ô lọc: nền thẻ + viền xám + chữ xám-đậm, KHÔNG còn chữ màu
+   theo hue. ⚠️ CHẤM MÀU (`.nhom-dot`) vẫn giữ nguyên màu ⇒ vẫn phân biệt được 10 tab (chấm chỉ
+   hiện ở khổ ≥560px; dưới 560px đã ẩn).
+   ⚠️ VIỀN NÀY LÀ BẮT BUỘC về mặt thị giác: nền thẻ ở dark TRÙNG nền thanh công cụ (`#1a1f28`)
+   ⇒ nếu để `border: transparent` như trước thì tab “biến mất”, không ai thấy “nền giống nền thẻ”.
+   `border-width` vẫn 1px (rule gốc) ⇒ ⛔ KHÔNG đổi kích thước tab, chỉ đổi MÀU viền.
+   ⚠️ `:not(.active)` là BẮT BUỘC: tab ĐANG CHỌN phải giữ nền xanh đặc + chữ trắng (`#3b82f6` ở
+   CẢ 2 theme) — thiếu `:not(.active)` là rule này (đến SAU, độ ưu tiên cao hơn) xoá mất dấu
+   “đang lọc”. Độ ưu tiên: (0,4,1) cả 2 theme ⇒ đè được 10 rule chữ-màu (0,3,1) phía trên.
+   ⚠️ Phải khai lại `:active` (lúc ĐANG CHẠM): rule gốc `.loai-tab:active` (0,2,0) bị rule này đè. */
+body:not(.light-mode) .loai-tab[data-val]:not(.active) { background-color: var(--dk-card); border-color: var(--ctl-line); color: #cbd5e1; }
+body.light-mode     .loai-tab[data-val]:not(.active) { background-color: var(--light-card); border-color: var(--ctl-light-line); color: #1e293b; }
+body:not(.light-mode) .loai-tab[data-val]:not(.active):active { background-color: rgba(148,163,184,0.22); }
+body.light-mode     .loai-tab[data-val]:not(.active):active { background-color: rgba(148,163,184,0.22); }
 
 /* ── 📱 2026-10-24 (yêu cầu: “cho dải tab ôm vừa 6 tab trên điện thoại thay vì cuộn ngang, thu
    nhỏ chữ/đệm và cho viền sát vô chữ”) ──────────────────────────────────────────
@@ -3783,8 +3817,8 @@ body.light-mode .count-info.tb-floating { box-shadow: 0 8px 16px rgba(15, 23, 42
 .count-line-2 { padding-left: 6px; border-left: 1px solid var(--border); }
 body.light-mode .count-line-2 { border-left-color: #e2e8f0; }
 /* Icon “$” của dòng Nợ đổi sang CAM cho khớp con số (icon biên lai của dòng 1 vẫn xanh lá). */
-.count-line-2 .count-ic { color: #fb923c; }
-body.light-mode .count-line-2 .count-ic { color: #ea580c; }
+.count-line-2 .count-ic { color: #fdba74; }   /* ⟳ 2026-10-28 (yêu cầu “cho màu cam trong ảnh nhạt xuống 1 nấc”, ảnh = dòng “$ Nợ: 5.002.186.679” ở dark): `#fb923c` (orange-400) → **`#fdba74`** (orange-300). ⚠️ Phải đổi CÙNG LÚC với `.count-info .count-tien` (số Nợ) — hai thứ này là MỘT cặp icon + số, lệch tông là thấy ngay. Đo trên nền thẻ “Chuẩn” `#1a1f28`: **8,3:1** ✓ AA. */
+body.light-mode .count-line-2 .count-ic { color: #f97316; }   /* ⟳ 2026-10-28 (yêu cầu “cho icon nhạt xuống 1 nấc”, ảnh = icon “$” cam của dòng Nợ ở LIGHT mode — nhận ra nhờ vạch dọc trái `#e2e8f0`): `#ea580c` (orange-600) → **`#f97316`** (orange-500) = ĐÚNG 1 nấc nhạt hơn trong cùng họ cam. ⚠️ CHỈ đổi icon: số Nợ `.count-info .count-tien` ở light vẫn `#c2410c` (người dùng nói “icon”, không nói số) — hai thứ cố ý khác tông nhẹ. Tương phản icon trên nền thẻ `#f8fafc` ≈ **2,7:1** (icon trang trí, cạnh chữ “Nợ:” đậm nên vẫn đọc được); muốn đạt 3:1 cho đồ hoạ thì lùi về **`#ea580c`**. Dark KHÔNG đụng (`#fdba74` ở rule trên). */
 /* Mỗi dòng `nowrap` + `align-items: baseline` để nhãn 17px và số 19px ngồi CHUNG một dòng cơ sở
    (thiếu baseline là hai cỡ chữ lệch mực, nhìn như số bị trễ xuống). */
 .count-line { display: flex; align-items: baseline; white-space: nowrap; }
@@ -3847,6 +3881,16 @@ body.light-mode .count-range-x:active { background: #ef4444; color: #ffffff; }
      **2026-09-28d**, gồm cả bẫy đặc hiệu của `prefers-reduced-motion`).
      ℹ️ Nhắc lại lý do KHÔNG dùng `--ic-hash` như icon cũ: đây là cặp icon BIÊN LAI + CHỒNG XU,
      và tông của cặp đó trong app là `--ic-green` (xem chú thích `:root` “biên lai + chồng xu”). */
+/* ⟳ 2026-10-28 (yêu cầu “đổi 2 icon thành emoji”, ảnh = dòng “HĐ: 2.215 | Nợ: 5.002.186.679”):
+   HAI ICON SVG Ở ĐẦU 2 DÒNG nay là **EMOJI** — 🧾 trước `HĐ:` và 💰 (**túi tiền**, yêu cầu tiếp
+   “có emoji túi tiền không” — đổi từ 💵 tờ bạc) trước `Nợ:` (viết thẳng trong
+   `span.count-ic`, `font-size: 16px` + `line-height: 1` đặt INLINE ở markup). Emoji là glyph MÀU
+   của font hệ điều hành ⇒ rule `color` bên dưới KHÔNG còn tác dụng thị giác (giữ lại để dựng lại
+   SVG nhanh: chỉ cần trả `<svg><use href="#i-receipt"/></svg>` / `#i-dollar` vào 2 span đó).
+   ⚠️ Vẫn giữ `.count-ic` làm hộp bọc: `fitCountRow()` đo bề rộng theo hộp này, `align-self: center`
+   giữ emoji nằm giữa dòng, `min-width: max-content` chặn bóp khi hàng hẹp.
+   ⛔ Đừng nhét emoji vào trong `#countHoaDon` / `#countTongTien`: JS ghi `textContent` ⇒ emoji bị
+   XOÁ mỗi lần cập nhật số (đúng cái bẫy đã ghi ở chú thích khối trên). */
 .count-ic { display: inline-flex; align-items: center; align-self: center; min-width: max-content; color: var(--ic-green); }
 .count-ic .ic { display: block; }
 /* SỐ canh giữa trong ô 30px của nó — trước đây `.count-line2 { height: 30px }` + `align-items:
@@ -3921,7 +3965,7 @@ body.light-mode .count-range-x:active { background: #ef4444; color: #ffffff; }
    ngắt dòng của 2 dòng này chỉ có thể LÙI VỀ SAU, không hồi quy.
    ⚠️ Tương phản KHÔNG đổi (chỉ đổi độ dày nét, không đổi MÀU) ⇒ mọi tỉ lệ AA đã ghi vẫn đúng. */
 .count-info .count-kh-hd { color: #60a5fa; font-weight: 400; }
-.count-info .count-tien { color: #fb923c; font-weight: 400; }   /* ⟳ 2026-10-28 (ảnh mẫu): `#ff8888` (hồng đỏ) → **`#fb923c`** (cam) cho đồng bộ với light mode. */
+.count-info .count-tien { color: #fdba74; font-weight: 400; }   /* ⟳ 2026-10-28 (ảnh mẫu): `#ff8888` (hồng đỏ) → **`#fb923c`** (cam) cho đồng bộ với light mode. ⟳ 2026-10-28 (yêu cầu “cho màu cam trong ảnh nhạt xuống 1 nấc”, ảnh = dòng “$ Nợ: 5.002.186.679” ở dark): `#fb923c` → **`#fdba74`** (orange-400 → orange-300), đổi CÙNG `.count-line-2 .count-ic` (icon $) để cặp icon + số không lệch tông. Chỉ DARK: light vẫn `#c2410c` (chữ trên nền sáng, nhạt hơn là trượt AA). */
 /* ⟳ 2026-10-28 (yêu cầu “cố định một cặp màu cho số Nợ ở hàng tổng để light và dark khớp
    nhau, thay vì đổi theo mức nợ”): BỎ hệ màu theo quy mô (`.low` xanh · `.mid` vàng · mặc định
    cam). Số Nợ nay MỘT màu cho mỗi theme — `#fb923c` (dark) / `#c2410c` (light) — nên hàng tổng
@@ -5042,7 +5086,7 @@ body.light-mode .kh-card .kh-addr-line.is-pinned .kh-addr-txt { text-decoration-
    hơn bản cũ 3px nên hàng danh số (và chiều cao thẻ) không phình thêm. Giữ đệm ngang 5px. */
 .kh-photo:not(.has-photo) { padding: 0 4px; gap: 0; }   /* ⟳ 2026-10-27e: 1px 5px → 0 4px (bù icon 22 → 24px, nút vẫn ~34×26) */
 .kh-photo.has-photo { border-color: #3b82f6; color: #93c5fd; }
-body.light-mode .kh-photo { border-color: #94a3b8; color: #475569; }
+body.light-mode .kh-photo { border-color: #94a3b8; color: #64748b; }   /* ⟳ 2026-10-28 (yêu cầu “cho màu icon camera nhạt xuống 1 nấc”): xám **slate-600 `#475569` → slate-500 `#64748b`** = ĐÚNG 1 nấc nhạt hơn trong cùng họ xám (không sinh tông mới). Đo: icon `rgb(100,116,139)` trên thẻ `#f8fafc` ≈ **4,4:1** — trên ngưỡng 3:1 của WCAG 1.4.11 cho ĐỒ HOẠ ✓. ⚠️ Màu này còn nuôi nhãn “Ảnh (n)” — nhưng nhãn chỉ hiện ở trạng thái `.has-photo` (rule ngay dưới đổi sang `#1d4ed8`) ⇒ thực tế CHỈ icon đổi, đúng phạm vi yêu cầu. ⛔ DARK KHÔNG đụng: icon camera ở dark đang là `#ffffff` (rule `body:not(.light-mode) .kh-card .kh-photo .ic`, ~1683) nên “nhạt hơn” là vô nghĩa — muốn dịu lại thì phải nói rõ “mờ/tối xuống”. ⚠️ 2 rule `.kh-mid-row .kh-photo` (~7731–7739) nay KHÔNG còn khớp vì nút 📷 đã dời sang `.kh-phone-row` (2026-10-28) — đừng sửa ở đó rồi tưởng là không ăn. */
 body.light-mode .kh-photo:active { background: rgba(15,23,42,0.08); }
 body.light-mode .kh-photo.has-photo { border-color: #2563eb; color: #1d4ed8; }
 /* ⟳ 2026-10-26 (yêu cầu lặp lại “bỏ viền quanh icon camera” — lần đầu đặt rule TRƯỚC các rule
@@ -5558,12 +5602,20 @@ body.light-mode .page-act { background: #ffffff; border-color: var(--light-edge)
 
 .sa-sum { font-size: 11px; color: var(--text-dim); margin-left: 1px; }
 .summary-table th.sorted .sa-sum { color: var(--accent-glow); }
+/* NỀN THÂN Ô BẢNG TỔNG HỢP = NỀN THẺ KHÁCH (2026-10-28)
+   Yêu cầu: “cho màu nền trong ảnh đồng bộ với nền thẻ dark mode” (ảnh = các hàng số của bảng ở dark).
+   ⇒ thân ô đổi `#0d1b2a` (navy lạnh, tối hơn thẻ) → **`var(--dk-card)`** = ĐÚNG nền `.kh-card`
+   (mức “Chuẩn” `#1a1f28`; tự đổi theo cả 5 mức “Mức nền” của dark).
+   Khung (header · cột NHÓM · dòng TỔNG) GIỮ `#15181f`/`#151820` = tối hơn thân ô 1 nấc, y như
+   light (khung `#e2e8f0` đậm hơn thân ô `var(--light-card)`); ⛔ đừng đổi cả 4 về cùng một màu —
+   mất luôn hình bảng. Nền khung ngoài vẫn là `--dk-sum` (`#0e1119` ở mức “Chuẩn”).
+   ⚠️ Light KHÔNG đụng: mọi rule light nằm trong `body.light-mode` (khối ~1911–1932). */
 .summary-table td {
   padding: 5px 4px;
   font-size: 14px;
   border-bottom: none;
   white-space: nowrap;
-  background: #0d1b2a;
+  background: var(--dk-card);
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -5579,7 +5631,7 @@ function changeBackgroundColor(newColor) {
 .summary-table td:nth-child(2), .summary-table td:nth-child(3), .summary-table td:nth-child(4) { color: #ea8b3e !important; }
 .summary-table td:nth-child(5), .summary-table td:nth-child(6), .summary-table td:nth-child(7) { color: #5a9be6 !important; }
 .summary-table td:nth-child(8), .summary-table td:nth-child(9), .summary-table td:nth-child(10) { color: #2fc48a !important; }
-.summary-table .tien-no-cell { font-weight: 500; color: #fca5a5; font-family: 'Inter', sans-serif; font-size: 14px; background: #0d1b2a !important; }
+.summary-table .tien-no-cell { font-weight: 500; color: #fca5a5; font-family: 'Inter', sans-serif; font-size: 14px; background: var(--dk-card) !important; }
 .summary-table .num-cell { font-family: 'Inter', sans-serif; font-weight: 500; font-size: 14px; color: var(--text); text-align: right; font-variant-numeric: tabular-nums; }
 .summary-table .ten-nv-cell { font-weight: 500; color: var(--text); font-size: 14px; white-space: nowrap; position: sticky; left: 0; background: #15181f !important; z-index: 2; border-right: 1px solid #4b5563; border-bottom: none !important; }
 .summary-table tfoot td {
@@ -7695,7 +7747,9 @@ body:not(.light-mode) .kh-card .kh-idcol .kh-name { color: #cbd5e1 !important; }
    Trước đây cả 3 thứ là tông sáng/cyan (`#dbeafe` · `#a7e8f5` · viền cyan) vì viên nằm trên
    dải teal — dải đã bỏ nên trên nền thẻ sáng chữ gần như tan biến. DARK giữ nguyên (chữ sáng
    trên thẻ tối vẫn đạt tương phản). */
-body.light-mode .kh-card .kh-mid-row .kh-ma { color: #1e3a8a !important; border-color: rgba(30,58,138,0.28); }
+body.light-mode .kh-card .kh-mid-row .kh-ma { color: #1e293b !important; border-color: rgba(30,58,138,0.28); }   /* ⟳ 2026-10-28 (yêu cầu “cho màu chữ mã kh như tên kh”): `#1e3a8a` (navy) → **`#1e293b`** = ĐÚNG màu chữ TÊN KH ở light (rule `body.light-mode .kh-card .kh-idcol .kh-name` ngay trên, ~7741) ⇒ chữ viên mã KH và tên cùng một tông. Vẫn **~12,6:1** trên nền viên `#e0ebfd` ✓ dư AA. ⛔ Nền viên `#e0ebfd` + viền `rgba(30,58,138,0.28)` GIỮ NGUYÊN — người dùng chỉ nói “màu chữ”. ⚠️ Tên KH ở light có 2 biến thể (đánh dấu cam `#422006` · tím `#1d4ed8`) nên phải khai thêm 2 rule ngay dưới, thiếu là thẻ đánh dấu bị lệch tông. */
+body.light-mode .kh-card.highlighted .kh-mid-row .kh-ma { color: #422006 !important; }   /* = màu tên KH của thẻ ĐÁNH DẤU CAM (rule ~7742). Specificity (0,5,1) > (0,4,1) của rule trên ⇒ thắng bằng độ đặc hiệu, KHÔNG phải nhờ thứ tự. */
+body.light-mode .kh-card.highlighted-purple .kh-mid-row .kh-ma { color: #1d4ed8 !important; }   /* = màu tên KH của thẻ ĐÁNH DẤU TÍM (~7743). */
 body.light-mode .kh-card .kh-mid-row .kh-ma .ic { color: #1d4ed8; }
 
 /* 4) SỐ TIỀN thành VIÊN thuốc: chỉ đổi nền + bo + đệm; MÀU CHỮ giữ nguyên hệ đỏ/xanh đã chốt. */
@@ -8516,7 +8570,7 @@ body.light-mode .kh-card.tier-low  { --card-accent: #34d399; }
              `-` ở ngoài là tab đó còn lại một dấu gạch trơ giữa hàng. -->
         <div class="count-lines">
           <div class="count-line count-line-1">
-            <span class="count-pair"><span class="count-ic" aria-hidden="true"><svg class="ic" width="18" height="18"><use href="#i-receipt"/></svg></span><span class="count-lbl">HĐ:</span><span id="countHoaDon" class="count-kh-hd">0</span></span><span class="count-kh-group"><span class="count-sep">-</span><span class="count-lbl">KH:</span><span id="countKH" class="count-kh-hd">0</span></span><span class="count-range" id="countRange"></span>
+            <span class="count-pair"><span class="count-ic" aria-hidden="true" style="font-size:16px;line-height:1">🧾</span><span class="count-lbl">HĐ:</span><span id="countHoaDon" class="count-kh-hd">0</span></span><span class="count-kh-group"><span class="count-sep">-</span><span class="count-lbl">KH:</span><span id="countKH" class="count-kh-hd">0</span></span><span class="count-range" id="countRange"></span>
           </div>
         <!-- ⛔ **LỊCH SỬ** — bố cục 2 dòng đã bỏ 2026-09-27 (nay `.count-stats` 3 cột, nhãn trên
              số dưới). Đoạn dưới nói về `.count-tien-wrap` (đã xoá), giữ lại chỉ để đọc lịch sử lỗi:
@@ -8530,7 +8584,7 @@ body.light-mode .kh-card.tier-low  { --card-accent: #34d399; }
              ⚠️ Số tổng nay **KHÔNG còn hậu tố `đ`** (yêu cầu “bỏ chữ đ sau số tiền”) — cả ở
              markup này (`0đ` → `0`) lẫn ở JS (`elTongTien.textContent`). -->
           <div class="count-line count-line-2">
-            <span class="count-pair"><span class="count-ic" aria-hidden="true"><svg class="ic" width="18" height="18"><use href="#i-dollar"/></svg></span><span class="count-lbl">Nợ:</span><span id="countTongTien" class="count-tien low">0</span></span>
+            <span class="count-pair"><span class="count-ic" aria-hidden="true" style="font-size:16px;line-height:1">💰</span><span class="count-lbl">Nợ:</span><span id="countTongTien" class="count-tien low">0</span></span>
           </div>
         </div>
       </div>
@@ -12582,37 +12636,47 @@ function saoLuuDuLieu() {
    (⛔ không dùng `display: inline-block`: `.cell-tenkh` là ô `td` của lưới, đổi `display` là vỡ hàng).
    Viên MÃ KH vẫn gọi kiểu cũ (nó là viên bo tròn ôm sẵn chữ nên `background` đã “vừa bằng chữ”). */
 const COPY_FLASH_BG = 'rgba(34,197,94,0.3)';
+/* ⟳ 2026-10-28 — 2 sửa trong CÙNG một hàm:
+   ⓐ “bỏ cong màu viền khi nhấn copy tên kh”: ô TÊN (fitText = true) vẫn tô dải xanh dài đúng bằng
+      CHỮ (đo bằng Range) nhưng **KHÔNG bo góc** nữa — bản trước đặt border-radius 4px nên dải bị
+      cong 4 góc. Nay border-radius = 0 ⇒ dải VUÔNG.
+   ⓑ “khi copy mã kh hiện màu như copy tên kh”: bản trước gán style.background NHƯNG KHÔNG có
+      !important, mà stylesheet có luật `background: transparent !important` cho `.kh-card .kh-ma`
+      (và `.kh-phone`) ⇒ inline style THUA ⇒ computed vẫn `rgba(0,0,0,0)` ⇒ viên mã KH KHÔNG nháy
+      màu (đo live: `style.background` = xanh mà `backgroundColor` computed = trong suốt).
+      Nay mọi thuộc tính nháy đặt bằng setProperty(..., 'important') ⇒ inline-important THẮNG
+      stylesheet-important ⇒ viên mã KH nháy ĐÚNG màu xanh y như ô tên.
+   ℹ️ Viên mã KH GIỮ bo góc gốc của nó (5px — nó vốn là viên tròn); CHỈ ô TÊN mới vuông.
+   ⚠️ Trả lại nguyên trạng bằng cách nhớ CẢ CHUỖI attribute `style` lúc chưa nháy: nháy là đặt 5–6
+   thuộc tính kèm !important, gỡ từng thuộc tính rất dễ sót !important ⇒ ô bị xanh vĩnh viễn.
+   Vẫn chỉ nhớ MỘT LẦN (`_copySnap`) để chạm 2 lần trong 1,2s không “nhớ” nhầm màu xanh. */
 function copyFlash(el, ms, fitText) {
   if (!el || !el.style) return;
   if (el._copyTimer) { clearTimeout(el._copyTimer); el._copyTimer = null; }
-  if (el._copyBg === undefined) {
-    el._copyBg = el.style.background;   el._copyBr = el.style.borderRadius;
-    el._copyBgImg = el.style.backgroundImage; el._copyBgSize = el.style.backgroundSize;
-    el._copyBgRep = el.style.backgroundRepeat; el._copyBgPos = el.style.backgroundPosition;
-  }
+  if (el._copySnap === undefined) el._copySnap = el.getAttribute('style') || '';
+  const set = (p, v) => el.style.setProperty(p, v, 'important');
   let w = 0;
   if (fitText) {
     try { const rg = document.createRange(); rg.selectNodeContents(el); w = rg.getBoundingClientRect().width; } catch (e) { w = 0; }
-    if (w > 0) {
-      el.style.background = 'transparent';
-      el.style.backgroundImage = 'linear-gradient(' + COPY_FLASH_BG + ',' + COPY_FLASH_BG + ')';
-      el.style.backgroundRepeat = 'no-repeat';
-      el.style.backgroundSize = (w + 6) + 'px 100%';
-      el.style.backgroundPosition = 'left center';
-    } else {
-      el.style.background = COPY_FLASH_BG;   // không đo được chữ (ô rỗng) ⇒ tô như cũ
-    }
-  } else {
-    el.style.background = COPY_FLASH_BG;
   }
-  el.style.borderRadius = '4px';
+  if (fitText && w > 0) {
+    set('background', 'transparent');
+    set('background-image', 'linear-gradient(' + COPY_FLASH_BG + ',' + COPY_FLASH_BG + ')');
+    set('background-repeat', 'no-repeat');
+    set('background-size', (w + 6) + 'px 100%');
+    set('background-position', 'left center');
+    set('border-radius', '0');      // dải VUÔNG (yêu cầu “bỏ cong màu viền”)
+  } else {
+    set('background', COPY_FLASH_BG);   // viên mã KH (hoặc ô tên rỗng) ⇒ tô đặc cả viên
+    set('background-image', 'none');
+    set('background-repeat', 'repeat');
+    set('background-size', 'auto');
+    set('background-position', '0% 0%');
+  }
   el._copyTimer = setTimeout(() => {
-    el.style.background = el._copyBg || '';
-    el.style.backgroundImage = el._copyBgImg || '';
-    el.style.backgroundSize = el._copyBgSize || '';
-    el.style.backgroundRepeat = el._copyBgRep || '';
-    el.style.backgroundPosition = el._copyBgPos || '';
-    el.style.borderRadius = el._copyBr || '';
+    if (el._copySnap) el.setAttribute('style', el._copySnap);
+    else el.removeAttribute('style');
+    el._copySnap = undefined;
     el._copyTimer = null;
   }, ms || 1200);
 }
