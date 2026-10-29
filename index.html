@@ -1377,7 +1377,15 @@ body.light-mode {
      mép trên cùng) — chấp nhận theo yêu cầu; muốn tách lại thì đậm viền/bóng toolbar.
      ⚠️ Chữ ngồi TRỰC TIẾP trên nền trang (`.count-kh-hd`, `.count-tien`, `.page-info`) NAY
      SÁNG TƯƠNG PHẢN HƠN (nền trắng dễ đọc hơn `#f8fafc`) ⇒ không có rủi ro AA nào. */
-  --page-bg: #ffffff;
+  /* ⟳ 2026-10-29 (yêu cầu “cho nền trắng phía sau các tab và thẻ ở light mode có màu trắng xám nhẹ”):
+     `#ffffff` → **`#eef1f4`** (trắng ngả xám rất nhẹ, ~7% xám). Nền trang + `.toolbar` (xem rule
+     `body.light-mode .toolbar`) đổi CÙNG token nên hai dải không thể lệch tông.
+     ĐO LIVE (mức “Chuẩn”): thẻ/control `#f8fafc` vs nền mới **1,07:1** — thẻ vẫn NHẸT hơn nền
+     (đúng chiều) và viền `--light-edge` + bóng đổ gánh việc tách thẻ như trước.
+     ⚠️ Chữ ngồi TRỰC TIẾP trên nền trang (`.count-kh-hd`, `.count-tien`, `.page-info`) tụt
+     tương phản ~4% so với trước — vẫn dư AA vì trước đây là trắng tuyệt đối; đổi đậm hơn nữa
+     thì phải đo lại nhóm đó. */
+  --page-bg: #eef1f4;
   background: var(--page-bg);
   color: #000000;
 }
@@ -1544,7 +1552,7 @@ body.light-mode .nhom-dropdown { background: #ffffff !important; border-color: #
 .nhom-option { font-weight: var(--ctl-fw) !important; font-size: var(--ctl-fs) !important; user-select: none; -webkit-user-select: none; }
 body.light-mode .nhom-option { color: #000000 !important; border-bottom: 1px solid #94a3b8 !important; background: #ffffff !important; }
 body.light-mode .nhom-option:hover { background: rgba(100,116,139,0.12) !important; }   /* ⟳ xám trung tính */
-body.light-mode .toolbar { background: #ffffff; border-bottom-color: #e2e8f0; }
+body.light-mode .toolbar { background: var(--page-bg); border-bottom-color: #e2e8f0; }   /* ⟳ 2026-10-29: `#ffffff` → `var(--page-bg)` (cùng yêu cầu “nền trắng phía sau các tab … màu trắng xám nhẹ”): thanh công cụ NAY là nền trang, nên tab/ô tìm kiếm/ô lọc (`--light-card` `#f8fafc`, vẫn gần trắng) NỔI lên trên nó. ⛔ Đừng trả về `#ffffff` — sẽ lại tách thanh công cụ thành một dải trắng khác tông với nền trang. */
 body.light-mode .toolbar.stuck { box-shadow: var(--elev-3); }   /* ⟳ 2026-10-03o: vào THANG CHUNG */
 /* Bề mặt nút sắp xếp = ĐÚNG bề mặt 2 ô lọc ở light mode (`--ctl-light-bg` +
    `--ctl-light-line`) — cùng cặp TOKEN với `body.light-mode .filter-select`.
@@ -1931,9 +1939,9 @@ body.light-mode .summary-table td:first-child { background: #e2e8f0 !important; 
 body.light-mode .summary-table .ten-nv-cell { background: #e2e8f0 !important; color: #334155; border-right: 1px solid #8a93a0 !important; border-bottom: none !important; }
 body.light-mode .summary-table tfoot td:first-child { background: #e2e8f0 !important; color: #000000 !important; }
 body.light-mode .summary-table td { color: #000000; border-bottom: none; background: var(--light-card) !important; }
-body.light-mode .summary-table td:nth-child(2), body.light-mode .summary-table td:nth-child(3), body.light-mode .summary-table td:nth-child(4) { color: #9a3412 !important; background: var(--light-card) !important; }
-body.light-mode .summary-table td:nth-child(5), body.light-mode .summary-table td:nth-child(6), body.light-mode .summary-table td:nth-child(7) { color: #1e40af !important; background: var(--light-card) !important; }
-body.light-mode .summary-table td:nth-child(8), body.light-mode .summary-table td:nth-child(9), body.light-mode .summary-table td:nth-child(10) { color: #065f46 !important; background: var(--light-card) !important; }
+body.light-mode .summary-table td:nth-child(2), body.light-mode .summary-table td:nth-child(3), body.light-mode .summary-table td:nth-child(4), body.light-mode .summary-table td:nth-child(5), body.light-mode .summary-table td:nth-child(6) { color: #9a3412 !important; background: var(--light-card) !important; }
+body.light-mode .summary-table td:nth-child(7), body.light-mode .summary-table td:nth-child(8), body.light-mode .summary-table td:nth-child(9) { color: #1e40af !important; background: var(--light-card) !important; }
+body.light-mode .summary-table td:nth-child(10), body.light-mode .summary-table td:nth-child(11), body.light-mode .summary-table td:nth-child(12) { color: #065f46 !important; background: var(--light-card) !important; }
 body.light-mode .summary-table tr:hover { background: #bfdbfe; }
 body.light-mode .summary-table tfoot td:nth-child(n) { color: #000000; background: #e2e8f0 !important; border-bottom: none !important; }
 body.light-mode .summary-table .tien-no-cell { color: #9a3412; background: var(--light-card) !important; }
@@ -4383,7 +4391,7 @@ body.light-mode .kh-card-top .kh-tien { background: var(--light-card); }
 .kh-tien.high { color: #ff8888; }
 .kh-tien.mid { color: #fde68a; }
 .mil-digit { color: #ff8888; }
-.kh-thang { font-size: var(--fs-card); color: #94a3b8; margin-top: 2px; font-weight: 400; }
+.kh-thang { font-size: calc(var(--fs-card) - 2px); color: #94a3b8; margin-top: 2px; font-weight: 400; }   /* ⟳ 2026-10-29 (yêu cầu “hàng tháng nợ và hoá đơn chữ nhỏ hơn 2 nấc”): `var(--fs-card)` → **`calc(var(--fs-card) - 2px)`** = nhỏ đúng **2 nấc** (mỗi nấc = 1px, xem thang `--fs-card` ở `:root`) và vẫn ĐI THEO mức cỡ người dùng chọn. ⚠️ PHẢI sửa cả bản khai LẦN HAI của `.kh-thang` (~dòng 5027) — bản đó thắng `font-size`. */
 .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #60a5fa; text-underline-offset: 3px; text-decoration-thickness: 2px; }
 
 .kh-card-mid { display: flex; gap: 1px; flex-wrap: wrap; margin-bottom: 0; align-items: center; }
@@ -4803,7 +4811,7 @@ body.light-mode .ghi-chu-input::placeholder { color: #5b6777; opacity: 1; }
 body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
 .ghi-chu-input:focus { border-color: #60a5fa; }
 
-.kh-addr-line { font-size: var(--fs-card); color: #94a3b8; font-weight: 400; margin-bottom: 0; white-space: normal; word-wrap: break-word; } /* địa chỉ TRONG THẺ CARD — +1px, xem chú thích “CỠ CHỮ NỘI DUNG THẺ CARD”. ⟳ 2026-10-24: nay là HÀNG CUỐI của thẻ (dưới ghi chú) ⇒ margin-bottom 0, khe trên do inline margin-top 3px */
+.kh-addr-line { font-size: calc(var(--fs-card) - 1px); color: #94a3b8; font-weight: 400; margin-bottom: 0; white-space: normal; word-wrap: break-word; } /* địa chỉ TRONG THẺ CARD — +1px, xem chú thích “CỠ CHỮ NỘI DUNG THẺ CARD”. ⟳ 2026-10-24: nay là HÀNG CUỐI của thẻ (dưới ghi chú) ⇒ margin-bottom 0, khe trên do inline margin-top 3px */
 /* ── NHỊP DỌC ĐỀU CHO MỌI HÀNG TRONG THẺ (2026-10-26, yêu cầu “cho khoảng cách các hàng đều nhau”) ──
    Trước đây mỗi hàng tự khai khe riêng nên mắt đọc thấy so le: danh số **3px** · mã sổ/TBI **3px**
    (và 2 dòng mã sổ↔TBI dính nhau vì `gap: 0`) · ghi chú **6px** · địa chỉ **5px** (inline).
@@ -5016,7 +5024,7 @@ body.light-mode .kh-card .kh-addr-line.is-pinned .kh-addr-txt { text-decoration-
    nên **thắng** — hệ quả là `margin-top: 2px` của bản trên vẫn áp, còn `font-size` thì lấy ở
    đây. Sửa cỡ chữ tháng phải sửa **cả hai** (đã +2 lần ⇒ **18px** ở cả hai), nếu không bạn
    sẽ sửa bản trên rồi đo lại thấy y nguyên như cũ. */
-.kh-thang { font-size: var(--fs-card); color: #94a3b8; font-weight: 400; }
+.kh-thang { font-size: calc(var(--fs-card) - 2px); color: #94a3b8; font-weight: 400; }   /* ⟳ 2026-10-29: cùng −2px với bản đầu (xem chú thích ở rule `.kh-thang` gần `.kh-tien`). ⛔ Sửa một bản là vô ích: rule NÀY thắng `font-size`. */
 
 /* ── 📷 NÚT “CHỤP ẢNH” DƯỚI DÒNG THÁNG (2026-10-24) ──────────────────────────────
    Yêu cầu người dùng: “thêm chế độ chụp ảnh nằm dưới tháng” (ảnh kèm = THẺ khách ở chế
@@ -5628,9 +5636,9 @@ function changeBackgroundColor(newColor) {
   document.documentElement.style.setProperty('--navy-mid', newColor);
   document.documentElement.style.setProperty('--navy-light', newColor);
 }
-.summary-table td:nth-child(2), .summary-table td:nth-child(3), .summary-table td:nth-child(4) { color: #ea8b3e !important; }
-.summary-table td:nth-child(5), .summary-table td:nth-child(6), .summary-table td:nth-child(7) { color: #5a9be6 !important; }
-.summary-table td:nth-child(8), .summary-table td:nth-child(9), .summary-table td:nth-child(10) { color: #2fc48a !important; }
+.summary-table td:nth-child(2), .summary-table td:nth-child(3), .summary-table td:nth-child(4), .summary-table td:nth-child(5), .summary-table td:nth-child(6) { color: #ea8b3e !important; }
+.summary-table td:nth-child(7), .summary-table td:nth-child(8), .summary-table td:nth-child(9) { color: #5a9be6 !important; }
+.summary-table td:nth-child(10), .summary-table td:nth-child(11), .summary-table td:nth-child(12) { color: #2fc48a !important; }
 .summary-table .tien-no-cell { font-weight: 500; color: #fca5a5; font-family: 'Inter', sans-serif; font-size: 14px; background: var(--dk-card) !important; }
 .summary-table .num-cell { font-family: 'Inter', sans-serif; font-weight: 500; font-size: 14px; color: var(--text); text-align: right; font-variant-numeric: tabular-nums; }
 .summary-table .ten-nv-cell { font-weight: 500; color: var(--text); font-size: 14px; white-space: nowrap; position: sticky; left: 0; background: #15181f !important; z-index: 2; border-right: 1px solid #4b5563; border-bottom: none !important; }
@@ -5730,6 +5738,81 @@ function changeBackgroundColor(newColor) {
 }
 
 .modal-body { padding: 6px 12px 18px; }   /* ⟳ 2026-10-13k: “cho bảng này cao hơn” — nới cả đệm thân tấm */
+
+/* ══ TẤM “CHI TIẾT KHÁCH HÀNG” — DẠNG THẺ THÔNG TIN (2026-10-29) ══════════════════════════
+   Yêu cầu người dùng: “cho bảng modal chi tiết hiển thị như trong ảnh” (ảnh = thẻ khách của
+   một app khác: đầu XANH đậm có mã KH + tên + viên SĐT, 4 hàng icon, ô “TỔNG NỢ” viền cam,
+   “Chi tiết nợ” từng kỳ, 4 nút màu ở đáy). Markup do `showDetailRow()` dựng — ⛔ đừng đổ
+   dữ liệu vào markup tĩnh.
+   ⚠️ NHÃN GIỮ THEO TỪ VỰNG CỦA APP (Mã KV · Mã sổ · Số TBI), ⛔ KHÔNG chép nhãn của ảnh
+   (“Số CTO”, “Mã KV/Lộ Trình”, “Trạm”) — ba cột đó KHÔNG có trong dữ liệu Excel của app; nhãn
+   lạ sẽ khiến người dùng tưởng app có cột mới. Đổi nhãn = đổi ở `showDetailRow`.
+   ⚠️ Màu khai theo CẶP: nền SÁNG ở đây (không viết `body.light-mode`, vì đây là mặc định của
+   thẻ mới), nền TỐI ở block `body:not(.light-mode) .cd-*` ngay sau các rule này.
+   ℹ️ Các rule `.info-row`/`.i-*` bên dưới vẫn còn nguyên nhưng KHÔNG còn ai dùng: tấm “Chi
+   tiết” nay dựng `.cd-*`; chúng ở lại cho bảng khác (nếu sau này có) và để không phải xoá 60
+   dòng ghi chú lịch sử. */
+.cd-card { border-radius: 14px; overflow: hidden; background: #ffffff; font-family: 'Inter', sans-serif; }
+.cd-head { display: flex; align-items: center; gap: 10px; padding: 11px 12px; background: linear-gradient(160deg, #1f86bd 0%, #1470a4 100%); color: #ffffff; }
+.cd-head-main { flex: 1; min-width: 0; }
+/* ⟳ 2026-10-29 (yêu cầu “cho nét chữ mã kh mỏng lại”): `font-weight` **700 → 400**. Chỉ đổi NÉT
+   (`font-weight`), KHÔNG đổi cỡ chữ ⇒ không reflow, không đổi bề rộng mã. */
+.cd-code { font-size: 18px; font-weight: 400; line-height: 1.15; letter-spacing: 0.01em; word-break: break-all; }
+/* ⟳ 2026-10-29 (yêu cầu “cho nét và chữ tên kh mỏng và nhạt hơn”): `font-weight` **600 → 400**,
+   chữ `#eaf6ff` → **`#cfe8fa`** (xanh trắng nhạt hơn, vẫn > 4,5:1 trên dải xanh #1a7db2).
+   Chỉ đổi NÉT + MÀU, cỡ chữ giữ 12px ⇒ không reflow. */
+.cd-name { margin-top: 3px; font-size: 12px; font-weight: 400; line-height: 1.35; text-transform: uppercase; color: #cfe8fa; }
+.cd-phone { flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 999px; background: #ffffff; color: #1a7db2; font-size: 14px; font-weight: 700; text-decoration: none; white-space: nowrap; }   /* ⟳ 2026-10-29 (yêu cầu “cho sdt màu chữ như màu nền trong ảnh”): chữ `#0b4a6f` (navy) → **`#1a7db2`** = tông xanh của chính dải đầu thẻ (gradient #1f86bd→#1470a4), nên viên trắng chỉ còn nổi phần nền, số hoà vào màu header. ⛔ Icon 📞 vẫn XANH LÁ (`.cd-phone .ic`) theo ảnh. */
+.cd-phone .ic { color: #1a9f4f; }
+.cd-body { padding: 9px 12px 12px; }
+.cd-row { display: flex; align-items: flex-start; gap: 8px; padding: 3px 0; font-size: 14.5px; line-height: 1.35; color: #334155; }
+/* ⟳ 2026-10-29 (yêu cầu “cho các icon màu nhạt lại”, ảnh = 4 icon hàng thông tin): `opacity`
+   **0.55** ⇒ icon vẫn đọc được nhưng không tranh chỗ với chữ đậm bên cạnh. Dùng `opacity` (không
+   `filter: grayscale`) để giữ sắc nhận dạng: pin đỏ · tia sét cam · sổ vàng · đồng hồ xanh. */
+.cd-row .cd-ic { flex-shrink: 0; width: 18px; text-align: center; line-height: 1.35; opacity: 0.55; }
+.cd-row b { color: #0f172a; font-weight: 600; }
+/* ⟳ 2026-10-29 (yêu cầu “bỏ màu nền trong ảnh”, ảnh = ô TỔNG NỢ): NỀN `#fff6ef` → TRONG SUỐT,
+   chỉ còn VIỀN CAM + chữ. ⚠️ `transparent` (không phải `#ffffff`): ở dark nền thẻ là `#1a1d24`,
+   nền trắng sẽ thành một ô trắng chói. Nền tối bên dưới cũng phải về `transparent`. */
+.cd-total { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; padding: 9px 11px; border: 1px solid #f3b98f; border-radius: 10px; background: transparent; }
+.cd-total-lbl { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; letter-spacing: 0.02em; color: #b45309; }
+.cd-total-num { font-size: 19px; font-weight: 700; color: #e2591f; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cd-total-num small { margin-left: 2px; font-size: 10.5px; font-weight: 600; color: #9a5b32; }
+.cd-detail-title { display: flex; align-items: center; gap: 6px; margin: 11px 0 7px; font-size: 14.5px; font-weight: 700; color: #0f172a; }
+.cd-periods { display: flex; flex-direction: column; gap: 5px; }
+.cd-period { display: flex; align-items: center; gap: 8px; padding: 6px 9px; border: 1px solid #e2e8f0; border-radius: 9px; background: #ffffff; }
+/* ⚠️ 2026-10-29 (“cho icon tháng nợ … như trong ảnh” rồi “đổi icon”): ruột ô lịch là SVG VẼ TAY
+   `CD_IC_CAL` (lịch đầu đỏ + số 17), KHÔNG phải emoji — vì 📅 do hệ điều hành vẽ nên Windows ra
+   lịch xanh không số, còn ảnh mẫu là lịch đỏ có số. Ô nền xám nhạt giữ nguyên như ảnh. */
+.cd-cal { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 21px; height: 21px; border-radius: 5px; background: #eef2f7; line-height: 1; }
+.cd-cal svg, .cd-detail-title svg { display: block; flex-shrink: 0; }
+.cd-t-ic { display: inline-flex; align-items: center; }
+.cd-period-ky { flex: 1; min-width: 0; font-size: 14px; font-weight: 600; color: #0f172a; }
+/* ⟳ 2026-10-29 (yêu cầu “cho màu số tiền như tiền tổng nợ”): chữ số của từng KỲ lấy ĐÚNG màu
+   của `.cd-total-num` (`#e2591f`) — hai chỗ cùng một tông cam đỏ, chỉ khác cỡ. */
+.cd-period-num { font-size: 15.5px; font-weight: 700; color: #e2591f; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cd-period-num small { margin-left: 2px; font-size: 10px; font-weight: 500; color: #64748b; }
+.cd-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+.cd-act { display: inline-flex; align-items: center; justify-content: center; gap: 4px; width: 100%; padding: 8px 4px; border: none; border-radius: 9px; color: #ffffff; font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.cd-act-a { background: #1d87c4; }   /* Lấy */
+.cd-act-b { background: #f5941e; }   /* Đường */
+.cd-act-c { background: #3cb371; }   /* Ảnh */
+.cd-act-d { background: #8b5cf6; }   /* Toạ độ — ⟳ 2026-10-29 (yêu cầu “hiển thị thêm tab Toạ độ”): tím như ảnh mẫu */
+.cd-act:active { filter: brightness(0.92); }
+/* ── nền TỐI của thẻ chi tiết ──────────────────────────────────────────────────────────────── */
+body:not(.light-mode) .cd-card { background: #1a1d24; }
+body:not(.light-mode) .cd-row { color: #cbd5e1; }
+body:not(.light-mode) .cd-row b { color: #e2e8f0; }
+body:not(.light-mode) .cd-total { background: transparent; border-color: rgba(249,115,22,0.55); }
+body:not(.light-mode) .cd-total-lbl { color: #fdba74; }
+body:not(.light-mode) .cd-total-num { color: #ffa07a; }
+body:not(.light-mode) .cd-total-num small { color: #cbd5e1; }
+body:not(.light-mode) .cd-detail-title { color: #e2e8f0; }
+body:not(.light-mode) .cd-period { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.12); }
+body:not(.light-mode) .cd-cal { background: rgba(255,255,255,0.08); }
+body:not(.light-mode) .cd-period-ky { color: #e2e8f0; }
+body:not(.light-mode) .cd-period-num { color: #ffa07a; }   /* = đúng màu `.cd-total-num` ở dark */
+body:not(.light-mode) .cd-period-num small { color: #94a3b8; }
 
 .info-row {
   display: flex;
@@ -8657,10 +8740,15 @@ body.light-mode .kh-card.tier-low  { --card-accent: #34d399; }
                  ("510.174.887") ở 14px cần **97px** kể cả padding, trước đây khai
                  80px nên SỐ BỊ CẮT ở mọi bề rộng dưới ~1100px (đo được 7 ô bị cắt
                  ở 640px và cả ở 900px). Đừng hạ lại dưới 100px.
-                 Cột 1 (Nhóm) 110 → 118px vì tên nhóm dài hơn "BT Dũng" sẽ bị cắt. -->
+                 Cột 1 (Nhóm) 110 → 118px vì tên nhóm dài hơn "BT Dũng" sẽ bị cắt.
+                 ⟳ 2026-10-29: nhóm MỚI có THÊM 2 cột **“2 KỲ”** (75px) + **“NỢ”** (115px) ngay
+                 sau cột “Nợ” ⇒ MỚI 5 cột, tổng bảng 12 cột / **1103px**. Cột “NỢ” mới cũng 115px
+                 vì cùng chứa tiền 9 chữ số. -->
             <colgroup>
               <col style="width:118px">
               <col style="width:75px">
+              <col style="width:75px">
+              <col style="width:115px">
               <col style="width:75px">
               <col style="width:115px">
               <col style="width:75px">
@@ -8673,7 +8761,7 @@ body.light-mode .kh-card.tier-low  { --card-accent: #34d399; }
             <thead>
               <tr>
                 <th rowspan="2" style="vertical-align:bottom" onclick="sortSummary('ten_nhom')">Nhóm <span class="sa-sum" data-col="ten_nhom">↕</span></th>
-                <th colspan="3" style="text-align:center;border-bottom:1px solid #fb923c;color:#fb923c;font-size:15px;letter-spacing:0.05em">MỚI</th>
+                <th colspan="5" style="text-align:center;border-bottom:1px solid #fb923c;color:#fb923c;font-size:15px;letter-spacing:0.05em">MỚI</th>
                 <th colspan="3" style="text-align:center;border-bottom:1px solid #3b82f6;color:#3b82f6;font-size:15px;letter-spacing:0.05em">CŨ</th>
                 <th colspan="3" style="text-align:center;border-bottom:1px solid #10b981;color:#10b981;font-size:15px;letter-spacing:0.05em">ĐÃ TT</th>
               </tr>
@@ -8681,6 +8769,12 @@ body.light-mode .kh-card.tier-low  { --card-accent: #34d399; }
                 <th onclick="sortSummary('hoa_don')" style="text-align:right;border-bottom:none">HĐ <span class="sa-sum" data-col="hoa_don">↕</span></th>
                 <th onclick="sortSummary('khach_hang')" style="text-align:right;border-bottom:none">KH <span class="sa-sum" data-col="khach_hang">↕</span></th>
                 <th onclick="sortSummary('tien_no')" style="text-align:right;border-bottom:none">Nợ <span class="sa-sum" data-col="tien_no">↕</span></th>
+                <!-- ➕ 2026-10-29 (yêu cầu “sau cột nợ thêm cột 2 KỲ và cột NỢ”): 2 cột THỐNG KÊ
+                     khách nợ NHIỀU KỲ trong nhóm MỚI — “2 KỲ” = số khách có từ 2 kỳ trở lên,
+                     “NỢ” = tổng tiền của TẤT CẢ kỳ của những khách đó. Số liệu tính từ `allData`
+                     trong `computeTwoKyByNhom()` (⛔ KHÔNG lấy từ sheet 2 — sheet đó không có cột này). -->
+                <th onclick="sortSummary('kh_2ky')" style="text-align:right;border-bottom:none">2 KỲ <span class="sa-sum" data-col="kh_2ky">↕</span></th>
+                <th onclick="sortSummary('tien_2ky')" style="text-align:right;border-bottom:none">NỢ <span class="sa-sum" data-col="tien_2ky">↕</span></th>
                 <th style="text-align:right;color:#94a3b8;border-bottom:none">HĐ</th>
                 <th style="text-align:right;color:#94a3b8;border-bottom:none">KH</th>
                 <th style="text-align:right;color:#94a3b8;border-bottom:none">Nợ</th>
@@ -8696,6 +8790,8 @@ body.light-mode .kh-card.tier-low  { --card-accent: #34d399; }
                 <td style="text-align:right;font-weight:500;font-size:14px;color:#fb923c;border-top:2px solid #fb923c" id="sumTotalHd"></td>
                 <td style="text-align:right;font-weight:500;font-size:14px;color:#fb923c;border-top:2px solid #fb923c" id="sumTotalKh"></td>
                 <td class="tien-no-cell" style="text-align:right;font-size:14px;color:#fb923c;border-top:2px solid #fb923c" id="sumTotalTien"></td>
+                <td style="text-align:right;font-weight:500;font-size:14px;color:#fb923c;border-top:2px solid #fb923c" id="sumTotalKh2"></td>
+                <td class="tien-no-cell" style="text-align:right;font-size:14px;color:#fb923c;border-top:2px solid #fb923c" id="sumTotalTien2"></td>
                 <td style="text-align:right;font-weight:500;font-size:14px;color:#3b82f6;border-top:2px solid #3b82f6" id="sumOldHd"></td>
                 <td style="text-align:right;font-weight:500;font-size:14px;color:#3b82f6;border-top:2px solid #3b82f6" id="sumOldKh"></td>
                 <td style="text-align:right;font-size:14px;color:#3b82f6;border-top:2px solid #3b82f6" id="sumOldTien"></td>
@@ -10088,22 +10184,61 @@ function abbreviateName(name) {
     : name;
 }
 
-const _sumTds = ['ten-nv-cell','num-cell','num-cell','tien-no-cell','num-cell','num-cell','num-cell','num-cell','num-cell','tien-no-cell'];
-const _sumColors = ['','#fb923c','#fb923c','#fb923c','#3b82f6','#3b82f6','#3b82f6','#10b981','#10b981','#10b981'];
-const _sumBold = [0,0,0,1,0,0,0,0,0,1];
+const _sumTds = ['ten-nv-cell','num-cell','num-cell','tien-no-cell','num-cell','tien-no-cell','num-cell','num-cell','num-cell','num-cell','num-cell','tien-no-cell'];
+// ⟳ 2026-10-29: thứ tự cột mới = Nhóm · [HĐ KH Nợ 2KỲ NỢ] · [HĐ KH Nợ] · [HĐ KH Nợ] ⇒ 12 ô.
+const _sumColors = ['','#fb923c','#fb923c','#fb923c','#fb923c','#fb923c','#3b82f6','#3b82f6','#3b82f6','#10b981','#10b981','#10b981'];
+const _sumBold = [0,0,0,1,0,1,0,0,0,0,0,1];
+
+/* 🔑 “2 KỲ” / “NỢ” (2 kỳ) — yêu cầu 2026-10-29: “hiển thị các kh 2 kỳ và tổng số tiền 2 kỳ”.
+   Người dùng chọn “từ 2 kỳ trở lên” ⇒ đếm MỌI khách có ≥ 2 dòng trong `allData` và cộng tiền
+   của TẤT CẢ kỳ của khách đó (không chỉ 2).
+   ⚠️ Gom theo `ma_khach_hang` (khách không có mã thì theo tên) — nếu gom theo TỪNG dòng thì
+   không bao giờ thấy “nhiều kỳ”.
+   ⚠️ Nhóm của khách = nhân viên của dòng ĐẦU TIÊN gặp được; ghi vào CẢ 2 khoá `nhan_vien` và
+   `ma_nhom` (bảng Tổng hợp lấy `nhan_vien || ma_nhom` làm `ten_nhom`, xem `computeSummaryFromDetail`)
+   ⇒ dữ liệu nào đang dùng khoá nào cũng khớp.
+   ⛔ KHÔNG ghi số này vào `summaryData`/`saveData`: nó là hàm dẫn xuất từ `allData`, tính lại
+   mỗi lần vẽ ⇒ đổi dữ liệu là số tự đúng, và bản lưu cũ (chưa có 2 trường này) không bị lỗi. */
+function computeTwoKyByNhom() {
+  const byCust = {};
+  for (let i = 0, len = allData.length; i < len; i++) {
+    const r = allData[i];
+    const key = r.ma_khach_hang || ('ten:' + (r.ten_khach_hang || ''));
+    if (!key || key === 'ten:') continue;
+    let c = byCust[key];
+    if (!c) c = byCust[key] = { nhom: (r.nhan_vien || r.ma_nhom || 'Không rõ'), n: 0, tien: 0 };
+    c.n++;
+    c.tien += (r.tien_no || 0);
+  }
+  const map = {};
+  const bump = (nhom, tien) => {
+    if (!nhom) return;
+    if (!map[nhom]) map[nhom] = { kh: 0, tien: 0 };
+    map[nhom].kh++;
+    map[nhom].tien += tien;
+  };
+  for (const k in byCust) {
+    const c = byCust[k];
+    if (c.n < 2) continue;   // “từ 2 kỳ trở lên”
+    bump(c.nhom, c.tien);
+  }
+  return map;
+}
 let _sumFrag = null;
 let _sumRows = [];
 function renderSummaryBody() {
   const tbody = document.getElementById('summaryBody');
   const tfoot = document.getElementById('summaryFoot');
-  if (!summaryData.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text-dim);padding:24px">Không có dữ liệu sheet 2</td></tr>'; tfoot.style.display = 'none'; return; }
+  if (!summaryData.length) { tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;color:var(--text-dim);padding:24px">Không có dữ liệu sheet 2</td></tr>'; tfoot.style.display = 'none'; return; }
   const oldMap = {};
   if (oldSummaryData.length) {
     for (let i = 0, len = oldSummaryData.length; i < len; i++) oldMap[oldSummaryData[i].ten_nhom] = oldSummaryData[i];
   }
   let totalHd = 0, totalKh = 0, totalTien = 0;
+  let totalKh2 = 0, totalTien2 = 0;
   let totalOldHd = 0, totalOldKh = 0, totalOldTien = 0;
   let totalPaidHd = 0, totalPaidKh = 0, totalPaidTien = 0;
+  const twoKyMap = computeTwoKyByNhom();
   const frag = document.createDocumentFragment();
   const len = summaryData.length;
   const existingRows = tbody.rows;
@@ -10112,6 +10247,11 @@ function renderSummaryBody() {
     totalHd += r.hoa_don;
     totalKh += r.khach_hang;
     totalTien += r.tien_no;
+    const two = twoKyMap[r.ten_nhom] || null;
+    const kh2 = two ? two.kh : 0;
+    const tien2 = two ? two.tien : 0;
+    totalKh2 += kh2;
+    totalTien2 += tien2;
     const old = oldMap[r.ten_nhom] || null;
     const oldHd = old ? old.hoa_don : 0;
     const oldKh = old ? old.khach_hang : 0;
@@ -10126,7 +10266,7 @@ function renderSummaryBody() {
       tr = existingRows[i];
     } else {
       tr = document.createElement('tr');
-      for (let c = 0; c < 10; c++) tr.appendChild(document.createElement('td'));
+      for (let c = 0; c < 12; c++) tr.appendChild(document.createElement('td'));
       frag.appendChild(tr);
     }
     const cells = tr.cells;
@@ -10134,12 +10274,14 @@ function renderSummaryBody() {
     cells[1].textContent = r.hoa_don; cells[1].style.color = _sumColors[1];
     cells[2].textContent = r.khach_hang; cells[2].style.color = _sumColors[2];
     cells[3].textContent = fmt(r.tien_no); cells[3].style.color = _sumColors[3];
-    cells[4].textContent = oldHd; cells[4].style.color = _sumColors[4];
-    cells[5].textContent = oldKh; cells[5].style.color = _sumColors[5];
-    cells[6].textContent = fmt(oldTien); cells[6].style.color = _sumColors[6];
-    cells[7].textContent = paidHd; cells[7].style.color = _sumColors[7];
-    cells[8].textContent = paidKh; cells[8].style.color = _sumColors[8];
-    cells[9].textContent = fmt(paidTien); cells[9].style.color = _sumColors[9];
+    cells[4].textContent = kh2; cells[4].style.color = _sumColors[4];
+    cells[5].textContent = fmt(tien2); cells[5].style.color = _sumColors[5];
+    cells[6].textContent = oldHd; cells[6].style.color = _sumColors[6];
+    cells[7].textContent = oldKh; cells[7].style.color = _sumColors[7];
+    cells[8].textContent = fmt(oldTien); cells[8].style.color = _sumColors[8];
+    cells[9].textContent = paidHd; cells[9].style.color = _sumColors[9];
+    cells[10].textContent = paidKh; cells[10].style.color = _sumColors[10];
+    cells[11].textContent = fmt(paidTien); cells[11].style.color = _sumColors[11];
   }
   while (tbody.rows.length > len) tbody.deleteRow(tbody.rows.length - 1);
   if (frag.childNodes.length) tbody.appendChild(frag);
@@ -10147,6 +10289,8 @@ function renderSummaryBody() {
   document.getElementById('sumTotalHd').textContent = totalHd;
   document.getElementById('sumTotalKh').textContent = totalKh;
   document.getElementById('sumTotalTien').textContent = fmt(totalTien);
+  document.getElementById('sumTotalKh2').textContent = totalKh2;
+  document.getElementById('sumTotalTien2').textContent = fmt(totalTien2);
   document.getElementById('sumOldHd').textContent = totalOldHd;
   document.getElementById('sumOldKh').textContent = totalOldKh;
   document.getElementById('sumOldTien').textContent = fmt(totalOldTien);
@@ -13263,67 +13407,138 @@ function openCardDetail(el) {
   if (r) showDetailRow(r);
 }
 
+/* 🗓️ HAI ICON CỦA THẺ CHI TIẾT — VẼ TAY BẰNG SVG, ⛔ KHÔNG DÙNG EMOJI.
+   Yêu cầu 2026-10-29 “đổi icon” (ảnh: lịch có ĐẦU ĐỎ + số 17, và sổ VÀNG có BĂNG ĐEN).
+   Vì sao không dùng 📅 / 📒: emoji do HỆ ĐIỀU HÀNH vẽ, mỗi máy một kiểu (Windows ra lịch xanh
+   không số / sổ vàng xoắn ốc; iPhone ra lịch đỏ “July 17” / sổ có băng đen) ⇒ không thể “giống
+   ảnh” trên mọi máy. SVG thì giống y nhau ở mọi thiết bị.
+   Màu lấy từ chính ảnh mẫu: đầu lịch `#e53935`, sổ `#f5b301` + băng `#1f2937`.
+   ⚠️ Đây là icon TRANG TRÍ (`aria-hidden`) — đừng gắn `onclick` vào chúng. */
+/* Lịch kiểu iOS trong ảnh mẫu: ĐẦU ĐỎ có TÊN THÁNG, thân trắng có SỐ LỚN.
+   Số liệu lấy từ chính KỲ của khách (thang_no, vd “1-9/2026” ⇒ tháng cuối = 9 ⇒ “SEP” + “9”)
+   — ⛔ KHÔNG ghi cứng “JUL 17” như ảnh: mỗi hàng là một kỳ khác nhau, ghi cứng là nói sai.
+   Không đọc được tháng thì dùng gạch chéo mờ — vẫn giữ đúng hình dạng ô lịch. */
+const CD_MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+function cdCalIcon(thang) {
+  const m = String(thang || '').match(/(\d+)\s*\/\s*\d{4}/) || String(thang || '').match(/^(\d+)/);
+  const mon = m ? parseInt(m[1], 10) : 0;
+  const ok = mon >= 1 && mon <= 12;
+  const abbr = ok ? CD_MONTHS[mon - 1] : '•••';
+  const num = ok ? String(mon) : '–';
+  /* ⟳ 2026-10-29 (“bỏ viền và cho icon to hơn”): BỎ `stroke` của tờ lịch (viền xám bao quanh ô
+     trắng) và 14 → **17px** (ô nền xám 21px vẫn đủ chỗ). */
+  return '<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">' +
+    '<rect x="2.5" y="3.5" width="19" height="17" rx="3" fill="#ffffff"/>' +
+    '<path d="M2.5 6.5a3 3 0 0 1 3-3h13a3 3 0 0 1 3 3V9h-19z" fill="#f0453e"/>' +
+    '<text x="12" y="8.3" font-size="4.6" font-weight="700" fill="#ffffff" text-anchor="middle" font-family="Inter, Arial, sans-serif">' + abbr + '</text>' +
+    '<text x="12" y="18.6" font-size="9" font-weight="600" fill="#26303b" text-anchor="middle" font-family="Inter, Arial, sans-serif">' + num + '</text>' +
+    '</svg>';
+}
+/* Sổ kiểu ảnh mẫu MỚI (2026-10-29 “đổi icon”): thẻ VÀNG bo góc + BĂNG XANH ĐEN ngang trên +
+   2 vạch trắng + 4 ô vuông nhỏ + 1 khối trắng bên phải. ⛔ Vẽ theo TỈ LỆ của ảnh, đừng thêm
+   xoắn ốc/chữ: ở cỡ 15px chúng nhoè thành vệt. */
+const CD_IC_LEDGER = '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="1" y="2.2" width="22" height="19.6" rx="4" fill="#f5b301"/><path d="M1 6.2a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4v5.2H1z" fill="#4a4f63"/><rect x="3.4" y="13.4" width="11" height="1.9" rx="0.95" fill="#ffffff"/><rect x="3.4" y="16.3" width="7" height="1.9" rx="0.95" fill="#ffffff"/><rect x="3.4" y="18.6" width="2.7" height="2.5" rx="0.6" fill="#ffffff"/><rect x="7.1" y="18.6" width="2.7" height="2.5" rx="0.6" fill="#ffffff"/><rect x="10.8" y="18.6" width="2.7" height="2.5" rx="0.6" fill="#ffffff"/><rect x="14.5" y="15.6" width="6.2" height="5.5" rx="1" fill="#ffffff"/></svg>';
+
 function showDetailRow(r) {
   if (!r) return;
   document.getElementById('modalName').textContent = r.ten_khach_hang || 'Không có tên';
   document.getElementById('modalMa').textContent = r.ma_khach_hang;
 
-  const phone = r.dien_thoai && r.dien_thoai!='0' ? r.dien_thoai : '';
+  const phone = r.dien_thoai && r.dien_thoai != '0' ? r.dien_thoai : '';
   const phoneHref = phone ? 'tel:' + phone.replace(/[^0-9+]/g, '') : '';
   const phoneHtml = phone
-    ? `<a class="call-link" href="${esc(phoneHref)}">📞 ${esc(phone)}</a>`
-    : '—';
+    ? `<a class="cd-phone" href="${esc(phoneHref)}"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-call"/></svg>${esc(phone)}</a>`
+    : '';
 
-  // Find all original records for this customer from allData
+  // MỌI kỳ của khách (một khách có thể nợ nhiều dòng trong `allData`): dùng cho “Chi tiết nợ”
+  // và cho “TỔNG NỢ”. Không có dòng nào trùng mã thì lấy chính bản ghi đang xem.
   const custRecords = allData.filter(x => x.ma_khach_hang === r.ma_khach_hang);
-  const hasMultiMonth = custRecords.length > 1;
-  let monthDetail = '';
-  if (hasMultiMonth) {
-    monthDetail = '<div style="margin-top:2px;line-height:1.5">' +
-      custRecords.map(x =>
-        // `flex-wrap: wrap` (thêm khi cỡ chữ +1px): ở panel ≤ ~360px, dòng phụ chỉ rộng
-        // 182.6px mà badge tháng (110px) + số tiền (91px) + gap 8 = **209px** ⇒ không wrap thì
-        // số tiền **thò ra ngoài modal** và bị cắt mất. Wrap thì số tiền xuống dòng dưới badge —
-        // thà cao thêm 1 dòng còn hơn mất số (bất biến của dự án: KHÔNG bao giờ cắt số tiền).
-        `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:2px 0;border-bottom:1px solid var(--border)">
-          <span class="badge badge-blue">${esc(x.thang_no)||'—'}</span>
-          <span class="tien-no${x.tien_no >= 2000000 ? ' high' : ' low'}" style="margin-left:auto">${fmt(x.tien_no)}</span>
-        </div>`
-      ).join('') + '</div>';
-  }
+  const recs = custRecords.length ? custRecords : [r];
+  const totalTien = recs.reduce((s, x) => s + (x.tien_no || 0), 0);
 
-  // ⚠️ Mỗi hàng là BỘ BA [nhãn, giá trị, LỚP `i-*`].
-  //  - THỨ TỰ hàng: Tên KH lên ĐẦU, STT xuống CUỐI (yêu cầu người dùng).
-  //  - LỚP `i-*` là thứ DUY NHẤT quyết định màu/cỡ riêng của hàng (rule ở block theme sáng
-  //    `body.light-mode .i-*` + block theme tối `.i-*`). Đổi thứ tự mà quên lớp = hàng khác
-  //    lặng lẽ mất màu; thêm hàng mới nhớ khai `i-*` (và khai rule nếu cần định dạng riêng).
-  //  - `i-sdt` · `i-abc` cố ý CHƯA có rule nào: chúng dùng cỡ/màu nền `.info-value`.
-  const rows = [
-    ['Tên KH', `<span class="modal-ten-kh" style="letter-spacing:0.02em">${esc(r.ten_khach_hang)||'—'}</span>`, 'i-tenkh'],
-    ['Mã KH', `<span class="ma-kh" style="letter-spacing:0.02em">${esc(r.ma_khach_hang)}</span>`, 'i-makh'],
-    ['Địa chỉ', esc(r.dia_chi)||'—', 'i-diachi'],
-    ['Mã Số GCS', esc(r.ma_sogcs)||'—', 'i-sogcs'],
-    ['Danh Số', esc(r.danh_so)||'—', 'i-danhso'],
-    ['Tháng', r.thang_no ? `<span class="badge badge-blue">${esc(shortMonths(r.thang_no))}</span>` : '—', 'i-thang'],
-    ['Tiền nợ', `<span class="tien-no${r.tien_no >= 2000000 ? ' high' : ' low'}">${fmtHtml(r.tien_no)}</span>` + monthDetail, 'i-tien'],
-    ['SĐT', phoneHtml, 'i-sdt'],
-    ['Số TBi', esc(r.so_tbi)||'—', 'i-tbi'],
-    ['Chú ý', `<input type="text" class="ghi-chu-input" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" placeholder="Nhập ghi chú..." oninput="saveGhiChu(this)">`, 'i-chuy'],
-    ['ABC', esc(r.abc)||'—', 'i-abc'],
-    ['STT', esc(r.stt)||'—', 'i-stt'],
-  ];
+  /* ⚠️ `fmt()` (không phải `fmtHtml`) cho tiền trong thẻ: `fmtHtml` bọc chữ số ĐẦU của khoảng
+     1–2 triệu vào `.mil-digit` (để bảng tô đỏ chữ số hàng triệu) — trong thẻ không có rule đó
+     nên vẫn ra số bình thường, nhưng thêm markup vô nghĩa. */
+  const periodsHtml = recs.map(x => `
+      <div class="cd-period">
+        <span class="cd-cal" aria-hidden="true">${cdCalIcon(x.thang_no)}</span>
+        <span class="cd-period-ky">Kỳ ${esc(x.thang_no) || '—'}</span>
+        <span class="cd-period-num">${fmt(x.tien_no)} <small>VND</small></span>
+      </div>`).join('');
 
-  document.getElementById('modalBody').innerHTML = rows.map(([l,v,c]) =>
-    `<div class="info-row ${c}"><div class="info-label">${l}</div><div class="info-value">${v}</div></div>`
-  ).join('');
+  /* ⛔ 2026-10-29 (yêu cầu “ẩn 2 hàng này”, ảnh = ô “Nhập ghi chú…” + dòng “NV: … · STT: …”):
+     HAI HÀNG ĐÓ ĐÃ BỊ BỎ KHỎI THẺ — ô ghi chú vẫn còn trên thẻ khách hàng ở danh sách.
+     ⇒ nút “Ghi chú” ở hàng nút cũng bỏ (nó chỉ để focus ô nay không tồn tại), `cdFocusNote()` xoá.
+     Nếu sau này muốn đưa lại: dựng lại `.cd-note` (input PHẢI giữ lớp `ghi-chu-input` + `data-ma`
+     thì `saveGhiChu()` mới lưu) và thêm lại nút thứ tư. */
 
-  // Focus ghi chú input
-  const gcInput = document.querySelector('.ghi-chu-input');
-  if (gcInput) gcInput.focus();
+  document.getElementById('modalBody').innerHTML = `
+    <div class="cd-card">
+      <div class="cd-head">
+        <div class="cd-head-main">
+          <div class="cd-code">${esc(r.ma_khach_hang) || '—'}</div>
+          <div class="cd-name">${esc(r.ten_khach_hang) || '—'}</div>
+        </div>
+        ${phoneHtml}
+      </div>
+      <div class="cd-body">
+        <!-- ⟳ 2026-10-29 (yêu cầu “đổi số TBI thành Số CTO, mã KV thành Mã KV/Lộ Trình, và chuyển
+             số CTO nằm dưới hàng địa chỉ”): THỨ TỰ + NHÃN theo ảnh mẫu — Địa chỉ → **Số CTO**
+             (cột so_tbi) → **Mã KV/Lộ Trình** (cột danh_so) → Mã sổ (cột ma_sogcs). Icon đi theo
+             NHÃN như ảnh mẫu: tia sét cho Số CTO, toà nhà cho Mã KV/Lộ Trình, sổ cho Mã sổ.
+             ⛔ Đổi lại chỉ cần sửa 4 dòng này — không có chỗ nào khác đọc thứ tự hàng.
+             ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG một template literal). -->
+        <div class="cd-row"><span class="cd-ic" aria-hidden="true">📍</span><span>${esc(r.dia_chi) || '—'}</span></div>
+        <div class="cd-row"><span class="cd-ic" aria-hidden="true">⚡</span><span>Số CTO: <b>${esc(r.so_tbi) || '—'}</b></span></div>
+        <div class="cd-row"><span class="cd-ic" aria-hidden="true">🏢</span><span>Mã KV/Lộ Trình: <b>${esc(r.danh_so) || '—'}</b></span></div>
+        <div class="cd-row"><span class="cd-ic" aria-hidden="true">📒</span><span>Mã sổ: <b>${esc(r.ma_sogcs) || '—'}</b></span></div>
+        <div class="cd-total">
+          <span class="cd-total-lbl"><span aria-hidden="true">💰</span>TỔNG NỢ</span>
+          <span class="cd-total-num">${fmt(totalTien)} <small>VND</small></span>
+        </div>
+        <div class="cd-detail-title"><span class="cd-t-ic" aria-hidden="true">${CD_IC_LEDGER}</span>Chi tiết nợ:</div>
+        <div class="cd-periods">${periodsHtml}</div>
+        <div class="cd-actions">
+          <button type="button" class="cd-act cd-act-a" data-ma="${esc(r.ma_khach_hang)}" onclick="cdCopy(this)"><span aria-hidden="true">📋</span>Lấy</button>
+          <button type="button" class="cd-act cd-act-b" data-ma="${esc(r.ma_khach_hang)}" onclick="pinNav(this)"><span aria-hidden="true">🧭</span>Đường</button>
+          <button type="button" class="cd-act cd-act-c" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang||'')}" data-ky="${esc(r.thang_no||'')}" onclick="photoTap(this)"><span aria-hidden="true">📷</span>Ảnh</button>
+          <button type="button" class="cd-act cd-act-d" data-ma="${esc(r.ma_khach_hang)}" onclick="cdCoords(this)"><span aria-hidden="true">📍</span>Tọa độ</button>
+        </div>
+      </div>
+    </div>`;
 
   document.getElementById('modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
+
+/* 📍 Nút “Toạ độ” (yêu cầu 2026-10-29 “hiển thị thêm tab Toạ độ”): mở Google Maps tại ĐÚNG
+   toạ độ đã ghim của khách (`pinAll()[ma]`), KHÔNG mở chế độ chỉ đường (đó là nút “Đường”).
+   Chưa ghim thì báo cách ghim — nút ghim nằm trên thẻ (nhấn-giữ địa chỉ), nên đừng hứa hão. */
+function cdCoords(btn) {
+  const ma = (btn && btn.dataset && btn.dataset.ma) || '';
+  if (!ma) return;
+  const rec = pinAll()[ma];
+  if (!rec || rec.lat == null || rec.lng == null) {
+    showToast('Chưa có toạ độ — nhấn giữ địa chỉ trên thẻ để cập nhật vị trí');
+    return;
+  }
+  window.open('https://www.google.com/maps/search/?api=1&query=' + rec.lat + ',' + rec.lng, '_blank');
+}
+
+// 📋 Nút “Lấy” của thẻ chi tiết = COPY MÃ KH (giữ nguyên cơ chế 3 tầng của `copyMaKH`: đồng bộ →
+// clipboard → hộp nhập tay), nhưng không cần một phần tử chứa chữ để đọc `textContent`.
+function cdCopy(btn) {
+  const txt = (btn && btn.dataset && btn.dataset.ma) || '';
+  if (!txt) return;
+  const xong = () => showToast('✓ Đã copy mã KH: ' + txt);
+  if (lpCopyFallback(txt)) { xong(); return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(xong).catch(() => lpShowCopyBox(txt));
+    return;
+  }
+  lpShowCopyBox(txt);
+}
+
 
 // ══ TẤM “THANH TOÁN CHO ĐIỂM DÙNG ĐIỆN” ═════════════════════════════════════════════
 // Yêu cầu người dùng: “tôi muốn khi chạm vào số tiền thì hiện bảng giao diện như ảnh”.
