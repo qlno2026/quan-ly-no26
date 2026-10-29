@@ -1016,8 +1016,13 @@ body.light-mode .kh-danhso .ic { color: #1d4ed8; }
      header tự về nền đặc cũ. ⚠️ Khai bằng `background-image` RIÊNG (không nhét vào `background`
      shorthand) để rule `body.light-mode .header` (cũng dùng `background:`) không xoá mất dải —
      rule đó PHẢI khai lại `background-image` (đã làm ngay dưới). */
+  /* ⟳ 2026-10-29 (yêu cầu “cho bảng header màu phẳng không đổ bóng”): BỎ dải gradient
+     (`--hdr-grad`) ⇒ header chỉ còn ĐÚNG một màu ĐẶC `--hdr-bg`. Token `--hdr-grad` và
+     `--hdr-inset` từ đây KHÔNG còn ai dùng — để nguyên định nghĩa, đừng khai lại `background-image`
+     hay `box-shadow` ở đây (xem mục ⛔ ngay dưới).
+     ⛔ PHẢI sửa CẢ `body.light-mode .header` bên dưới: rule đó khai lại đủ cặp ⇒ thiếu là light
+     mode vẫn còn gradient/bóng. */
   background: var(--hdr-bg);
-  background-image: var(--hdr-grad);
   border-bottom: 1px solid var(--hdr-line);
   /* ⟳ 2026-10-03k: thêm lớp `--hdr-inset` (vạch sáng đỉnh/đáy + bóng trong) để header navy có
      chiều sâu. Vẫn KHÔNG gradient (xem chú thích `:root`).
@@ -1031,7 +1036,7 @@ body.light-mode .kh-danhso .ic { color: #1d4ed8; }
      ℹ️ Muốn bỏ LUÔN quầng tối trong đáy header thì xoá số hạng `inset 0 -14px 18px -12px
      rgba(0,0,0,0.62)` khỏi token `--hdr-inset` (**159**) — ⛔ hỏi trước, đó là “bóng TRONG” chứ
      không phải “đổ bóng”. */
-  box-shadow: var(--hdr-inset);
+  box-shadow: none;   /* 2026-10-29 “màu phẳng không đổ bóng” — trước là `var(--hdr-inset)` */
   height: calc(var(--header-h) + env(safe-area-inset-top, 0px));
   /* ⟳ LỀ PHẢI `0 → 8px` (yêu cầu “tôi muốn đồng hồ và ngày tháng xích vô 1 tí”).
      Trước đây khối đồng hồ kết thúc ở `x = 403,6` — NGOÀI đường thẳng hàng của cả app:
@@ -1460,9 +1465,8 @@ body.light-mode .header {
   /* ⚠️ `background:` shorthand XOÁ `background-image` của rule `.header` (dân trên) ⇒ phải khai
      LẠI dải `--hdr-grad` ở đây, không thì light mode MẤT gradient (chỉ dark còn). */
   background: var(--hdr-bg);
-  background-image: var(--hdr-grad);
   border-bottom-color: var(--hdr-line);
-  box-shadow: var(--hdr-inset);   /* ⟳ 2026-10-26 “bỏ đổ bóng header” — xem chú thích ở `.header` (~1001): bỏ `var(--elev-2)`, phải giữ KHỚP với rule gốc, thiếu là light mode vẫn đổ bóng */
+  box-shadow: none;   /* ⟳ 2026-10-29: khớp `box-shadow: none` ở `.header` — thiếu dòng này là light mode vẫn đổ bóng */
 }
 /* ⛔ ĐỪNG thêm lại `body.light-mode .header-title/.header-sub/.clock-box { color:#ffffff }`:
    cả 3 đã dùng `--hdr-text`/`--hdr-sub` (và `.clock-box` không cần override nền/border vì
@@ -3782,7 +3786,9 @@ body.light-mode .count-info.tb-floating { box-shadow: 0 8px 16px rgba(15, 23, 42
    `#countTongTien` (đổi `id` là số điền lệch mà không báo lỗi). */
 .count-stats {
   grid-column: 1;
-  grid-row: 1 / span 2;
+  /* ⟳ 2026-10-29: `1 / span 2` → **`1`** — hàng 2 của ô lưới nay thuộc về nhãn khoảng tiền
+     `.count-range` (xem markup); để `span 2` là hai thứ chồng lên nhau. */
+  grid-row: 1;
   display: flex;
   flex-wrap: wrap;
   align-content: center;
@@ -3835,7 +3841,11 @@ body.light-mode .count-line-2 .count-ic { color: #f97316; }   /* ⟳ 2026-10-28 
    (khối flex không ngắt dòng) ⇒ chữ **nhỏ hơn 1 nấc** và màu mờ: nó là CHÚ THÍCH, không phải số
    chính; to bằng số KH là hàng 320px tràn ra ngoài (đo: nhãn `(10.000.000 - 20.000.000)` ~150px).
    Span rỗng khi KHÔNG lọc tiền ⇒ không chiếm bề rộng, không để lại khe thừa. */
-.count-range { font-size: 15px; color: var(--text-dim); white-space: nowrap; }
+/* ⟳ 2026-10-29: nhãn khoảng tiền là HÀNG RIÊNG dưới khối số (xem markup) ⇒ `display: block`,
+   ô lưới thứ 2 của `.count-info`, và BIẾN MẤT khi rỗng (`:empty`) để hàng không cao thêm khi
+   không lọc tiền. Dùng `margin-top: 2px` thay cho `line-height` lớn để không phình hàng. */
+.count-range { display: block; grid-column: 1; grid-row: 2; margin-top: 2px; font-size: 15px; color: var(--text-dim); white-space: nowrap; }
+.count-range:empty { display: none; }
 .count-range-txt { font-size: 15px; }
 /* Nút ✕ xoá lọc tiền — ô TRÒN nhỏ, cùng hệ nhãn nổi “mờ” của hàng Tổng (không phải control 40px:
    nó nằm trong dòng số 22px, to hơn là đẩy hàng xuống). Chạm được trên điện thoại nhờ `padding`
@@ -5737,7 +5747,20 @@ function changeBackgroundColor(newColor) {
   margin-left: 8px;
 }
 
-.modal-body { padding: 6px 12px 18px; }   /* ⟳ 2026-10-13k: “cho bảng này cao hơn” — nới cả đệm thân tấm */
+/* ⟳ 2026-10-29 (yêu cầu “bỏ viền xám phía ngoài, cho bảng to ra”): đệm `6px 12px 18px` → **0** ⇒
+   tấm `.cd-card` tràn hết bề ngang/cao của sheet, không còn khung xám bao quanh. ⚠️ `.modal-body`
+   CHỈ được tấm “Chi tiết” dùng (id ":modalBody") nên không ảnh hưởng tấm khác. */
+.modal-body { padding: 0; }
+/* Bỏ luôn đường VIỀN XÁM 1px của sheet (cùng yêu cầu) — chỉ tấm “Chi tiết”, tấm thanh toán giữ nguyên. */
+#modal .modal { border: none; }
+/* ⟳ 2026-10-29 (yêu cầu “bỏ viền xám phía trên nền xanh”): dải xám trên đầu tấm chính là TAY NẮM
+   `.modal-handle` + nền sheet hở ra trên thẻ ⇒ ẩn tay nắm và cho đầu thẻ ăn tới MÉP trên, bo đúng
+   bán kính của sheet (20px mobile / 16px desktop — xem `.modal` + `@media 640px`).
+   ⛔ Bo phải KHỚP bán kính sheet: thẻ đang `border-radius: 0` và sheet không `overflow: hidden`
+   (cần `overflow-y: auto` để cuộn) ⇒ bo sai là 2 góc xanh LỒI ra ngoài đường bo. */
+#modal .modal-handle { display: none; }
+#modal .cd-head { border-radius: 20px 20px 14px 14px; }
+@media (min-width: 640px) { #modal .cd-head { border-radius: 16px 16px 14px 14px; } }
 
 /* ══ TẤM “CHI TIẾT KHÁCH HÀNG” — DẠNG THẺ THÔNG TIN (2026-10-29) ══════════════════════════
    Yêu cầu người dùng: “cho bảng modal chi tiết hiển thị như trong ảnh” (ảnh = thẻ khách của
@@ -5752,9 +5775,25 @@ function changeBackgroundColor(newColor) {
    ℹ️ Các rule `.info-row`/`.i-*` bên dưới vẫn còn nguyên nhưng KHÔNG còn ai dùng: tấm “Chi
    tiết” nay dựng `.cd-*`; chúng ở lại cho bảng khác (nếu sau này có) và để không phải xoá 60
    dòng ghi chú lịch sử. */
-.cd-card { border-radius: 14px; overflow: hidden; background: #ffffff; font-family: 'Inter', sans-serif; }
-.cd-head { display: flex; align-items: center; gap: 10px; padding: 11px 12px; background: linear-gradient(160deg, #1f86bd 0%, #1470a4 100%); color: #ffffff; }
+/* ⟳ 2026-10-29: bo `14px` → **0** vì thân tấm nay không còn đệm (thẻ tràn viền) — giữ bo là
+   4 góc hở ra 4 mảng xám. Bo góc do chính `.modal` lo (nó đã `overflow-y: auto` + bo 20/16px). */
+.cd-card { border-radius: 0; overflow: hidden; background: #ffffff; font-family: 'Inter', sans-serif; }
+/* ⟳ 2026-10-29 (yêu cầu “cho nền xanh bo cong 2 góc phía dưới”): dải xanh bo **2 góc DƯỚI**
+   14px = đúng bán kính `.cd-card`, để nền xanh “ ôm” theo thẻ thay vì vuông góc. */
+.cd-head { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 0 0 14px 14px; background: linear-gradient(160deg, #1f86bd 0%, #1470a4 100%); color: #ffffff; }
 .cd-head-main { flex: 1; min-width: 0; }
+/* ⟳ 2026-10-29 (yêu cầu “cho thêm dấu X trên góc để đóng trang”): cột PHẢI của đầu thẻ =
+   X trên, viên SĐT dưới (xếp CỘT nên không bao giờ đè nhau trên máy hẹp). ⛔ X nằm trong cột này
+   chứ không `position: absolute` — đặt tuyệt đối thì với tên KH 1 dòng (header thấp) nó đè lên
+   viên SĐT. */
+/* ⟳ 2026-10-29 (yêu cầu “cho dấu nằm sát trên góc”): kéo X lên/gần mép bằng `margin` ÂM
+   (`-7px -6px 0 0`) ⇒ so với đệm đầu thẻ `11px 12px` thì X chỉ còn cách góc ~5px.
+   ⛔ Đừng sửa `padding` của `.cd-head` để làm việc này — nó cũng là đệm của mã KH/tên KH. */
+.cd-head-side { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin: -7px -6px 0 0; }
+/* ⟳ 2026-10-29 (yêu cầu “cho dấu x nhạt lại”): nền `0.22` → **`0.14`**, chữ trắng đặc →
+   **`rgba(255,255,255,0.72)`** và nét `600` → **`400`** ⇒ X là nút phụ, không tranh chấp với mã KH. */
+.cd-x { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border: none; border-radius: 999px; background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.72); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 400; line-height: 1; cursor: pointer; }
+.cd-x:active { background: rgba(255,255,255,0.28); color: #ffffff; }
 /* ⟳ 2026-10-29 (yêu cầu “cho nét chữ mã kh mỏng lại”): `font-weight` **700 → 400**. Chỉ đổi NÉT
    (`font-weight`), KHÔNG đổi cỡ chữ ⇒ không reflow, không đổi bề rộng mã. */
 .cd-code { font-size: 18px; font-weight: 400; line-height: 1.15; letter-spacing: 0.01em; word-break: break-all; }
@@ -5774,26 +5813,49 @@ function changeBackgroundColor(newColor) {
 /* ⟳ 2026-10-29 (yêu cầu “bỏ màu nền trong ảnh”, ảnh = ô TỔNG NỢ): NỀN `#fff6ef` → TRONG SUỐT,
    chỉ còn VIỀN CAM + chữ. ⚠️ `transparent` (không phải `#ffffff`): ở dark nền thẻ là `#1a1d24`,
    nền trắng sẽ thành một ô trắng chói. Nền tối bên dưới cũng phải về `transparent`. */
-.cd-total { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; padding: 9px 11px; border: 1px solid #f3b98f; border-radius: 10px; background: transparent; }
-.cd-total-lbl { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; letter-spacing: 0.02em; color: #b45309; }
+/* ⟳ 2026-10-29 (yêu cầu “cho bảng này nền trắng xám”): nền `transparent` → **`#f8fafc`** (trắng ngả
+   xám như thẻ), vẫn giữ viền cam. Nền tối bên dưới phải là một lớp trắng MỜ, không dùng `#f8fafc`. */
+/* ⟳ 2026-10-29 (yêu cầu “cho viền màu đậm hơn”): viền `#f3b98f` → **`#ea8b4b`** (cam đậm hơn 2 nấc,
+   vẫn nhạt hơn số tiền `#e2591f` nên khung không tranh chấp với con số). */
+.cd-total { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; padding: 9px 11px; border: 1px solid #ea8b4b; border-radius: 10px; background: #f8fafc; }
+/* ⟳ 2026-10-29 (yêu cầu “cho màu đen nhạt”): chữ “TỔNG NỢ” `#b45309` (nâu cam) → **`#334155`**
+   (đen ngả xám = “đen nhạt”). Số tiền vẫn CAM `#e2591f` — chỉ đổi nhãn. */
+.cd-total-lbl { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; letter-spacing: 0.02em; color: #334155; }
+/* ⟳ 2026-10-29 (yêu cầu “cho icon to hơn và nhạt hơn”, ảnh = 💰 trước “TỔNG NỢ”): emoji to 1 nấc
+   (14 → **18px**) + `opacity: .65` cho nhạt. Chỉ đụng SPAN ICON, chứng không to lên theo. */
+.cd-total-lbl > span[aria-hidden] { font-size: 18px; line-height: 1; opacity: 0.65; }
 .cd-total-num { font-size: 19px; font-weight: 700; color: #e2591f; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.cd-total-num small { margin-left: 2px; font-size: 10.5px; font-weight: 600; color: #9a5b32; }
-.cd-detail-title { display: flex; align-items: center; gap: 6px; margin: 11px 0 7px; font-size: 14.5px; font-weight: 700; color: #0f172a; }
-.cd-periods { display: flex; flex-direction: column; gap: 5px; }
-.cd-period { display: flex; align-items: center; gap: 8px; padding: 6px 9px; border: 1px solid #e2e8f0; border-radius: 9px; background: #ffffff; }
+/* ⟳ 2026-10-29 (yêu cầu “cho chữ VNĐ giống nhau phía dưới”): cỡ/nét/màu lấy ĐÚNG như
+   `.cd-period-num small` (11px · 500 · `#64748b`) — trước là 10,5px · 600 · nâu `#9a5b32` nên hai
+   chữ VNĐ nhìn lệch hẳn. ⛔ Sửa cỡ thì sửa CẢ HAI rule. */
+.cd-total-num small { margin-left: 2px; font-size: 11px; font-weight: 500; color: #64748b; }
+/* ⟳ 2026-10-29 (yêu cầu “cho các chữ màu nhạt xuống 1 tí”): `#0f172a` (slate-900) → **`#1e293b`**
+   (slate-800) = nhạt hơn 1 nấc. Áp cho CẢ `.cd-period-ky` để tiêu đề và tên kỳ cùng tông. */
+.cd-detail-title { display: flex; align-items: center; gap: 7px; margin: 12px 0 8px; font-size: 16px; font-weight: 700; color: #1e293b; }
+.cd-periods { display: flex; flex-direction: column; gap: 7px; }
+/* ⟳ 2026-10-29 (yêu cầu “bỏ nền sau bảng trong ảnh, và cho kích cỡ bảng to hơn”): nền mỗi hàng
+   KỲ `#ffffff` → **trong suốt** (chỉ còn VIỀN, đúng kiểu ô TỔNG NỢ ở trên), và cả bảng phóng to:
+   padding 6/9 → **9/11**, kỳ 14 → **16px**, số 15,5 → **18px**, ô lịch 21 → **24px**. */
+.cd-period { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border: 1px solid #e2e8f0; border-radius: 10px; background: transparent; }
 /* ⚠️ 2026-10-29 (“cho icon tháng nợ … như trong ảnh” rồi “đổi icon”): ruột ô lịch là SVG VẼ TAY
    `CD_IC_CAL` (lịch đầu đỏ + số 17), KHÔNG phải emoji — vì 📅 do hệ điều hành vẽ nên Windows ra
    lịch xanh không số, còn ảnh mẫu là lịch đỏ có số. Ô nền xám nhạt giữ nguyên như ảnh. */
-.cd-cal { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 21px; height: 21px; border-radius: 5px; background: #eef2f7; line-height: 1; }
+/* ⟳ 2026-10-29 (yêu cầu “bỏ viền ở ô lịch trong ảnh”): ô nền xám `#eef2f7` bao quanh tờ lịch chính
+   là “cái viền” người dùng thấy ⇒ bỏ thành **trong suốt** (giữ nguyên 24px làm khung căn hàng, và
+   phóng tờ lịch 17 → **20px** cho khỏi hụt chỗ). Nền tối bên dưới phải bỏ theo, nếu không ban đêm
+   vẫn còn một ô xám `rgba(255,255,255,.08)`. */
+.cd-cal { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 5px; background: transparent; line-height: 1; }
 .cd-cal svg, .cd-detail-title svg { display: block; flex-shrink: 0; }
 .cd-t-ic { display: inline-flex; align-items: center; }
-.cd-period-ky { flex: 1; min-width: 0; font-size: 14px; font-weight: 600; color: #0f172a; }
+.cd-period-ky { flex: 1; min-width: 0; font-size: 16px; font-weight: 600; color: #1e293b; }
 /* ⟳ 2026-10-29 (yêu cầu “cho màu số tiền như tiền tổng nợ”): chữ số của từng KỲ lấy ĐÚNG màu
    của `.cd-total-num` (`#e2591f`) — hai chỗ cùng một tông cam đỏ, chỉ khác cỡ. */
-.cd-period-num { font-size: 15.5px; font-weight: 700; color: #e2591f; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.cd-period-num small { margin-left: 2px; font-size: 10px; font-weight: 500; color: #64748b; }
+.cd-period-num { font-size: 18px; font-weight: 700; color: #e2591f; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cd-period-num small { margin-left: 2px; font-size: 11px; font-weight: 500; color: #64748b; }
 .cd-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
-.cd-act { display: inline-flex; align-items: center; justify-content: center; gap: 4px; width: 100%; padding: 8px 4px; border: none; border-radius: 9px; color: #ffffff; font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+/* ⟳ 2026-10-29 (yêu cầu “cho viền 4 tab này dạng tròn như tab chi tiết”): bo `9px` → **999px**
+   = viên thuốc, đúng dáng các tab lọc ở thanh trên (`#Chi tiết`, `Từ 3Tr`…). */
+.cd-act { display: inline-flex; align-items: center; justify-content: center; gap: 4px; width: 100%; padding: 8px 4px; border: none; border-radius: 999px; color: #ffffff; font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 600; white-space: nowrap; cursor: pointer; }
 .cd-act-a { background: #1d87c4; }   /* Lấy */
 .cd-act-b { background: #f5941e; }   /* Đường */
 .cd-act-c { background: #3cb371; }   /* Ảnh */
@@ -5803,13 +5865,13 @@ function changeBackgroundColor(newColor) {
 body:not(.light-mode) .cd-card { background: #1a1d24; }
 body:not(.light-mode) .cd-row { color: #cbd5e1; }
 body:not(.light-mode) .cd-row b { color: #e2e8f0; }
-body:not(.light-mode) .cd-total { background: transparent; border-color: rgba(249,115,22,0.55); }
-body:not(.light-mode) .cd-total-lbl { color: #fdba74; }
+body:not(.light-mode) .cd-total { background: rgba(255,255,255,0.06); border-color: rgba(249,115,22,0.55); }
+body:not(.light-mode) .cd-total-lbl { color: #cbd5e1; }   /* “đen nhạt” ở dark = xám sáng nhạt */
 body:not(.light-mode) .cd-total-num { color: #ffa07a; }
-body:not(.light-mode) .cd-total-num small { color: #cbd5e1; }
+body:not(.light-mode) .cd-total-num small { color: #94a3b8; }   /* = đúng `.cd-period-num small` ở dark */
 body:not(.light-mode) .cd-detail-title { color: #e2e8f0; }
-body:not(.light-mode) .cd-period { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.12); }
-body:not(.light-mode) .cd-cal { background: rgba(255,255,255,0.08); }
+body:not(.light-mode) .cd-period { background: transparent; border-color: rgba(255,255,255,0.18); }
+body:not(.light-mode) .cd-cal { background: transparent; }
 body:not(.light-mode) .cd-period-ky { color: #e2e8f0; }
 body:not(.light-mode) .cd-period-num { color: #ffa07a; }   /* = đúng màu `.cd-total-num` ở dark */
 body:not(.light-mode) .cd-period-num small { color: #94a3b8; }
@@ -8653,7 +8715,7 @@ body.light-mode .kh-card.tier-low  { --card-accent: #34d399; }
              `-` ở ngoài là tab đó còn lại một dấu gạch trơ giữa hàng. -->
         <div class="count-lines">
           <div class="count-line count-line-1">
-            <span class="count-pair"><span class="count-ic" aria-hidden="true" style="font-size:16px;line-height:1">🧾</span><span class="count-lbl">HĐ:</span><span id="countHoaDon" class="count-kh-hd">0</span></span><span class="count-kh-group"><span class="count-sep">-</span><span class="count-lbl">KH:</span><span id="countKH" class="count-kh-hd">0</span></span><span class="count-range" id="countRange"></span>
+            <span class="count-pair"><span class="count-ic" aria-hidden="true" style="font-size:16px;line-height:1">🧾</span><span class="count-lbl">HĐ:</span><span id="countHoaDon" class="count-kh-hd">0</span></span><span class="count-kh-group"><span class="count-sep">-</span><span class="count-lbl">KH:</span><span id="countKH" class="count-kh-hd">0</span></span>
           </div>
         <!-- ⛔ **LỊCH SỬ** — bố cục 2 dòng đã bỏ 2026-09-27 (nay `.count-stats` 3 cột, nhãn trên
              số dưới). Đoạn dưới nói về `.count-tien-wrap` (đã xoá), giữ lại chỉ để đọc lịch sử lỗi:
@@ -8671,6 +8733,13 @@ body.light-mode .kh-card.tier-low  { --card-accent: #34d399; }
           </div>
         </div>
       </div>
+      <!-- ⟳ 2026-10-29 (yêu cầu “khi lọc thì hàng trong ảnh xuống dòng”, ảnh = nhãn
+           `(≥1Tr) ✕`): nhãn khoảng tiền ĐÃ RỜI khỏi dòng 1 — nay nó là HÀNG RIÊNG ngay dưới
+           khối số. ⛔ Đặt nó NGOÀI `.count-stats` là có chủ ý: `countRowNeed()` chỉ cộng bề rộng
+           CON của `.count-stats` ⇒ nhãn không còn bị tính vào “cần bao nhiêu chỗ”, nên khi lọc
+           tiền các con số KHÔNG bị thu nhỏ (`--count-fit`) nữa — đúng ý “xuống dòng”.
+           Nằm trong `.count-stats` thì `max-content` vẫn cộng nhãn vào và chữ vẫn bị bóp. -->
+      <div class="count-range" id="countRange"></div>
       <!-- Nút "Xuất" là **anh em** của `.count-line2`, KHÔNG nằm trong nó: nó là ô của
            CỘT 2 trong lưới `.count-info`. Nằm trong `.count-line2` thì nó tràn 15px lên
            và **che đuôi dòng "Tổng: … KH - … HĐ"** khi panel hẹp (xem run doc).
@@ -13427,17 +13496,26 @@ function cdCalIcon(thang) {
   const num = ok ? String(mon) : '–';
   /* ⟳ 2026-10-29 (“bỏ viền và cho icon to hơn”): BỎ `stroke` của tờ lịch (viền xám bao quanh ô
      trắng) và 14 → **17px** (ô nền xám 21px vẫn đủ chỗ). */
-  return '<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">' +
-    '<rect x="2.5" y="3.5" width="19" height="17" rx="3" fill="#ffffff"/>' +
-    '<path d="M2.5 6.5a3 3 0 0 1 3-3h13a3 3 0 0 1 3 3V9h-19z" fill="#f0453e"/>' +
-    '<text x="12" y="8.3" font-size="4.6" font-weight="700" fill="#ffffff" text-anchor="middle" font-family="Inter, Arial, sans-serif">' + abbr + '</text>' +
-    '<text x="12" y="18.6" font-size="9" font-weight="600" fill="#26303b" text-anchor="middle" font-family="Inter, Arial, sans-serif">' + num + '</text>' +
+  return '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">' +
+    '<rect x="1" y="2" width="22" height="20" rx="3.6" fill="#ffffff"/>' +
+    '<path d="M1 5.6a3.6 3.6 0 0 1 3.6-3.6h14.8a3.6 3.6 0 0 1 3.6 3.6v4.6H1z" fill="#f0453e"/>' +
+    '<text x="12" y="9.4" font-size="7" font-weight="700" fill="#ffffff" text-anchor="middle" font-family="Inter, Arial, sans-serif">' + abbr + '</text>' +
+    '<text x="12" y="20.4" font-size="11" font-weight="600" fill="#26303b" text-anchor="middle" font-family="Inter, Arial, sans-serif">' + num + '</text>' +
     '</svg>';
 }
 /* Sổ kiểu ảnh mẫu MỚI (2026-10-29 “đổi icon”): thẻ VÀNG bo góc + BĂNG XANH ĐEN ngang trên +
    2 vạch trắng + 4 ô vuông nhỏ + 1 khối trắng bên phải. ⛔ Vẽ theo TỈ LỆ của ảnh, đừng thêm
    xoắn ốc/chữ: ở cỡ 15px chúng nhoè thành vệt. */
-const CD_IC_LEDGER = '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="1" y="2.2" width="22" height="19.6" rx="4" fill="#f5b301"/><path d="M1 6.2a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4v5.2H1z" fill="#4a4f63"/><rect x="3.4" y="13.4" width="11" height="1.9" rx="0.95" fill="#ffffff"/><rect x="3.4" y="16.3" width="7" height="1.9" rx="0.95" fill="#ffffff"/><rect x="3.4" y="18.6" width="2.7" height="2.5" rx="0.6" fill="#ffffff"/><rect x="7.1" y="18.6" width="2.7" height="2.5" rx="0.6" fill="#ffffff"/><rect x="10.8" y="18.6" width="2.7" height="2.5" rx="0.6" fill="#ffffff"/><rect x="14.5" y="15.6" width="6.2" height="5.5" rx="1" fill="#ffffff"/></svg>';
+/* ⟳ 2026-10-29 (yêu cầu “chi tiết nợ đổi icon này”, ảnh = sổ cam có băng đen + ô trắng có
+   đường KÝ nguệch ngoạc): vẽ lại theo ảnh — nền cam bo góc · BĂNG ĐEN ngang trên · Ô TRẮNG
+   nằm ngang giữa có nét ký màu xám. ⛔ Đường ký phải là `stroke` (không fill): vẽ fill là ra một
+   mảng xám đặc, không ra nét bút. */
+const CD_IC_LEDGER = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">' +
+  '<rect x="1" y="2.5" width="22" height="19" rx="3.6" fill="#f7a415"/>' +
+  '<rect x="1" y="7.6" width="22" height="3.8" fill="#2b2f3a"/>' +
+  '<rect x="3.2" y="14" width="17.6" height="4.6" fill="#ffffff"/>' +
+  '<path d="M4.7 17.2c1.3 0 1.4-1.9 2.7-1.9s1.4 1.9 2.7 1.9 1.4-1.9 2.7-1.9 1.4 1.9 2.7 1.9" fill="none" stroke="#8f9cb4" stroke-width="1.5" stroke-linecap="round"/>' +
+  '</svg>';
 
 function showDetailRow(r) {
   if (!r) return;
@@ -13446,6 +13524,12 @@ function showDetailRow(r) {
 
   const phone = r.dien_thoai && r.dien_thoai != '0' ? r.dien_thoai : '';
   const phoneHref = phone ? 'tel:' + phone.replace(/[^0-9+]/g, '') : '';
+  /* ⟳ 2026-10-29 (yêu cầu “số công tơ nào dài chỉ lấy 14 ký tự từ sau lấy tới”): số CTO dài hơn
+     14 ký tự thì CHỈ LẤY 14 KÝ TỰ CUỐI (bỏ phần đầu) — chuỗi gốc vẫn giữ nguyên trong dữ liệu,
+     chỉ hiển thị là cắt. ⛔ Đừng cắt ở `so_tbi` gốc: nút “Lấy”/sao chép và bộ lọc đang dùng
+     giá trị đầy đủ. */
+  const ctoRaw = String(r.so_tbi || '');
+  const ctoShow = ctoRaw.length > 14 ? ctoRaw.slice(-14) : ctoRaw;
   const phoneHtml = phone
     ? `<a class="cd-phone" href="${esc(phoneHref)}"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-call"/></svg>${esc(phone)}</a>`
     : '';
@@ -13463,7 +13547,7 @@ function showDetailRow(r) {
       <div class="cd-period">
         <span class="cd-cal" aria-hidden="true">${cdCalIcon(x.thang_no)}</span>
         <span class="cd-period-ky">Kỳ ${esc(x.thang_no) || '—'}</span>
-        <span class="cd-period-num">${fmt(x.tien_no)} <small>VND</small></span>
+        <span class="cd-period-num">${fmt(x.tien_no)} <small>VNĐ</small></span>
       </div>`).join('');
 
   /* ⛔ 2026-10-29 (yêu cầu “ẩn 2 hàng này”, ảnh = ô “Nhập ghi chú…” + dòng “NV: … · STT: …”):
@@ -13479,7 +13563,10 @@ function showDetailRow(r) {
           <div class="cd-code">${esc(r.ma_khach_hang) || '—'}</div>
           <div class="cd-name">${esc(r.ten_khach_hang) || '—'}</div>
         </div>
-        ${phoneHtml}
+        <div class="cd-head-side">
+          <button type="button" class="cd-x" onclick="closeModalDirect()" aria-label="Đóng">✕</button>
+          ${phoneHtml}
+        </div>
       </div>
       <div class="cd-body">
         <!-- ⟳ 2026-10-29 (yêu cầu “đổi số TBI thành Số CTO, mã KV thành Mã KV/Lộ Trình, và chuyển
@@ -13489,19 +13576,19 @@ function showDetailRow(r) {
              ⛔ Đổi lại chỉ cần sửa 4 dòng này — không có chỗ nào khác đọc thứ tự hàng.
              ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG một template literal). -->
         <div class="cd-row"><span class="cd-ic" aria-hidden="true">📍</span><span>${esc(r.dia_chi) || '—'}</span></div>
-        <div class="cd-row"><span class="cd-ic" aria-hidden="true">⚡</span><span>Số CTO: <b>${esc(r.so_tbi) || '—'}</b></span></div>
+        <div class="cd-row"><span class="cd-ic" aria-hidden="true">⚡</span><span>Số CTO: <b>${esc(ctoShow) || '—'}</b></span></div>
         <div class="cd-row"><span class="cd-ic" aria-hidden="true">🏢</span><span>Mã KV/Lộ Trình: <b>${esc(r.danh_so) || '—'}</b></span></div>
         <div class="cd-row"><span class="cd-ic" aria-hidden="true">📒</span><span>Mã sổ: <b>${esc(r.ma_sogcs) || '—'}</b></span></div>
         <div class="cd-total">
           <span class="cd-total-lbl"><span aria-hidden="true">💰</span>TỔNG NỢ</span>
-          <span class="cd-total-num">${fmt(totalTien)} <small>VND</small></span>
+          <span class="cd-total-num">${fmt(totalTien)} <small>VNĐ</small></span>
         </div>
         <div class="cd-detail-title"><span class="cd-t-ic" aria-hidden="true">${CD_IC_LEDGER}</span>Chi tiết nợ:</div>
         <div class="cd-periods">${periodsHtml}</div>
         <div class="cd-actions">
           <button type="button" class="cd-act cd-act-a" data-ma="${esc(r.ma_khach_hang)}" onclick="cdCopy(this)"><span aria-hidden="true">📋</span>Lấy</button>
           <button type="button" class="cd-act cd-act-b" data-ma="${esc(r.ma_khach_hang)}" onclick="pinNav(this)"><span aria-hidden="true">🧭</span>Đường</button>
-          <button type="button" class="cd-act cd-act-c" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang||'')}" data-ky="${esc(r.thang_no||'')}" onclick="photoTap(this)"><span aria-hidden="true">📷</span>Ảnh</button>
+          <button type="button" class="cd-act cd-act-c" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang||'')}" data-ky="${esc(r.thang_no||'')}" onclick="cdShot(this)"><span aria-hidden="true">📷</span>Ảnh</button>
           <button type="button" class="cd-act cd-act-d" data-ma="${esc(r.ma_khach_hang)}" onclick="cdCoords(this)"><span aria-hidden="true">📍</span>Tọa độ</button>
         </div>
       </div>
@@ -13693,7 +13780,13 @@ function closePayDirect() {
 //  · bỏ `width/height` ⇒ bố cục tự dàn lại theo font thật của máy, không bị cắt chữ khi font đổi;
 //  · bỏ `position` ⇒ khối đáy `.pay-foot` (`position: sticky`) về dòng chảy bình thường, đúng chỗ
 //    cuối tấm — bản sao không cuộn nên “dính đáy” ở đó là vô nghĩa.
-const SHOT_PROPS = ['display', 'flex-direction', 'flex-wrap', 'flex-grow', 'flex-shrink', 'flex-basis', 'align-items', 'align-self', 'justify-content', 'gap', 'row-gap', 'column-gap', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style', 'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius', 'background-color', 'color', 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-align', 'text-decoration-line', 'text-transform', 'white-space', 'word-break', 'overflow-wrap', 'box-sizing', 'min-width', 'max-width', 'vertical-align', 'opacity', 'text-indent'];
+const SHOT_PROPS = ['display', 'flex-direction', 'flex-wrap', 'flex-grow', 'flex-shrink', 'flex-basis', 'align-items', 'align-self', 'justify-content', 'gap', 'row-gap', 'column-gap', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style', 'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius', 'background-color', 'color', 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-align', 'text-decoration-line', 'text-transform', 'white-space', 'word-break', 'overflow-wrap', 'box-sizing', 'min-width', 'max-width', 'vertical-align', 'opacity', 'text-indent',
+  // ⟳ 2026-10-29: `grid-template-columns`/`grid-auto-flow` để ảnh chụp giữ đúng hàng 4 nút
+  // `.cd-actions` (`repeat(4,1fr)`); thiếu hai thuộc tính này thì bản sao xếp nút thành 1 CỘT.
+  'grid-template-columns', 'grid-auto-flow', 'grid-auto-rows',
+  // ⟳ 2026-10-29: `background-image` — dải đầu `.cd-head` là **gradient**, không phải
+  // `background-color`; thiếu dòng này thì ảnh chụp ra nền TRẮNG với chữ trắng (mất mã KH).
+  'background-image', 'background-position', 'background-size', 'background-repeat'];
 
 // Đi ĐÔI với bản sao theo đúng cây con (con thứ i ⇄ con thứ i) — vì `cloneNode` giữ nguyên cây nên
 // chỉ số luôn khớp; sprite chép vào CUỐI (sau lượt này) nên không làm lệch chỉ số.
@@ -13931,11 +14024,15 @@ async function capturePayShot() {
 //     nhận ra của khách nào, kỳ nào. Kỳ đổi `/` thành `-` vì tên tệp không được chứa `/`.
 //  ℹ️ Trả về TÊN TỆP khi đã kích hoạt tải (để báo cho người dùng), `null` khi hỏng ⇒ nơi gọi rơi về
 //     đường cũ (hiện ảnh để nhấn giữ) nên KHÔNG bao giờ mất hẳn đường lưu ảnh.
-async function shotSaveToDevice(url) {
+// `name` (tuỳ chọn, ⟳ 2026-10-29): tấm “Chi tiết” tự đặt tên (`Chi-tiet-…`) — thiếu tham số này
+// thì vẫn lấy tên theo hoá đơn đang mở, đúng hành vi cũ của nút QR.
+async function shotSaveToDevice(url, name) {
   try {
-    const r = _payRecs[0] || {};
-    const ky = String(r.thang_no || '').replace(/[\\/:*?"<>|]+/g, '-');
-    const name = 'Thanh-toan-' + (r.ma_khach_hang || 'KH') + (ky ? '-' + ky : '') + '.png';
+    if (!name) {
+      const r = _payRecs[0] || {};
+      const ky = String(r.thang_no || '').replace(/[\\/:*?"<>|]+/g, '-');
+      name = 'Thanh-toan-' + (r.ma_khach_hang || 'KH') + (ky ? '-' + ky : '') + '.png';
+    }
     const blob = await (await fetch(url)).blob();
     const href = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -14085,6 +14182,81 @@ function photoPick() {
   const inp = photoInput();
   inp.value = '';
   inp.click();
+}
+
+/* 📸 NÚT “ẢNH” TRONG TẤM CHI TIẾT = CHỤP ẢNH MÀN HÌNH TẤM (2026-10-29)
+   Yêu cầu người dùng: “nhấn nút máy ảnh là chụp ảnh màn hình bảng”.
+   ⇒ Dựng ẢNH PNG của chính tấm “Chi tiết” đang mở rồi LƯU XUỐNG MÁY (cùng đường với nút QR:
+   `shotSaveToDevice`), máy không cho tải tự động thì mở `#shotModal` để NHẤN GIỮ mà lưu.
+   ⚠️ KHÔNG dùng thư viện (html2canvas…) — dự án là MỘT file HTML tĩnh, không build. Dùng lại
+   đúng bộ máy có sẵn: chép computed style (`shotCopyStyles`) → `<foreignObject>` → canvas
+   (`shotRender`). Xem khối chú thích dài ở `capturePayShot` để biết các bẫy.
+   ⛔ Phải chép sprite `#__icon-sprite` vào bản sao: icon SĐT là `<use href="#i-call">` nằm NGOÀI
+   tấm ⇒ thiếu sprite là icon BIẾN MẤT mà không báo lỗi.
+   ⛔ `_photoBusy` dùng chung với `photoPicked` để chặn bấm đúp (đang vẽ mà bấm tiếp là ra 2 tệp). */
+function cdShot(btn) {
+  const card = document.querySelector('#modal .cd-card');
+  if (!card || _photoBusy) return;
+  _photoBusy = true;
+  shotFontCss().then(fontCss => {
+    const r = card.getBoundingClientRect();
+    const w = Math.max(1, Math.round(r.width));
+    const h = Math.max(1, Math.round(card.scrollHeight || r.height));
+    if (w < 20 || h < 20) {
+      _photoBusy = false;
+      showToast('Không đo được tấm — hãy mở lại tấm chi tiết rồi chạm lại');
+      return;
+    }
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('width', w);
+    svg.setAttribute('height', h);
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    if (fontCss) { const st = document.createElementNS(NS, 'style'); st.textContent = fontCss; svg.appendChild(st); }
+    const fo = document.createElementNS(NS, 'foreignObject');
+    fo.setAttribute('x', 0);
+    fo.setAttribute('y', 0);
+    fo.setAttribute('width', w);
+    fo.setAttribute('height', h);
+    const clone = card.cloneNode(true);
+    // Nút X là nút ĐÓNG của app — chụp vào ảnh gửi khách thì vô nghĩa ⇒ bỏ khỏi bản sao.
+    clone.querySelectorAll('.cd-x').forEach(n => n.remove());
+    shotCopyStyles(card, clone);
+    clone.setAttribute('style', clone.getAttribute('style') +
+      'width:' + w + 'px;height:' + h + 'px;margin:0;overflow:hidden;animation:none;');
+    const sprite = document.getElementById('__icon-sprite');
+    if (sprite) clone.appendChild(sprite.cloneNode(true));
+    shotStripComments(clone);
+    fo.appendChild(clone);
+    svg.appendChild(fo);
+    const str = new XMLSerializer().serializeToString(svg);
+
+    let scale = Math.min(3, Math.max(2, window.devicePixelRatio || 1));
+    const maxPx = 12e6;
+    if (w * h * scale * scale > maxPx) scale = Math.max(1, Math.sqrt(maxPx / (w * h)));
+    const cw = Math.round(w * scale), ch = Math.round(h * scale);
+
+    showToast('Đang tạo ảnh…');
+    shotRender(str, cw, ch, 2, async url => {
+      try {
+        if (!url) { showToast('Máy này không vẽ được ảnh — hãy chụp màn hình bằng cách thường'); return; }
+        const ma = (btn && btn.dataset.ma) || '';
+        const ky = String((btn && btn.dataset.ky) || '').replace(/[\\/:*?"<>|]+/g, '-');
+        const name = 'Chi-tiet-' + (ma || 'KH') + (ky ? '-' + ky : '') + '.png';
+        const saved = await shotSaveToDevice(url, name);
+        if (saved) { showToast('✓ Đã lưu ảnh ' + name); return; }
+        const ov = document.getElementById('shotModal');
+        const out = document.getElementById('shotImg');
+        if (ov && out) { out.src = url; ov.classList.add('open'); }
+        else showToast('Không lưu được ảnh trên máy này');
+      } finally {
+        _photoBusy = false;
+      }
+    });
+  }).catch(err => {
+    _photoBusy = false;
+    showToast('⚠️ Không tạo được ảnh: ' + ((err && err.message) || 'lỗi không rõ'));
+  });
 }
 
 // Bấm nút dưới dòng tháng.
