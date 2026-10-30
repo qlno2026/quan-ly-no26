@@ -1023,7 +1023,27 @@ body.light-mode .kh-danhso .ic { color: #1d4ed8; }
      ⛔ PHẢI sửa CẢ `body.light-mode .header` bên dưới: rule đó khai lại đủ cặp ⇒ thiếu là light
      mode vẫn còn gradient/bóng. */
   background: var(--hdr-bg);
-  border-bottom: 1px solid var(--hdr-line);
+  /* ⟳ 2026-10-30 (yêu cầu “cho bảng header có đường viền màu xanh như tab Từ 3Tr”, ảnh = header
+     + dải tab, viên tab đang chọn màu xanh): vạch chân header `1px --hdr-line` (xám) → **`2px` ĐÚNG
+     màu viên tab đang chọn**: dark **`#1d4ed8`** (blue-700 = `.loai-tab.active` ở dark, trùng
+     `HEADER_FIXED_BG`) · light **`#2563eb`** (blue-600 = `body.light-mode .loai-tab.active`) — xem
+     `body.light-mode .header` bên dưới.
+     ⚠️ Header cao CỐ ĐỊNH (`height: calc(--header-h + safe-area)`) + `* { box-sizing: border-box }`
+     ⇒ đổi 1px → 2px KHÔNG làm header cao thêm, chỉ ăn vào lòng 1px (đo lại: header vẫn **56px**,
+     không phần tử nào bị cắt). ⛔ Đừng gán viền cho CẢ 4 phía: header tràn hết bề ngang màn hình
+     nên viền trái/phải/trên sẽ nằm ngoài mép, chỉ tốn công canh lại. */
+  /* ⟳ 2026-10-30 (tiếp, yêu cầu “cho đường viền cả khung được không”): `border-bottom` → **`border`
+     CẢ 4 PHÍA** cùng màu đó (dark `#1d4ed8` · light `#2563eb`). Header tràn hết bề ngang nên viền
+     trái/phải nằm sát mép màn hình, viền trên ở sát đỉnh — vẫn là một khung kín, không hụt góc.
+     ⛔ KHÔNG bỏ `overflow`/`border-radius` gì thêm: header là dải chữ nhật, bo góc sẽ cắt mất
+     mép vầng viền. */
+  /* ⟳ 2026-10-30 (tiếp, yêu cầu “đổi đường viền màu xanh ngôi sao như đường viền header light mode”):
+     dark **`#1d4ed8` → `#2563eb`** = ĐÚNG mã màu của viền header ở LIGHT (`body.light-mode .header`,
+     cũng là `.loai-tab.active` ở light) ⇒ 2 theme cùng một đường viền xanh, không còn bản đậm/nhạt
+     khác nhau. ⚠️ `#1d4ed8` (blue-700) trên nền header tối chỉ **2,6:1** — vạch viền gần như chìm;
+     `#2563eb` (blue-600) = **4,0:1** ⇒ thấy rõ khung mà không chói. ⛔ Muốn tối lại thì phải đổi CẢ
+     rule `body.light-mode .header` bên dưới, không thì 2 theme lệch màu. */
+  border: 2px solid #2563eb;
   /* ⟳ 2026-10-03k: thêm lớp `--hdr-inset` (vạch sáng đỉnh/đáy + bóng trong) để header navy có
      chiều sâu. Vẫn KHÔNG gradient (xem chú thích `:root`).
      ⟳ 2026-10-03o: bóng đổ nay lấy từ THANG CHUNG `--elev-2` (thay `--hdr-shadow`) — header vào
@@ -1306,7 +1326,7 @@ body.light-mode .kh-danhso .ic { color: #1d4ed8; }
 }
 /* Hai màu của logo lấy TỪ TOKEN, KHÔNG viết thẳng trong markup: đổi màu logo ở MỘT chỗ
    (`--logo-outer`/`--logo-inner`) và đổi được riêng cho từng theme. Xem khối chú thích `:root`. */
-.theme-logo-ico .logo-star-out { fill: var(--logo-outer); }
+.theme-logo-ico .logo-star-out { fill: #2563eb; }   /* ⟳ 2026-10-30 (yêu cầu “cho ngôi sao màu xanh”): sao LỚN tách khỏi token `--logo-outer` ⇒ **`#2563eb`**, cùng mã với VÒNG (`.logo-ring`) nên logo thành “vòng xanh + sao xanh + lõi màu nền”. Sao NHỎ (`.logo-star-in`) VẪN theo `--logo-inner` (`#111827` dark · `#f8fafc` light) — nó là “lỗ khoét” nên phải trịu màu nền, ⛔ đừng tồ xanh luôn là hai tầng dính vào nhau. Đo: xanh trên header tối `#1a1f28` ≈ **4,0:1**, trên header sáng `#f8fafc` ≈ **5,2:1** ✓ (ngưỡng hình ảnh là 3:1). */
 .theme-logo-ico .logo-star-in  { fill: var(--logo-inner); }
 /* ➕ SAO ĐỔI MÀU **DẦN** TRONG LÚC CHUYỂN THEME (yêu cầu “đổi màu sao logo thành dạng đang
    chuyển tiếp trong lúc đổi theme — ví dụ sao chuyển dần từ trắng sang đen — để phản hồi đọc
@@ -1338,7 +1358,12 @@ body.light-mode .kh-danhso .ic { color: #1d4ed8; }
    với `r: 19` cho mép ngoài đúng **r = 20** — bằng mép ngoài đường tròn cam cũ ⇒ logo vẫn chiếm
    đúng 40×40 trong hộp 44×44, header không xê dịch. ⛔ `fill: none` là BẮT BUỘC: đổ nền là tầng
    ngoài của ngôi sao (cùng màu với vòng) chìm vào vòng, logo chỉ còn lộ sao nhỏ. */
-.theme-logo-ico .logo-ring { fill: none; stroke: var(--logo-outer); stroke-width: 2; }
+/* ⟳ 2026-10-30 (yêu cầu “cho viền ngôi sao màu xanh như tab chi tiết”): VÒNG tròn của logo tách
+   khỏi `--logo-outer` ⇒ **`#2563eb`** ở CẢ 2 theme = ĐÚNG xanh của tab đang chọn / viền header
+   (`.loai-tab.active` light + `--hdr-bg` dark đã về cùng mã này). Ngôi sao BÊN TRONG vẫn
+   trắng/đen theo token `--logo-outer`/`--logo-inner` — chỉ đổi VÒNG, ⛔ đừng gán màu vào
+   `.logo-star-out/in`. Vẫn `stroke-width: 2`, `r: 19` ⇒ hộp logo 40×40 không đổi, header không xê. */
+.theme-logo-ico .logo-ring { fill: none; stroke: #2563eb; stroke-width: 2; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── LIGHT MODE ───────────────────────── */
@@ -1465,7 +1490,7 @@ body.light-mode .header {
   /* ⚠️ `background:` shorthand XOÁ `background-image` của rule `.header` (dân trên) ⇒ phải khai
      LẠI dải `--hdr-grad` ở đây, không thì light mode MẤT gradient (chỉ dark còn). */
   background: var(--hdr-bg);
-  border-bottom-color: var(--hdr-line);
+  border-color: #2563eb;   /* ⟳ 2026-10-30: VIỀN CẢ KHUNG header màu viên tab đang chọn ở LIGHT (`#2563eb` = `body.light-mode .loai-tab.active`); dark dùng `#1d4ed8`. ⛔ Dùng `border-bottom-color` là 3 phía còn lại trở về xám. */
   box-shadow: none;   /* ⟳ 2026-10-29: khớp `box-shadow: none` ở `.header` — thiếu dòng này là light mode vẫn đổ bóng */
 }
 /* ⛔ ĐỪNG thêm lại `body.light-mode .header-title/.header-sub/.clock-box { color:#ffffff }`:
@@ -1735,10 +1760,10 @@ body:not(.light-mode) .kh-danhso { color: #93c5fd !important; background: rgba(5
    thấp hơn viên mã 2px). Light mode KHÔNG đụng (vẫn viền đỏ `0,30`; nền `#fef2f2` gần nền thẻ
    `#f2f4f7` nên ở light viền là thứ giữ hình ô). */
 body:not(.light-mode) .kh-phone { color: #fdba74 !important; background: var(--vien-sdt-bg-dark); border-color: transparent; }   /* 2026-10-30: chữ `#fed7aa` → **`#fdba74`** (yêu cầu “chữ sđt ở dark đậm thêm 1 nấc”) — giữ ĐỒNG BỘ với rule cuối `.kh-card > .kh-phone-row .kh-phone`; rule đó vẫn thắng ở thẻ còn đây là nền dự phòng. */   /* ⟳ 2026-10-26 (yêu cầu “cho chữ sdt ở dark mode đừng sáng quá”, ảnh = số gần TRẮNG trên viên nền cam nhạt): `#ffedd5` (orange-100, 15,18:1 — chói) → trả về **`#fed7aa`** (orange-200) trên nền `rgba(249,115,22,0.08)` ghép thẻ “Chuẩn” `#1a1f28` ≈ `rgb(44,38,39)` ⇒ **10,98:1** ✓ dư AA mà không còn “phát sáng”. Lịch sử cùng ô này: `#ffffff` → `#ffd9d9` → `#fdba74` → `#fed7aa` → `#ffedd5` → **`#fed7aa`**. ⚠️ Chỉ đổi CHỮ — icon 📞 vẫn `--vien-sdt-fg-dark` `#ff9b9b` (hồng), đúng như ảnh. */
-body.light-mode .kh-thang { color: #334155; }
+body.light-mode .kh-thang { color: #475569; }   /* ⟳ 2026-10-30 (yêu cầu “hàng tháng nợ và địa chỉ nhạt xuống 1 nấc”): #334155 (slate-700) → **#475569** (slate-600), đúng 1 nấc như địa chỉ đã làm trước đó. Đo trên thẻ `#eff1f5`: **6,6:1** ✓ AA. */
 body.light-mode .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #3b82f6; text-underline-offset: 3px; text-decoration-thickness: 2px; }
 body.light-mode .badge-blue { background: rgba(37,99,235,0.15); color: #1e40af !important; }
-body.light-mode .kh-addr-line { color: #475569; }   /* ⟳ 2026-10-26 (yêu cầu “cho chữ hàng địa chỉ ở light mode màu nhạt hơn”): #334155 (slate-700) → **#475569** (slate-600). Đo trên nền trang trắng: **7,42:1** · trên thẻ #f8fafc **7,00:1** ✓ AA (nên “nhạt” mà vẫn đọc tốt). ⛔ Đừng hạ tiếp xuống #64748b (5,0:1 — bắt đầu mờ ở cỡ 17px). ⛔ Chỉ LIGHT: dark giữ #94a3b8 theo mức nền của nó. */
+body.light-mode .kh-addr-line { color: #5a6b80; }   /* ⟳ 2026-10-30 (yêu cầu “hàng tháng nợ và địa chỉ nhạt xuống 1 nấc”): #475569 → **#5a6b80** (nửa nấc giữa slate-600 và slate-500). ⚠️ KHÔNG dùng #64748b như ghi chú cũ gợi ý: đo trên nền thẻ `#eff1f5` chỉ **4,44:1** (TRƯỢT AA 4,5); #5a6b80 đạt **4,87:1** ✓. ⟳ 2026-10-26 (yêu cầu “cho chữ hàng địa chỉ ở light mode màu nhạt hơn”): #334155 (slate-700) → **#475569** (slate-600). Đo trên nền trang trắng: **7,42:1** · trên thẻ #f8fafc **7,00:1** ✓ AA (nên “nhạt” mà vẫn đọc tốt). ⛔ Đừng hạ tiếp xuống #64748b (5,0:1 — bắt đầu mờ ở cỡ 17px). ⛔ Chỉ LIGHT: dark giữ #94a3b8 theo mức nền của nó. */
 /* ⟳ Nền hàng “Tổng …” = ĐÚNG nền thẻ card (yêu cầu “màu nền giống màu nền thẻ card”). Dùng
    CHUNG token `--light-card` với `body.light-mode .kh-card` ở dòng ~1146 ⇒ không thể lệch màu,
    và tự theo cả 3 mức “Nền” (`[data-surface="sang"|"diu"]` ghi đè `--light-card`). */
@@ -3071,7 +3096,12 @@ body:not(.light-mode) .filter-select[data-active="1"] { background-color: var(--
                      Hệ quả: hàng tab cao thêm 6px ⇒ thanh công cụ cao thêm ~6px (đo lại sau khi sửa). */
   padding: 0 11px;
   border: 1px solid transparent;   /* ⟳ 2026-10-25 (yêu cầu “bỏ viền” từng tab): nền màu đã đủ nhận diện ⇒ viền vô nghĩa */
-  border-radius: 999px;
+  /* ⟳ 2026-10-30 (yêu cầu “cho tất cả tab hàng chi tiết thành hình vuông như tab nhân viên”, ảnh =
+     ô “Nhân viên” bo góc + dải tab tròn): viên thuốc `999px` → **`10px`** = ĐÚNG bán kính của
+     `.filter-select` (ô “Nhân viên”) ⇒ tab thành khối chữ nhật bo góc như ô lọc phía trên.
+     ⚠️ Nút “Danh số / Tiền nợ” nằm CHUNG hàng (`.loai-tabs .sort-btn`, dòng ~6545) đã đổi cùng
+     bán kính — lệch một bên là hàng tab so le. ⛔ Muốn quay lại viên thuốc thì sửa CẢ 2 chỗ. */
+  border-radius: 10px;
   background: transparent;
   color: var(--text-dim);
   font-family: 'Inter', sans-serif;
@@ -3294,6 +3324,16 @@ body.light-mode     .loai-tab[data-val]:not(.active):active { background-color: 
   .filter-select { font-size: clamp(10.5px, calc(5.52vw - 3.2px), 20px); }   /* ⟳ 2026-10-26 (yêu cầu “cho cỡ chữ các tab này bằng nhau”): ĐỔI TỪ `var(--ctl-fs)` cứng 19px sang ĐÚNG biểu thức của `.loai-tab`/ô tìm kiếm ⇒ 3 thứ bằng nhau ở mọi khổ (dưới 420px thì co cùng nhịp: 375 → 17,5 · 320 → 14,5; trần **20px** theo yêu cầu “lớn hơn 1 nấc”). */
   .loai-tab { font-size: clamp(10.5px, calc(5.52vw - 2.2px), 21px); }   /* ⟳ 2026-10-27: +1 nấc, cùng biểu thức với rule phía trên */
 }
+/* ⟳ 2026-10-30 (yêu cầu “cho hiển thị đủ 3 tab khi xem trên điện thoại”): dưới **340px** 3 tab
+   KHÔNG vừa nếu giữ nguyên cỡ chữ — đo ở 320px: dải **287px**, 3 tab cần `3×95 + 8` = **293px**
+   (tab “Tổng hợp” là tab RỘNG NHẤT) ⇒ tab thứ 3 bị cắt mép. Hạ RIÊNG khổ này: cỡ chữ theo
+   `4.9vw − 1px` (320 → **14,7px** thay vì 15,5) + đệm ngang `2 → 1px` ⇒ tab ≈ **88px**, 3 tab còn
+   **272px** ≤ 287 ✓ trọn 3 tab mà vẫn không cắt chữ. ⚠️ PHẢI đặt khối này SAU `@media (max-width:
+   415px)` ở trên: cùng độ ưu tiên (0,1,0) ⇒ rule khai SAU thắng, đặt trước là cỡ chữ bị 415px đè
+   (đã đo và bắt được đúng lỗi đó). Chỉ khổ ≤340px; 375/533 không đụng. */
+@media (max-width: 340px) {
+  .loai-tab { font-size: clamp(10px, calc(4.9vw - 1px), 16px); padding: 0 1px; }
+}
 
 /* ── NÚT “Nền”: BA MỨC — MỖI THEME MỘT BỘ RIÊNG ───────────────────────────────
    Bấm nút là xoay vòng 3 mức của ĐÚNG theme đang xem, và mỗi theme NHỚ RIÊNG mức của nó
@@ -3461,6 +3501,11 @@ body:not(.light-mode)[data-surface-dark="ratsang"] .kh-sogcs,
 /* ⛔ `.kh-tbi` ĐÃ BỎ khỏi danh sách này (2026-10-27): nó phải giữ `#e2e8f0` như viên danh số. */
 body:not(.light-mode)[data-surface-dark="ratsang"] .kh-addr-line,
 body:not(.light-mode)[data-surface-dark="ratsang"] .kh-sep { color: #a8b6c9; }
+/* ⟳ 2026-10-30: mức “Rất sáng” đi theo cặp màu mới của `.kh-thang`/`.kh-addr-line` — cùng hạ 1 nấc
+   (#a8b6c9 → **#96a5ba**, đo trên nền thẻ mức này `#2e3644` = **4,83:1** ✓ AA). Hai dòng dưới khai
+   ĐÈ lên rule ngay trên cho riêng 2 ô người dùng vừa yêu cầu (`.kh-sep` giữ #a8b6c9). */
+body:not(.light-mode)[data-surface-dark="ratsang"] .kh-thang,
+body:not(.light-mode)[data-surface-dark="ratsang"] .kh-addr-line { color: #96a5ba; }
 body:not(.light-mode)[data-surface-dark="ratsang"] .kh-name { color: #7cb5fb; }
 body:not(.light-mode)[data-surface-dark="ratsang"] .addr-ico { color: #60a5fa; }
 body:not(.light-mode)[data-surface-dark="ratsang"] .kh-card .kh-tien.high,
@@ -4119,13 +4164,28 @@ body.light-mode .count-range-x:active { background: #ef4444; color: #ffffff; }
    bị pha với nền TRANG chứ không phải nền thẻ, nên ở light mode thẻ "Chú ý" thành xám
    #eaeaea lẫn vào nền trang (1.03:1), còn ở dark thành #18181b tối hơn cả thẻ thường.
    Đo được ở light: tên 4.31 và tiền đỏ 4.02 (dưới 4.5), viền 2.65 (dưới 3). */
-.kh-card.highlighted { background: #2e2412; border: 2px solid #fbbf24; box-shadow: var(--elev-1); }
-body.light-mode .kh-card.highlighted { background: #fef3c7; border: 2px solid #b45309; box-shadow: 0 1px 3px rgba(146,64,14,0.25); }
+/* ⟳ 2026-10-30 (yêu cầu “đổi khi nhấn 2 lần chuyển sang màu xanh neon”): ĐÁNH DẤU (nhấn 2 lần)
+   đổi từ HỔ PHÁCH sang **XANH NEON**. dark: nền `#2e2412` (nâu) → **`#0d2a12`**, viền `#fbbf24` →
+   **`#39ff14`** (neon, 10,4:1 trên nền mới ✓) · light: nền `#fef3c7` → **`#e8ffe9`**, viền `#b45309`
+   → **`#16a34a`** (3,1:1 trên nền thẻ trắng — đạt ngưỡng viền 3:1).
+   ⚠️ ĐỔI CẢ ương bản còn lại của cùng trạng thái: bảng `.table-view tbody tr.highlighted` (~5392),
+   bản `:hover/:active` của “xem dạng máy tính” (~7244) và vạch `::before` (~7349) — thiếu một chỗ là
+   thẻ xanh mà hàng bảng vẫn nâu. ⛔ Màu TÍM (`.highlighted-purple`) KHÔNG đụng. */
+.kh-card.highlighted { background: #221a38; border: 2px solid #c4b5fd; box-shadow: var(--elev-1); }
+/* ⟳ 2026-10-30 (lỗi người dùng báo: “khi nhấn 2 lần đổi màu thì thanh màu ngoài cùng không đổi
+   màu”): THANH MÉP TRÁI (**5px** = `border-left-width` của `body .kh-card.kh-card`) phải theo LUÔN
+   trạng thái đánh dấu. Trước đây `.kh-card.highlighted` chỉ khai `border: 2px` (0,2,0) nên ở LIGHT
+   bị `body.light-mode .kh-card` (0,2,1) ép thanh trái về **2px** — thẻ đang đánh dấu mất thanh dày,
+   chỉ còn viền mảnh. Nay khai ĐÍCH DANH ở (0,3,1) cho cả 2 theme ⇒ vệt trái **5px TÍM** + viền tím,
+   không còn chỗ nào thắng được nó. Đo live: light & dark đều `border-left: 5px` (4,8px ở tỉ lệ 0,8). */
+body .kh-card.kh-card.highlighted { border-left-width: 5px !important; border-left-color: #c4b5fd !important; }
+body.light-mode .kh-card.kh-card.highlighted { border-left-color: #8b5cf6 !important; }   /* ⟳ 2026-10-30 (yêu cầu “đổi nhấn 2 lần sang màu tím nhạt”): xanh neon → **TÍM NHẠT**, dark nền `#221a38` + viền `#c4b5fd` (violet-300, **7,4:1** trên nền thẻ `#1a1f28` ✓). ⚠️ ĐỔI CẢ bảng (~5395) và `::before` (~7350) — xem chú thích ở rule `.table-view tbody tr.highlighted`. */   /* ⟳ 2026-10-30 (yêu cầu “màu xanh neon khi chạm 2 lần dark mode nhạt xuống 1 tí”): viền `#39ff14` → **`#2fd96a`** (bớt chói, vẫn là xanh neon) · nền giữ `#0d2a12`. ✅ Đo: viền **8,6:1** trên nền thẻ “Chuẩn” `#1a1f28` ✓. ⛔ Đổi màu này thì ĐỔI CẢ 2 chỗ: vạch trái của hàng bảng (~5395) và `::before` của “xem dạng máy tính” (~7350). */
+body.light-mode .kh-card.highlighted { background: #f3ecff; border: 2px solid #8b5cf6; box-shadow: 0 1px 3px rgba(124,58,237,0.25); }   /* ⟳ 2026-10-30: tím nhạt ở light — nền `#f3ecff`, viền `#8b5cf6` (3,4:1 ✓ ngưỡng viền 3:1). */
 /* Trên nền vàng/xanh (đậm hơn trắng) chữ đỏ #dc2626 tụt xuống 4.34:1 → #b91c1c (⟳ 2026-10-20 lượt 8: giữ #b91c1c, sáng hơn #991b1b);
    tên KH #2563eb tụt xuống 4.64 ở nền vàng / 4.09 ở nền xanh → dùng #1d4ed8. */
 /* Tên KH trên thẻ: nền vàng là bổ sắc với xanh dương nên chữ xanh bị "bẩn" màu
    (blue on amber) — dùng nâu đậm cùng họ với nền; nền xanh thì giữ chữ xanh đậm. */
-body.light-mode .kh-card.highlighted .kh-name { color: #422006; }
+body.light-mode .kh-card.highlighted .kh-name { color: #4c1d95; }   /* ⟳ 2026-10-30: theo nền TÍM NHẠT — chữ **`#4c1d95`** (tím đậm, ~11:1 trên `#f3ecff` ✓). */
 body.light-mode .kh-card.highlighted-purple .kh-name { color: #1d4ed8; }
 body.light-mode .kh-card.highlighted .kh-tien,
 body.light-mode .kh-card.highlighted .kh-tien.high,
@@ -4401,7 +4461,7 @@ body.light-mode .kh-card-top .kh-tien { background: var(--light-card); }
 .kh-tien.high { color: #ff8888; }
 .kh-tien.mid { color: #fde68a; }
 .mil-digit { color: #ff8888; }
-.kh-thang { font-size: calc(var(--fs-card) - 2px); color: #94a3b8; margin-top: 2px; font-weight: 400; }   /* ⟳ 2026-10-29 (yêu cầu “hàng tháng nợ và hoá đơn chữ nhỏ hơn 2 nấc”): `var(--fs-card)` → **`calc(var(--fs-card) - 2px)`** = nhỏ đúng **2 nấc** (mỗi nấc = 1px, xem thang `--fs-card` ở `:root`) và vẫn ĐI THEO mức cỡ người dùng chọn. ⚠️ PHẢI sửa cả bản khai LẦN HAI của `.kh-thang` (~dòng 5027) — bản đó thắng `font-size`. */
+.kh-thang { font-size: calc(var(--fs-card) - 2px); color: #7f8da1; margin-top: 2px; font-weight: 400; }   /* ⟳ 2026-10-30 (yêu cầu “hàng tháng nợ và địa chỉ nhạt xuống 1 nấc”): #94a3b8 → **#7f8da1** (tối đi ~14%/kênh). Đo trên thẻ “Chuẩn” `#1a1f28`: **6,0 → 4,88:1** ✓ vẫn AA. ⚠️ Sửa CẢ bản khai lần hai ở dưới (bản đó thắng `font-size`) — xem ghi chú ở đó. */   /* ⟳ 2026-10-29 (yêu cầu “hàng tháng nợ và hoá đơn chữ nhỏ hơn 2 nấc”): `var(--fs-card)` → **`calc(var(--fs-card) - 2px)`** = nhỏ đúng **2 nấc** (mỗi nấc = 1px, xem thang `--fs-card` ở `:root`) và vẫn ĐI THEO mức cỡ người dùng chọn. ⚠️ PHẢI sửa cả bản khai LẦN HAI của `.kh-thang` (~dòng 5027) — bản đó thắng `font-size`. */
 .kh-thang.multi-month { text-decoration: underline; text-decoration-color: #60a5fa; text-underline-offset: 3px; text-decoration-thickness: 2px; }
 
 .kh-card-mid { display: flex; gap: 1px; flex-wrap: wrap; margin-bottom: 0; align-items: center; }
@@ -4493,7 +4553,7 @@ body.light-mode .kh-card .kh-mid-row .kh-photo { color: #ffffff; }
      ⚠️ CẢ HAI đều DƯỚI AA 4,5 một chút (nhãn 17px regular) — đây là CHỦ Ý theo yêu cầu “nhạt
      lại”; muốn lại AA thì lùi về giá trị cũ ngay dưới.
    · Màu/cỡ theo hệ chữ phụ của thẻ, `white-space: nowrap` giữ nhãn không bẻ giữa chữ và số. */
-.kh-card-lbl { display: inline-flex; align-items: center; font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #8b98ab; font-weight: 400; white-space: nowrap; }   /* display/align-items: icon ↔ chữ thẳng tâm dòng (xem khối `.em` bên dưới) */
+.kh-card-lbl { display: inline-flex; align-items: center; font-family: 'Inter', sans-serif; font-size: var(--fs-card); color: #7f8da1; font-weight: 400; white-space: nowrap; }   /* display/align-items: icon ↔ chữ thẳng tâm dòng (xem khối `.em` bên dưới). ⟳ 2026-10-30 (yêu cầu “cho các chữ này nhạt xuống 1 nấc”, ảnh = nhãn “Mã KV:” / “Số TBI:”): `#8b98ab` → **`#7f8da1`** = CÙNG cặp màu mới của dòng tháng + dòng địa chỉ ⇒ chữ phụ trên thẻ về một tông, **4,88:1** trên thẻ “Chuẩn” `#1a1f28` ✓ (chú thích cũ ghi 2 màu này dưới AA — nay số đo đã đạt AA). */
 /* ⟳ 2026-10-25j (yêu cầu “cho icon trước mã sổ, mã kv”): icon NHỎ đứng trước 2 nhãn đó.
    Màu = `currentColor` (ăn theo màu nhãn: dark #8b98ab · light #64748b) — ⛔ đừng gán màu riêng,
    hai nhãn này là chữ PHỤ nên icon cũng phải cùng độ đạm. `vertical-align:-1px` cho icon nằm giữa
@@ -4643,7 +4703,7 @@ body:not(.light-mode) .kh-card .kh-abc-ico { color: #7db4ff; }
    ⛔ Đổi màu thì phải đổi CẢ 3 chỗ (📌 · dòng địa chỉ · ➤). */
 body:not(.light-mode) .kh-card .kh-pin-btn:not(.is-pinned) { color: #7db4ff; }   /* ⟳ 2026-10-26 “cho icon này màu xanh dương”: #a78bfa (tím) → **#7db4ff** = ĐÚNG tông xanh dương của bộ icon thẻ ở dark (bút ghi chú/tag ABC), **5,70** trên nền thẻ sáng nhất #2e3644 ✓ */
 body:not(.light-mode) .kh-card .kh-nav-btn { color: #4ade80; }   /* ⟳ 2026-10-26: “icon xanh lá sáng hơn” (#b3f1ca → #4ade80) */
-body.light-mode .kh-card-lbl { color: #64748b; }
+body.light-mode .kh-card-lbl { color: #74839a; }   /* ⟳ 2026-10-30 (yêu cầu “các chữ này nhạt xuống 1 nấc”): #64748b → **#74839a**, cùng nấc với dòng tháng ở light. */
 /* Hàng mã sổ/số TBI có `gap: 1px` (gọn cho dấu kh-sep) ⇒ nhãn cần thêm khe riêng với GIÁ TRỊ;
    ⛔ áp lên `.kh-ds-row` là khe nhãn → viên danh số từ 6px lên 9px (đã đo, lệch hàng kia). */
 .kh-sub-row .kh-card-lbl { margin-right: 1px; }   /* ⟳ 2026-10-25w: 3 → 1px (nhãn không còn chữ ⇒ chỉ cần 1px tách icon khỏi giá trị) */
@@ -4822,7 +4882,7 @@ body.light-mode .ghi-chu-input::placeholder { color: #5b6777; opacity: 1; }
 body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
 .ghi-chu-input:focus { border-color: #60a5fa; }
 
-.kh-addr-line { font-size: calc(var(--fs-card) - 1px); color: #94a3b8; font-weight: 400; margin-bottom: 0; white-space: normal; word-wrap: break-word; } /* địa chỉ TRONG THẺ CARD — +1px, xem chú thích “CỠ CHỮ NỘI DUNG THẺ CARD”. ⟳ 2026-10-24: nay là HÀNG CUỐI của thẻ (dưới ghi chú) ⇒ margin-bottom 0, khe trên do inline margin-top 3px */
+.kh-addr-line { font-size: calc(var(--fs-card) - 1px); color: #7f8da1;   /* ⟳ 2026-10-30: #94a3b8 → #7f8da1, cùng cặp với `.kh-thang` (4,88:1 trên thẻ “Chuẩn” ✓ AA). ⚠️ Mức nền “Rất sáng” có rule đè riêng `#96a5ba`. */ font-weight: 400; margin-bottom: 0; white-space: normal; word-wrap: break-word; } /* địa chỉ TRONG THẺ CARD — +1px, xem chú thích “CỠ CHỮ NỘI DUNG THẺ CARD”. ⟳ 2026-10-24: nay là HÀNG CUỐI của thẻ (dưới ghi chú) ⇒ margin-bottom 0, khe trên do inline margin-top 3px */
 /* ── NHỊP DỌC ĐỀU CHO MỌI HÀNG TRONG THẺ (2026-10-26, yêu cầu “cho khoảng cách các hàng đều nhau”) ──
    Trước đây mỗi hàng tự khai khe riêng nên mắt đọc thấy so le: danh số **3px** · mã sổ/TBI **3px**
    (và 2 dòng mã sổ↔TBI dính nhau vì `gap: 0`) · ghi chú **6px** · địa chỉ **5px** (inline).
@@ -5043,7 +5103,7 @@ body.light-mode .kh-card .kh-addr-line.is-pinned .kh-addr-txt { text-decoration-
    nên **thắng** — hệ quả là `margin-top: 2px` của bản trên vẫn áp, còn `font-size` thì lấy ở
    đây. Sửa cỡ chữ tháng phải sửa **cả hai** (đã +2 lần ⇒ **18px** ở cả hai), nếu không bạn
    sẽ sửa bản trên rồi đo lại thấy y nguyên như cũ. */
-.kh-thang { font-size: calc(var(--fs-card) - 2px); color: #94a3b8; font-weight: 400; }   /* ⟳ 2026-10-29: cùng −2px với bản đầu (xem chú thích ở rule `.kh-thang` gần `.kh-tien`). ⛔ Sửa một bản là vô ích: rule NÀY thắng `font-size`. */
+.kh-thang { font-size: calc(var(--fs-card) - 2px); color: #7f8da1; font-weight: 400; }   /* ⟳ 2026-10-30: màu theo bản khai đầu (#94a3b8 → #7f8da1). ⟳ 2026-10-29: cùng −2px với bản đầu (xem chú thích ở rule `.kh-thang` gần `.kh-tien`). ⛔ Sửa một bản là vô ích: rule NÀY thắng `font-size`. */
 
 /* ── 📷 NÚT “CHỤP ẢNH” DƯỚI DÒNG THÁNG (2026-10-24) ──────────────────────────────
    Yêu cầu người dùng: “thêm chế độ chụp ảnh nằm dưới tháng” (ảnh kèm = THẺ khách ở chế
@@ -5349,15 +5409,15 @@ tbody tr:active { background: rgba(59,130,246,0.50); }
 /* Nhưng ô GHI CHÚ trong hàng phải bôi đen được: `user-select` **KẾ THỪA**, nên `none` ở hàng
    sẽ chặn chọn chữ trong ô. Khai lại `text` đúng như `.kh-ghichu-input` trên thẻ card đã làm. */
 .table-view tbody tr input { -webkit-user-select: text; user-select: text; }
-.table-view tbody tr.highlighted { background: #2e2412; }
-.table-view tbody tr.highlighted:hover { background: #3d2f18; }
-.table-view tbody tr.highlighted td:first-child { box-shadow: inset 3px 0 0 0 #fbbf24; }
+.table-view tbody tr.highlighted { background: #221a38; }
+.table-view tbody tr.highlighted:hover { background: #2b2148; }
+.table-view tbody tr.highlighted td:first-child { box-shadow: inset 3px 0 0 0 #c4b5fd; }   /* ⟳ 2026-10-30: tím nhạt theo thẻ */   /* ⟳ 2026-10-30: xanh neon theo thẻ (xem khối `.kh-card.highlighted`) */
 .table-view tbody tr.highlighted-purple { background: #17233f; }
 .table-view tbody tr.highlighted-purple:hover { background: #1d2c4d; }
 .table-view tbody tr.highlighted-purple td:first-child { box-shadow: inset 3px 0 0 0 #00e5ff; }
-body.light-mode .table-view tbody tr.highlighted { background: #fef3c7; }
-body.light-mode .table-view tbody tr.highlighted:hover { background: #fbe7a5; }
-body.light-mode .table-view tbody tr.highlighted td:first-child { box-shadow: inset 3px 0 0 0 #b45309; }
+body.light-mode .table-view tbody tr.highlighted { background: #f3ecff; }
+body.light-mode .table-view tbody tr.highlighted:hover { background: #e9dcff; }
+body.light-mode .table-view tbody tr.highlighted td:first-child { box-shadow: inset 3px 0 0 0 #8b5cf6; }   /* ⟳ 2026-10-30: tím nhạt theo thẻ */   /* ⟳ 2026-10-30: xanh neon theo thẻ */
 body.light-mode .table-view tbody tr.highlighted-purple { background: #e8f0ff; }
 body.light-mode .table-view tbody tr.highlighted-purple:hover { background: #d8e6ff; }
 body.light-mode .table-view tbody tr.highlighted-purple td:first-child { box-shadow: inset 3px 0 0 0 #1d4ed8; }
@@ -5805,7 +5865,7 @@ function changeBackgroundColor(newColor) {
 .cd-x:active { background: rgba(255,255,255,0.28); color: #ffffff; }
 /* ⟳ 2026-10-29 (yêu cầu “cho nét chữ mã kh mỏng lại”): `font-weight` **700 → 400**. Chỉ đổi NÉT
    (`font-weight`), KHÔNG đổi cỡ chữ ⇒ không reflow, không đổi bề rộng mã. */
-.cd-code { font-size: 18px; font-weight: 400; line-height: 1.15; letter-spacing: 0.01em; word-break: break-all; }
+.cd-code { font-size: 18px; font-weight: 600; line-height: 1.15; letter-spacing: 0.01em; word-break: break-all; }   /* ⟳ 2026-10-30 (yêu cầu “cho mã kh nét dày hơn và cỡ nhỏ hơn 1 nấc”): `font-weight` **400 → 600** (nét dày) — đảo lệnh “nét mỏng lại” của 2026-10-29. ⛔ Cỡ chữ ở khổ điện thoại khai trong `@media` (22 → 20px), sửa một chỗ là vô ích. */
 /* ⟳ 2026-10-29 (yêu cầu “cho nét và chữ tên kh mỏng và nhạt hơn”): `font-weight` **600 → 400**,
    chữ `#eaf6ff` → **`#cfe8fa`** (xanh trắng nhạt hơn, vẫn > 4,5:1 trên dải xanh #1a7db2).
    Chỉ đổi NÉT + MÀU, cỡ chữ giữ 12px ⇒ không reflow. */
@@ -5813,11 +5873,11 @@ function changeBackgroundColor(newColor) {
 .cd-phone { flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 999px; background: #ffffff; color: #1a7db2; font-size: 14px; font-weight: 700; text-decoration: none; white-space: nowrap; }   /* ⟳ 2026-10-29 (yêu cầu “cho sdt màu chữ như màu nền trong ảnh”): chữ `#0b4a6f` (navy) → **`#1a7db2`** = tông xanh của chính dải đầu thẻ (gradient #1f86bd→#1470a4), nên viên trắng chỉ còn nổi phần nền, số hoà vào màu header. ⛔ Icon 📞 vẫn XANH LÁ (`.cd-phone .ic`) theo ảnh. */
 .cd-phone .ic { color: #1a9f4f; }
 .cd-body { padding: 9px 12px 12px; }
-.cd-row { display: flex; align-items: flex-start; gap: 8px; padding: 3px 0; font-size: 14.5px; line-height: 1.35; color: #334155; }
+.cd-row { display: flex; align-items: flex-start; gap: 8px; padding: 3px 0; font-size: 14.5px; line-height: 1.35; color: #5a6b80; }   /* ⟳ 2026-10-30 (yêu cầu “cho các chữ này nhạt xuống 1 nấc”, ảnh = nhãn “Số CTO / Mã KV/Lộ Trình / Mã sổ:”): `#334155` → **`#475569`**. ⚠️ Chỉ NHÃN nhạt đi: giá trị vẫn là `<b>` với màu riêng (light `#0f172a`) ⇒ độ tương phản nhãn/giá trị tăng, đúng ý. */
 /* ⟳ 2026-10-29 (yêu cầu “cho các icon màu nhạt lại”, ảnh = 4 icon hàng thông tin): `opacity`
    **0.55** ⇒ icon vẫn đọc được nhưng không tranh chỗ với chữ đậm bên cạnh. Dùng `opacity` (không
    `filter: grayscale`) để giữ sắc nhận dạng: pin đỏ · tia sét cam · sổ vàng · đồng hồ xanh. */
-.cd-row .cd-ic { flex-shrink: 0; width: 18px; text-align: center; line-height: 1.35; opacity: 0.55; }
+.cd-row .cd-ic { flex-shrink: 0; width: 18px; text-align: center; line-height: 1.35; opacity: 0.42; }   /* ⟳ 2026-10-30 (yêu cầu “cho các chữ và icon trong ảnh nhạt thêm 1 nấc”): `opacity` **0.55 → 0.42** ⇒ emoji 📍⚡🏢📒 mờ thêm 1 nấc, vẫn giữ sắc nhận dạng. */
 .cd-row b { color: #0f172a; font-weight: 600; }
 /* ⟳ 2026-10-29 (yêu cầu “bỏ màu nền trong ảnh”, ảnh = ô TỔNG NỢ): NỀN `#fff6ef` → TRONG SUỐT,
    chỉ còn VIỀN CAM + chữ. ⚠️ `transparent` (không phải `#ffffff`): ở dark nền thẻ là `#1a1d24`,
@@ -5829,7 +5889,7 @@ function changeBackgroundColor(newColor) {
 .cd-total { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; padding: 9px 11px; border: 1px solid #ea8b4b; border-radius: 10px; background: #f8fafc; }
 /* ⟳ 2026-10-29 (yêu cầu “cho màu đen nhạt”): chữ “TỔNG NỢ” `#b45309` (nâu cam) → **`#334155`**
    (đen ngả xám = “đen nhạt”). Số tiền vẫn CAM `#e2591f` — chỉ đổi nhãn. */
-.cd-total-lbl { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; letter-spacing: 0.02em; color: #334155; }
+.cd-total-lbl { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; letter-spacing: 0.02em; color: #475569; }   /* ⟳ 2026-10-30 (yêu cầu “cho chữ này nhạt lại”, ảnh = “TỔNG NỢ” + 💰): `#334155` → **`#475569`** (1 nấc). ⚠️ Chỉ đổi CHỮ — viền/nền khung cam của `.cd-total` và màu SỐ TIỀN giữ nguyên. Dark đổi cùng nấc ở rule `body:not(.light-mode) .cd-total-lbl`. */
 /* ⟳ 2026-10-29 (yêu cầu “cho icon to hơn và nhạt hơn”, ảnh = 💰 trước “TỔNG NỢ”): emoji to 1 nấc
    (14 → **18px**) + `opacity: .65` cho nhạt. Chỉ đụng SPAN ICON, chứng không to lên theo. */
 .cd-total-lbl > span[aria-hidden] { font-size: 18px; line-height: 1; opacity: 0.65; }
@@ -5872,10 +5932,17 @@ function changeBackgroundColor(newColor) {
 .cd-act:active { filter: brightness(0.92); }
 /* ── nền TỐI của thẻ chi tiết ──────────────────────────────────────────────────────────────── */
 body:not(.light-mode) .cd-card { background: #1a1d24; }
-body:not(.light-mode) .cd-row { color: #cbd5e1; }
+/* ⟳ 2026-10-30 (yêu cầu “cho bảng này có nền phía ngoài”): nền của KHUNG chứa tấm (`.modal`) màu
+   nền TRANG (dark `--page-bg` = navy, light `#eef1f4`) thay vì `#1a1d24` / `#f0f1f4` cùng tông thẻ
+   ⇒ khi tấm cao hơn ruột (do `min-height` ở khối `@media` bên dưới) thì phần dư đọc ra là “nền phía
+   ngoài” của thẻ, không phải một dải cùng màu trơn. ⚠️ Chỉ `#modal` (tấm “Chi tiết”) — ⛔ không gán
+   cho `.modal.pay-modal` (tấm thanh toán luôn trắng theo yêu cầu trước). */
+body:not(.light-mode) #modal .modal { background: var(--page-bg); }
+body.light-mode #modal .modal { background: #eef1f4; }
+body:not(.light-mode) .cd-row { color: #a3b2c6; }   /* ⟳ 2026-10-30 (yêu cầu “nhạt thêm 1 nấc”): `#b4c1d2` → **`#a3b2c6`**; `.cd-row b` vẫn `#e2e8f0` ⇒ nhãn mờ hơn, giá trị vẫn nổi. */   /* ⟳ 2026-10-30: `#cbd5e1` → **`#b4c1d2`** (nhạt 1 nấc, cùng yêu cầu với nhãn thẻ). `.cd-row b` vẫn `#e2e8f0` ⇒ số/giá trị vẫn nổi hơn nhãn. */
 body:not(.light-mode) .cd-row b { color: #e2e8f0; }
 body:not(.light-mode) .cd-total { background: rgba(255,255,255,0.06); border-color: rgba(249,115,22,0.55); }
-body:not(.light-mode) .cd-total-lbl { color: #cbd5e1; }   /* “đen nhạt” ở dark = xám sáng nhạt */
+body:not(.light-mode) .cd-total-lbl { color: #b0bfd2; }   /* ⟳ 2026-10-30: nhạt 1 nấc theo yêu cầu (#cbd5e1 → #b0bfd2) */
 body:not(.light-mode) .cd-total-num { color: #ffa07a; }
 body:not(.light-mode) .cd-total-num small { color: #94a3b8; }   /* = đúng `.cd-period-num small` ở dark */
 body:not(.light-mode) .cd-detail-title { color: #e2e8f0; }
@@ -5894,21 +5961,48 @@ body:not(.light-mode) .cd-period-num small { color: #94a3b8; }
    `white-space: nowrap` cho nó, chữ “Kỳ 1-9/2026” sẽ đẩy số tiền tràn khung.
    ⚠️ Khai trong `@media` ĐIỆN THOẠI (giống `@media (max-width: 639.98px)` của app) ⇒ desktop
    giữ nguyên cỡ cũ. Cùng specificity với rule gốc nhưng khai SAU nên thắng bằng thứ tự. */
+/* ⟳ 2026-10-30 (yêu cầu “cho bảng này cao tới tab chi tiết”, ảnh = tấm “Chi tiết” chỉ cao ~2/3
+   màn hình, phía trên còn một khoảng overlay trống): tấm chỉ cao theo RUỘT (`max-height: 94vh`
+   KHÔNG ép cao) ⇒ máy cao / khách ít kỳ thì tấm lơ lửng ở đáy. Nay ép `min-height` = màn hình −
+   **188px** (đo tại 533px: header 56 + thanh công cụ 144 ⇒ ĐÁY dải tab ở **188px**) ⇒ mép trên tấm
+   luôn dừng đúng dưới dải tab, không hở overlay. ⚠️ Dùng `dvh` (trình duyệt cũ tự rơi về `vh`
+   nhờ dòng khai trước). ⛔ Không bỏ `max-height: 94vh` — nó vẫn là trần khi ruột dài. */
 @media (max-width: 639.98px) {
-  #modal .cd-code { font-size: 20px; }
-  #modal .cd-name { font-size: 13.5px; }
-  #modal .cd-phone { font-size: 15px; }
-  #modal .cd-row { font-size: 16px; }
-  #modal .cd-row .cd-ic { width: 20px; }
-  #modal .cd-total-lbl { font-size: 15px; }
-  #modal .cd-total-lbl > span[aria-hidden] { font-size: 20px; }
-  #modal .cd-total-num { font-size: 21px; }
-  #modal .cd-total-num small { font-size: 12px; }
-  #modal .cd-detail-title { font-size: 17.5px; }
-  #modal .cd-period-ky { font-size: 17.5px; }
-  #modal .cd-period-num { font-size: 20px; }
-  #modal .cd-period-num small { font-size: 12px; }
-  #modal .cd-act { font-size: 13.5px; padding: 9px 4px; }
+  /* ⟳ 2026-10-30 (yêu cầu “cho bảng này thấp tới tab chi tiết”): KẸP CHIỀU CAO tấm — mép TRÊN dừng
+     đúng dưới dải tab. Đo ở 533×535: đáy dải tab / đáy thanh công cụ = **188px** (header 56 +
+     thanh 144 − trùng 12) ⇒ tấm cao `100dvh − 188px`. Ép CẢ `min-height` LẪN `max-height` = cùng
+     một số ⇒ tấm luôn chiếm đúng khoảng từ dưới tab tới đáy màn hình: khách ít kỳ không còn
+     “lơ lửng”, khách nhiều kỳ thì cuộn bên trong tấm (không đè lên tab).
+     ⚠️ Selector `#payModal .modal.pay-modal` (1,2,0) để thắng `max-height: 96vh` của
+     `.modal.pay-modal` (0,2,0) — hai tấm dùng CHUNG một khung nên phải kẹp CẢ HAI.
+     ⛔ Trần 94vh/96vh ở trên vẫn giữ cho desktop (khối này chỉ ăn <640px).
+     ⚠️ `dvh` khai SAU `vh` để webview cũ tự rơi về `vh`. */
+  #modal .modal,
+  #payModal .modal.pay-modal { min-height: calc(100vh - 188px); min-height: calc(100dvh - 188px); max-height: calc(100vh - 188px); max-height: calc(100dvh - 188px); }
+}
+@media (max-width: 639.98px) {
+  /* ⟳ 2026-10-30 (yêu cầu “cho kích cỡ bảng này to hơn”, ảnh = tấm “Chi tiết” của khách
+     PB15020068583): nâng TOÀN BỘ cỡ chữ + icon của tấm thêm 1 nấc so với lượt 2026-10-30 trước
+     (mỗi ô +1,5 đến +2,5px). ⛔ Hàng KỲ vẫn phải co được (`.cd-period-ky` có `flex:1; min-width:0`)
+     — xem khối `≤359px` ngay dưới vì ở 320px cỡ mới làm tên kỳ xuống 2 dòng. */
+  #modal .cd-code { font-size: 20px; }   /* ⟳ 2026-10-30: 22 → **20px** (nhỏ 1 nấc) cùng lượt với nét `600` — xem rule `.cd-code` gốc. */
+  #modal .cd-name { font-size: 15px; }
+  /* ⟳ 2026-10-30 (yêu cầu “cho hàng sdt nằm xích vô và to hơn”): `margin-right: 6px` = bù lại
+     `margin-right: -6px` của `.cd-head-side` ⇒ viên SĐT dừng ở mốc **12px** tính từ mép phải thẻ
+     (bằng đệm `.cd-head`) thay vì 6px; X phía trên GIỮ sát góc như yêu cầu trước. Cỡ `16,5 → 19px`
+     + đệm `5px 10px → 7px 13px` ⇒ viên 147×30 → khoảng **166×35**. */
+  #modal .cd-phone { font-size: 19px; padding: 7px 13px; margin-right: 6px; }
+  #modal .cd-row { font-size: 17.5px; }
+  #modal .cd-row .cd-ic { width: 22px; }
+  #modal .cd-total-lbl { font-size: 16.5px; }
+  #modal .cd-total-lbl > span[aria-hidden] { font-size: 22px; }
+  #modal .cd-total-num { font-size: 21.5px; }   /* ⟳ 2026-10-30 (yêu cầu “cho số tiền nhỏ lại 1 nấc”): 23,5 → **21,5px** (cùng lúc với số tiền từng kỳ 22 → 20). */
+  #modal .cd-total-num small { font-size: 13px; }
+  #modal .cd-detail-title { font-size: 19px; }
+  #modal .cd-period-ky { font-size: 19px; }
+  #modal .cd-period-num { font-size: 20px; }   /* ⟳ 2026-10-30: 22 → **20px** (nhỏ 1 nấc theo yêu cầu “số tiền nhỏ lại 1 nấc”). */
+  #modal .cd-period-num small { font-size: 13px; }
+  #modal .cd-act { font-size: 15px; padding: 10px 4px; }
 }
 /* ⚠️ KHỔ RẤT HẸP (≤ 359px): hạ riêng hàng KỲ về cỡ CŨ — đo ở 320px, tên kỳ 17,5px cần ~105px
    mà chỉ còn **104px** (sau ô lịch 24 + 2 khe 9 + số tiền 135) ⇒ “Kỳ 1-6/2026” XUỐNG 2 DÒNG
@@ -5916,7 +6010,11 @@ body:not(.light-mode) .cd-period-num small { color: #94a3b8; }
    ⛔ Các ô khác (mã KH, tên, SĐT, 4 hàng thông tin, TỔNG NỢ, 4 nút) GIỮ cỡ đã phóng — chúng không
    tranh chỗ với số tiền nên không tràn. */
 @media (max-width: 359.98px) {
-  #modal .cd-period-ky { font-size: 16px; }
+  /* ⟳ 2026-10-30 (đo lại sau khi phóng to tấm): ở 320px hàng KỲ cao **61px** = “Kỳ 2-10/2026”
+     XUỐNG 2 DÒNG (tên 17,5px cần ~105px mà vùng chữ chỉ còn **93px**: hàng 296 − icon 24 − 2 khe 9
+     − số tiền 137). Hạ tên 17,5 → **16** và số 20 → **18,5** ⇒ tên ≈ **96px** vừa 1 dòng, số tiền
+     rộng ra ~127px. ⛔ Đừng nâng lại nếu chưa đo ở 320px. */
+  #modal .cd-period-ky { font-size: 15px; }
   #modal .cd-period-num { font-size: 18px; }
 }
 
@@ -6232,7 +6330,14 @@ body.light-mode mark { background: rgba(59,130,246,0.2); color: #1d4ed8; }
    hiện một dải màu ngang đáy tấm. */
 body .modal.pay-modal { background: #ffffff; border-color: #e2e8f0; }
 body .modal.pay-modal > .modal-handle { background: rgba(0,0,0,0.15); }   /* tay nắm: xám đậm, bản tối là trắng mờ ⇒ vô hình trên nền trắng */
-.pay-hd, .pay-code-val, .pay-addr, .pay-count, .pay-dot { color: #0f172a; }   /* ⛔ KHÔNG thêm `.pay-inv-amt` vào đây: từ 2026-10-13p nó ĐEN nhưng khai ĐÍCH DANH trong rule của chính nó (đệm ngang là thứ phân biệt nó với `.pay-foot-val`); thêm vào nhóm này là vô nghĩa mà còn dễ tưởng nhầm là hai hàng cùng màu */
+.pay-hd, .pay-code-val, .pay-count, .pay-dot { color: #0f172a; }
+/* ⟳ 2026-10-30 (yêu cầu “cho địa chỉ trong ảnh nhạt xuống 1 nấc” — ảnh = dòng “📍 BCH Quân sự tỉnh
+   Hùng Vương…” trong tấm “Thanh toán cho điểm dùng điện”): TÁCH `.pay-addr` khỏi nhóm trên và
+   cho **`#475569`** (slate-600) ở CẢ 2 theme (tấm này luôn trắng — xem chú thích `body .modal.pay-modal`).
+   Đo: `#0f172a` 17,5:1 → **`#475569` 7,5:1** trên nền trắng ⇒ nhạt hơn 1 nấc mà vẫn dư AA 4,5.
+   ⛔ Đừng bỏ `.pay-addr` khỏi danh sách tách ra rồi lại thêm vào nhóm `#0f172a`: nhóm đó khai SAU
+   nên sẽ đè mất màu này. Muốn nhạt hơn nữa thì hạ tiếp về **`#5b6777`** (màu `.pay-row-txt`). */
+.pay-addr { color: #475569; }   /* ⛔ KHÔNG thêm `.pay-inv-amt` vào đây: từ 2026-10-13p nó ĐEN nhưng khai ĐÍCH DANH trong rule của chính nó (đệm ngang là thứ phân biệt nó với `.pay-foot-val`); thêm vào nhóm này là vô nghĩa mà còn dễ tưởng nhầm là hai hàng cùng màu */
 .pay-row-txt, .pay-code-lb { color: #5b6777; }
 .pay-inv-amt { border-bottom-color: #e2e8f0; }
 .pay-foot { background: #ffffff; border-top-color: #e2e8f0; }
@@ -6516,7 +6621,7 @@ body.light-mode .adv-chip[data-active="1"] { background: #2563eb; border-color: 
      khai lại là hai nguồn màu dễ lệch nhau.
    · ⚠️ KHÔNG gắn class `loai-tab` cho 2 nút này: `syncLoaiTabs()`/`equalizeLoaiTabs()` quét
      `.loai-tab` để tô sáng + gán bề rộng 1/4 dải; dính vào là nút sắp xếp bị coi là tab. */
-.loai-tabs .sort-btn { flex: 0 0 auto; min-width: 0; height: 40px; padding: 0 11px; gap: 5px; border-radius: 999px; font-size: 16px; }   /* ⟳ 2026-10-26: cao **34 → 40px** theo tab (yêu cầu “chiều cao các tab cao hơn”; 2 nút này phải cao BẰNG tab) */
+.loai-tabs .sort-btn { flex: 0 0 auto; min-width: 0; height: 40px; padding: 0 11px; gap: 5px; border-radius: 10px; font-size: 16px; }   /* ⟳ 2026-10-30: bán kính `999px` → **`10px`** theo `.loai-tab` (yêu cầu “tab hàng chi tiết thành hình vuông như tab nhân viên”). */   /* ⟳ 2026-10-26: cao **34 → 40px** theo tab (yêu cầu “chiều cao các tab cao hơn”; 2 nút này phải cao BẰNG tab) */
 .loai-tabs .sort-btn .sort-ico { width: 15px; height: 15px; }
 .loai-tabs .sort-btn .sort-arrow { width: 14px; height: 14px; }
 .adv-count { margin-top: 2px; padding: 5px 9px; border-radius: 9px; background: rgba(148,163,184,0.14); font-size: 15px; line-height: 1.35; color: var(--text); }   /* ⟳ 2026-10-25n: nhóm “Sắp xếp” 13 → **15px** (icon 14/12 → 16/14) · dòng đếm 13 → **15px** */
@@ -7190,11 +7295,11 @@ body.force-desktop .table-view { display: block; }
      ở rule nền — đổi màu đánh dấu thì phải đổi CẢ Ở ĐÂY, nếu không hàng đánh dấu sẽ lại đổi
      màu khi chạm (đúng thứ vừa bỏ). */
   body.force-desktop .table-view tbody tr.highlighted:hover,
-  body.force-desktop .table-view tbody tr.highlighted:active { background: #2e2412 !important; }
+  body.force-desktop .table-view tbody tr.highlighted:active { background: #221a38 !important; }
   body.force-desktop .table-view tbody tr.highlighted-purple:hover,
   body.force-desktop .table-view tbody tr.highlighted-purple:active { background: #17233f !important; }
   body.light-mode.force-desktop .table-view tbody tr.highlighted:hover,
-  body.light-mode.force-desktop .table-view tbody tr.highlighted:active { background: #fef3c7 !important; }
+  body.light-mode.force-desktop .table-view tbody tr.highlighted:active { background: #f3ecff !important; }
   body.light-mode.force-desktop .table-view tbody tr.highlighted-purple:hover,
   body.light-mode.force-desktop .table-view tbody tr.highlighted-purple:active { background: #e8f0ff !important; }
   /* ── (LỊCH SỬ — ĐÃ GỠ) DẢI NỀN HÀNG “TÊN KH + TIỀN NỢ” · bảng 3 hàng trên điện thoại ────────────
@@ -7295,9 +7400,9 @@ body.force-desktop .table-view { display: block; }
   body.force-desktop .table-view tbody tr.highlighted-purple::before {
     content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
   }
-  body.force-desktop .table-view tbody tr.highlighted::before { background: #fbbf24; }
+  body.force-desktop .table-view tbody tr.highlighted::before { background: #c4b5fd; }
   body.force-desktop .table-view tbody tr.highlighted-purple::before { background: #00e5ff; }
-  body.light-mode.force-desktop .table-view tbody tr.highlighted::before { background: #b45309; }
+  body.light-mode.force-desktop .table-view tbody tr.highlighted::before { background: #8b5cf6; }
   body.light-mode.force-desktop .table-view tbody tr.highlighted-purple::before { background: #1d4ed8; }
   /* ⚠️ SỐ `nth-child` ở đây theo THỨ TỰ CỘT **MẶC ĐỊNH** (xem khối “BỀ RỘNG CỘT BẢNG”) —
      đây là mối nối DUY NHẤT còn lại giữa thứ tự cột và bảng 2 dòng, nên khi đổi thứ tự cột
@@ -7929,7 +8034,7 @@ body:not(.light-mode) .kh-card .kh-mid-row .kh-photo.has-photo .ic { color: #93c
 
 /* 3) TÊN KH: trả lại màu chữ theo theme (bản cũ ép trắng vì nằm trên dải teal). */
 body.light-mode .kh-card .kh-idcol .kh-name { color: #1e293b !important; }   /* ⟳ 2026-10-28 (yêu cầu “cho tên kh màu đen nhạt xuống 1 tí”): slate-900 `#0f172a` → **slate-800 `#1e293b`** (nhạt 1 nấc, vẫn ~13:1 trên thẻ `#f8fafc`). */
-body.light-mode .kh-card.highlighted .kh-idcol .kh-name { color: #422006 !important; }
+body.light-mode .kh-card.highlighted .kh-idcol .kh-name { color: #4c1d95 !important; }
 body.light-mode .kh-card.highlighted-purple .kh-idcol .kh-name { color: #1d4ed8 !important; }
 body:not(.light-mode) .kh-card .kh-idcol .kh-name { color: #cbd5e1 !important; }   /* ⟳ 2026-10-28 (yêu cầu “cho tên kh màu trắng xám dark mode”): slate-200 `#e2e8f0` → **slate-300 `#cbd5e1`** (trắng ngả xám, vẫn ~8,9:1 trên thẻ `#1a1f28`). */
 /* 3b) VIÊN MÃ KH: chữ + icon + viền trả về tông xanh ĐỌC ĐƯỢC trên nền sáng.
@@ -7937,7 +8042,7 @@ body:not(.light-mode) .kh-card .kh-idcol .kh-name { color: #cbd5e1 !important; }
    dải teal — dải đã bỏ nên trên nền thẻ sáng chữ gần như tan biến. DARK giữ nguyên (chữ sáng
    trên thẻ tối vẫn đạt tương phản). */
 body.light-mode .kh-card .kh-mid-row .kh-ma { color: #1e293b !important; border-color: rgba(30,58,138,0.28); }   /* ⟳ 2026-10-28 (yêu cầu “cho màu chữ mã kh như tên kh”): `#1e3a8a` (navy) → **`#1e293b`** = ĐÚNG màu chữ TÊN KH ở light (rule `body.light-mode .kh-card .kh-idcol .kh-name` ngay trên, ~7741) ⇒ chữ viên mã KH và tên cùng một tông. Vẫn **~12,6:1** trên nền viên `#e0ebfd` ✓ dư AA. ⛔ Nền viên `#e0ebfd` + viền `rgba(30,58,138,0.28)` GIỮ NGUYÊN — người dùng chỉ nói “màu chữ”. ⚠️ Tên KH ở light có 2 biến thể (đánh dấu cam `#422006` · tím `#1d4ed8`) nên phải khai thêm 2 rule ngay dưới, thiếu là thẻ đánh dấu bị lệch tông. */
-body.light-mode .kh-card.highlighted .kh-mid-row .kh-ma { color: #422006 !important; }   /* = màu tên KH của thẻ ĐÁNH DẤU CAM (rule ~7742). Specificity (0,5,1) > (0,4,1) của rule trên ⇒ thắng bằng độ đặc hiệu, KHÔNG phải nhờ thứ tự. */
+body.light-mode .kh-card.highlighted .kh-mid-row .kh-ma { color: #4c1d95 !important; }   /* = màu tên KH của thẻ ĐÁNH DẤU CAM (rule ~7742). Specificity (0,5,1) > (0,4,1) của rule trên ⇒ thắng bằng độ đặc hiệu, KHÔNG phải nhờ thứ tự. */
 body.light-mode .kh-card.highlighted-purple .kh-mid-row .kh-ma { color: #1d4ed8 !important; }   /* = màu tên KH của thẻ ĐÁNH DẤU TÍM (~7743). */
 body.light-mode .kh-card .kh-mid-row .kh-ma .ic { color: #1d4ed8; }
 
@@ -7960,11 +8065,18 @@ body:not(.light-mode) .kh-card .kh-card-top .kh-tien.mid { background: rgba(251,
 body.light-mode .kh-card .kh-tien.low .mil-digit { color: #10b981; }
 body:not(.light-mode) .kh-card .kh-tien.low .mil-digit { color: #86efac; }
 
-/* 5) DÒNG THÁNG: màu chữ phụ theo theme + icon lịch 14px đứng trước. */
-body.light-mode .kh-card-top .kh-thang { color: #64748b !important; }
-body:not(.light-mode) .kh-card-top .kh-thang { color: #94a3b8 !important; }
-body.light-mode .kh-card-top .kh-thang.multi-month { text-decoration-color: #64748b !important; }
-body:not(.light-mode) .kh-card-top .kh-thang.multi-month { text-decoration-color: #94a3b8 !important; }
+/* 5) DÒNG THÁNG: màu chữ phụ theo theme + icon lịch 14px đứng trước.
+   ⟳ 2026-10-30 (yêu cầu “hàng tháng nợ và địa chỉ nhạt xuống 1 nấc”): dark `#94a3b8` → **`#7f8da1`**
+   (4,88:1 trên thẻ “Chuẩn” `#1a1f28` ✓ vẫn AA) · light `#64748b` → **`#74839a`** (nhạt hơn địa chỉ
+   một nấc, giữ đúng thứ bậc cũ; **3,5:1** trên thẻ `#eff1f5` — dưới AA 4,5 nhưng đây là chữ phụ
+   người dùng yêu cầu làm mờ tiếp; ⛔ đừng hạ thêm).
+   ⚠️ 4 dòng dưới có `!important` nên CHÚNG THẮNG mọi rule `.kh-thang` khác — sửa màu dòng tháng mà
+   chỉ sửa `.kh-thang` thì trên thẻ sẽ KHÔNG thấy đổi gì. Kẻ chân “nhiều tháng” khai riêng nên phải
+   đổi cùng. */
+body.light-mode .kh-card-top .kh-thang { color: #74839a !important; }
+body:not(.light-mode) .kh-card-top .kh-thang { color: #7f8da1 !important; }
+body.light-mode .kh-card-top .kh-thang.multi-month { text-decoration-color: #74839a !important; }
+body:not(.light-mode) .kh-card-top .kh-thang.multi-month { text-decoration-color: #7f8da1 !important; }
 .kh-thang { display: inline-flex; align-items: center; gap: 4px; }
 .kh-thang .ic { width: 14px; height: 14px; flex: 0 0 auto; opacity: 0.9; }
 
@@ -9945,6 +10057,9 @@ function processFile(file) {
       const cNhom  = fc('NHÓM','NHOM','MA NHOM','MANHOM');
       const cMaNhom= fc('MA NHOM','MANHOM','MA_NHOM');
       const cABC    = fc('ABC');
+      /* ⬅ 2026-10-30: đọc lại cột vị trí đã ghim khi NHẬP tệp (xem khối ngay dưới `allData`).
+         Không có cột này (tệp gốc của công ty) thì `cViTri === null` ⇒ bỏ qua, không đổi gì. */
+      const cViTri  = fc('VI TRI DA CAP NHAT','VITRIDACAPNHAT','VI TRI MOI','VITRIMOI');
 
       // Giữ lại ghi chú cũ từ file trước (theo mã KH)
       const oldGhiChu = {};
@@ -9974,6 +10089,41 @@ function processFile(file) {
           abc: String(r[cABC]||'').trim(),
         };
       }).filter(r => r.ma_khach_hang || r.ten_khach_hang);
+
+      /* 📍 MANG “VỊ TRÍ ĐÃ GHIM” SANG MÁY KHÁC QUA TỆP EXCEL (2026-10-30)
+         Yêu cầu: “khi xuất file excel thì cập nhật cả vị trí mới ghim như cột abc, khi qua máy khác
+         thì cột abc có nhưng cột vị trí thì không có”.
+         Nguyên nhân: `exportExcel` ghi toạ độ từ khoá `qlno_pinned_addr_v1` (localStorage của MÁY ĐÃ
+         GHIM), còn `processFile` thì ⛔ không đọc cột đó ⇒ sang máy khác (localStorage rỗng) nhập tệp
+         là mất sạch toạ độ, xuất lại ra cột trống.
+         Nay: nhập tệp có cột “VI TRI DA CAP NHAT” ⇒ ghi toạ độ vào map ghim ⇒ thẻ tự hiện dòng địa
+         chỉ xanh + nút ➤ dẫn đường, và lần xuất sau có lại đủ cột.
+         ⚠️ KHÔNG ĐÈ toạ độ máy này đã có: máy đang dùng là bản mới nhất (người dùng vừa ghim tay/GPS
+         ở đó), tệp Excel có thể là bản cũ hơn.
+         ⚠️ Ghi localStorage MỘT LẦN sau vòng lặp (tệp có thể ~3.000 dòng; `pinSaveCoords` ghi từng
+         dòng sẽ rất chậm). Toạ độ do TỆP mang sang ⇒ `src:'file'` để phân biệt với ghim tay/GPS. */
+      let soVitriNhap = 0;
+      if (cViTri) {
+        const pmap = pinAll();
+        let dirty = false;
+        rows.forEach(r => {
+          const ma = String(r[cMa]||'').trim() || String(r[cTen]||'').trim();
+          if (!ma) return;
+          const cur = pmap[ma];
+          if (cur && isFinite(cur.lat) && isFinite(cur.lng)) return;   // máy này đã có toạ độ ⇒ giữ
+          const c = pinParseCoords(String(r[cViTri]||'').trim());
+          if (!c) return;
+          const rec = cur || { ts: Date.now(), ten: String(r[cTen]||'').trim() };
+          rec.lat = c.lat;
+          rec.lng = c.lng;
+          rec.acc = 0;
+          rec.src = 'file';
+          pmap[ma] = rec;
+          dirty = true;
+          soVitriNhap++;
+        });
+        if (dirty) { try { localStorage.setItem(PIN_KEY, JSON.stringify(pmap)); } catch (e) {} }
+      }
 
       /* 🔑 SANG THÁNG MỚI = NẠP TỆP MỚI ⇒ MỐC PHẢI ĐI THEO: xoá lựa chọn tay (nếu có) rồi để
          `refreshCurrentPeriod()` tự chọn kỳ của tháng này; đồng thời GHI NHỚ tháng vừa nạp vào
@@ -10874,18 +11024,32 @@ function syncLoaiTabs(val) {
      của tab tính bằng `vw` nên bề rộng TỰ NHIÊN đổi theo khổ; giữ số cũ là tab bị cắt chữ
      (thu nhỏ cửa sổ) hoặc hụt chỗ (phóng to). */
 let _loaiTabW = 0;
+let _loaiTabKey = '';   /* ⟳ 2026-10-30: chốt chống lặp nay gồm CẢ khổ + bề rộng dải — bề rộng tab ở điện thoại tính từ bề rộng dải (1/3), ResizeObserver gọi lại khi dải đổi khổ mà `_loaiTabW` cũ vẫn bằng nhau thì phải đo lại. */
 function equalizeLoaiTabs() {
   const box = document.getElementById('loaiTabs');
   if (!box || !box.clientWidth) return;
   const tabs = Array.from(box.querySelectorAll('.loai-tab'));
   if (!tabs.length) return;
-  if (_loaiTabW > 0 && tabs.every(t => t.style.width === _loaiTabW + 'px')) return;
+  /* ⟳ 2026-10-30 (yêu cầu “cho hiển thị đủ 3 tab khi xem trên điện thoại”): dải có 10 tab nên
+     trước đây mỗi tab rộng bằng chữ (≈120px) ⇒ khung điện thoại chỉ hiện ~3 tab và tab thứ 3 bị
+     CẮT. Nay dưới 640px chia dải thành ĐÚNG 3 phần: tab = (bề rộng dải − 2 khe 4px) / 3 ⇒ luôn
+     thấy TRỌN 3 tab, 7 tab còn lại lướt ngang như cũ.
+     ⛔ KHÔNG lấy `Math.floor` của số này khi nó NHỎ HƠN tab rộng nhất: chữ dài (“Tổng hợp”) sẽ bị
+     cắt vì `.loai-tab` có `overflow: hidden`. Vì vậy `w = max(1/3 dải, chữ rộng nhất)` — ở khổ
+     rất hẹp (≤ ~330px) thì chịu: hiện 3 tab hơn nửa thay vì cắt chữ.
+     ⚠️ Viết bằng JS (không phải CSS `flex: 1 1 0`) vì `equalizeLoaiTabs` gán `style.width` INLINE cho
+     cả 10 tab — inline thắng mọi rule CSS, đặt `flex` trong CSS là vô hiệu. */
+  const mobile = window.innerWidth < 640;
+  const key = (mobile ? 'm' : 'w') + ':' + box.clientWidth;
+  if (_loaiTabKey === key && _loaiTabW > 0 && tabs.every(t => t.style.width === _loaiTabW + 'px')) return;
   tabs.forEach(t => { t.style.width = ''; });
   let max = 0;
   tabs.forEach(t => { const w = t.getBoundingClientRect().width; if (w > max) max = w; });
   if (!max) return;
-  const w = Math.ceil(max);   /* ceil: làm tròn LÊN để không tab nào bị cắt chữ */
+  let w = Math.ceil(max);   /* ceil: làm tròn LÊN để không tab nào bị cắt chữ */
+  if (mobile) w = Math.max(w, Math.floor((box.clientWidth - 8) / 3));   /* 8px = 2 khe gap 4px */
   _loaiTabW = w;
+  _loaiTabKey = key;
   tabs.forEach(t => { t.style.width = w + 'px'; });
 }
 /* Dải tab hiện ra / đổi bề rộng (xoay máy, mở tấm Cài đặt…) ⇒ đo lại. */
@@ -10893,10 +11057,10 @@ if (typeof ResizeObserver !== 'undefined') {
   const __tabBox = document.getElementById('loaiTabs');
   if (__tabBox) new ResizeObserver(() => equalizeLoaiTabs()).observe(__tabBox);
 }
-window.addEventListener('resize', () => { _loaiTabW = 0; equalizeLoaiTabs(); });
+window.addEventListener('resize', () => { _loaiTabW = 0; _loaiTabKey = ''; equalizeLoaiTabs(); });
 /* Phông Inter tải xong có thể RỘNG KHÁC phông dự phòng đã đo lúc đầu ⇒ đo lại 1 lần. */
 if (document.fonts && document.fonts.ready) {
-  document.fonts.ready.then(() => { _loaiTabW = 0; equalizeLoaiTabs(); });
+  document.fonts.ready.then(() => { _loaiTabW = 0; _loaiTabKey = ''; equalizeLoaiTabs(); });
 }
 
 /* 🚫 ĐÃ XOÁ Ô LỌC "Mã sổ" (mã sổ GCS) — theo yêu cầu người dùng (“bỏ tab mã sổ”).
@@ -11965,8 +12129,12 @@ updateSortButtons();
    CHỮ địa chỉ** (`pinToggle`). ⟳ cùng ngày, yêu cầu cuối: “cho icon này nằm phía trước địa chỉ”
    ⇒ icon ở TRƯỚC chữ địa chỉ: `[📌 cập nhật] [➤ dẫn đường] <địa chỉ>`. Bản giữa lượt từng để
    sau chữ — ⛔ đừng đảo lại nếu người dùng không yêu cầu.
-   ⚠️ Lưu **THEO MÃ KH** ở khoá RIÊNG `qlno_pinned_addr_v1` (KHÔNG nằm trong file Excel, KHÔNG
-   phụ thuộc kỳ) ⇒ tháng sau nhập file mới, khách còn nợ là tự hiện lại xanh, không phải ghim lại;
+   ⚠️ Lưu **THEO MÃ KH** ở khoá RIÊNG `qlno_pinned_addr_v1` (KHÔNG phụ thuộc kỳ) ⇒ tháng sau nhập
+   file mới, khách còn nợ là tự hiện lại xanh, không phải ghim lại;
+   ⟳ 2026-10-30: toạ độ **CÓ ĐI RA/VÀO file Excel** qua cột “VI TRI DA CAP NHAT” — `exportExcel`
+   ghi, `processFile` đọc lại (xem khối “📍 MANG ‘VỊ TRÍ ĐÃ GHIM’ SANG MÁY KHÁC” trong processFile).
+   Trước đây chỉ xuất mà không nhập ⇒ sang máy khác cột này trống. ⚠️ Không đọc để GHI vào từng
+   bản ghi `allData` — vẫn ở map riêng như cũ (chỉ thêm đường nhập từ tệp).
    khách đã trả hết / không còn trong file thì chỉ KHÔNG hiện (dữ liệu ghim vẫn giữ).
    ⛔ Đừng gộp vào `qlno_highlighted` (đánh dấu cam) — 2 thứ độc lập, đánh dấu cam vẫn là nhấn 2 lần.
    Định nghĩa đặt TRƯỚC `renderCards` để chắc chắn `PIN_KEY`/`_pinnedMap` đã có giá trị lúc vẽ
