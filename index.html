@@ -4172,14 +4172,30 @@ body.light-mode .count-range-x:active { background: #ef4444; color: #ffffff; }
    bản `:hover/:active` của “xem dạng máy tính” (~7244) và vạch `::before` (~7349) — thiếu một chỗ là
    thẻ xanh mà hàng bảng vẫn nâu. ⛔ Màu TÍM (`.highlighted-purple`) KHÔNG đụng. */
 .kh-card.highlighted { background: #221a38; border: 2px solid #c4b5fd; box-shadow: var(--elev-1); }
-/* ⟳ 2026-10-30 (lỗi người dùng báo: “khi nhấn 2 lần đổi màu thì thanh màu ngoài cùng không đổi
-   màu”): THANH MÉP TRÁI (**5px** = `border-left-width` của `body .kh-card.kh-card`) phải theo LUÔN
-   trạng thái đánh dấu. Trước đây `.kh-card.highlighted` chỉ khai `border: 2px` (0,2,0) nên ở LIGHT
-   bị `body.light-mode .kh-card` (0,2,1) ép thanh trái về **2px** — thẻ đang đánh dấu mất thanh dày,
-   chỉ còn viền mảnh. Nay khai ĐÍCH DANH ở (0,3,1) cho cả 2 theme ⇒ vệt trái **5px TÍM** + viền tím,
-   không còn chỗ nào thắng được nó. Đo live: light & dark đều `border-left: 5px` (4,8px ở tỉ lệ 0,8). */
-body .kh-card.kh-card.highlighted { border-left-width: 5px !important; border-left-color: #c4b5fd !important; }
-body.light-mode .kh-card.kh-card.highlighted { border-left-color: #8b5cf6 !important; }   /* ⟳ 2026-10-30 (yêu cầu “đổi nhấn 2 lần sang màu tím nhạt”): xanh neon → **TÍM NHẠT**, dark nền `#221a38` + viền `#c4b5fd` (violet-300, **7,4:1** trên nền thẻ `#1a1f28` ✓). ⚠️ ĐỔI CẢ bảng (~5395) và `::before` (~7350) — xem chú thích ở rule `.table-view tbody tr.highlighted`. */   /* ⟳ 2026-10-30 (yêu cầu “màu xanh neon khi chạm 2 lần dark mode nhạt xuống 1 tí”): viền `#39ff14` → **`#2fd96a`** (bớt chói, vẫn là xanh neon) · nền giữ `#0d2a12`. ✅ Đo: viền **8,6:1** trên nền thẻ “Chuẩn” `#1a1f28` ✓. ⛔ Đổi màu này thì ĐỔI CẢ 2 chỗ: vạch trái của hàng bảng (~5395) và `::before` của “xem dạng máy tính” (~7350). */
+/* ℹ️ LỊCH SỬ thanh trái của thẻ ĐÁNH DẤU (2 lượt trong CÙNG ngày 2026-10-30, đừng đảo thêm mà không hỏi):
+   · lượt 2 — lỗi người dùng báo “khi nhấn 2 lần đổi màu thì thanh màu ngoài cùng không đổi màu”:
+     đã cho thanh trái **theo màu đánh dấu** (tím). ⚠️ Nhưng gốc của “không đổi màu” khi đó là BỀ RỘNG:
+     `.kh-card.highlighted { border: 2px }` (0,2,0) bị `body.light-mode .kh-card` (0,2,1) ép thanh trái
+     về **2px** ở light ⇒ mất thanh dày. Đó mới là thứ phải sửa (nay khai 5px đích danh, xem dưới).
+   · lượt 3 (nay) — ĐẢO phần MÀU: xem khối chú thích ngay dưới. */
+/* ⟳ 2026-10-30 (lượt 3 — ĐẢO LẠI đúng rule ngay dưới, yêu cầu nguyên văn: “khi nhấn 2 lần đổi màu thì
+   vẫn giữ lại thanh màu không đổi”, ảnh = vệt XANH LÁ của khách nợ thấp):
+   ĐÁNH DẤU (nhấn 2 lần) **KHÔNG ĐỔI MÀU THANH TRÁI** nữa — thanh giữ đúng màu NGỮ NGHĨA của thẻ
+   (`--card-accent`: đỏ = nợ ≥ 2 triệu · xanh lá = nợ dưới; xem `.kh-card.tier-high/.tier-low` ~7984).
+   Thẻ ≥ 2 hoá đơn (`.multi-hd`) giữ **`--multi-hd`** (tím) như khi chưa đánh dấu.
+   ⚠️ Bề rộng 5px vẫn PHẢI khai (đây là thứ từng bị `body.light-mode .kh-card` ép về 2px ở light).
+   ⚠️ Rule này (0,3,1) phải đứng SAU `body .kh-card.kh-card:not(.highlighted)…` (0,4,1) — rule kia
+   KHÔNG áp dụng khi đã đánh dấu nên không đè; đừng đổi sang selector yếu hơn.
+   ✅ Muốn quay lại “thanh theo màu đánh dấu” (bản lượt 2 hôm nay) thì đổi 2 dòng dưới thành
+   `#c4b5fd` (dark) / `#8b5cf6` (light) — và ĐỔI CẢ vạch `::before` của hàng bảng (~7409). */
+body .kh-card.kh-card.highlighted,
+body .kh-card.kh-card.highlighted-purple { border-left-width: 5px !important; border-left-color: var(--card-accent) !important; }
+body .kh-card.kh-card.multi-hd.highlighted,
+body .kh-card.kh-card.multi-hd.highlighted-purple { border-left-color: var(--multi-hd) !important; }
+/* ⚠️ Ở LIGHT **KHÔNG** cần khai lại `border-left-color`: rule nhóm ngay trên đã là (0,3,1) và đứng
+   SAU `body.light-mode .kh-card` (0,2,1) ⇒ thắng. Riêng `body.light-mode .kh-card.kh-card.highlighted`
+   (0,4,1) của bản lượt 2 đã GỠ: nó chỉ còn tác dụng đè màu thanh thành tím. */
+/* Nền + viền (2px) của thẻ đánh dấu vẫn TÍM NHẠT như lượt 2 — chỉ THANH TRÁI giữ màu ngữ nghĩa. */
 body.light-mode .kh-card.highlighted { background: #f3ecff; border: 2px solid #8b5cf6; box-shadow: 0 1px 3px rgba(124,58,237,0.25); }   /* ⟳ 2026-10-30: tím nhạt ở light — nền `#f3ecff`, viền `#8b5cf6` (3,4:1 ✓ ngưỡng viền 3:1). */
 /* Trên nền vàng/xanh (đậm hơn trắng) chữ đỏ #dc2626 tụt xuống 4.34:1 → #b91c1c (⟳ 2026-10-20 lượt 8: giữ #b91c1c, sáng hơn #991b1b);
    tên KH #2563eb tụt xuống 4.64 ở nền vàng / 4.09 ở nền xanh → dùng #1d4ed8. */
@@ -5973,12 +5989,23 @@ body:not(.light-mode) .cd-period-num small { color: #94a3b8; }
      thanh 144 − trùng 12) ⇒ tấm cao `100dvh − 188px`. Ép CẢ `min-height` LẪN `max-height` = cùng
      một số ⇒ tấm luôn chiếm đúng khoảng từ dưới tab tới đáy màn hình: khách ít kỳ không còn
      “lơ lửng”, khách nhiều kỳ thì cuộn bên trong tấm (không đè lên tab).
-     ⚠️ Selector `#payModal .modal.pay-modal` (1,2,0) để thắng `max-height: 96vh` của
-     `.modal.pay-modal` (0,2,0) — hai tấm dùng CHUNG một khung nên phải kẹp CẢ HAI.
+     ⟳ 2026-10-30 (lượt 3): TÁCH 2 TẤM — mốc 188px nay CHỈ áp cho `#modal` (tấm “Chi tiết”); tấm
+     thanh toán lấy `100dvh − 56px` (xem khối chú thích ngay dưới). Selector vẫn phải viết
+     `#payModal .modal.pay-modal` (1,2,0) để thắng `max-height: 96vh` của `.modal.pay-modal` (0,2,0).
      ⛔ Trần 94vh/96vh ở trên vẫn giữ cho desktop (khối này chỉ ăn <640px).
      ⚠️ `dvh` khai SAU `vh` để webview cũ tự rơi về `vh`. */
-  #modal .modal,
-  #payModal .modal.pay-modal { min-height: calc(100vh - 188px); min-height: calc(100dvh - 188px); max-height: calc(100vh - 188px); max-height: calc(100dvh - 188px); }
+  /* ⟳ 2026-10-30 (yêu cầu “cho bảng này cao hơn để xem được đầy đủ khi xem trên điện thoại”, ảnh =
+     tấm “Thanh toán cho điểm dùng điện” bị khối đáy che mất nửa ô “Mã khách hàng”): TÁCH TẤM THANH
+     TOÁN RA khỏi mốc `188px`. ĐO Ở 533×394 (iframe, dữ liệu giả 2 hoá đơn): tấm cũ cao **206,4px**
+     nhưng ruột cần **693px** ⇒ chỉ thấy tiêu đề + hàng tích + nửa ô mã KH; khối đáy (112,8px, sticky)
+     đè lên ô mã **71,6px**. Nay tấm thanh toán lấy trọn khoảng từ DƯỚI HEADER (56px — header đã
+     `position: fixed`, xem khối `@media` ở đầu file) xuống ĐÁY màn hình ⇒ **338,4px** ở khổ 394
+     (đo lại: `scrollHeight` 693 — ruột vẫn dài nên còn cuộn, nhưng mỗi khổ thấy thêm ~132px).
+     Mốc **188px** (header 56 + thanh công cụ 144 − trùng 12) CHỈ còn dùng cho tấm “Chi tiết” — tấm
+     đó vẫn dừng dưới dải tab theo yêu cầu “cao tới tab chi tiết”.
+     ⛔ Muốn tấm thanh toán quay lại dừng dưới dải tab thì đổi `56px` → `188px` ở ĐÚNG khối này. */
+  #modal .modal { min-height: calc(100vh - 188px); min-height: calc(100dvh - 188px); max-height: calc(100vh - 188px); max-height: calc(100dvh - 188px); }
+  #payModal .modal.pay-modal { min-height: calc(100vh - 56px); min-height: calc(100dvh - 56px); max-height: calc(100vh - 56px); max-height: calc(100dvh - 56px); }
 }
 @media (max-width: 639.98px) {
   /* ⟳ 2026-10-30 (yêu cầu “cho kích cỡ bảng này to hơn”, ảnh = tấm “Chi tiết” của khách
@@ -7400,10 +7427,17 @@ body.force-desktop .table-view { display: block; }
   body.force-desktop .table-view tbody tr.highlighted-purple::before {
     content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
   }
-  body.force-desktop .table-view tbody tr.highlighted::before { background: #c4b5fd; }
-  body.force-desktop .table-view tbody tr.highlighted-purple::before { background: #00e5ff; }
-  body.light-mode.force-desktop .table-view tbody tr.highlighted::before { background: #8b5cf6; }
-  body.light-mode.force-desktop .table-view tbody tr.highlighted-purple::before { background: #1d4ed8; }
+  /* ⟳ 2026-10-30 (lượt 3 — theo yêu cầu “khi nhấn 2 lần đổi màu thì vẫn giữ lại thanh màu không đổi”):
+     VẠCH TRÁI CỦA HÀNG ĐÁNH DẤU **GIỮ ĐÚNG MÀU MỨC NỢ** (`--row-acc` = CHÍNH biến mà `tr` dùng cho
+     `inset 3px` ở khối ~8233/8238) ⇒ đánh dấu chỉ đổi NỀN + VIỀN hàng, vạch đỏ/xanh không đổi.
+     ⚠️ `--row-acc` chỉ khai cho `.tier-high` / `.tier-low` ⇒ PHẢI giữ hệ số dự phòng `#10b981`
+     y như rule `tr` (hàng không có lớp mức nợ = xanh lá).
+     ✅ Muốn quay lại “vạch theo màu đánh dấu” (bản lượt 2 hôm nay): `#c4b5fd` (dark) / `#8b5cf6`
+     (light) · `.highlighted-purple`: `#00e5ff` (dark) / `#1d4ed8` (light). */
+  body.force-desktop .table-view tbody tr.highlighted::before,
+  body.force-desktop .table-view tbody tr.highlighted-purple::before,
+  body.light-mode.force-desktop .table-view tbody tr.highlighted::before,
+  body.light-mode.force-desktop .table-view tbody tr.highlighted-purple::before { background: var(--row-acc, #10b981); }
   /* ⚠️ SỐ `nth-child` ở đây theo THỨ TỰ CỘT **MẶC ĐỊNH** (xem khối “BỀ RỘNG CỘT BẢNG”) —
      đây là mối nối DUY NHẤT còn lại giữa thứ tự cột và bảng 2 dòng, nên khi đổi thứ tự cột
      thì phải sửa 6 dòng dưới (tên 3 · danh số 6 · tiền 8 · mã kh 2 · mã sổ 5 · tháng 7).
