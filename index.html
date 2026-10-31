@@ -3427,7 +3427,7 @@ body.light-mode     .loai-tab[data-val]:not(.active):active { background-color: 
      của mức đó; mức “Sáng” không cần bù gì. */
 body.light-mode[data-surface="chuan"]   { --light-surface: #ffffff; --light-card: #f8fafc; --row1-bg: #c9d6e5; }
 body.light-mode[data-surface="sang"]    { --light-surface: #ffffff; --light-card: #fdfefe; --row1-bg: #d3deeb; }
-body.light-mode[data-surface="diu"]     { --light-surface: #f7f9fc; --light-card: #f2f4f7; --row1-bg: #c3cede; }
+body.light-mode[data-surface="diu"]     { --light-surface: #f7f9fc; --light-card: #f8fafc; --row1-bg: #c3cede; }   /* ⟳ 2026-10-31 (yêu cầu “chỉnh lại nền thẻ ở chế độ màu dịu là chế độ màu chuẩn”): nền THẺ **`#f2f4f7` → `#f8fafc`** = ĐÚNG nền thẻ mức “Chuẩn” (rule `[data-surface="chuan"]` ngay trên). ⚠️ CHỈ đổi `--light-card` (nền thẻ) — `--light-surface` (nền trang) và `--row1-bg` (dải tên) GIỮ NGUYÊN theo yêu cầu. ⛔ Đừng đổi luôn 2 token kia: nền trang “Dịu” phải tối hơn “Chuẩn” mới còn phân tầng. */
 body.light-mode[data-surface="ratsang"] { --light-surface: #ffffff; --light-card: #ffffff; --row1-bg: #dce6f2; }
 body.light-mode[data-surface="ratdiu"]  { --light-surface: #edf2f8; --light-card: #dee3ea; --multi-hd: #8b5cf6;   /* ⟳ 2026-10-28 (tiếp, “nhạt thêm 1 nấc”): violet-600 `#7c3aed` → **violet-500 `#8b5cf6`** — mức “Rất dịu” luôn NHẠT HƠN mức “Chuẩn” 1 bậc cho khớp thang nền. */ --row1-bg: #b9c5d4; --text-dim: #4f5b6b; }
 body.light-mode[data-surface="ratdiu"] .kh-name { color: #1d4ed8; }   /* thẻ “Rất dịu” nay = #dee3ea (thẻ của “Dịu” cũ) ⇒ dùng ĐÚNG cặp màu của mức đó; #1e40af chỉ cần cho #d2d9e2 đã bỏ */
@@ -3466,7 +3466,7 @@ body.light-mode[data-surface="ratdiu"] .kh-name { color: #1d4ed8; }   /* thẻ �
 body:not(.light-mode)[data-surface-dark="ratsang"] { --dk-card: #2e3644; --dk-sum: #1c212c; --dk-table: #191f29; }
 body:not(.light-mode)[data-surface-dark="sang"]    { --dk-card: #242a34; --dk-sum: #141720; --dk-table: #12171f; }
 body:not(.light-mode)[data-surface-dark="chuan"]   { --dk-card: #1a1f28; --dk-sum: #0e1119; --dk-table: #0c1117; }
-body:not(.light-mode)[data-surface-dark="diu"]     { --dk-card: #141820; --dk-sum: #0a0d13; --dk-table: #080b10; }
+body:not(.light-mode)[data-surface-dark="diu"]     { --dk-card: #1a1f28; --dk-sum: #0a0d13; --dk-table: #080b10; }   /* ⟳ 2026-10-31 (yêu cầu “chỉnh lại nền thẻ ở chế độ màu dịu là chế độ màu chuẩn”): nền THẺ **`#141820` → `#1a1f28`** = ĐÚNG nền thẻ mức “Chuẩn” (rule `[data-surface-dark="chuan"]` ngay trên). ⚠️ CHỈ `--dk-card`; `--dk-sum` (bảng Tổng hợp) và `--dk-table` (bảng) giữ nguyên — chúng là tầng riêng, không phải “nền thẻ”. */
 body:not(.light-mode)[data-surface-dark="ratdiu"]  { --dk-card: #101318; --dk-sum: #07090d; --dk-table: #06090c; }
 /* ⟳ 2026-10-03ag: 3 mức → **5 MỨC** ở DARK — hai ĐẦU thang. “Chuẩn” vẫn là token gốc
    (`--dk-card: var(--ctl-solid)` = `#242a34` + `--dk-table: #12171f` + `--dk-sum: #141720`).
@@ -4535,6 +4535,28 @@ body.light-mode .kh-card-top .kh-tien { background: var(--light-card); }
 .kh-phone-row { display: flex; align-items: center; gap: 1px; margin-top: 3px; flex-wrap: wrap; }   /* ⟳ 2026-10-27: 4 → 3px theo yêu cầu “mọi hàng cách nhau 3px” */
 body:not(.light-mode) .kh-card .kh-phone-row .kh-phone { color: #93c5fd !important; }
 body.light-mode .kh-card .kh-phone-row .kh-phone { color: #1e3a8a !important; }
+/* ⟳ 2026-10-31 (yêu cầu “khi kh có cập nhật vị trí mới thì sẽ hiện tab Đường ở kế camera”):
+   Tab “Đường” đứng NGAY TRÁI nút 📷 ở hàng SĐT cuối thẻ, CHỈ hiện khi khách ĐÃ GHIM
+   (`pinOn` ⇒ `renderCards` thêm `.is-on` + `.has-dir`; `pinApply` bật/tắt TẠI CHỖ khi ghim/bỏ
+   ghim nên không phải vẽ lại danh sách). Bấm = `pinNav` (Google Maps chỉ đường tới toạ độ đã lưu)
+   — y hệt nút ➤ cạnh địa chỉ, chỉ khác là có CHỮ cho dễ thấy.
+   ⚠️ `.kh-dir-btn { margin-left: auto }` để cụm [Đường][📷] bám mép phải; có nó thì 📷 BỎ
+   `margin-left: auto` (rule `.has-dir` bên dưới) và chỉ còn 5px khe, nếu không 2 auto chia đôi
+   khoảng trống ⇒ tab lơ lửng giữa hàng.
+   ⟳ 2026-10-31 (yêu cầu “đổi icon mũi tên màu xanh và cho chữ cùng màu với địa chỉ”): icon EMOJI
+   🧭 (HĐH tự vẽ, không ăn `color`) đổi thành SVG **`#i-nav` 15px** = mũi tên chỉ đường, tô XANH LÁ
+   y hệt mũi tên ➤ cạnh địa chỉ (dark `#4ade80` · light `#22c55e`). CHỮ “Đường” nay ăn ĐÚNG màu chữ
+   địa chỉ (dark `#7f8da1` · light `#5a6b80`) thay vì xanh — nút vẫn nhận ra nhờ icon + viền xanh.
+   ⚠️ Chỉ icon mang `color` riêng (rule `.kh-dir-btn .ic`); nếu đổi màu chữ thì sửa 2 rule thân nút,
+   ⛔ đừng đổi luôn `color` của `.ic` (mũi tên sẽ thành xám). */
+.kh-dir-btn { display: none; align-items: center; gap: 4px; margin-left: auto; padding: 2px 9px; border: 1px solid rgba(74,222,128,0.55); border-radius: 999px; background: transparent; color: #7f8da1; font-family: 'Inter', sans-serif; font-size: var(--fs-card); font-weight: 600; white-space: nowrap; cursor: pointer; }
+.kh-dir-btn.is-on { display: inline-flex; }
+.kh-dir-btn .ic { color: #4ade80; }
+.kh-dir-btn:active { background: rgba(74,222,128,0.16); }
+body.light-mode .kh-card .kh-dir-btn { color: #5a6b80; border-color: rgba(21,128,61,0.45); }
+body.light-mode .kh-card .kh-dir-btn .ic { color: #22c55e; }
+body.light-mode .kh-card .kh-dir-btn:active { background: rgba(21,128,61,0.12); }
+body .kh-card > .kh-phone-row.has-dir .kh-photo { margin-left: 5px; }
 .kh-mid-row .kh-photo { position: absolute; right: 0; top: calc(50% - 3px); transform: translateY(-50%); margin: 0; }   /* ⟳ 2026-10-27 (yêu cầu “icon camera xích lên ngang với mã kh”): `50%` tính cả đệm đáy 6px của dải ⇒ nút thấp hơn viên mã KH 3px; trừ 3px để 2 tâm thẳng nhau. */
 /* ⟳ 2026-10-27 (yêu cầu “màu icon camera ở dark mode như light mode”): `#e2e8f0` → **`#ffffff`**. */
 body:not(.light-mode) .kh-card .kh-mid-row .kh-photo { color: #ffffff; }
@@ -5075,24 +5097,15 @@ body.light-mode .kh-card .kh-pin-btn.is-pinned { color: #22c55e; }   /* ⟳ 2026
    Chữ địa chỉ ở light nay lấy `#334155` của `body.light-mode .kh-addr-line`. Nút 📌 đã ghim vẫn
    giữ `#16a34a` (ẩn khi đã ghim, chỉ để `pinApply`/`pinUpdate` đồng bộ lớp). */
 body.light-mode .kh-card .kh-addr-line.is-pinned .kh-addr-txt { font-weight: 600; }
-/* ⟳ 2026-10-26 (yêu cầu “thêm đường kẻ cùng màu dưới địa chỉ đã ghi, cả 2 chế độ”, rồi **“cho
-   đường kẻ xanh lá nhạt”**): gạch chân bằng `text-decoration` nhưng nay khai màu ĐÍCH DANH, KHÔNG
-   dùng `currentColor` nữa — vì chữ địa chỉ đã ghim đã trả về màu chưa ghim (xám/navy), để
-   `currentColor` thì kẻ thành màu xám.
-   · dark: **`#4ade80`** · light: **`#22c55e`** — ⟳ 2026-10-26 (yêu cầu “cho đường kẻ màu giống icon”):
-     kẻ chân nay dùng ĐÚNG màu nút ➤ (dark `#4ade80`, light `#22c55e`) thay cho bản nhạt hơn
-     (`#b3f1ca` / `#4ade80`).
-   ⇒ hàng địa chỉ = **➤ xanh lá sáng + chữ xám/navy + kẻ chân xanh lá nhạt**.
-   ⚠️ `text-underline-offset` 3px để kẻ không dính chân chữ (dấu tiếng Việt nặng/ngã nhìn rõ);
-   `text-decoration-thickness` 1,5px cho thấy rõ trên nền sáng. ⛔ Đừng đổi sang `border-bottom`
-   trên `.kh-addr-line`: kẻ sẽ chạy HẾT bề rộng thẻ (vượt qua cả icon) chứ không chỉ dưới địa chỉ. */
-body .kh-card .kh-addr-line.is-pinned .kh-addr-txt {
-  text-decoration: underline;
-  text-decoration-color: #4ade80;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 3px;
-}
-body.light-mode .kh-card .kh-addr-line.is-pinned .kh-addr-txt { text-decoration-color: #22c55e; }
+/* ⛔ 2026-10-31 (yêu cầu “bỏ hàng gạch xanh dưới địa chỉ”): GẠCH CHÂN ĐÃ BỎ HẲN — 2 rule
+   `body .kh-card .kh-addr-line.is-pinned .kh-addr-txt { text-decoration: underline; … }` và bản
+   light `… { text-decoration-color: #22c55e }` đã XOÁ (trước đó: dark `#4ade80` · light `#22c55e`,
+   thickness 1,5px, offset 3px).
+   ⇒ “Đã ghim” nay chỉ còn nhận ra bằng **mũi tên ➤ xanh lá** (`#4ade80` / `#22c55e`) và
+   (riêng light) **chữ đậm 600** — chữ địa chỉ vẫn dùng màu chưa ghim (dark `#94a3b8` · light `#334155`).
+   ⛔ Muốn dựng lại kẻ chân thì khai `text-decoration` ĐÍCH DANH (dark `#4ade80` · light `#22c55e`)
+   chứ đừng dùng `currentColor` (chữ đã về xám ⇒ kẻ thành xám), và đặt offset 3px kẻo dính dấu tiếng Việt. */
+body.light-mode .kh-card .kh-addr-line.is-pinned .kh-addr-txt { text-decoration: none; }
 
 /* ⚑ Dòng địa chỉ đã cập nhật vị trí (2026-10-25): sau khi dùng “Dán vị trí được chia sẻ” hoặc
    “Cập nhật vị trí mới”, dòng địa chỉ hiện một chi tiết nhỏ “✔ Đã cập nhật vị trí” — giống hệt
@@ -5910,10 +5923,14 @@ function changeBackgroundColor(newColor) {
    (14 → **18px**) + `opacity: .65` cho nhạt. Chỉ đụng SPAN ICON, chứng không to lên theo. */
 .cd-total-lbl > span[aria-hidden] { font-size: 18px; line-height: 1; opacity: 0.65; }
 .cd-total-num { font-size: 19px; font-weight: 700; color: #e2591f; font-variant-numeric: tabular-nums; white-space: nowrap; }
-/* ⟳ 2026-10-29 (yêu cầu “cho chữ VNĐ giống nhau phía dưới”): cỡ/nét/màu lấy ĐÚNG như
-   `.cd-period-num small` (11px · 500 · `#64748b`) — trước là 10,5px · 600 · nâu `#9a5b32` nên hai
-   chữ VNĐ nhìn lệch hẳn. ⛔ Sửa cỡ thì sửa CẢ HAI rule. */
-.cd-total-num small { margin-left: 2px; font-size: 11px; font-weight: 500; color: #64748b; }
+/* ⟳ 2026-10-29 (yêu cầu “cho chữ VNĐ giống nhau phía dưới”): nét/màu lấy ĐÚNG như
+   `.cd-period-num small` (500 · `#64748b`) — trước là 10,5px · 600 · nâu `#9a5b32` nên hai
+   chữ VNĐ nhìn lệch hẳn. ⛔ Sửa cỡ thì sửa CẢ HAI rule.
+   ⟳ 2026-10-31 (yêu cầu “cho chữ VNĐ bằng chữ tổng nợ”): cỡ **11 → 14px** = ĐÚNG cỡ
+   `.cd-total-lbl` (14px, desktop). Ở khổ điện thoại là **14,5px** (= nhãn TỔNG NỢ) — xem
+   `@media (max-width: 639.98px)` ~6033/6037. `.cd-period-num small` đổi CÙNG cỡ để 2 chữ VNĐ
+   vẫn bằng nhau (đúng ý 2026-10-29). ⛔ Đổi cỡ thì đổi CẢ 4 DÒNG (2 desktop + 2 trong @media). */
+.cd-total-num small { margin-left: 2px; font-size: 14px; font-weight: 500; color: #64748b; }
 /* ⟳ 2026-10-29 (yêu cầu “cho các chữ màu nhạt xuống 1 tí”): `#0f172a` (slate-900) → **`#1e293b`**
    (slate-800) = nhạt hơn 1 nấc. Áp cho CẢ `.cd-period-ky` để tiêu đề và tên kỳ cùng tông. */
 .cd-detail-title { display: flex; align-items: center; gap: 7px; margin: 12px 0 8px; font-size: 16px; font-weight: 700; color: #1e293b; }
@@ -5936,7 +5953,9 @@ function changeBackgroundColor(newColor) {
 /* ⟳ 2026-10-29 (yêu cầu “cho màu số tiền như tiền tổng nợ”): chữ số của từng KỲ lấy ĐÚNG màu
    của `.cd-total-num` (`#e2591f`) — hai chỗ cùng một tông cam đỏ, chỉ khác cỡ. */
 .cd-period-num { font-size: 18px; font-weight: 700; color: #e2591f; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.cd-period-num small { margin-left: 2px; font-size: 11px; font-weight: 500; color: #64748b; }
+/* ⟳ 2026-10-31: cỡ **11 → 14px** cho BẰNG `.cd-total-num small` (yêu cầu “chữ VNĐ bằng chữ
+   tổng nợ”) — hai chữ VNĐ của tấm luôn cùng cỡ. Mobile 14,5px ở ~6037. */
+.cd-period-num small { margin-left: 2px; font-size: 14px; font-weight: 500; color: #64748b; }
 .cd-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
 /* ⟳ 2026-10-29 (yêu cầu “cho viền 4 tab này dạng tròn như tab chi tiết”): bo `9px` → **999px**
    = viên thuốc, đúng dáng các tab lọc ở thanh trên (`#Chi tiết`, `Từ 3Tr`…). */
@@ -6021,14 +6040,22 @@ body:not(.light-mode) .cd-period-num small { color: #94a3b8; }
   #modal .cd-phone { font-size: 19px; padding: 7px 13px; margin-right: 6px; }
   #modal .cd-row { font-size: 17.5px; }
   #modal .cd-row .cd-ic { width: 22px; }
-  #modal .cd-total-lbl { font-size: 16.5px; }
-  #modal .cd-total-lbl > span[aria-hidden] { font-size: 22px; }
-  #modal .cd-total-num { font-size: 21.5px; }   /* ⟳ 2026-10-30 (yêu cầu “cho số tiền nhỏ lại 1 nấc”): 23,5 → **21,5px** (cùng lúc với số tiền từng kỳ 22 → 20). */
-  #modal .cd-total-num small { font-size: 13px; }
+  /* ⟳ 2026-10-31 (yêu cầu “cho hàng này và số tiền nhỏ xuống 1 nấc”, ảnh = ô “TỔNG NỢ”):
+     hạ CẢ HÀNG lẫn số tiền đúng **−2px** (= 1 nấc của tấm này — cùng bước với lượt 2026-10-30
+     “số tiền nhỏ lại 1 nấc”: 23,5 → 21,5). Nhãn 16,5 → 14,5 · icon 💰 22 → 20 · số 21,5 → 19,5 ·
+     “VNĐ” 13 → 12. Đệm `.cd-total` (9px 11px) GIỮ NGUYÊN — hàng tự thấp đi ~2px theo chữ.
+     ⚠️ Hàng KỲ vẫn 20px (chênh 0,5px — CỐ Ý, yêu cầu chỉ nói hàng TỔNG NỢ). Muốn hạ luôn số tiền
+     từng kỳ thì sửa `#modal .cd-period-num` ngay dưới theo đúng bước −2px (20 → 18).
+     ⟳ 2026-10-31 (yêu cầu “cho chữ VNĐ bằng chữ tổng nợ”): chữ “VNĐ” 12 → **14,5px** = ĐÚNG cỡ
+     nhãn TỔNG NỢ. Hàng KỲ cũng 13 → **14,5px** để 2 chữ VNĐ vẫn bằng nhau (đúng ý 2026-10-29). */
+  #modal .cd-total-lbl { font-size: 14.5px; }
+  #modal .cd-total-lbl > span[aria-hidden] { font-size: 20px; }
+  #modal .cd-total-num { font-size: 19.5px; }
+  #modal .cd-total-num small { font-size: 14.5px; }
   #modal .cd-detail-title { font-size: 19px; }
   #modal .cd-period-ky { font-size: 19px; }
   #modal .cd-period-num { font-size: 20px; }   /* ⟳ 2026-10-30: 22 → **20px** (nhỏ 1 nấc theo yêu cầu “số tiền nhỏ lại 1 nấc”). */
-  #modal .cd-period-num small { font-size: 13px; }
+  #modal .cd-period-num small { font-size: 14.5px; }   /* ⟳ 2026-10-31: 13 → **14,5px** = cỡ chữ “VNĐ” của hàng TỔNG NỢ (yêu cầu “chữ VNĐ bằng chữ tổng nợ”). */
   #modal .cd-act { font-size: 15px; padding: 10px 4px; }
 }
 /* ⚠️ KHỔ RẤT HẸP (≤ 359px): hạ riêng hàng KỲ về cỡ CŨ — đo ở 320px, tên kỳ 17,5px cần ~105px
@@ -8030,8 +8057,8 @@ body:not(.light-mode) .kh-card .kh-phone-row .kh-phone .ic { color: currentColor
 }
 .kh-card:not(.highlighted):not(.highlighted-purple) { box-shadow: 0 1px 3px rgba(0,0,0,0.34); }
 body.light-mode .kh-card:not(.highlighted):not(.highlighted-purple) { box-shadow: 0 1px 2px rgba(15,23,42,0.07); }
-body.light-mode .kh-card { border-color: #cbd5e1; }   /* ⟳ 2026-10-28 (yêu cầu “cho màu viền thẻ ở light mode nhạt 1 tí”): slate-400 `#94a3b8` → **slate-300 `#cbd5e1`** (1 nấc nhạt). ⚠️ Chỉ đổi 3 viền TRÊN/PHẢI/DƯỚI — viền TRÁI là thanh màu (đặt riêng, không ăn rule này). */
-body:not(.light-mode) .kh-card:not(.highlighted):not(.highlighted-purple) { border-color: rgba(255,255,255,0.20); }   /* ⟳ 2026-10-28 (yêu cầu “cho màu viền thẻ sáng thêm 1 nấc dark mode”): trắng alpha **0,14 → 0,20** (một nấc, đối xứng với bản sáng `#cbd5e1`). */
+body.light-mode .kh-card { border-color: #94a3b8; }   /* ⟳ 2026-10-31 (yêu cầu “cho viền nền thẻ đậm hơn 1 tí cả 2 chế độ”): slate-300 `#cbd5e1` → **slate-400 `#94a3b8`** (đậm lại ĐÚNG 1 nấc — đảo chiều lệnh “nhạt 1 tí” của 2026-10-28). ⚠️ Chỉ đổi 3 viền TRÊN/PHẢI/DƯỚI — viền TRÁI là thanh màu (đặt riêng, không ăn rule này). */
+body:not(.light-mode) .kh-card:not(.highlighted):not(.highlighted-purple) { border-color: rgba(255,255,255,0.26); }   /* ⟳ 2026-10-31 (yêu cầu “cho viền nền thẻ đậm hơn 1 tí cả 2 chế độ”): trắng alpha **0,20 → 0,26** (đậm lại 1 nấc, đối xứng với bản sáng `#94a3b8`). ⚠️ Chỉ thẻ THƯỜNG — 2 thẻ đánh dấu giữ viền tím/xanh riêng. */
 
 /* 2) BỎ HAI DẢI TEAL: trả .kh-card-top và .kh-mid-row về nền thẻ, giữ đúng khe 3px.
    ⟳ 2026-10-28 (yêu cầu “cho icon camera ra nằm dưới góc hàng sdt”): nút 📷 ĐÃ RỜI
@@ -12305,6 +12332,14 @@ function pinApply(ma, on, ten) {
     const line = b.closest('.kh-addr-line');
     if (line) line.classList.toggle('is-pinned', on);
   });
+  /* ⟳ 2026-10-31 (“tab Đường ở kế camera”): bật/tắt TẠI CHỖ tab Đường của đúng khách này —
+     không vẽ lại danh sách (giữ vị trí cuộn). `.is-on` cho tab hiện/ẩn, `.has-dir` cho hàng
+     SĐT biết phải bỏ `margin-left:auto` của nút 📷 (xem CSS `.kh-phone-row.has-dir`). */
+  document.querySelectorAll('.kh-dir-btn[data-ma="' + CSS.escape(ma) + '"]').forEach(function (b) {
+    b.classList.toggle('is-on', on);
+    const row = b.closest('.kh-phone-row');
+    if (row) row.classList.toggle('has-dir', on);
+  });
   return map;
 }
 
@@ -12763,7 +12798,12 @@ function renderCards(q='') {
              Hàng này vẫn LUÔN render để khách không có Số TBI không làm xô lệch bố cục.
              ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG một template literal). -->
         <div class="kh-sub-row">
-        <div class="kh-sub-line">${r.so_tbi ? `<span class="kh-tbi-cluster"><span class="kh-card-lbl" aria-label="Số TBI"><span class="lbl-txt">Số TBI:</span></span><span class="kh-tbi">${hi(r.so_tbi.length > 10 ? r.so_tbi.slice(-10) : r.so_tbi, q)}</span></span>` : ''}</div>
+        <!-- ⟳ 2026-10-31 (yêu cầu “cho số tbi hiển thị đủ 14 số tính từ sau ra trước”, ảnh = thẻ KH
+             đang hiện “Số TBI: 2610004050”): cắt **14 ký tự CUỐI** thay vì 10 (đúng cách ô “Số CTO”
+             của tấm Chi tiết đang làm — xem ctoRaw ở showDetailRow). CHỈ cắt khi HIỂN THỊ, dữ liệu
+             gốc so_tbi vẫn đủ cho nút Lấy / sao chép / lọc. ⛔ KHÔNG viết dấu backtick trong chú
+             thích này (nó nằm TRONG một template literal). -->
+        <div class="kh-sub-line">${r.so_tbi ? `<span class="kh-tbi-cluster"><span class="kh-card-lbl" aria-label="Số TBI"><span class="lbl-txt">Số TBI:</span></span><span class="kh-tbi">${hi(r.so_tbi.length > 14 ? r.so_tbi.slice(-14) : r.so_tbi, q)}</span></span>` : ''}</div>
         </div>
       </div>
       <!-- ⟳ 2026-10-27k (yêu cầu “đổi vị trí sđt và địa chỉ cho nhau” + “đổi sang icon dẫn đường”):
@@ -12798,7 +12838,7 @@ function renderCards(q='') {
            ngay trên khối địa chỉ phía trên. ⚠️ Chú thích cũ nói “địa chỉ = hàng cuối” đã LỖI
            THỜI — hàng cuối nay là SĐT.
            ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
-      <div class="kh-phone-row">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="margin-right:2px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}${r.ma_khach_hang ? `<button type="button" class="kh-photo${pc ? ' has-photo' : ''}" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang || '')}" data-ky="${esc(r.thang_no || '')}" onclick="event.stopPropagation();photoTap(this)" aria-label="${pc ? 'Xem ảnh của khách (' + pc + ')' : 'Chụp ảnh khách hàng'}"><svg class="ic" aria-hidden="true"><use href="#i-camera"></use></svg><span class="kh-photo-txt">${pc ? 'Ảnh (' + pc + ')' : ''}</span></button>` : ''}</div>
+      <div class="kh-phone-row${pinHere ? ' has-dir' : ''}">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="margin-right:2px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}${r.ma_khach_hang ? `<button type="button" class="kh-dir-btn${pinHere ? ' is-on' : ''}" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí mới đã cập nhật"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-nav"/></svg>Đường</button>` : ''}${r.ma_khach_hang ? `<button type="button" class="kh-photo${pc ? ' has-photo' : ''}" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang || '')}" data-ky="${esc(r.thang_no || '')}" onclick="event.stopPropagation();photoTap(this)" aria-label="${pc ? 'Xem ảnh của khách (' + pc + ')' : 'Chụp ảnh khách hàng'}"><svg class="ic" aria-hidden="true"><use href="#i-camera"></use></svg><span class="kh-photo-txt">${pc ? 'Ảnh (' + pc + ')' : ''}</span></button>` : ''}</div>
       <button type="button" class="kh-chev" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();openCardDetail(this)" ondblclick="event.stopPropagation()" aria-label="Xem chi tiết khách hàng"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-chev"></use></svg></button>
     </div>`;
   }).join('');
@@ -12903,14 +12943,15 @@ function renderTable(q='') {
       <td>${(r.dien_thoai && r.dien_thoai != '0')
         ? '<a class="phone" href="tel:' + String(r.dien_thoai).replace(/[^0-9+]/g, '') + '" onclick="event.stopPropagation()">' + hi(r.dien_thoai, q) + '</a>'
         : '<span class="phone" style="color:var(--text-dim)">—</span>'}</td>
-      <!-- ⟳ 2026-10-20 (LƯỢT 9): ô **SỐ TBI** chỉ lấy **12 KÝ TỰ CUỐI** (yêu cầu: “số tbi chỉ lấy
+      <!-- ⟳ 2026-10-20 (LƯỢT 9): ô **SỐ TBI** chỉ lấy các KÝ TỰ CUỐI (yêu cầu: “số tbi chỉ lấy
            12 số cuối”) — mã TBI dài 18–19 ký tự nên ở khổ điện thoại nó chiếm gần hết bề rộng
-           hàng và đẩy thẻ tràn ngang. slice(-12) trên chuỗi NGẮN hơn 12 tự trả về cả chuỗi
+           hàng và đẩy thẻ tràn ngang. slice() trên chuỗi NGẮN hơn số cắt tự trả về cả chuỗi
            ⇒ không cần if. ⚠️ Ô này nằm trong CÙNG DOM với bảng máy tính nhưng cột Số TBi bị
            display: none ở mọi khổ (rule nth-child(10) … display: none !important) nên việc
-           cắt KHÔNG ảnh hưởng bảng máy tính. ℹ️ Thẻ khách (renderCards) đã cắt **10** ký tự từ
-           trước — hai chỗ khác số là CỐ Ý (thẻ hẹp hơn). -->
-      <td class="cell-dim">${hi(String(r.so_tbi || '').slice(-12), q) || '—'}</td>
+           cắt KHÔNG ảnh hưởng bảng máy tính. ⟳ 2026-10-31 (yêu cầu “cho số tbi hiển thị đủ 14 số
+           tính từ sau ra trước”): **12 → 14** cho ĐỒNG BỘ với thẻ khách (cũng 14 ký tự cuối).
+           Đã đo ở 533/320px: hàng vẫn không tràn (trOver 0, docOverX 0). -->
+      <td class="cell-dim">${hi(String(r.so_tbi || '').slice(-14), q) || '—'}</td>
       <td class="cell-ghi"><input type="text" class="ghi-chu-table" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" placeholder="—" oninput="saveGhiChu(this)" onclick="event.stopPropagation()" onpointerdown="event.stopPropagation()" onpointerup="event.stopPropagation()" ondblclick="event.stopPropagation()"></td>
       <td class="cell-abc">${hi(r.abc,q)||'—'}</td>
       <td><span class="badge ${bc}">${hi(r.ma_nhom,q)||'—'}</span></td>
@@ -14203,6 +14244,11 @@ async function capturePayShot() {
     fo.setAttribute('height', h);
     const clone = panel.cloneNode(true);
     shotCopyStyles(panel, clone);
+    /* ⟳ 2026-10-31 (yêu cầu “khi chụp ảnh thì ẩn dấu x”): nút ✕ là nút ĐÓNG của app — chụp vào
+       ảnh gửi khách thì vô nghĩa ⇒ bỏ khỏi bản sao (giống `cdShot` với `.cd-x`).
+       ⛔ Xoá SAU `shotCopyStyles`: hàm đó khớp cây con theo CHỈ SỐ (con thứ i ⇄ con thứ i), xoá
+       trước là các con phía sau nhận style lệch (tiêu đề ăn style của nút X…). */
+    clone.querySelectorAll('.pay-x').forEach(n => n.remove());
     /* ⛔ FIX 2026-10-16e — NÚT ĐỎ “Tiếp tục thanh toán” PHẢI GIÃN HẾT BỀ RỘNG NHƯ BÌNH THƯỜNG
        (yêu cầu người dùng: “cho bảng tiếp tục thanh toán dài ra như bình thường khi chụp ảnh”).
        ĐO TRƯỚC KHI SỬA (đếm VỆT ĐỎ LIỀN MẠCH dài nhất trên ảnh — ⛔ không đo bằng “bao lồi” vì
@@ -14471,9 +14517,14 @@ function cdShot(btn) {
     fo.setAttribute('width', w);
     fo.setAttribute('height', h);
     const clone = card.cloneNode(true);
+    /* ⛔ THỨ TỰ BẮT BUỘC: chép style TRƯỚC rồi mới xoá nút X.
+       ⟳ 2026-10-31 (yêu cầu “khi chụp ảnh thì ẩn dấu x”): `shotCopyStyles` đi theo ĐÚNG cây con
+       (con thứ i ⇄ con thứ i). Xoá `.cd-x` TRƯỚC khi chép ⇒ các con phía sau lệch chỉ số, viên SĐT
+       nhận style của nút X (thành ô 24×24, mất đệm/màu) — lỗi câm, ảnh vẫn ra nhưng sai.
+       ⇒ Xoá SAU `shotCopyStyles` (ngay dưới) để mọi phần tử còn lại giữ đúng style của nó. */
+    shotCopyStyles(card, clone);
     // Nút X là nút ĐÓNG của app — chụp vào ảnh gửi khách thì vô nghĩa ⇒ bỏ khỏi bản sao.
     clone.querySelectorAll('.cd-x').forEach(n => n.remove());
-    shotCopyStyles(card, clone);
     clone.setAttribute('style', clone.getAttribute('style') +
       'width:' + w + 'px;height:' + h + 'px;margin:0;overflow:hidden;animation:none;');
     const sprite = document.getElementById('__icon-sprite');
