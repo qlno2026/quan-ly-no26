@@ -4524,11 +4524,9 @@ body.light-mode .kh-card-top .kh-tien { background: var(--light-card); }
 /* ⟳ 2026-10-27 (yêu cầu “cho icon camera nằm chung hàng với mã kh”): nút 📷 dời vào
    `.kh-mid-row` (dải xanh) — phải đẩy sang MÉP PHẢI và bỏ khe trên, nếu không nó chen giữa
    viên SĐT và viên mã KH. Icon nằm trên dải xanh nên không dùng màu chữ theme (xám đậm). */
-/* ⚠️ Nút 📷 phải NẰM CÙNG HÀNG với SĐT + mã KH mà KHÔNG được đẩy xuống dòng: đặt absolute
-   ở mép phải của dải + chừa `padding-right` 34px cho chữ khỏi chui xuống dưới nút. Trước đó
-   dùng `margin-left: auto` trong flex ⇒ hết chỗ là nút WRAP xuống dòng 2 (ảnh người dùng:
-   camera nằm riêng một hàng, dải xanh cao gấp đôi). */
-.kh-mid-row { position: relative; padding-right: 34px; }
+/* ⟳ 2026-10-31: nút 📷 KHÔNG còn absolute trong hàng mã KH (xem rule `.kh-mid-row .kh-photo`
+   ở dưới) ⇒ bỏ luôn rãnh dự phòng `padding-right: 34px`; hàng đã lấy lại trọn bề ngang. */
+.kh-mid-row { position: relative; }
 /* ⟳ 2026-10-27 (yêu cầu “dời sđt xuống dưới hàng số tbi, không dời mã kh”): hàng SĐT mới nằm
    trên NỀN THẺ (không còn dải xanh) ⇒ chữ phải theo theme, không dùng màu chữ-trắng của dải.
    Dùng `!important` + specificity (0,4,1) để thắng rule `body.light-mode .kh-card .kh-phone`. */
@@ -4549,18 +4547,124 @@ body.light-mode .kh-card .kh-phone-row .kh-phone { color: #1e3a8a !important; }
    địa chỉ (dark `#7f8da1` · light `#5a6b80`) thay vì xanh — nút vẫn nhận ra nhờ icon + viền xanh.
    ⚠️ Chỉ icon mang `color` riêng (rule `.kh-dir-btn .ic`); nếu đổi màu chữ thì sửa 2 rule thân nút,
    ⛔ đừng đổi luôn `color` của `.ic` (mũi tên sẽ thành xám). */
-.kh-dir-btn { display: none; align-items: center; gap: 4px; margin-left: auto; padding: 2px 9px; border: 1px solid rgba(74,222,128,0.55); border-radius: 999px; background: transparent; color: #7f8da1; font-family: 'Inter', sans-serif; font-size: var(--fs-card); font-weight: 600; white-space: nowrap; cursor: pointer; }
+.kh-dir-btn { display: none; align-items: center; gap: 4px; margin-left: auto; padding: 2px 9px; border: 1px solid rgba(74,222,128,0.55); border-radius: 999px; background: #1d4ed8; color: #ffffff; font-family: 'Inter', sans-serif; font-size: var(--fs-card); font-weight: 600; white-space: nowrap; cursor: pointer; }   /* ⟳ 2026-10-31 (yêu cầu “cho tab đường màu nền như tab chi tiết”): nền `transparent` → **`#1d4ed8`** = ĐÚNG nền tab ĐANG CHỌN ở dải tab (`.loai-tab.active`, cả 2 theme đều `#1d4ed8`); chữ `#7f8da1` → **`#ffffff`** (như tab đang chọn) vì chữ xám trên nền xanh đậm chỉ ≈2,5:1 (không đọc được). ⚠️ Đổi nền thì PHẢI đổi chữ — 2 rule thân nút (dark ở đây, light ở `body.light-mode .kh-card .kh-dir-btn`) phải cùng `#ffffff`. */
+/* ⟳ 2026-10-31 (yêu cầu “cho viền xanh sáng hơn”, ảnh = tab “Đường” ở dark mode): viền
+   `rgba(74,222,128,0.55)` (lẫn vào nền thẻ) → **`#4ade80` ĐẶC** = ĐÚNG màu mũi tên ➤ bên trong
+   ⇒ viền và icon cùng một tông, nổi rõ trên thẻ tối mà ⛔ không đổi bề dày/kích thước nút
+   (1px, đệm giữ nguyên ⇒ thẻ không cao thêm). Light: `rgba(21,128,61,0.45)` → **`#22c55e`**
+   (cùng cặp với mũi tên ở light). ⛔ Trước đây chú thích này dặn “đừng đổi `color` của nút” — NAY
+   KHÔNG còn đúng: nền nút đã đổi sang `#1d4ed8` (2026-10-31, “cho tab đường màu nền như tab chi
+   tiết”) ⇒ chữ phải là `#ffffff`, xem rule thân nút ở trên. */
+body:not(.light-mode) .kh-card .kh-dir-btn { border-color: #2563eb; }   /* ⟳ 2026-10-31 (“cho viền giống viền màu chi tiết”): `#4ade80` → **`#2563eb`** = viền xanh dương chủ đạo (header/tab đang chọn). */
 .kh-dir-btn.is-on { display: inline-flex; }
 .kh-dir-btn .ic { color: #4ade80; }
-.kh-dir-btn:active { background: rgba(74,222,128,0.16); }
-body.light-mode .kh-card .kh-dir-btn { color: #5a6b80; border-color: rgba(21,128,61,0.45); }
+.kh-dir-btn:active { background: #1e40af; }
+body.light-mode .kh-card .kh-dir-btn { color: #ffffff; border-color: #2563eb; }   /* ⟳ 2026-10-31: viền `rgba(21,128,61,0.45)` → `#22c55e` → **`#2563eb`** (yêu cầu “cho viền giống viền màu chi tiết” — viền xanh dương chủ đạo, đồng bộ 2 theme). ⟳ cùng ngày: chữ `#5a6b80` → **`#ffffff`** (nền nút đã đổi sang `#1d4ed8` như tab “Chi tiết” đang chọn). */
 body.light-mode .kh-card .kh-dir-btn .ic { color: #22c55e; }
-body.light-mode .kh-card .kh-dir-btn:active { background: rgba(21,128,61,0.12); }
-body .kh-card > .kh-phone-row.has-dir .kh-photo { margin-left: 5px; }
-.kh-mid-row .kh-photo { position: absolute; right: 0; top: calc(50% - 3px); transform: translateY(-50%); margin: 0; }   /* ⟳ 2026-10-27 (yêu cầu “icon camera xích lên ngang với mã kh”): `50%` tính cả đệm đáy 6px của dải ⇒ nút thấp hơn viên mã KH 3px; trừ 3px để 2 tâm thẳng nhau. */
-/* ⟳ 2026-10-27 (yêu cầu “màu icon camera ở dark mode như light mode”): `#e2e8f0` → **`#ffffff`**. */
-body:not(.light-mode) .kh-card .kh-mid-row .kh-photo { color: #ffffff; }
-body.light-mode .kh-card .kh-mid-row .kh-photo { color: #ffffff; }
+body.light-mode .kh-card .kh-dir-btn:active { background: #1e40af; }
+/* ⛔ ĐÃ GỠ 2026-10-31: `body .kh-card > .kh-phone-row.has-dir .kh-photo { margin-left: 2px }` — nút 📷
+   đã rời `.kh-phone-row` về hàng MÃ KH. */
+/* ⟳ 2026-10-31 (yêu cầu “thêm nút Ghim kế nút đường, các chức năng ở hàng địa chỉ dời xuống nút
+   Ghim”): tab **“Ghim”** mới, LUÔN hiện, đứng NGAY TRƯỚC tab “Đường” ở hàng SĐT.
+   · Nó gánh TOÀN BỘ chức năng của hàng địa chỉ cũ:
+       – CHẠM: **chỉ mở hộp chọn** (Cập nhật vị trí mới · Bỏ ghim · Dán vị trí được chia sẻ ·
+         Chia sẻ vị trí) — yêu cầu “bỏ chức năng khi nhấn vào ghi là ghim vị trí mới, chỉ hiển thị
+         bảng chọn” ⇒ ⛔ `pinTabTap` không ghim ngay, không bật GPS.
+       – NHẤN-GIỮ 0,5s: mở cùng hộp đó (`pinLpTarget` nay nhận `.kh-pin-tab` thay cho chữ địa chỉ).
+     Ở hàng địa chỉ, 2 nút 📌/➤ bị ẨN (rule ngay dưới) và chữ địa chỉ KHÔNG còn bấm được.
+   · `margin-left: auto` để cả cụm [Ghim][Đường][📷] bám mép phải; nhờ nó mà `.kh-dir-btn`
+     (cũng `margin-left: auto`) phải nhường — rule `.kh-phone-row .kh-dir-btn` bên dưới đặt lại 5px.
+   ·   Màu: CHƯA ghim = viền + icon XANH DƯƠNG `#7db4ff` (đúng tông bộ icon thẻ ở dark);
+     ĐÃ ghim = `#4ade80` = cùng cặp màu của tab “Đường” ⇒ hai nút cạnh nhau đọc ra một cặp.
+     ⛔ Chữ “Ghim” giữ màu chữ phụ (`#7f8da1` / light `#5a6b80`) y như chữ “Đường”.
+     ⚠️ Icon 2 tab nay là **SVG `#i-gmap`** (không còn emoji) — xem rule cỡ ở dưới. */
+.kh-pin-tab {
+  display: inline-flex; align-items: center; gap: 2px;
+  /* ⟳ 2026-10-31 (yêu cầu “đẩy sát ra viền”): thêm `margin-right: -18px` — ĐÚNG con số của cột
+     TIỀN/DÒNG THÁNG (mục 6b) và của nút 📷 trong hàng mã KH ⇒ mép phải tab “Ghim” cách mép thẻ
+     ~9px, cả cột phải của thẻ (tiền · tháng · 📷 · tab) thẳng MỘT đường. Tab “Ghim” là con CUỐI
+     của `.kh-phone-row` nên chỉ nó cần số âm; `margin-left: auto` (dòng dưới) vẫn lo việc bám phải. */
+  margin-left: auto; margin-right: -18px; padding: 1px 5px;
+  /* ⟳ 2026-10-31 (yêu cầu “cho viền giống viền màu chi tiết”): viền xanh dương **`#2563eb`** —
+     ĐÚNG màu chủ đạo của app (`HEADER_FIXED_BG`, viền header, tab đang chọn) thay cho viền xanh
+     lá `#4ade80` của trạng thái đã ghim. Trạng thái “đã ghim” vẫn đọc được nhờ **tab “Đường”
+     xuất hiện** (tab này chỉ hiện khi đã ghim) — xem `.kh-dir-btn.is-on`. */
+  border: 1px solid #2563eb; border-radius: 999px;
+  background: transparent; color: #7f8da1;
+  /* ⟳ 2026-10-31: chữ **15px** (không dùng `--fs-card` 17px như tab “Đường”): hàng SĐT ở 375px
+     chỉ có 324px chữ, mà SĐT (137) + Ghim (80) + Đường (92) + 📷 (34) + 3 khe = **353px** ⇒ vượt
+     29px là hàng tự xuống 2 dòng, thẻ cao thêm 27px. Hạ cỡ chữ + đệm của CẢ 2 tab (xem rule
+     `.kh-phone-row .kh-dir-btn` bên dưới) để cả 3 nút + SĐT vẫn đứng MỘT HÀNG (đo lại: 375px
+     `rowH = 26px`, thẻ KHÔNG cao thêm). */
+  font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+  white-space: nowrap; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+/* ⟳ 2026-10-31 (yêu cầu “đổi 2 icon qua emoji”, rồi “đổi icon này” cho ảnh chiếc đinh đỏ — và
+   CUỐI CÙNG là “dùng cùng icon ghim Google Maps cho mọi chỗ còn emoji 🧭/📍 trên thẻ và các tấm”):
+   2 tab nay DÙNG CHUNG icon `#i-gmap` (ghim Google Maps 4 màu, symbol `#i-gmap` trong sprite):
+   **📍→`#i-gmap` Ghim** · **`#i-gmap` Đường**. SVG ăn `color` nhưng ghim Maps mang màu riêng nên
+   chỉ cỡ là quan trọng (15px, ≤374px: 13px). Chữ “Ghim/Đường” vẫn màu chữ phụ.
+.kh-pin-tab .em, body .kh-card > .kh-phone-row .kh-dir-btn .em {
+  width: auto; height: auto; font-size: 13px; line-height: 1; opacity: 1; vertical-align: middle;
+}
+/* ⛔ ĐÃ BỎ rule `.kh-pin-tab.is-pinned { border-color: #4ade80 }`: viền nay LUÔN xanh dương
+   theo yêu cầu “cho viền giống viền màu chi tiết”. Lớp `.is-pinned` vẫn được `pinApply` bật/tắt
+   để sau này cần tô gì thì dùng (hiện không khai màu). */
+.kh-pin-tab:active { background: rgba(125,180,255,0.16); }
+body.light-mode .kh-card .kh-pin-tab { color: #5a6b80; border-color: #2563eb; }   /* ⟳ 2026-10-31: viền `rgba(37,99,235,0.45)` → **`#2563eb` đặc** (đồng bộ với bản dark, yêu cầu “cho viền giống viền màu chi tiết”). */
+/* Đã có “Ghim” bám mép phải ⇒ “Đường” KHÔNG được `margin-left: auto` nữa (2 auto chia đôi khoảng
+   trống là 2 nút lơ lửng giữa hàng); chỉ cần 5px khe. */
+/* ⟳ 2026-10-31 (yêu cầu “đổi vị trí 2 nút này”): thứ tự trong markup nay là **Đường → Ghim**.
+   `margin-left: auto` đặt cho nút ĐẦU của cụm để cả cụm vẫn bám mép phải:
+   · CHƯA ghim (Đường ẩn) ⇒ nút đầu là **Ghim** ⇒ Ghim giữ `auto` (rule gốc của `.kh-pin-tab`).
+   · ĐÃ ghim (có `.has-dir`) ⇒ nút đầu là **Đường** ⇒ Đường `auto`, Ghim `margin-left: 2px`.
+   ⛔ Để `auto` cho cả hai là 2 nút lơ lửng giữa hàng (2 auto chia đôi khoảng trống). */
+body .kh-card > .kh-phone-row.has-dir .kh-dir-btn { margin-left: auto; }
+body .kh-card > .kh-phone-row.has-dir .kh-pin-tab { margin-left: 2px; }
+body .kh-card > .kh-phone-row .kh-dir-btn { font-size: 13px; padding: 1px 5px; gap: 2px; }
+/* Tab “Đường” dùng **icon ghim Google Maps 4 màu** (`#i-gmap`, yêu cầu “đổi icon tab đường bằng
+   icon này”) ⇒ SVG cần cỡ riêng (emoji 📍 của tab Ghim thì ăn rule `.em`). 13px cho cân với chữ 13px. */
+body .kh-card > .kh-phone-row .kh-dir-btn .ic { width: 15px; height: 15px; }   /* 15px: ở 13px ghim 4 màu bị nhoè thành một chấm, không nhận ra logo Maps */
+/* ⛔ ĐÃ GỠ 2026-10-31: `body .kh-card > .kh-phone-row > .kh-photo { margin-left: 2px; padding: 0 2px }`
+   — nút 📷 KHÔNG còn là con của `.kh-phone-row` (đã về hàng MÃ KH, xem `.kh-mid-row .kh-photo`). */
+/* ⟳ 2026-10-31 (người dùng báo “bị mất tab Đường”): ⛔ KHÔNG Ẩn CHỮ “Đường” nữa — ở khổ ≤ 374px
+   trước đây chữ tự ẩn (chỉ còn mũi tên nhỏ) nên nhìn như MẤT TAB. Nay trên điện thoại hẹp thì
+   THU GỌN CẢ 2 TAB + viên SĐT để vẫn đủ MỘT HÀNG: SĐT 15px (~126) + Ghim 13px (~57) +
+   Đường 13px (~66) + 📷 30 + 3 khe = ~283px ≤ 292px ở 360. Ở 320px vẫn có thể xuống 2 dòng —
+   chấp nhận, vì thà thẻ cao 23px còn hơn mất tab. */
+@media (max-width: 374px) {
+  body .kh-card > .kh-phone-row > .kh-phone { font-size: 15px; }
+  body .kh-card > .kh-phone-row .kh-pin-tab,
+  body .kh-card > .kh-phone-row .kh-dir-btn { font-size: 12px; padding: 1px 4px; }
+  body .kh-card > .kh-phone-row .kh-pin-tab .em { font-size: 12px; }
+}
+/* Hàng địa chỉ: ẨN 2 nút 📌/➤ (chức năng đã dời xuống tab “Ghim”).
+   ⚠️ Chỉ ẩn 2 NÚT, GIỮ `.kh-addr-acts` trong DOM: `pinGps` gắn huy hiệu “Đã cập nhật vị trí”
+   (`.addr-upd-badge`) vào đó và `pinApply`/`pinMenuUpdate` tìm `.kh-pin-btn[data-ma]` — bỏ hẳn là
+   ném lỗi hoặc mất huy hiệu. `!important` để thắng `.kh-addr-line.is-pinned .kh-nav-btn`. */
+body .kh-card .kh-addr-acts .kh-pin-btn,
+body .kh-card .kh-addr-acts .kh-nav-btn { display: none !important; }
+/* Chữ địa chỉ nay là CHỮ THƯỜNG: ⛔ không còn `cursor: pointer`/gạch chân báo “bấm được”, vì mọi
+   cử chỉ đã dời xuống nút Ghim. Vẫn giữ gạch chân ở light cho khách ĐÃ ghim? — KHÔNG: dấu hiệu
+   “đã ghim” nay do 2 tab Ghim/Đường báo (viền + icon xanh). */
+body .kh-card .kh-addr-txt { cursor: default; }
+body.light-mode .kh-card .kh-addr-line.is-pinned .kh-addr-txt { text-decoration: none; font-weight: 400; }
+/* ⟳ 2026-10-31 (yêu cầu “cho camera cùng hàng với mã kh”): nút 📷 về lại hàng MÃ KH nhưng KHÔNG
+   còn dùng absolute — nay là con CUỐI của `.kh-mid-row` và bám mép phải bằng `margin-left: auto`.
+   Vì sao bỏ absolute: bản 2026-10-27 phải chừa `padding-right: 34px` cho chữ khỏi chui dưới nút,
+   tức là mất 34px bề ngang của cả hàng; nay hàng là flex-wrap nên hết chỗ thì nút tự xuống dòng,
+   chữ không bao giờ bị đè ⇒ trả lại trọn bề ngang.
+   `margin` khai ĐỦ 4 phía để đè `margin-top: 6px` của rule `.kh-photo` gốc (chỉ khai `margin-top: 0`
+   thì `auto` bên trái không ăn).
+   ⟳ 2026-10-31 (yêu cầu “đẩy sát ra viền”): `margin-right: -18px` = ĐÚNG con số đang dùng cho cột
+   TIỀN + DÒNG THÁNG (`body .kh-card .kh-card-top .kh-tien-col { margin-right: -18px }`, mục 6b) ⇒
+   mép phải nút 📷 cách mép thẻ **~9px**, THẲNG CỘT với viên tiền và dòng tháng (trước là 0 ⇒ cách
+   mép thẻ 26px, lọt vào trong so với 2 thứ kia — đúng ảnh người dùng gửi). Thẻ có `overflow: hidden`
+   nên phần vượt 18px vào đệm phải 26px vẫn nằm trong thẻ, không sinh cuộn ngang. */
+.kh-mid-row .kh-photo { position: static; right: auto; top: auto; transform: none; margin: 0 -18px 0 auto; }
+/* Màu nút 📷 (2 theme) nay khai ở mục 2b cuối `<style>` (cùng chỗ với `.has-photo`) — ⛔ đừng khai
+   lại ở đây: rule đó khai SAU nên thắng, thêm bản trùng chỉ làm rối. */
 /* ⟳ 2026-10-25y (yêu cầu “chỉnh cho thẳng hàng”, người dùng chọn “mọi giá trị cùng một mốc trái”):
    MỐC TRÁI CHUNG cho MỌI GIÁ TRỊ = **20px tính từ mép thẻ** (= 16px icon + 2px margin + 2px khe).
    · hàng 1 `.kh-ds-row`: icon 16,7–32,7 ⇒ khe **6 → 4px** để viên danh số bắt đầu đúng 36,7
@@ -5007,7 +5111,7 @@ body.light-mode .kh-pin-btn { color: var(--ic-blue-dark); }
 .kh-addr-line.is-pinned .kh-addr-txt { cursor: pointer; }
 /* CỤM NÚT nằm NGAY TRƯỚC chữ địa chỉ: [📌 cập nhật] [➤ dẫn đường] <địa chỉ>. `inline-flex` + `nowrap`
    để 2 nút LUÔN đứng liền nhau (không bị tách sang 2 dòng khi dòng địa chỉ tự xuống dòng). */
-.kh-addr-acts { display: inline-flex; align-items: center; gap: 2px; vertical-align: middle; margin-right: 4px; white-space: nowrap; }
+.kh-addr-acts { display: inline-flex; align-items: center; gap: 2px; vertical-align: middle; margin-right: 0; white-space: nowrap; }   /* ⟳ 2026-10-31 (yêu cầu “cho hàng địa chỉ thẳng hàng với hàng trên”): `margin-right: 4px` → **`0`**. Hai nút 📌/➤ trong cụm nay bị ẩn `!important` (2026-10-31, chức năng dời sang tab “Ghim”) ⇒ cụm RỖNG nhưng vẫn giữ 4px đệm phải ⇒ chữ địa chỉ bị thụt vào 4px so với nhãn “Mã KV:”/“Số TBI:” (đo live: nhãn 16,79 · chữ địa chỉ 20,79). Khe 4px đó nay chuyển sang chính huy hiệu `.addr-upd-badge` (rule bên dưới) để khách ĐÃ cập nhật vị trí vẫn có khoảng cách với chữ. ⛔ Đừng trả `4px` về đây: cụm chỉ có huy hiệu mới cần đệm. */
 /* ➤ NÚT DẪN ĐƯỜNG — chỉ HIỆN khi khách đã ghim (2026-10-24, yêu cầu “khi ghim vị trí mới thì
    có dẫn đường đến vị trí mới đã ghim luôn”). Đứng TRƯỚC chữ địa chỉ; khách ĐÃ GHIM thì nút 📌
    bị ẩn ⇒ hàng đọc là **➤ <địa chỉ xanh>** (yêu cầu 2026-10-24: “hiển thị icon như ảnh”).
@@ -5113,6 +5217,7 @@ body.light-mode .kh-card .kh-addr-line.is-pinned .kh-addr-txt { text-decoration:
 .kh-addr-acts .addr-upd-badge .ic { color: #dc2626; vertical-align: -1px; margin-right: 2px; }   /* ⟳ 2026-10-28 (yêu cầu “đổi icon đã cập nhật vị trí sang icon này”): dấu ✔ → icon pin có mái nhà `#i-homepin`, màu ĐỚ như ảnh mẫu. */
 .kh-addr-acts .addr-upd-badge {
   margin-left: 6px;
+  margin-right: 4px;   /* ⟳ 2026-10-31: nhận 4px mà `.kh-addr-acts` vừa trả lại (yêu cầu “cho hàng địa chỉ thẳng hàng với hàng trên”) — chỉ huy hiệu “Đã cập nhật vị trí” mới cần khe với chữ địa chỉ. */
   font-size: 11px;
   font-weight: 600;
   color: #16a34a;
@@ -6684,6 +6789,28 @@ body.light-mode .adv-count { background: #e8ecf1; color: #0f172a; }
 /* Số in ĐẬM trong dòng đếm: light dùng `#1d4ed8` (**6,3:1** trên nền hộp `#e8ecf1`) — ⛔ không dùng
    `#2563eb` ở đây: trên nền `#e8ecf1` nó chỉ còn **4,36:1**, hụt mức 4,5 của chữ 14px đậm. */
 body.light-mode .adv-count b { color: #1d4ed8; }
+/* ⟳ 2026-10-31 — NÚT “📷 Chụp ảnh danh sách” TRONG TẤM LỌC (`advShotList`).
+   *Yêu cầu người dùng: “trong nút lọc thêm tính năng khi nhập tổng hợp các kh trên 3tr thì sẽ
+   chụp ảnh các kh đó và có các thông tin mã kh, tên kh, địa chỉ, danh số, sđt, tháng nợ, tiền nợ”.*
+   · Nằm GIỮA dòng đếm và 2 nút dưới, GIÃN HẾT bề rộng (một nút hành động chính, không chen vào
+     hàng “Xoá lọc / Xong” — 3 nút một hàng ở 320px là cắt chữ).
+   · Màu xanh `#2563eb` = ĐÚNG màu chủ đạo của app (tab đang chọn, nút “Xong”) ⇒ đọc ra là nút
+     chính. Nền chỉ pha nhẹ để không tranh chỗ với nút “Xong” (đặc `#2563eb`).
+   · `gap` + icon 18px để chữ và biểu tượng máy ảnh không dính nhau. */
+.adv-shot {
+  display: flex; width: 100%; box-sizing: border-box;
+  align-items: center; justify-content: center; gap: 8px;
+  margin-top: 3px; padding: 10px 12px; border-radius: 9px;
+  border: 1px solid #2563eb; background: rgba(37,99,235,0.16); color: #93c5fd;
+  font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.adv-shot .ic { width: 18px; height: 18px; }
+.adv-shot:active { background: rgba(37,99,235,0.3); }
+/* Light: nền xanh rất nhạt + chữ `#1d4ed8` (**6,3:1** trên `#e8effc`) — ⛔ không dùng `#2563eb`
+   cho chữ ở đây (4,4:1, hụt AA cho chữ 16px đậm). */
+body.light-mode .adv-shot { background: #e8effc; border-color: #2563eb; color: #1d4ed8; }
+body.light-mode .adv-shot:active { background: #d3e1fb; }
 .adv-acts { display: flex; gap: 5px; margin-top: 2px; }
 .adv-act {
   flex: 1 1 0; padding: 9px 10px; border-radius: 9px;
@@ -8080,8 +8207,9 @@ body.light-mode .kh-card > .kh-mid-row { background: transparent; }
    ⚠️ Hàng này `flex-wrap: wrap` nên khi SĐT quá dài ở khổ hẹp, nút 📷 xuống dòng dưới vẫn
    canh phải — không bao giờ tràn ngang. */
 body .kh-card > .kh-phone-row { justify-content: flex-start; }
-body .kh-card > .kh-phone-row .kh-photo { margin: 0 -18px 0 auto; }
-/* 2b) NÚT 📷 (absolute trong dòng mã KH): trả lại màu theo theme.
+/* ⛔ ĐÃ GỠ 2026-10-31: `body .kh-card > .kh-phone-row .kh-photo { margin: 0 -18px 0 2px }` — nút 📷
+   đã rời hàng SĐT về hàng MÃ KH (số âm `-18px` đó nay nằm ở `.kh-mid-row .kh-photo`).
+   2b) NÚT 📷 TRONG HÀNG MÃ KH: màu theo theme.
    Bản cũ ép TRẮNG vì nút nằm trên dải teal — dải đã bỏ nên trắng trên nền thẻ sáng là gần
    như vô hình. Đặt SAU rule trắng và cùng 4 lớp nên thắng bằng thứ tự khai báo. */
 body.light-mode .kh-card .kh-mid-row .kh-photo,
@@ -8489,6 +8617,22 @@ body.light-mode .kh-card.tier-low  { --card-accent: #34d399; }
   <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="3.8" y="13.4" width="4.6" height="7" rx="1.3"/><rect x="9.7" y="9" width="4.6" height="11.4" rx="1.3"/><rect x="15.6" y="3.6" width="4.6" height="16.8" rx="1.3"/></symbol>
   <!-- ── Đơn sắc cho thẻ khách hàng / modal (màu theo `color` của class cha) ── -->
   <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.8 9.8c0 3.9-3.1 7.6-6.8 11.6C8.3 17.4 5.2 13.7 5.2 9.8a6.8 6.8 0 1 1 13.6 0z"/><circle cx="12" cy="9.7" r="2.6"/></symbol>
+  <!-- 2026-10-31 (yêu cầu “đổi icon tab đường bằng icon này”, ảnh = ghim 4 màu của Google Maps):
+       icon **ghim Google Maps** cho tab “Đường” — 4 màu đặt cứng (xanh dương / đỏ / vàng / xanh lá)
+       + lỗ tròn trắng, y hệt logo. ⚠️ Đây là ngoại lệ của quy tắc “icon ăn currentColor” (dòng 5351):
+       logo nhiều màu thì không thể ăn `color`. ⚠️ `clipPath` KHÔNG được đổi id (`gmclip`) — id trùng
+       là hình vẽ sai; và phải khai `clipPathUnits="userSpaceOnUse"` để toạ độ khớp viewBox khi icon
+       bị thu nhỏ bằng `width/height`. -->
+  <symbol id="i-gmap" viewBox="0 0 48 60">
+    <defs><clipPath id="gmclip" clipPathUnits="userSpaceOnUse"><path d="M24 1.5C11.6 1.5 2 11.4 2 23.6c0 15.1 16.6 31.5 20.6 35.2a2.1 2.1 0 0 0 2.8 0C29.4 55.1 46 38.7 46 23.6 46 11.4 36.4 1.5 24 1.5Z"/></clipPath></defs>
+    <g clip-path="url(#gmclip)">
+      <rect x="1" y="0" width="46" height="31" fill="#4285F4"/>
+      <rect x="1" y="17" width="23" height="23" fill="#EA4335"/>
+      <rect x="1" y="29" width="21" height="31" fill="#FBBC04"/>
+      <rect x="21" y="19" width="26" height="41" fill="#34A853"/>
+    </g>
+    <circle cx="24" cy="22.5" r="8.8" fill="#ffffff"/>
+  </symbol>
   <!-- ➕ `#i-homepin` (2026-10-28, yêu cầu “đổi icon đã cập nhật vị trí sang icon này”): pin địa chỉ
        CÓ MÁI NHÀ bên trong — dùng cho nhãn “Đã cập nhật vị trí” ở dòng địa chỉ. Vẽ 1 màu
        (`currentColor`), màu đỏ đặt ở CSS của nhãn. -->
@@ -8518,11 +8662,17 @@ body.light-mode .kh-card.tier-low  { --card-accent: #34d399; }
        Dựng theo khuôn “copy” quen thuộc (ô sau + đường viền ô trước lộ ra ở góc trên-trái), cùng
        lưới 24×24 · `stroke-width: 2.2` · `currentColor` — ⛔ đừng vẽ đặc/đổi lưới. -->
   <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8.6" y="9.4" width="12.4" height="12.2" rx="2.2"/><path d="M5.4 15.2h-.8A2.2 2.2 0 0 1 2.4 13V4.6A2.2 2.2 0 0 1 4.6 2.4h8.4A2.2 2.2 0 0 1 15.2 4.6v.8"/></symbol>
-  <!-- ➕ `i-camera` (2026-10-24) — icon MÁY ẢNH cho nút “Chụp ảnh” dưới dòng tháng của thẻ
-       khách (xem `photoTap`). Khuôn máy ảnh quen thuộc: thân hộp + “gù” kính ngắm + 1 vòng
-       tròn ống kính. Đúng 3 quy tắc icon ở đầu khối sprite: lưới 24×24 · `stroke-width: 2.2`
-       · ăn `currentColor` (không hard-code màu). -->
-  <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 19.6a2.2 2.2 0 0 1-2.2 2.2H5.6a2.2 2.2 0 0 1-2.2-2.2V9.2a2.2 2.2 0 0 1 2.2-2.2h2.9l1.7-2.6h3.6l1.7 2.6h2.9a2.2 2.2 0 0 1 2.2 2.2z"/><circle cx="12" cy="13.6" r="3.5"/></symbol>
+  <!-- ⟳ `i-camera` (2026-10-31, yêu cầu “đổi icon camera” + ảnh mẫu người dùng gửi): ĐỔI HÌNH.
+       Bản cũ (2026-10-24 → 2026-10-27) là máy ảnh NÉT MẢNH (thân hộp + gù + 1 vòng tròn rỗng).
+       Bản mới theo ảnh mẫu: **khung VUÔNG BO NÉT** bao ngoài + **thân máy ảnh ĐẶC** (có gù kính
+       ngắm nhô lên) + **ống kính hình VÀNH** (vành trong suốt, TÂM đặc).
+       Cách vẽ: khung là `<rect>` stroke 2.2; thân + 2 vòng tròn lens gộp vào MỘT `<path fill>`
+       với `fill-rule="evenodd"` ⇒ chỗ chồng 2 lần (vành lens) thành LỖ, chỗ chồng 3 lần (tâm)
+       đặc lại — đúng “vành rỗng, tâm đặc” mà không cần mask.
+       ⚠️ Vẫn giữ 3 quy tắc icon của app: lưới 24×24 · nét 2.2 · ăn `currentColor` (không màu cứng).
+       ⛔ `#i-camera` còn dùng cho nút “📷 Chụp ảnh danh sách” trong tấm lọc — ĐỔI HÌNH thì cả 2
+       nơi đổi theo, nhưng ĐỪNG đổi id. -->
+  <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1.3" y="1.3" width="21.4" height="21.4" rx="5.6"/><path fill="currentColor" stroke="none" fill-rule="evenodd" d="M5.8 9h3.3l.8-1.8h4.2l.8 1.8h3.3a1.6 1.6 0 0 1 1.6 1.6v5.2a1.6 1.6 0 0 1-1.6 1.6H5.8a1.6 1.6 0 0 1-1.6-1.6v-5.2A1.6 1.6 0 0 1 5.8 9Zm6.2 1.3a2.9 2.9 0 1 0 0 5.8 2.9 2.9 0 0 0 0-5.8Zm0 1.05a1.85 1.85 0 1 1 0 3.7 1.85 1.85 0 0 1 0-3.7Z"/></symbol>
   <!-- `i-mobile` — hình điện thoại. ⚠️ Còn dùng ở mục lọc “KH chưa gọi” của thanh công cụ (`selectLoai`);
        ⛔ KHÔNG còn dùng cho hộp NHẤN-GIỮ mã KH nữa (nút “Mở app EVNHCMC” đã gỡ 2026-10-18) — nhưng
        ⛔ đừng xoá icon: xoá là mục lọc kia mất hình. -->
@@ -9355,6 +9505,13 @@ body.light-mode .kh-card.tier-low  { --card-accent: #34d399; }
              nên nhãn ô “Chi tiết nợ” + view + tab sáng y như trước. -->
       </div>
       <div class="adv-count" id="advCount"></div>
+      <!-- 📷 2026-10-31 (yêu cầu “trong nút lọc thêm tính năng khi nhập tổng hợp các kh trên 3tr
+           thì sẽ chụp ảnh các kh đó và có các thông tin mã kh, tên kh, địa chỉ, danh số, sđt,
+           tháng nợ, tiền nợ”): nút CHỤP ẢNH DANH SÁCH ĐANG LỌC — dựng bảng PNG 7 cột rồi lưu
+           xuống máy. Xem `advShotList`. Nút đứng giữa dòng đếm và 2 nút dưới, giãn hết bề rộng. -->
+      <button class="adv-shot" type="button" onclick="advShotList()" aria-label="Chụp ảnh danh sách khách đang lọc">
+        <svg class="ic" aria-hidden="true"><use href="#i-camera"></use></svg><span>Chụp ảnh danh sách</span>
+      </button>
       <div class="adv-acts">
         <button class="adv-act" type="button" onclick="advClear()">Xoá lọc</button>
         <button class="adv-act adv-act-primary" type="button" onclick="closeAdv()">Xong</button>
@@ -11880,6 +12037,367 @@ function advClearRange() {
   advApply();
 }
 
+/* ══ 📷 CHỤP ẢNH DANH SÁCH ĐANG LỌC (2026-10-31) ══════════════════════════════════════════════
+   *Yêu cầu người dùng: “tôi muốn trong nút lọc thêm tính năng khi nhập tổng hợp các kh trên 3tr
+   thì sẽ chụp ảnh các kh đó và có các thông tin mã kh, tên kh, địa chỉ, danh số, sđt, tháng nợ,
+   tiền nợ”.*
+   ⇒ Nút “📷 Chụp ảnh danh sách” trong tấm `#advModal` (`advShotList`) dựng ẢNH PNG của ĐÚNG
+   danh sách ĐANG LỌC — `filtered`, tức đã qua TAB (Chi tiết/tổng hợp/trên 3Tr/…), ô Nhóm/NV,
+   ô tìm kiếm, 2 chip lọc nhanh và khoảng tiền — rồi LƯU XUỐNG MÁY bằng `shotSaveToDevice`
+   (cùng đường với nút 📷 của tấm “Chi tiết” và nút QR của tấm “Thanh toán”).
+   Bảng 7 cột: # · Mã KH · Tên KH · Địa chỉ · Danh số · SĐT · Tháng nợ · Tiền nợ.
+   ⚠️ VÌ SAO VẼ BẰNG CANVAS 2D chứ ⛔ không dùng lại `shotRender` (SVG + `foreignObject`):
+     · danh sách có thể vài trăm dòng ⇒ `foreignObject` cao cả chục nghìn px bị webview BỎ QUA
+       (ảnh trắng trơn) và việc chép computed style cho cả nghìn phần tử thì rất nặng;
+     · canvas vẽ chữ TRỰC TIẾP nên không phụ thuộc CSS của trang (khỏi chép style/sprite) và
+       tự chia trang khi ảnh vượt trần 12 triệu điểm ảnh.
+   · GỘP THEO MÃ KH: tab “Tổng hợp”/“Nợ cũ” có thể trả nhiều dòng cho CÙNG một khách ⇒ cộng
+     `tien_no` lại + giữ tháng GẦN NHẤT (`pickNearestMonth`) để mỗi khách đúng MỘT dòng.
+   · ẢNH LUÔN NỀN TRẮNG + chữ tối: đây là ảnh để gửi/in, ⛔ không theo theme của app.
+   ⛔ Đừng đổi sang chụp “phần đang thấy”: người dùng cần ĐỦ khách của bộ lọc, không phải 50 thẻ
+     của trang hiện tại.
+   ══════════════════════════════════════════════════════════════════════════════════════════════ */
+let _listShotBusy = false;
+const LISTSHOT_FONT = "'Inter', 'Segoe UI', Roboto, Arial, sans-serif";
+
+/* Gom `filtered` thành 1 dòng / 1 KHÁCH (xem “GỘP THEO MÃ KH” ở trên). */
+function listShotRows() {
+  const map = new Map();
+  (filtered || []).forEach(function (r) {
+    const key = r.ma_khach_hang || r.ten_khach_hang;
+    if (!key) return;
+    let o = map.get(key);
+    if (!o) {
+      o = { ma: r.ma_khach_hang || '', ten: r.ten_khach_hang || '', dia_chi: '', danh_so: '', sdt: '', thang: '', tien: 0 };
+      map.set(key, o);
+    }
+    o.tien += (r.tien_no || 0);
+    if (!o.ten && r.ten_khach_hang) o.ten = r.ten_khach_hang;
+    if (!o.dia_chi && r.dia_chi) o.dia_chi = trimDiaChi(r.dia_chi);
+    if (!o.danh_so && r.danh_so) o.danh_so = r.danh_so;
+    if (!o.sdt && r.dien_thoai && String(r.dien_thoai) !== '0') o.sdt = String(r.dien_thoai);
+    const t = String(r.thang_no || '').trim();
+    if (t) o.thang = o.thang ? pickNearestMonth(o.thang + ',' + t) : t;
+  });
+  return Array.from(map.values());
+}
+
+/* Dòng phụ dưới tiêu đề: đang lọc theo gì (mục · nhóm · NV · khoảng tiền · từ khoá). */
+function listShotMetaText() {
+  const g = function (id) { return document.getElementById(id); };
+  const parts = [];
+  const lo = (g('filterLoai') || {}).value || '';
+  parts.push('Mục: ' + (lo ? (loaiNames[lo] || lo) : 'Chi tiết'));
+  const nhom = (g('filterNhom') || {}).value || '';
+  if (nhom) {
+    const lbl = g('filterNhomLabel');
+    parts.push('Nhóm: ' + (lbl ? lbl.textContent.replace(/\s+/g, ' ').trim() : nhom));
+  }
+  if (typeof nvScope === 'string' && nvScope) parts.push('NV: ' + nvScope);
+  const amin = g('advMin'), amax = g('advMax');
+  const mn = amin && amin.value.trim() ? parseTienLoc(amin.value) : null;
+  const mx = amax && amax.value.trim() ? parseTienLoc(amax.value) : null;
+  if (mn != null || mx != null) {
+    parts.push('Tiền nợ: ' + (mn != null ? mn.toLocaleString('vi-VN') : '0') +
+               ' → ' + (mx != null ? mx.toLocaleString('vi-VN') : '∞'));
+  }
+  const q1 = g('advQ'), q2 = g('searchInput');
+  if (q1 && q1.value.trim()) parts.push('Tìm: ' + q1.value.trim());
+  if (q2 && q2.value.trim()) parts.push('Tìm: ' + q2.value.trim());
+  return parts.join('   ·   ');
+}
+
+/* ══ TÊN TỆP ẢNH DANH SÁCH = BỘ LỌC ĐANG DÙNG (2026-10-31) ══════════════════════════════════════
+   *Yêu cầu người dùng: “đổi tên ảnh khi chụp file, ví dụ lọc trên 2tr thì ghi là DSKH tren 2tr”.*
+   ⇒ Tên tệp không còn cố định `Danh-sach-KH.png` mà ghép theo ĐÚNG bộ lọc đang bật, để mở thư mục
+   ảnh ra là biết tấm nào của bộ lọc nào (trước đây chụp 5 bộ lọc thì 5 tệp trùng tên).
+   Thứ tự ghép (chỉ thêm phần ĐANG BẬT): `DSKH` · tab (tren 3tr / no cu / tong hop / chu y / da goi /
+   chua goi / duoi 1tr / 1-2tr / 2-3tr / 3-5tr / tren 5tr) · khoảng tiền của tấm lọc (tren 2tr ·
+   duoi 5tr · 2tr-5tr) · `nhom …` · `nv …` · `tim …`.
+   ⚠️ Tên tệp phải viết KHÔNG DẤU và không có ký tự cấm (`/ \ : * ? " < > |`): một số webview/Android
+   đổi dấu tiếng Việt thành ký tự lạ hoặc cắt cụt tên ⇒ `listShotSafe()` khử dấu (dùng `normVn` +
+   `đ → d`) rồi chỉ giữ `a-z 0-9` và dấu cách.
+   ⛔ Đừng lấy nhãn từ `loaiNames` (dài, có dấu, ví dụ “Nợ 1Tr đến 3Tr” ⇒ tên tệp 40 ký tự). */
+function listShotSafe(s, maxLen) {
+  let t = normVn(String(s == null ? '' : s)).replace(/đ/g, 'd');
+  t = t.replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+  if (maxLen && t.length > maxLen) t = t.slice(0, maxLen).trim();
+  return t;
+}
+
+/* 2.000.000 → “2tr” · 1.500.000 → “1tr5” · 500.000 → “500k” · 2.000.000.000 → “2ty”.
+   (Tên tệp KHÔNG dùng `toLocaleString` được: dấu chấm/phẩy bị `listShotSafe` xoá ⇒ “2000000”.)
+   ⚠️ Phần lẻ nối LIỀN chữ đơn vị (“1tr5”) đúng cách nói của người dùng, đừng đổi thành “1.5tr”. */
+function tienTag(v) {
+  const n = Number(v);
+  if (!isFinite(n) || n <= 0) return '0';
+  const one = function (x, u) {
+    const r = Math.round(x * 10) / 10;
+    return r % 1 === 0 ? String(Math.round(r)) + u : String(r).replace('.', u);
+  };
+  if (n >= 1e9) return one(n / 1e9, 'ty');
+  if (n >= 1e6) return one(n / 1e6, 'tr');
+  if (n >= 1e3) return one(n / 1e3, 'k');
+  return String(Math.round(n));
+}
+
+/* Tên tệp KHÔNG kèm `.png` và KHÔNG kèm số trang (nơi gọi tự thêm). */
+function listShotFileName() {
+  const g = function (id) { return document.getElementById(id); };
+  const TAB_TAG = {
+    old: 'tren 3tr', oldky: 'no cu', summary: 'tong hop', marked: 'chu y',
+    called: 'da goi', notcalled: 'chua goi',
+    duoi1tr: 'duoi 1tr', '1tr': '1-3tr', '1-2tr': '1-2tr', '2-3tr': '2-3tr',
+    '3-5tr': '3-5tr', tren5tr: 'tren 5tr'
+  };
+  const parts = [];
+  if (currentTab && TAB_TAG[currentTab]) parts.push(TAB_TAG[currentTab]);
+
+  // Khoảng tiền của tấm “Lọc theo yêu cầu” (ví dụ gõ “2tr” ở ô Từ ⇒ “tren 2tr”)
+  const amin = g('advMin'), amax = g('advMax');
+  const mn = amin && amin.value.trim() ? parseTienLoc(amin.value) : null;
+  const mx = amax && amax.value.trim() ? parseTienLoc(amax.value) : null;
+  if (mn != null && mx != null) parts.push(tienTag(mn) + '-' + tienTag(mx));
+  else if (mn != null) parts.push('tren ' + tienTag(mn));
+  else if (mx != null) parts.push('duoi ' + tienTag(mx));
+
+  const nhom = (g('filterNhom') || {}).value || '';
+  if (nhom) {
+    const lbl = g('filterNhomLabel');
+    parts.push('nhom ' + (lbl ? lbl.textContent.replace(/\s+/g, ' ').trim() : nhom));
+  }
+  if (typeof nvScope === 'string' && nvScope) parts.push('nv ' + nvScope);
+
+  const q = ((g('advQ') || {}).value || '').trim() || ((g('searchInput') || {}).value || '').trim();
+  if (q) parts.push('tim ' + q);
+
+  // Trần 60 ký tự cho phần đuôi: tên tệp quá dài bị một số máy cắt cụt hoặc đổi thành tên tạm.
+  return 'DSKH' + (parts.length ? ' ' + listShotSafe(parts.join(' '), 60) : '');
+}
+
+/* Cắt chữ cho vừa bề rộng cột (thêm “…”). Đo bằng CHÍNH font đang đặt trên `ctx`. */
+function listShotCut(ctx, text, maxW) {
+  const t = String(text == null ? '' : text);
+  if (maxW <= 4) return '';
+  if (ctx.measureText(t).width <= maxW) return t;
+  let lo = 0, hi = t.length;
+  while (lo < hi) {
+    const mid = Math.ceil((lo + hi) / 2);
+    if (ctx.measureText(t.slice(0, mid) + '…').width <= maxW) lo = mid; else hi = mid - 1;
+  }
+  return t.slice(0, lo) + '…';
+}
+
+/* Vẽ MỘT TRANG ra canvas, trả `data:image/png` (null nếu canvas lỗi). */
+function listShotDrawPage(rows, o) {
+  const W = o.W, PAD = o.PAD, HEAD_H = o.HEAD_H, TBL_H = o.TBL_H, ROW_H = o.ROW_H, FOOT_H = o.FOOT_H;
+  const H = HEAD_H + TBL_H + rows.length * ROW_H + FOOT_H;
+  let S = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
+  const MAXPX = 12e6;
+  if (W * H * S * S > MAXPX) S = Math.max(0.75, Math.sqrt(MAXPX / (W * H)));
+  const cv = document.createElement('canvas');
+  cv.width = Math.max(1, Math.round(W * S));
+  cv.height = Math.max(1, Math.round(H * S));
+  const ctx = cv.getContext('2d');
+  if (!ctx) return null;
+  ctx.scale(S, S);
+  ctx.textBaseline = 'middle';
+  const F = LISTSHOT_FONT;
+  /* ⟳ 2026-10-31 (yêu cầu “cho đường viền kẻ ô đậm hơn”, ảnh = trang 1 của ảnh danh sách):
+     Lưới kẻ ô nay ĐẬM + DÀY hơn và có thêm ĐƯỜNG DỌC giữa các cột (trước chỉ có đường ngang):
+       · đường kẻ ô (ngang + dọc)  `#e2e8f0` 1px → **`#94a3b8` 1px** (slate-400)
+       · đường DỌC trong hàng tiêu đề xanh: `rgba(255,255,255,0.45)` (nền xanh nên kẻ xám là vô hình)
+       · khung BAO ngoài  `#cbd5e1` 1px → **`#475569` 1.5px** (slate-600, viền ngoài đậm nhất)
+       · đường ngăn CHÂN ảnh: `#cbd5e1` 1px → **`#64748b` 1px** (trước dùng lại strokeStyle cũ).
+     ⛔ Đừng làm đậm quá `#64748b`: chữ địa chỉ/SĐT `#1e293b` 14px nằm sát lưới sẽ bị “chìm” trong nét. */
+  const GRID_LINE = '#94a3b8';   // đường kẻ ô trong bảng
+  const GRID_FRAME = '#475569';  // khung bao ngoài bảng
+  const GRID_FOOT = '#64748b';   // đường ngăn chân ảnh
+  // Mốc trái của từng cột (dùng cho đường kẻ DỌC); bỏ mốc cuối vì khung bao đã vẽ.
+  const colXs = [];
+  (function () { let x = PAD; o.COLS.forEach(function (c) { colXs.push(x); x += c.w; }); colXs.shift(); })();
+  try {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#2563eb';
+    ctx.fillRect(0, 0, W, 6);
+    // ── đầu ảnh: tiêu đề + trang + dòng lọc + tổng
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#0f172a';
+    ctx.font = '700 29px ' + F;
+    ctx.fillText('DANH SÁCH KHÁCH HÀNG', PAD, 44);
+    ctx.textAlign = 'right';
+    ctx.font = '600 15px ' + F;
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('Trang ' + o.page + '/' + o.pageCount, W - PAD, 44);
+    ctx.textAlign = 'left';
+    ctx.font = '400 15px ' + F;
+    ctx.fillStyle = '#475569';
+    if (o.meta) ctx.fillText(listShotCut(ctx, o.meta, W - PAD * 2), PAD, 74);
+    /* ⟳ 2026-10-31 — dòng 2: “Tổng: N KH · X đ   ·   **Thứ Bảy 31/10/2026 09:00**”.
+       Lịch sử: từng in “Xuất lúc <thứ> dd/mm/yyyy hh:mm” → rồi bỏ hẳn ngày giờ (“bỏ chữ xuất lúc”)
+       → rồi yêu cầu “hiện lại ngày giờ thứ” ⇒ **giữ ngày giờ + thứ, BỎ 2 chữ “Xuất lúc”**. */
+    ctx.fillText(listShotCut(ctx, 'Tổng: ' + o.total + ' KH · ' + o.totalTien.toLocaleString('vi-VN') +
+      ' đ   ·   ' + o.when, W - PAD * 2), PAD, 98);
+    // ── hàng tiêu đề cột
+    ctx.fillStyle = '#2563eb';
+    ctx.fillRect(PAD, HEAD_H, W - PAD * 2, TBL_H);
+    ctx.font = '600 16px ' + F;
+    ctx.fillStyle = '#ffffff';
+    let hx = PAD;
+    o.COLS.forEach(function (c) {
+      ctx.textAlign = c.a === 'right' ? 'right' : (c.a === 'center' ? 'center' : 'left');
+      const tx = c.a === 'right' ? hx + c.w - 10 : (c.a === 'center' ? hx + c.w / 2 : hx + 8);
+      ctx.fillText(c.t, tx, HEAD_H + TBL_H / 2 + 1);
+      hx += c.w;
+    });
+    /* Đường kẻ DỌC trong hàng tiêu đề (nền XANH nên phải dùng nét TRẮNG mờ, kẻ xám là vô hình). */
+    ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    colXs.forEach(function (x) { ctx.moveTo(x + 0.5, HEAD_H + 5); ctx.lineTo(x + 0.5, HEAD_H + TBL_H - 5); });
+    ctx.stroke();
+    // ── các dòng khách
+    rows.forEach(function (r, i) {
+      const y = HEAD_H + TBL_H + i * ROW_H;
+      if (i % 2 === 1) { ctx.fillStyle = '#f1f5f9'; ctx.fillRect(PAD, y, W - PAD * 2, ROW_H); }
+      ctx.strokeStyle = GRID_LINE;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(PAD, y + ROW_H - 0.5);
+      ctx.lineTo(W - PAD, y + ROW_H - 0.5);
+      ctx.stroke();
+      let cx = PAD;
+      const cy = y + ROW_H / 2 + 1;
+      o.COLS.forEach(function (c) {
+        let txt = '', font = '400 15px ' + F, color = '#334155', align = 'left';
+        if (c.k === 'no') { txt = String(o.start + i + 1); font = '400 14px ' + F; color = '#64748b'; align = 'center'; }
+        else if (c.k === 'ma') { txt = r.ma; font = '600 15px ' + F; color = '#1d4ed8'; }
+        else if (c.k === 'ten') { txt = r.ten || '—'; font = '600 15px ' + F; color = '#0f172a'; }
+        /* ⟳ 2026-10-31 (yêu cầu “cho các cột này màu đậm hơn 1 nấc, cột danh số màu đậm như tên kh”):
+           Địa chỉ / SĐT / Tháng nợ **`#334155` → `#1e293b`**; cột **Danh số** lấy ĐÚNG màu + nét của
+           cột Tên KH (`#0f172a`, weight 600). Trước đó mọi cột phụ đều `#334155` (xám xanh). */
+        else if (c.k === 'dia_chi') { txt = r.dia_chi || ''; font = '400 14px ' + F; color = '#1e293b'; }
+        else if (c.k === 'danh_so') { txt = r.danh_so || ''; font = '600 14px ' + F; color = '#0f172a'; }
+        else if (c.k === 'sdt') { txt = r.sdt || ''; color = '#1e293b'; }
+        else if (c.k === 'thang') { txt = r.thang || ''; font = '400 14px ' + F; color = '#1e293b'; }
+        else if (c.k === 'tien') {
+          txt = (r.tien || 0).toLocaleString('vi-VN');
+          font = '700 15px ' + F;
+          color = r.tien >= 2000000 ? '#b91c1c' : '#047857';
+          align = 'right';
+        }
+        ctx.font = font;
+        ctx.fillStyle = color;
+        ctx.textAlign = align === 'right' ? 'right' : (align === 'center' ? 'center' : 'left');
+        const tx2 = align === 'right' ? cx + c.w - 10 : (align === 'center' ? cx + c.w / 2 : cx + 8);
+        ctx.fillText(listShotCut(ctx, txt, c.w - 16), tx2, cy);
+        cx += c.w;
+      });
+    });
+    // ── lưới kẻ ô: đường DỌC giữa các cột (phần thân bảng)
+    const fy = HEAD_H + TBL_H + rows.length * ROW_H;
+    ctx.strokeStyle = GRID_LINE;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    colXs.forEach(function (x) { ctx.moveTo(x + 0.5, HEAD_H + TBL_H); ctx.lineTo(x + 0.5, fy); });
+    ctx.stroke();
+    // khung bảng (đậm + dày hơn phần lưới bên trong)
+    ctx.strokeStyle = GRID_FRAME;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(PAD + 0.75, HEAD_H + 0.75, W - PAD * 2 - 1.5, TBL_H + rows.length * ROW_H - 1.5);
+    // ── chân ảnh
+    ctx.strokeStyle = GRID_FOOT;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(PAD, fy + 0.5);
+    ctx.lineTo(W - PAD, fy + 0.5);
+    ctx.stroke();
+    ctx.textAlign = 'left';
+    ctx.font = '600 16px ' + F;
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('Tổng: ' + o.total + ' KH · ' + o.totalTien.toLocaleString('vi-VN') + ' đ', PAD, fy + FOOT_H / 2 + 1);
+    ctx.textAlign = 'right';
+    ctx.font = '400 13px ' + F;
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('dstonno BR · Trang ' + o.page + '/' + o.pageCount, W - PAD, fy + FOOT_H / 2 + 1);
+    return cv.toDataURL('image/png');
+  } catch (e) {
+    return null;
+  }
+}
+
+/* Nút “Chụp ảnh danh sách” (xem khối chú thích ở đầu). Tự chia trang khi ảnh quá dài
+   (≤ 120 dòng/trang) và lưu TUẦN TỰ từng trang — máy chặn tải tự động thì mở tấm ảnh để
+   nhấn-giữ lưu (cùng đường dự phòng của `capturePayShot`). */
+function advShotList() {
+  if (_listShotBusy) return;
+  const rows = listShotRows();
+  if (!rows.length) { showToast('Không có khách nào trong bộ lọc — chỉnh lọc rồi chụp lại'); return; }
+  _listShotBusy = true;
+  showToast('Đang tạo ảnh danh sách…');
+
+  const W = 1200, PAD = 24, ROW_H = 30, TBL_H = 36, HEAD_H = 118, FOOT_H = 46;
+  const fixedW = 46 + 150 + 236 + 118 + 112 + 118 + 146;
+  const COLS = [
+    { k: 'no', w: 46, t: '#', a: 'center' },
+    { k: 'ma', w: 150, t: 'Mã KH' },
+    { k: 'ten', w: 236, t: 'Tên KH' },
+    { k: 'dia_chi', w: W - PAD * 2 - fixedW, t: 'Địa chỉ' },
+    { k: 'danh_so', w: 118, t: 'Danh số' },
+    { k: 'sdt', w: 112, t: 'SĐT' },
+    { k: 'thang', w: 118, t: 'Tháng nợ' },
+    { k: 'tien', w: 146, t: 'Tiền nợ', a: 'right' }
+  ];
+  // ≤ 120 dòng/trang ⇒ ảnh còn đọc được ở cỡ vừa; dài hơn thì sang trang sau.
+  const perPage = Math.min(120, Math.max(8, Math.floor((4200 - HEAD_H - TBL_H - FOOT_H) / ROW_H)));
+  const pageCount = Math.ceil(rows.length / perPage);
+  const totalTien = rows.reduce(function (s, r) { return s + (r.tien || 0); }, 0);
+  /* Ngày giờ + THỨ của hôm nay cho dòng 2 của ảnh (“hiện lại ngày giờ thứ”, 2026-10-31).
+     Tên thứ lấy từ mảng `WEEK[getDay()]` — ⛔ đừng dùng `toLocaleDateString('vi-VN')`: mỗi máy
+     (Chrome/Android/iOS) trả một kiểu (“Th 7” / “Thứ bảy” / “Saturday”) ⇒ ảnh gửi đi sẽ lệch nhau. */
+  const d = new Date();
+  const p2 = function (n) { return String(n).padStart(2, '0'); };
+  const WEEK = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+  const when = WEEK[d.getDay()] + ' ' + p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' +
+               d.getFullYear() + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
+  const opts = {
+    W: W, PAD: PAD, ROW_H: ROW_H, TBL_H: TBL_H, HEAD_H: HEAD_H, FOOT_H: FOOT_H, COLS: COLS,
+    meta: listShotMetaText(), when: when, total: rows.length, totalTien: totalTien,
+    pageCount: pageCount, page: 1, start: 0
+  };
+
+  (async function () {
+    let saved = 0;
+    for (let p = 0; p < pageCount; p++) {
+      opts.page = p + 1;
+      opts.start = p * perPage;
+      const url = listShotDrawPage(rows.slice(p * perPage, (p + 1) * perPage), opts);
+      if (!url) break;
+      /* ⟳ 2026-10-31: tên tệp theo BỘ LỌC ĐANG DÙNG (yêu cầu “lọc trên 2tr thì ghi là DSKH tren 2tr”)
+         — xem `listShotFileName`. Nhiều trang thì nối `-1`, `-2`… như cũ. */
+      const name = listShotFileName() + (pageCount > 1 ? '-' + (p + 1) : '') + '.png';
+      const ok = await shotSaveToDevice(url, name);
+      if (!ok) {
+        // Máy chặn tải tự động ⇒ giữ đường cũ: hiện ảnh để nhấn-giữ lưu.
+        const ov = document.getElementById('shotModal'), out = document.getElementById('shotImg');
+        if (ov && out) { out.src = url; ov.classList.add('open'); }
+        showToast('Máy không cho tải tự động — nhấn giữ ảnh' +
+                  (pageCount > 1 ? ' trang ' + (p + 1) : '') + ' để lưu');
+        saved = -1;
+        break;
+      }
+      saved++;
+    }
+    _listShotBusy = false;
+    if (saved > 0) {
+      showToast('✓ Đã lưu ' + saved + ' ảnh danh sách (' + rows.length + ' KH)');
+    } else if (saved === 0) {
+      showToast('Không tạo được ảnh — thử lại sau khi danh sách hiện ra');
+    }
+  })();
+}
+
 function openAdv() {
   const ov = document.getElementById('advModal');
   if (!ov) return;
@@ -12340,6 +12858,12 @@ function pinApply(ma, on, ten) {
     const row = b.closest('.kh-phone-row');
     if (row) row.classList.toggle('has-dir', on);
   });
+  /* ⟳ 2026-10-31: tab “Ghim” đổi trạng thái TẠI CHỖ (viền/icon xanh lá khi đã ghim) — nhờ nó mà
+     không phải vẽ lại danh sách (giữ vị trí cuộn). Tìm theo `data-ma` vì mỗi KH chỉ có 1 tab. */
+  document.querySelectorAll('.kh-pin-tab[data-ma="' + CSS.escape(ma) + '"]').forEach(function (b) {
+    b.classList.toggle('is-pinned', on);
+    b.setAttribute('aria-label', on ? 'Vị trí đã ghim — mở tuỳ chọn' : 'Ghim vị trí mới');
+  });
   return map;
 }
 
@@ -12395,7 +12919,10 @@ let _pinLpT = null, _pinLpEl = null, _pinLpX = 0, _pinLpY = 0;
 let _pinLpFired = false, _pinLpGuard = null;   // nuốt cú click bắn theo sau cú NHẤN-GIỮ
 let _pinMenuMa = '', _pinMenuTen = '';
 
-function pinLpTarget(t) { return (t && t.closest) ? t.closest('.kh-addr-txt') : null; }
+/* ⟳ 2026-10-31 (yêu cầu “các chức năng ở hàng địa chỉ dời xuống nút Ghim”): cử chỉ NHẤN-GIỮ nay
+   chỉ ăn trên tab **“Ghim”** ở hàng SĐT (`.kh-pin-tab`) — chữ địa chỉ KHÔNG còn mở hộp vị trí.
+   ⛔ Đừng trả `.kh-addr-txt` vào đây: chạm/giữ trên địa chỉ là để đọc, không phải để ghim nữa. */
+function pinLpTarget(t) { return (t && t.closest) ? t.closest('.kh-pin-tab, .kh-dir-btn') : null; }   /* ⟳ 2026-10-31: thêm `.kh-dir-btn` — NHẤN-GIỮ tab “Đường” mở hộp “Chia sẻ vị trí” (xem `dirMenuOpen`). ⛔ CHẠM 1 LẦN trên tab Đường vẫn là DẪN ĐƯỜNG (`pinNav`). */
 function pinLpHuy() {
   if (_pinLpT) { clearTimeout(_pinLpT); _pinLpT = null; }
   _pinLpEl = null;
@@ -12414,12 +12941,29 @@ function pinLpArm() {
        để ghim và bỏ ghim vị trí, vì đã có chức năng nhấn giữ”; muốn ghim thì NHẤN-GIỮ).
    ⚠️ Cờ `_pinLpFired` PHẢI chặn cú click bắn theo sau cú nhấn-giữ, nếu không: nhấn-giữ mở hộp rồi
    nhả tay là máy mở luôn Google Maps. */
+/* ⟳ 2026-10-31: KHÔNG còn `onclick` nào gọi `pinTextTap` — chức năng dẫn đường dời sang tab
+   “Đường”/“Ghim”. Hàm GIỮ LẠI để không phải sửa các chỗ tham chiếu trong chú thích lịch sử;
+   muốn dẫn đường từ chữ địa chỉ thì gắn lại `onclick="pinTextTap(this)"` cho `.kh-addr-txt`. */
 function pinTextTap(el) {
   if (_pinLpFired) return;
   if (!el || !el.closest) return;
   const card = el.closest('.kh-card');
   const ma = card ? (card.dataset.ma || '') : '';
   if (ma && pinOn(ma)) pinNav(el);
+}
+
+/* ⟳ 2026-10-31 — CHẠM TAB **“Ghim”** Ở HÀNG SĐT (yêu cầu “thêm nút Ghim kế nút đường, các chức
+   năng ở hàng địa chỉ dời xuống nút Ghim”).
+   ⟳ Cùng ngày, yêu cầu tiếp: **“bỏ chức năng khi nhấn vào ghi là ghim vị trí mới, chỉ hiển thị
+   bảng chọn”** ⇒ chạm Ghim **CHỈ MỞ HỘP CHỌN** (`pinMenuOpen`) ở CẢ 2 trạng thái — ⛔ KHÔNG còn
+   ghim ngay / không gọi `pinToggle`, không bật GPS ngay. Việc ghim nằm trong mục “Cập nhật vị trí
+   mới” của hộp (`pinMenuUpdate` → `pinUpdate`: chưa ghim thì ghim + GPS, đã ghim thì lấy lại GPS).
+   ⚠️ `_pinLpFired` PHẢI kiểm đầu tiên: nhấn-giữ đã mở hộp rồi nhả tay sẽ bắn thêm cú `click`,
+     không chặn thì hộp vừa đóng lại được mở lại. */
+function pinTabTap(el) {
+  if (_pinLpFired) return;
+  if (!el || !el.closest) return;
+  pinMenuOpen(el);
 }
 
 function pinMenuOpen(el) {
@@ -12441,6 +12985,10 @@ function pinMenuOpen(el) {
 function pinMenuClose() {
   const ov = document.getElementById('pinBox');
   if (ov) ov.classList.remove('on');
+  /* ⟳ 2026-10-31: hộp thứ hai (nhấn-giữ tab “Đường” ⇒ “Chia sẻ vị trí / Đóng”) đóng CHUNG một đường
+     — nhờ vậy phím Esc + cú chạm nền chỉ cần sửa ở đây, không phải thêm listener riêng. */
+  const dv = document.getElementById('dirBox');
+  if (dv) dv.classList.remove('on');
   /* ⚠️ Hạ cờ nuốt-click NGAY khi đóng hộp: nếu để cờ sống 700ms thì người dùng bấm “Cập nhật vị trí
      mới” rồi CHẠM vào địa chỉ để dẫn đường sẽ bị nuốt mất cú chạm đầu. Cú `click` bắn theo sau
      NHẤN-GIỮ đã trôi qua từ trước đó (nó tới ngay sau `pointerup`). */
@@ -12480,6 +13028,59 @@ function pinMenuEl() {
   ov.querySelector('[data-act="share"]').addEventListener('click', pinMenuShare);
   document.body.appendChild(ov);
   return ov;
+}
+
+/* ══ NHẤN-GIỮ 0,5s TRÊN TAB “ĐƯỜNG” ⇒ HỘP “Chia sẻ vị trí / Đóng” (2026-10-31) ═══════════════════
+   *Yêu cầu người dùng: “khi nhấn giữ tab đường có thêm tính năng trong ảnh”* (ảnh = hộp 2 nút
+   “Chia sẻ vị trí” + “Đóng”).
+   · CHẠM 1 LẦN trên tab Đường: GIỮ NGUYÊN dẫn đường bằng Google Maps (`pinNav`) — ⛔ đừng đổi, đó là
+     hành vi người dùng đã chốt; chỉ NHẤN-GIỮ mới mở hộp.
+   · Hộp dùng lại NGUYÊN khung `.lpcb-overlay`/`.lpcb-card`/`.lpsdt-act` của hộp Ghim + hộp SĐT ⇒
+     cùng nền trắng, cùng nút viền + chữ xanh, cùng kiểu “Đóng”.
+   · Nút “Chia sẻ vị trí” gọi THẲNG `pinMenuShare` (đọc `_pinMenuMa`/`_pinMenuTen` — hai biến này
+     được `dirMenuOpen` gán y như hộp Ghim) ⇒ CHỈ CÓ MỘT đường chia sẻ toạ độ trong app.
+     ⛔ Đừng viết bản `share` thứ hai: `pinMenuShare` đã lo đủ 3 nấc (Web Share → clipboard → hộp
+     tự-copy) và câu báo khi khách CHƯA có toạ độ. */
+function dirMenuOpen(el) {
+  const card = el && el.closest ? el.closest('.kh-card') : null;
+  if (!card) return;
+  const ma = card.dataset.ma || '';
+  if (!ma) return;
+  const tenEl = card.querySelector('.kh-name');
+  _pinMenuMa = ma;
+  _pinMenuTen = tenEl ? tenEl.textContent.trim() : '';
+  const ov = dirMenuEl();
+  ov.querySelector('.pin-box-name').textContent = _pinMenuTen || ma;
+  ov.classList.add('on');
+  pinLpArm();
+  try { if (navigator.vibrate) navigator.vibrate(15); } catch (e) {}
+}
+
+function dirMenuEl() {
+  let ov = document.getElementById('dirBox');
+  if (ov) return ov;
+  ov = document.createElement('div');
+  ov.id = 'dirBox';
+  ov.className = 'lpcb-overlay';
+  ov.innerHTML = '<div class="lpcb-card">' +
+      '<div class="lpcb-title">Vị trí khách hàng <b class="pin-box-name"></b></div>' +
+      '<button class="lpsdt-act" data-act="share" type="button">' +
+        '<svg class="ic" width="16" height="16" aria-hidden="true" style="vertical-align:middle">' +
+        '<use href="#i-share"/></svg>Chia sẻ vị trí</button>' +
+      '<button class="lpcb-btn" type="button">Đóng</button>' +
+    '</div>';
+  ov.addEventListener('click', function (e) { if (e.target === ov) pinMenuClose(); });
+  ov.querySelector('.lpcb-btn').addEventListener('click', pinMenuClose);
+  ov.querySelector('[data-act="share"]').addEventListener('click', pinMenuShare);
+  document.body.appendChild(ov);
+  return ov;
+}
+
+/* Chọn ĐÚNG hộp theo nút vừa bị nhấn-giữ: tab “Đường” ⇒ hộp chia sẻ, tab “Ghim” ⇒ hộp vị trí. */
+function pinLpOpen(el) {
+  if (!el) return;
+  if (el.classList && el.classList.contains('kh-dir-btn')) dirMenuOpen(el);
+  else pinMenuOpen(el);
 }
 
 /* “Cập nhật vị trí mới” của hộp: đi qua nút 📌 của thẻ để dùng CHUNG đường `pinUpdate`
@@ -12664,7 +13265,7 @@ function pinLpDown(e) {
     _pinLpT = null;
     const t = _pinLpEl;
     _pinLpEl = null;
-    if (t) pinMenuOpen(t);
+    if (t) pinLpOpen(t);   /* ⟳ 2026-10-31: tab “Đường” ⇒ hộp chia sẻ vị trí, tab “Ghim” ⇒ hộp vị trí */
   }, PIN_LP_MS);
 }
 function pinLpMove(e) {
@@ -12676,14 +13277,15 @@ function pinLpUp() {
   pinLpHuy();
   /* Nếu hộp VỪA mở: gia hạn cờ nuốt click tính từ lúc NHẢ TAY (người dùng có thể giữ rất lâu). */
   const ov = document.getElementById('pinBox');
-  if (wasEl && ov && ov.classList.contains('on')) pinLpArm();
+  const dv = document.getElementById('dirBox');
+  if (wasEl && ((ov && ov.classList.contains('on')) || (dv && dv.classList.contains('on')))) pinLpArm();
 }
 function pinLpMenu(e) {
   const el = pinLpTarget(e.target);
   if (!el) return;
   e.preventDefault();
   pinLpHuy();
-  pinMenuOpen(el);
+  pinLpOpen(el);
 }
 document.addEventListener('pointerdown', pinLpDown, true);
 document.addEventListener('pointermove', pinLpMove, true);
@@ -12767,7 +13369,13 @@ function renderCards(q='') {
              chữ “Mã KH:” NẰM TRONG viên mã KH (có nền --vien-bg) ⇒ vẫn tách bạch rõ mà không
              cần dấu, và hàng “SĐT · mã KH” vừa đủ 1 dòng ở 375px. Dấu thứ hai (giữa mã sổ và
              số TBI) cũng đã gỡ — số TBI nay xuống dòng riêng. ⛔ Đừng dựng lại dấu nào.
-             ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). --></span>
+             ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
+        <!-- ⟳ 2026-10-31 (yêu cầu “cho camera cùng hàng với mã kh”): nút camera RỜI hàng SĐT
+             (.kh-phone-row) — nay là con CUỐI của hàng MÃ KH (.kh-mid-row), bám mép PHẢI bằng
+             margin-left auto (xem rule .kh-mid-row .kh-photo trong CSS). Hàng này flex-wrap nên
+             ở khổ rất hẹp nút tự xuống dòng, không bao giờ đè lên viên mã KH.
+             ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG một template literal). -->
+        ${r.ma_khach_hang ? `<button type="button" class="kh-photo${pc ? ' has-photo' : ''}" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang || '')}" data-ky="${esc(r.thang_no || '')}" onclick="event.stopPropagation();photoTap(this)" aria-label="${pc ? 'Xem ảnh của khách (' + pc + ')' : 'Chụp ảnh khách hàng'}"><svg class="ic" aria-hidden="true"><use href="#i-camera"></use></svg><span class="kh-photo-txt">${pc ? 'Ảnh (' + pc + ')' : ''}</span></button>` : ''}</span>
       <div class="kh-card-mid">
         <!-- ⟳ 2026-10-25 — 3 HÀNG, mỗi hàng là flex 100% nên luôn đứng riêng:
              (1) Mã KV + danh số + mã sổ;
@@ -12809,11 +13417,13 @@ function renderCards(q='') {
       <!-- ⟳ 2026-10-27k (yêu cầu “đổi vị trí sđt và địa chỉ cho nhau” + “đổi sang icon dẫn đường”):
            ĐỊA CHỈ lên đứng NGAY SAU khối giữa (chỗ SĐT cũ) ⇒ thứ tự MỚI:
            [khối giữa: Mã KV / Mã sổ / Số TBI] → [ĐỊA CHỈ] → [GHI CHÚ] → [SĐT].
-           Nút ghim nay dùng emoji **🧭** (cùng icon với nút dẫn đường — 2 nút LUÔN LUỸ XEN:
+           Nút ghim đang dùng EMOJI 📍 (2026-10-31: SVG ghim Maps → emoji 📍 → Maps → nay về lại
+           emoji 📍 theo yêu cầu “đổi icon ghim này”); chỉ tab “Đường” giữ icon ghim Google Maps.
+           Chức năng ghim/nhấn-giữ/SĐT bấm gọi GIỮ NGUYÊN.
            khách CHƯA ghim thấy nút ghim, khách ĐÃ ghim thấy nút dẫn đường ⇒ không bao giờ
            hiện 2 icon song song). Chức năng ghim/nhấn-giữ/SĐT bấm gọi GIỮ NGUYÊN.
            ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
-      ${r.dia_chi ? `<div class="kh-addr-line${pinHere ? ' is-pinned' : ''}" style="margin-top:5px" ondblclick="event.stopPropagation()"><span class="kh-addr-acts"><button type="button" class="kh-pin-btn${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" tabindex="-1" aria-hidden="true"><span class="em" aria-hidden="true">📍</span></button><button type="button" class="kh-nav-btn" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí đã ghim"><svg class="ic" width="17" height="17" aria-hidden="true"><use href="#i-nav"/></svg></button></span><span class="kh-addr-txt" onclick="pinTextTap(this)">${hi(trimDiaChi(r.dia_chi),q)}</span></div>` : ''}
+      ${r.dia_chi ? `<div class="kh-addr-line${pinHere ? ' is-pinned' : ''}" style="margin-top:5px" ondblclick="event.stopPropagation()"><span class="kh-addr-acts"><button type="button" class="kh-pin-btn${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" tabindex="-1" aria-hidden="true"><span class="em" aria-hidden="true">📍</span></button><button type="button" class="kh-nav-btn" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí đã ghim"><svg class="ic" width="17" height="17" aria-hidden="true"><use href="#i-nav"/></svg></button></span><span class="kh-addr-txt">${hi(trimDiaChi(r.dia_chi),q)}</span></div>` : ''}
       <div class="kh-ghichu-row">
         <span class="em" aria-hidden="true" style="margin-right:6px">✏️</span>
         <input type="text" class="kh-ghichu-input" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" oninput="saveGhiChu(this)" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()" onpointerdown="event.stopPropagation()" onpointerup="event.stopPropagation()">
@@ -12838,7 +13448,10 @@ function renderCards(q='') {
            ngay trên khối địa chỉ phía trên. ⚠️ Chú thích cũ nói “địa chỉ = hàng cuối” đã LỖI
            THỜI — hàng cuối nay là SĐT.
            ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
-      <div class="kh-phone-row${pinHere ? ' has-dir' : ''}">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="margin-right:2px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}${r.ma_khach_hang ? `<button type="button" class="kh-dir-btn${pinHere ? ' is-on' : ''}" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí mới đã cập nhật"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-nav"/></svg>Đường</button>` : ''}${r.ma_khach_hang ? `<button type="button" class="kh-photo${pc ? ' has-photo' : ''}" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang || '')}" data-ky="${esc(r.thang_no || '')}" onclick="event.stopPropagation();photoTap(this)" aria-label="${pc ? 'Xem ảnh của khách (' + pc + ')' : 'Chụp ảnh khách hàng'}"><svg class="ic" aria-hidden="true"><use href="#i-camera"></use></svg><span class="kh-photo-txt">${pc ? 'Ảnh (' + pc + ')' : ''}</span></button>` : ''}</div>
+      <div class="kh-phone-row${pinHere ? ' has-dir' : ''}">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="margin-right:2px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}<!-- ⟳ 2026-10-31 (yêu cầu “đổi vị trí 2 nút này”): **ĐƯỜNG đứng TRƯỚC, GHIM đứng SAU**
+             (trước là Ghim → Đường). ⚠️ Đổi thứ tự thì phải đổi CẢ margin bám phải — xem 3 rule
+             .kh-phone-row + margin-left trong phần CSS: nút ĐẦU của cụm giữ auto.
+             ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG một template literal). -->${r.ma_khach_hang ? `<button type="button" class="kh-dir-btn${pinHere ? ' is-on' : ''}" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí mới đã cập nhật"><svg class="ic" aria-hidden="true"><use href="#i-gmap"/></svg><span class="kh-dir-txt">Đường</span></button>` : ''}${r.ma_khach_hang ? `<button type="button" class="kh-pin-tab${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinTabTap(this)" aria-label="${pinHere ? 'Vị trí đã ghim — mở tuỳ chọn' : 'Ghim vị trí mới'}"><span class="em" aria-hidden="true">📍</span>Ghim</button>` : ''}</div>
       <button type="button" class="kh-chev" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();openCardDetail(this)" ondblclick="event.stopPropagation()" aria-label="Xem chi tiết khách hàng"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-chev"></use></svg></button>
     </div>`;
   }).join('');
@@ -13880,7 +14493,7 @@ function showDetailRow(r) {
         <div class="cd-periods">${periodsHtml}</div>
         <div class="cd-actions">
           <button type="button" class="cd-act cd-act-a" data-ma="${esc(r.ma_khach_hang)}" onclick="cdCopy(this)"><span aria-hidden="true">📋</span>Lấy</button>
-          <button type="button" class="cd-act cd-act-b" data-ma="${esc(r.ma_khach_hang)}" onclick="pinNav(this)"><span aria-hidden="true">🧭</span>Đường</button>
+          <button type="button" class="cd-act cd-act-b" data-ma="${esc(r.ma_khach_hang)}" onclick="pinNav(this)"><svg class="ic" width="14" height="14" aria-hidden="true"><use href="#i-gmap"/></svg>Đường</button>
           <button type="button" class="cd-act cd-act-c" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang||'')}" data-ky="${esc(r.thang_no||'')}" onclick="cdShot(this)"><span aria-hidden="true">📷</span>Ảnh</button>
           <button type="button" class="cd-act cd-act-d" data-ma="${esc(r.ma_khach_hang)}" onclick="cdCoords(this)"><span aria-hidden="true">📍</span>Tọa độ</button>
         </div>
