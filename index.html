@@ -1704,7 +1704,14 @@ body:not(.light-mode) .kh-ma { color: var(--vien-fg) !important; background: var
    ⚠️ Đừng hạ `#7c8b9e` tiếp: #6f7d90 chỉ còn ~4,1:1 — dưới AA cho chữ 17px. */
 /* ⟳ 2026-10-27 (yêu cầu “màu chữ mã kh ở dark mode giống light mode”): `#93c5fd` → **`#dbeafe`**
    = ĐÚNG màu chữ viên mã KH ở light. Dải nền 2 theme nay cùng `#2E86AA` nên màu chữ cũng nên cùng. */
-body:not(.light-mode) .kh-card .kh-ma { color: #cbd5e1 !important; }   /* ⟳ 2026-10-28 (yêu cầu “cho màu chữ mã kh như tên kh”): **`#e2e8f0` → `#cbd5e1`** = ĐÚNG màu chữ TÊN KH ở dark (rule `body:not(.light-mode) .kh-card .kh-idcol .kh-name` ngay dưới, ~7744) ⇒ viên mã KH và tên cùng một tông, chỉ khác nền viên. Vẫn **~8,9:1** trên thẻ “Chuẩn” `#1a1f28` ✓ AA. Lịch sử chữ: `#dbeafe` → `#eff6ff` → `#e2e8f0` → **`#cbd5e1`**. ⚠️ Tên KH ở dark là MỘT màu cho mọi trạng thái (không có biến thể `highlighted`) ⇒ dark chỉ cần rule này. */
+/* ⟳ 2026-11-01 (yêu cầu “cho màu chữ mã kh ở dark mode như sdt”): `#cbd5e1` (xám nhạt — = màu TÊN KH
+   theo yêu cầu 2026-10-28) → **`#93c5fd`** = ĐÚNG màu chữ viên SĐT ở dark (rule
+   `body:not(.light-mode) .kh-card .kh-phone` ngay dưới). Hai viên nằm CẠNH NHAU trên cùng hàng nên
+   nay cùng một tông. Đo trên nền thẻ “Chuẩn” `#1a1f28` = **≈10:1** ✓ AA (trước `#cbd5e1` ≈ 8,9:1).
+   ⚠️ Đây là ĐẢO chiều yêu cầu 2026-10-28 (“mã kh như tên kh”), nay ưu tiên “như SĐT” — muốn quay lại
+   thì đổi đúng 1 giá trị về `#cbd5e1`. Lịch sử chữ: `#dbeafe` → `#eff6ff` → `#e2e8f0` → `#cbd5e1` →
+   **`#93c5fd`**. ℹ️ Dark là MỘT màu cho mọi trạng thái (không có biến thể `highlighted`). */
+body:not(.light-mode) .kh-card .kh-ma { color: #93c5fd !important; }
 /* ⟳ 2026-10-27d (yêu cầu “cho chữ viên SĐT ở dark mode cùng tông nhạt với mã KH”): hai viên
    nằm CẠNH NHAU trên cùng một hàng của dải xanh ⇒ lệch tông là thấy ngay. Nay cùng **#93c5fd**.
    ⚠️ Rule gốc `.kh-phone { color: var(--vien-fg) !important }` có specificity (0,2,1) nên rule này
@@ -8360,9 +8367,17 @@ body:not(.light-mode) .kh-card .kh-idcol .kh-name { color: #cbd5e1 !important; }
    Trước đây cả 3 thứ là tông sáng/cyan (`#dbeafe` · `#a7e8f5` · viền cyan) vì viên nằm trên
    dải teal — dải đã bỏ nên trên nền thẻ sáng chữ gần như tan biến. DARK giữ nguyên (chữ sáng
    trên thẻ tối vẫn đạt tương phản). */
-body.light-mode .kh-card .kh-mid-row .kh-ma { color: #1e293b !important; border-color: #2563eb; }   /* ⟳ 2026-11-01: viền `rgba(30,58,138,0.28)` → **`#2563eb`** (xanh dương như đường kẻ ghi chú). */   /* ⟳ 2026-10-28 (yêu cầu “cho màu chữ mã kh như tên kh”): `#1e3a8a` (navy) → **`#1e293b`** = ĐÚNG màu chữ TÊN KH ở light (rule `body.light-mode .kh-card .kh-idcol .kh-name` ngay trên, ~7741) ⇒ chữ viên mã KH và tên cùng một tông. Vẫn **~12,6:1** trên nền viên `#e0ebfd` ✓ dư AA. ⛔ Nền viên `#e0ebfd` + viền `rgba(30,58,138,0.28)` GIỮ NGUYÊN — người dùng chỉ nói “màu chữ”. ⚠️ Tên KH ở light có 2 biến thể (đánh dấu cam `#422006` · tím `#1d4ed8`) nên phải khai thêm 2 rule ngay dưới, thiếu là thẻ đánh dấu bị lệch tông. */
-body.light-mode .kh-card.highlighted .kh-mid-row .kh-ma { color: #1e40af !important; }   /* = màu tên KH của thẻ ĐÁNH DẤU (xanh dương, rule ~8311). */
-body.light-mode .kh-card.highlighted-purple .kh-mid-row .kh-ma { color: #1d4ed8 !important; }   /* = màu tên KH của thẻ ĐÁNH DẤU TÍM (~7743). */
+/* ⟳ 2026-11-01 (yêu cầu “cho màu chữ mã kh ở light mode như sđt”): `#1e293b` (xám đậm — = màu TÊN KH
+   theo 2026-10-28) → **`#1d4ed8`** = ĐÚNG màu chữ viên SĐT ở light (rule
+   `body.light-mode .kh-card > .kh-phone-row > .kh-phone`). Chữ nay cùng tông với ICON 🏷 của viên
+   (`#1d4ed8`, rule ngay dưới) và với viền `#2563eb` ⇒ cả viên một hệ xanh. Đo trên nền thẻ “Chuẩn”
+   `#f8fafc` = **7,0:1** ✓ AA (trước `#1e293b` ≈ 12,6:1).
+   ⚠️ ĐÃ XOÁ 2 rule biến thể `highlighted` (`#1e40af`) / `highlighted-purple` (`#1d4ed8`): viên mã KH
+   nay MỘT màu cho mọi trạng thái (đúng “như SĐT” — SĐT cũng không đổi theo trạng thái thẻ); giữ lại
+   là thẻ đánh dấu lệch tông với SĐT của chính nó. ⛔ Muốn quay lại “mã KH như tên KH” thì phải dựng
+   lại 2 rule đó (màu tên KH: `#1e40af` thẻ đánh dấu · `#1d4ed8` thẻ đánh dấu tím).
+   ℹ️ Viền 2026-11-01: `rgba(30,58,138,0.28)` → **`#2563eb`** (xanh dương như đường kẻ ghi chú). */
+body.light-mode .kh-card .kh-mid-row .kh-ma { color: #1d4ed8 !important; border-color: #2563eb; }
 body.light-mode .kh-card .kh-mid-row .kh-ma .ic { color: #1d4ed8; }
 
 /* 4) SỐ TIỀN thành VIÊN thuốc: chỉ đổi nền + bo + đệm; MÀU CHỮ giữ nguyên hệ đỏ/xanh đã chốt.
@@ -12375,7 +12390,11 @@ function listShotCut(ctx, text, maxW) {
 /* Vẽ MỘT TRANG ra canvas, trả `data:image/png` (null nếu canvas lỗi). */
 function listShotDrawPage(rows, o) {
   const W = o.W, PAD = o.PAD, HEAD_H = o.HEAD_H, TBL_H = o.TBL_H, ROW_H = o.ROW_H, FOOT_H = o.FOOT_H;
-  const H = HEAD_H + TBL_H + rows.length * ROW_H + FOOT_H;
+  /* ⟳ 2026-11-01: hàng của khách ≥ 2 hoá đơn cao hơn (`ROW_H2`) ⇒ chiều cao thân bảng phải CỘNG DỒN
+     theo từng hàng, không nhân `rows.length * ROW_H` như trước. */
+  const ROW_H2 = ROW_H + 16;
+  const bodyTotal = rows.reduce(function (s, r) { return s + (r.hd > 1 ? ROW_H2 : ROW_H); }, 0);
+  const H = HEAD_H + TBL_H + bodyTotal + FOOT_H;
   let S = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
   const MAXPX = 12e6;
   if (W * H * S * S > MAXPX) S = Math.max(0.75, Math.sqrt(MAXPX / (W * H)));
@@ -12442,17 +12461,23 @@ function listShotDrawPage(rows, o) {
     colXs.forEach(function (x) { ctx.moveTo(x + 0.5, HEAD_H + 5); ctx.lineTo(x + 0.5, HEAD_H + TBL_H - 5); });
     ctx.stroke();
     // ── các dòng khách
+    /* ⟳ 2026-11-01 (yêu cầu “những kh nào có 2 HĐ thì cho kh đó xuống dòng”): hàng của khách **≥ 2 hoá
+       đơn cao `ROW_H2` = 46px** và ô “Tháng nợ” vẽ **2 DÒNG** — kỳ ở dòng trên, “(n_HĐ)” ở dòng dưới
+       (giống hệt thẻ khách). Hàng 1 hoá đơn giữ **30px**. ⇒ `y` phải CỘNG DỒN (`bodyH`), ⛔ không dùng
+       `i * ROW_H` nữa; mọi mốc bên dưới (lưới dọc, khung bao, chân ảnh) đều theo `bodyH`. */
+    let bodyH = 0;
     rows.forEach(function (r, i) {
-      const y = HEAD_H + TBL_H + i * ROW_H;
-      if (i % 2 === 1) { ctx.fillStyle = '#f1f5f9'; ctx.fillRect(PAD, y, W - PAD * 2, ROW_H); }
+      const rh = r.hd > 1 ? ROW_H2 : ROW_H;
+      const y = HEAD_H + TBL_H + bodyH;
+      if (i % 2 === 1) { ctx.fillStyle = '#f1f5f9'; ctx.fillRect(PAD, y, W - PAD * 2, rh); }
       ctx.strokeStyle = GRID_LINE;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(PAD, y + ROW_H - 0.5);
-      ctx.lineTo(W - PAD, y + ROW_H - 0.5);
+      ctx.moveTo(PAD, y + rh - 0.5);
+      ctx.lineTo(W - PAD, y + rh - 0.5);
       ctx.stroke();
       let cx = PAD;
-      const cy = y + ROW_H / 2 + 1;
+      const cy = y + rh / 2 + 1;
       o.COLS.forEach(function (c) {
         let txt = '', font = '400 15px ' + F, color = '#334155', align = 'left';
         if (c.k === 'no') { txt = String(o.start + i + 1); font = '400 14px ' + F; color = '#64748b'; align = 'center'; }
@@ -12467,16 +12492,34 @@ function listShotDrawPage(rows, o) {
         else if (c.k === 'so_tbi') { txt = r.so_tbi || ''; font = '400 14px ' + F; color = '#1e293b'; }
         else if (c.k === 'sdt') { txt = r.sdt || ''; color = '#1e293b'; }
         /* ⟳ 2026-11-01 (yêu cầu “cột tháng nợ thêm phần mấy hoá đơn phía sau tháng”): thêm
-           “(2_HĐ)” y như thẻ khách (chỉ khi khách có > 1 hoá đơn; 1 HĐ thì giữ nguyên). */
+           “(2_HĐ)” y như thẻ khách (chỉ khi khách có > 1 hoá đơn; 1 HĐ thì giữ nguyên).
+           ⟳ Cùng ngày (yêu cầu “những kh nào có 2 HĐ thì cho kh đó xuống dòng”): tách “(n_HĐ)”
+           XUỐNG DÒNG RIÊNG trong ô (cột vẫn 128px) — vẽ tay ngay bên dưới, xem khối `if` sau đây. */
         else if (c.k === 'thang') {
-          txt = (r.thang || '') + (r.hd > 1 ? ' (' + r.hd + '_HĐ)' : '');
+          if (r.hd > 1) {
+            ctx.textAlign = 'left';
+            ctx.font = '400 14px ' + F;
+            ctx.fillStyle = '#1e293b';
+            ctx.fillText(listShotCut(ctx, r.thang || '', c.w - 16), cx + 8, y + 15);
+            ctx.font = '600 12px ' + F;
+            ctx.fillStyle = '#475569';
+            ctx.fillText('(' + r.hd + '_HĐ)', cx + 8, y + 32);
+            cx += c.w;
+            return;
+          }
+          txt = r.thang || '';
           font = '400 14px ' + F; color = '#1e293b';
         }
         else if (c.k === 'tien') {
           txt = (r.tien || 0).toLocaleString('vi-VN');
           font = '700 15px ' + F;
-          /* ⟳ 2026-11-01 (cùng ngưỡng với thẻ/bảng): ≥ 5Tr đỏ · 1Tr–4.999.999 CAM VÀNG · < 1Tr xanh. */
-          color = r.tien >= 5000000 ? '#b91c1c' : (r.tien >= 1000000 ? '#c2410c' : '#047857');
+          /* ⟳ 2026-11-01 (yêu cầu “cho màu số tiền trong ảnh đồng bộ màu với số tiền 3 mức ở thẻ”):
+             CHÉP ĐÚNG 3 màu chữ của THẺ ở light mode (ảnh luôn là bản sáng) —
+             `.high` **`#9f1239`** (rose-800) · `.mid` **`#854d0e`** (yellow-800) · `.low`
+             **`#047857`** (emerald-700); xem `body.light-mode .kh-tien.high` / `.mid` / `.low`
+             (~2086–2098). ⛔ Đừng để lại bộ cũ `#b91c1c` / `#c2410c` / `#047857`: hai mức đầu
+             lệch tông so với thẻ. Ngưỡng KHÔNG đổi (≥ 5Tr · 1Tr–4.999.999 · < 1Tr). */
+          color = r.tien >= 5000000 ? '#9f1239' : (r.tien >= 1000000 ? '#854d0e' : '#047857');
           align = 'right';
         }
         ctx.font = font;
@@ -12486,9 +12529,10 @@ function listShotDrawPage(rows, o) {
         ctx.fillText(listShotCut(ctx, txt, c.w - 16), tx2, cy);
         cx += c.w;
       });
+      bodyH += rh;
     });
     // ── lưới kẻ ô: đường DỌC giữa các cột (phần thân bảng)
-    const fy = HEAD_H + TBL_H + rows.length * ROW_H;
+    const fy = HEAD_H + TBL_H + bodyH;
     ctx.strokeStyle = GRID_LINE;
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -12497,7 +12541,7 @@ function listShotDrawPage(rows, o) {
     // khung bảng (đậm + dày hơn phần lưới bên trong)
     ctx.strokeStyle = GRID_FRAME;
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(PAD + 0.75, HEAD_H + 0.75, W - PAD * 2 - 1.5, TBL_H + rows.length * ROW_H - 1.5);
+    ctx.strokeRect(PAD + 0.75, HEAD_H + 0.75, W - PAD * 2 - 1.5, TBL_H + bodyH - 1.5);
     // ── chân ảnh
     ctx.strokeStyle = GRID_FOOT;
     ctx.lineWidth = 1;
@@ -12533,18 +12577,17 @@ function advShotList() {
      số tbi trước cột sdt”): 10 cột — # · Mã KH · Tên KH · Địa chỉ · Danh số · **Mã sổ** · Tháng nợ ·
      Tiền nợ · **Số TBI** · **SĐT (cuối hàng)**. Ảnh phải rộng thêm (`W` 1200 → **1440**) mới nhét đủ
      2 cột mà cột Địa chỉ vẫn còn ~240px. */
-  /* ⟳ 2026-11-01 (yêu cầu “cột tháng nợ hiện đủ (2_HĐ)” — ảnh xuất bị cắt mất phần đuôi):
-     Ảnh ra **W 1440 → 1470** để nới cột Tháng nợ mà cột Địa chỉ vẫn còn ~254px.
-     ⚠️ Số đo bằng `ctx.measureText` với ĐÚNG font của ô (400 14px Inter):
-       `1-10/2026 (2_HĐ)` = **116,5px** (dài nhất trong dữ liệu thật 1.147 KH) ·
-       `12/2025-1/2026 (2_HĐ)` = **155,5px** (khách vắt 2 năm — chưa có trong dữ liệu nhưng phải chừa).
-     `listShotCut` cắt theo `c.w - 16` ⇒ 128px chỉ còn 112px ⇒ **mất đuôi “(2_HĐ)”**. */
-  const W = 1470, PAD = 24, ROW_H = 30, TBL_H = 36, HEAD_H = 118, FOOT_H = 46;
+  /* ⛔ ĐÃ TRẢ LẠI BỀ RỘNG CŨ (2026-11-01 — yêu cầu sau đó: “không cần phải nới các cột, những kh nào
+     có 2 HĐ thì cho kh đó xuống dòng”). Nới cột Tháng nợ 128→172 + ảnh 1440→1470 (bản trước) đã GỠ:
+     nay cột vẫn **128** và chữ “(n_HĐ)” xuống DÒNG THỨ 2 ngay trong ô ⇒ hàng đó cao **46px** thay vì
+     30px (`ROW_H2`, xem `listShotDrawPage`). Vì sao phải xuống dòng chứ không nới: `1-10/2026 (2_HĐ)`
+     đo bằng `ctx.measureText` (400 14px Inter) = **116,5px** mà ô chỉ vẽ trong `c.w − 16` = 112px ⇒
+     nới tới 172px là ăn mất 44px của cột Địa chỉ. */
+  const W = 1440, PAD = 24, ROW_H = 30, TBL_H = 36, HEAD_H = 118, FOOT_H = 46;
   /* ⟳ 2026-11-01 (yêu cầu “cho cột tiền nợ, danh số, mã sổ sát vô hàng kẻ, để cột gọn lại”):
      thu hẹp 3 cột đó về sát nội dung — Danh số 118→**104** · Mã sổ 112→**104** · Tiền nợ 146→**128**
-     (Tháng nợ 118→**128** → **172** khi thêm “(n_HĐ)” — 172−16 = 156 ≥ 155,5). Phần bề rộng dư dồn
-     cho Địa chỉ (đo được **254px**). */
-  const fixedW = 46 + 150 + 236 + 104 + 104 + 172 + 128 + 116 + 112;
+     (Tháng nợ 118→**128**). Phần bề rộng dư dồn hết cho Địa chỉ (**268px**). */
+  const fixedW = 46 + 150 + 236 + 104 + 104 + 128 + 128 + 116 + 112;
   const COLS = [
     { k: 'no', w: 46, t: '#', a: 'center' },
     { k: 'ma', w: 150, t: 'Mã KH' },
@@ -12552,14 +12595,35 @@ function advShotList() {
     { k: 'dia_chi', w: W - PAD * 2 - fixedW, t: 'Địa chỉ' },
     { k: 'danh_so', w: 104, t: 'Danh số' },
     { k: 'so_gcs', w: 104, t: 'Mã sổ' },
-    { k: 'thang', w: 172, t: 'Tháng nợ' },
+    { k: 'thang', w: 128, t: 'Tháng nợ' },
     { k: 'tien', w: 128, t: 'Tiền nợ', a: 'right' },
     { k: 'so_tbi', w: 116, t: 'Số TBI' },
     { k: 'sdt', w: 112, t: 'SĐT' }
   ];
-  // ≤ 120 dòng/trang ⇒ ảnh còn đọc được ở cỡ vừa; dài hơn thì sang trang sau.
-  const perPage = Math.min(120, Math.max(8, Math.floor((4200 - HEAD_H - TBL_H - FOOT_H) / ROW_H)));
-  const pageCount = Math.ceil(rows.length / perPage);
+  /* ⟳ 2026-11-01 — chia trang theo CHIỀU CAO (không phải theo số dòng): từ khi khách ≥ 2 hoá đơn có
+     hàng cao gấp rưỡi (`ROW_H2` 46px, xem `listShotDrawPage`), chia cứng 120 dòng/trang sẽ làm trang
+     có nhiều khách 2 HĐ vượt 4200px. Nay: cộng dồn chiều cao, chạm trần `BODY_MAX` thì sang trang;
+     vẫn chặn tối đa **120 dòng/trang** để ảnh còn đọc được ở cỡ vừa. */
+  const ROW_H2 = ROW_H + 16;
+  const rowH = function (r) { return r.hd > 1 ? ROW_H2 : ROW_H; };
+  const BODY_MAX = 4200 - HEAD_H - TBL_H - FOOT_H;
+  const pagesArr = [], pageStarts = [];
+  (function () {
+    let cur = [], curH = 0;
+    rows.forEach(function (r) {
+      const h = rowH(r);
+      if (cur.length && (curH + h > BODY_MAX || cur.length >= 120)) {
+        pagesArr.push(cur);
+        cur = []; curH = 0;
+      }
+      cur.push(r); curH += h;
+    });
+    if (cur.length) pagesArr.push(cur);
+  })();
+  /* `pageStarts` = dòng bắt đầu của từng trang (`opts.start` dùng in số thứ tự) — tính MỘT lần ở đây
+     cho chắc, vì trang bị cắt theo chiều cao nên độ dài mỗi trang khác nhau. */
+  (function () { let s = 0; pagesArr.forEach(function (pg, i) { pageStarts[i] = s; s += pg.length; }); })();
+  const pageCount = pagesArr.length;
   const totalTien = rows.reduce(function (s, r) { return s + (r.tien || 0); }, 0);
   /* Ngày giờ + THỨ của hôm nay cho dòng 2 của ảnh (“hiện lại ngày giờ thứ”, 2026-10-31).
      Tên thứ lấy từ mảng `WEEK[getDay()]` — ⛔ đừng dùng `toLocaleDateString('vi-VN')`: mỗi máy
@@ -12579,8 +12643,8 @@ function advShotList() {
     let saved = 0;
     for (let p = 0; p < pageCount; p++) {
       opts.page = p + 1;
-      opts.start = p * perPage;
-      const url = listShotDrawPage(rows.slice(p * perPage, (p + 1) * perPage), opts);
+      opts.start = pageStarts[p];
+      const url = listShotDrawPage(pagesArr[p], opts);
       if (!url) break;
       /* ⟳ 2026-10-31: tên tệp theo BỘ LỌC ĐANG DÙNG (yêu cầu “lọc trên 2tr thì ghi là DSKH tren 2tr”)
          — xem `listShotFileName`. Nhiều trang thì nối `-1`, `-2`… như cũ. */
