@@ -4237,12 +4237,11 @@ body.light-mode .kh-card.highlighted { background: #e6efff; border: 2px solid #2
    (blue on amber) — dùng nâu đậm cùng họ với nền; nền xanh thì giữ chữ xanh đậm. */
 body.light-mode .kh-card.highlighted .kh-name { color: #1e40af; }   /* ⟳ 2026-11-01: theo nền XANH DƯƠNG NHẠT — chữ **`#1e40af`** (≈ 8:1 trên `#e6efff` ✓). */
 body.light-mode .kh-card.highlighted-purple .kh-name { color: #1d4ed8; }
-body.light-mode .kh-card.highlighted .kh-tien,
-body.light-mode .kh-card.highlighted .kh-tien.high,
-body.light-mode .kh-card.highlighted .kh-tien .mil-digit,
-body.light-mode .kh-card.highlighted-purple .kh-tien,
-body.light-mode .kh-card.highlighted-purple .kh-tien.high,
-body.light-mode .kh-card.highlighted-purple .kh-tien .mil-digit { color: #b91c1c !important; }
+/* ⛔ ĐÃ GỠ 2026-11-01 (yêu cầu “khi nhấn 2 lần đánh dấu, thì giữ nguyên màu số tiền ở light mode”):
+   khối 6 selector ép `.kh-tien` (kể cả `.mil-digit`) về `#b91c1c !important` khi thẻ đánh dấu
+   cam/tím — đó là lý do số tiền “đổi màu” lúc nhấn 2 lần. Nay màu tiền ĐI THEO MỨC NỢ như thẻ
+   thường (`.high` `#dc2626` · `.low` `#059669` · `.mid` …) trên nền đánh dấu `#e6efff`/`#e8f0ff`
+   — tương phản vẫn ≥ 4,5:1. Muốn bật lại thì chép đúng 6 selector đó vào đây. */
 .kh-card.highlighted-purple { background: #17233f; border-color: #00e5ff; border-width: 2px; box-shadow: var(--elev-1); }
 body.light-mode .kh-card.highlighted-purple { background: #e8f0ff; border-color: #1d4ed8; border-width: 2px; box-shadow: 0 0 0 2.5px rgba(29,78,216,0.20); }
 
@@ -4564,8 +4563,7 @@ body.light-mode .kh-card-top .kh-tien { background: var(--light-card); }
 /* ⟳ 2026-10-27 (yêu cầu “dời sđt xuống dưới hàng số tbi, không dời mã kh”): hàng SĐT mới nằm
    trên NỀN THẺ (không còn dải xanh) ⇒ chữ phải theo theme, không dùng màu chữ-trắng của dải.
    Dùng `!important` + specificity (0,4,1) để thắng rule `body.light-mode .kh-card .kh-phone`. */
-.kh-phone-row { display: flex; align-items: center; gap: 1px; margin-top: 3px; flex-wrap: wrap; }   /* ⟳ 2026-10-27: 4 → 3px theo yêu cầu “mọi hàng cách nhau 3px” */
-body:not(.light-mode) .kh-card .kh-phone-row .kh-phone { color: #93c5fd !important; }
+.kh-phone-row { display: flex; align-items: center; gap: 1px; margin-top: 3px; flex-wrap: wrap; }   /* ⟳ 2026-10-27: 4 → 3px theo yêu cầu “mọi hàng cách nhau 3px” */body:not(.light-mode) .kh-card .kh-phone-row .kh-phone { color: #93c5fd !important; }
 body.light-mode .kh-card .kh-phone-row .kh-phone { color: #1e3a8a !important; }
 /* ⟳ 2026-10-31 (yêu cầu “khi kh có cập nhật vị trí mới thì sẽ hiện tab Đường ở kế camera”):
    Tab “Đường” đứng NGAY TRÁI nút 📷 ở hàng SĐT cuối thẻ, CHỈ hiện khi khách ĐÃ GHIM
@@ -4670,7 +4668,7 @@ body.light-mode .kh-card .kh-pin-tab { color: #5a6b80; border-color: #2563eb; } 
    ⛔ Để `auto` cho cả hai là 2 nút lơ lửng giữa hàng (2 auto chia đôi khoảng trống). */
 body .kh-card > .kh-phone-row.has-dir .kh-dir-btn { margin-left: auto; }
 body .kh-card > .kh-phone-row.has-dir .kh-pin-tab { margin-left: 2px; }
-body .kh-card > .kh-phone-row .kh-dir-btn { font-size: 16px; padding: 2px 9px; gap: 4px; }   /* ⟳ 2026-11-01 (yêu cầu “cho 2 tab này kích cỡ to hơn”): 13 → **15px** cho ĐỒNG CỠ với tab “Ghim” (`.kh-pin-tab` cũng 15px). */
+body .kh-card > .kh-phone-row .kh-dir-btn { font-size: 16px; padding: 2px 10px; gap: 5px; line-height: 1.35; }   /* ⟳ 2026-11-01 (yêu cầu “cho kích cỡ nút vị trí và sđt bằng nút ảnh”): tab “Vị trí” lấy ĐÚNG bộ số đo của tab “Ảnh” (`body .kh-card > .kh-phone-row > .kh-photo`, ~4760): chữ **16px**, `line-height: 1.35` (trước `normal` ⇒ thấp hơn Ảnh **2,4px**), đệm **2px 10px**, khe icon↔chữ **5px**. Đo live 533px: trước Vị trí **24,8px** vs Ảnh **27,2px** ⇒ nay cả 3 đều **27,2px**. */   /* ⟳ 2026-11-01 (yêu cầu “cho 2 tab này kích cỡ to hơn”): 13 → **15px** cho ĐỒNG CỠ với tab “Ghim” (`.kh-pin-tab` cũng 15px). */
 /* Tab “Đường” dùng **icon ghim Google Maps 4 màu** (`#i-gmap`, yêu cầu “đổi icon tab đường bằng
    icon này”) ⇒ SVG cần cỡ riêng (emoji 📍 của tab Ghim thì ăn rule `.em`). 13px cho cân với chữ 13px. */
 body .kh-card > .kh-phone-row .kh-dir-btn .ic { width: 18px; height: 18px; }   /* 15px: ở 13px ghim 4 màu bị nhoè thành một chấm, không nhận ra logo Maps */
@@ -4681,12 +4679,19 @@ body .kh-card > .kh-phone-row .kh-dir-btn .ic { width: 18px; height: 18px; }   /
    THU GỌN CẢ 2 TAB + viên SĐT để vẫn đủ MỘT HÀNG: SĐT 15px (~126) + Ghim 13px (~57) +
    Đường 13px (~66) + 📷 30 + 3 khe = ~283px ≤ 292px ở 360. Ở 320px vẫn có thể xuống 2 dòng —
    chấp nhận, vì thà thẻ cao 23px còn hơn mất tab. */
-@media (max-width: 374px) {
-  body .kh-card > .kh-phone-row > .kh-phone { font-size: 15px; }
-  body .kh-card > .kh-phone-row .kh-pin-tab,
-  body .kh-card > .kh-phone-row .kh-dir-btn { font-size: 14px; padding: 1px 4px; }
-  body .kh-card > .kh-phone-row .kh-pin-tab .em { font-size: 14px; }
-}
+/* ⟳ 2026-11-01 (yêu cầu “cho kích cỡ nút vị trí và sđt bằng nút ảnh”): VIÊN SĐT lấy ĐÚNG bộ số
+   đo của tab “Ảnh” (`.kh-photo`: 16px · line-height 1.35 · đệm 2px 10px · viền 1px) ⇒ 3 phần tử
+   ở hàng SĐT cao BẰNG NHAU (đo 533px: SĐT **23,2 → 27,2** · Vị trí **24,8 → 27,2** · Ảnh 27,2).
+   ⚠️ Viên SĐT trước dùng `var(--fs-card)` (18px = mức “Chuẩn” của nút Cỡ chữ) — ⛔ ĐỪNG sửa token
+   `--fs-card`: nó còn gánh viên MÃ KH, danh số, số TBI, địa chỉ. Chỉ ô SĐT bị ghim cứng 16px.
+   ⚠️ Phải khai TRƯỚC khối `@media (max-width: 374px)` ngay dưới để bản hẹp vẫn hạ được 15px. */
+body .kh-card > .kh-phone-row > .kh-phone { font-size: var(--fs-card); line-height: 1.18; padding: 2px 10px; }   /* ⟳ 2026-11-01 (yêu cầu “cho cỡ chữ sdt bằng mã kh”): `16px` cứng → **`var(--fs-card)`** = ĐÚNG cỡ chữ viên MÃ KH (18px ở mức “Chuẩn”, đổi theo nút Cỡ chữ). `line-height` **1,35 → 1,18** để bù phần chữ to thêm: 18 × 1,18 = 21,24 + 4 đệm + 2 viền = **27,24** ⇒ viên SĐT vẫn CAO ĐÚNG BẰNG 2 tab “Vị trí”/“Ảnh” (27,2) — hai yêu cầu “bằng cỡ chữ mã kh” và “3 nút bằng nhau” cùng thoả. ⚠️ Đừng bỏ `line-height`: để `normal` (≈1,21) thì viên cao thêm ~0,6px và lệch hàng. */
+/* ⛔ ĐÃ GỠ 2026-11-01 (yêu cầu “cho các nút này kích cỡ bằng nhau”): khối `@media (max-width: 374px)`
+   trước đây hạ viên SĐT về **15px** và tab “Vị trí” về **14px / đệm 1px 4px** ⇒ ở máy hẹp 3 nút
+   CAO LỆCH NHAU (đo 320px: SĐT **25,85** · Vị trí **22,5** · Ảnh **27,2**) — đúng thứ người dùng
+   chỉ ra trong ảnh. Nay CẢ 3 giữ nguyên bộ số đo của tab “Ảnh” ở MỌI khổ (SĐT 16px · Vị trí 16px ·
+   Ảnh 16px ⇒ cùng **27,2px**). Hệ quả chấp nhận: ở ≤ ~365px hàng SĐT tự xuống 2 dòng (trước đây
+   cũng đã xuống ở 320px) — và tab “Ảnh” xuống DƯỚI tab “Vị trí” nhờ rule `margin-left: auto` bên dưới. */
 /* Hàng địa chỉ: ẨN 2 nút 📌/➤ (chức năng đã dời xuống tab “Ghim”).
    ⚠️ Chỉ ẩn 2 NÚT, GIỮ `.kh-addr-acts` trong DOM: `pinGps` gắn huy hiệu “Đã cập nhật vị trí”
    (`.addr-upd-badge`) vào đó và `pinApply`/`pinMenuUpdate` tìm `.kh-pin-btn[data-ma]` — bỏ hẳn là
@@ -4718,8 +4723,21 @@ body.light-mode .kh-card .kh-addr-line.is-pinned .kh-addr-txt { text-decoration:
    **TAB “Ảnh”** dạng viên thuốc giống tab “Đường” — cùng cỡ chữ 16px, cùng đệm dọc 2px, viền xanh
    dương, nền trong suốt. Cách xa tab Đường **8px** (yêu cầu “cho 3 nút xa nhau 1 tí” — nay còn 2).
    `margin-right: -18px` giữ đúng cột phải với viên tiền + dòng tháng. */
-body .kh-card > .kh-phone-row > .kh-photo { position: static; right: auto; top: auto; transform: none; margin: 0 -18px 0 8px; flex: 0 0 auto; padding: 2px 10px; border-radius: 999px; border-color: #2563eb; color: #7f8da1; font-size: 16px; font-weight: 600; line-height: 1.35; gap: 5px; }
+body .kh-card > .kh-phone-row > .kh-photo { position: static; right: auto; top: auto; transform: none; margin: 0 -18px 0 auto; flex: 0 0 auto; padding: 2px 10px; border-radius: 999px; border-color: #2563eb; color: #7f8da1; font-size: 16px; font-weight: 600; line-height: 1.35; gap: 5px; }   /* ⟳ 2026-11-01 (yêu cầu “nếu có xuống dòng thì cho nút ảnh nằm dưới nút vị trí”): `margin-left` 8px → **`auto`** — khi hàng CÒN đủ chỗ thì auto = 0 (khe 8px do `column-gap` của `.kh-phone-row` lo), khi hàng XUỐNG DÒNG thì khoảng trống thừa của dòng 2 đẩy nút Ảnh sang PHẢI ⇒ nằm ĐÚNG DƯỚI tab “Vị trí” (cùng mép phải). ⚠️ Đi kèm 3 rule `margin` bên dưới: viên SĐT `margin-right: auto` gánh việc đẩy cụm nút sang phải, nên tab “Vị trí” PHẢI bỏ `margin-left: auto` (2 auto là chia đôi khoảng trống, nút lơ lửng giữa hàng). */
 body .kh-card > .kh-phone-row > .kh-photo .ic { width: 18px; height: 18px; }
+/* ⟳ 2026-11-01 (yêu cầu “nếu có xuống dòng thì cho nút ảnh nằm dưới nút vị trí”): 3 rule `margin`
+   đi kèm `margin-left: auto` của nút Ảnh ở trên. Cách chạy:
+   · viên SĐT `margin-right: auto` = thứ ĐẨY CỤM NÚT sang mép phải (trước đây `.kh-dir-btn` làm việc này
+     bằng `margin-left: auto`). `column-gap: 8px` của hàng giữ khe SĐT ↕ hai tab; khi hàng còn chỗ thì
+     auto của nút Ảnh = 0 nên khe “Vị trí ↔ Ảnh” vẫn đúng 8px.
+   · tab “Vị trí” PHẢI bỏ `margin-left: auto` (đè cả rule `.has-dir`): để 2 auto là chia đôi khoảng trống
+     ⇒ tab lơ lửng giữa hàng.
+   · thẻ KHÔNG có SĐT (không có viên đẩy) ⇒ tab “Vị trí” là con ĐẦU ⇒ trả `auto` cho nó để vẫn bám phải. */
+body .kh-card > .kh-phone-row { column-gap: 3px; row-gap: 1px; }   /* ⟳ 2026-11-01 (yêu cầu “cho tab vị trí sát vô tab ảnh”): khe 2 tab **8 → 3px** (lấy đúng nhịp 3px của các hàng khác trên thẻ). */
+body .kh-card > .kh-phone-row > .kh-phone { margin-right: auto; }
+body .kh-card > .kh-phone-row > .kh-dir-btn,
+body .kh-card > .kh-phone-row.has-dir .kh-dir-btn { margin-left: 0; }
+body .kh-card > .kh-phone-row > .kh-dir-btn:first-child { margin-left: auto; }
 /* Màu nút 📷 (2 theme) nay khai ở mục 2b cuối `<style>` (cùng chỗ với `.has-photo`) — ⛔ đừng khai
    lại ở đây: rule đó khai SAU nên thắng, thêm bản trùng chỉ làm rối. */
 /* ⟳ 2026-10-25y (yêu cầu “chỉnh cho thẳng hàng”, người dùng chọn “mọi giá trị cùng một mốc trái”):
@@ -5630,18 +5648,10 @@ body.light-mode .table-view tbody tr.highlighted td:first-child { box-shadow: in
 body.light-mode .table-view tbody tr.highlighted-purple { background: #e8f0ff; }
 body.light-mode .table-view tbody tr.highlighted-purple:hover { background: #d8e6ff; }
 body.light-mode .table-view tbody tr.highlighted-purple td:first-child { box-shadow: inset 3px 0 0 0 #1d4ed8; }
-/* Trên nền vàng/xanh, màu tiền `#ffa0a0` (hồng rất nhạt) tụt xuống ~1,4:1 ⇒ dùng #b91c1c,
-   ĐÚNG màu mà thẻ card đã dùng cho `.kh-tien` khi thẻ được đánh dấu. Chỉ sửa trong hàng
-   ĐƯỢC ĐÁNH DẤU, hàng thường giữ nguyên màu cũ.
-   ⟳ 2026-10-20 (lượt 8): trả lại `#b91c1c` (lượt 7 từng hạ `#991b1b` khi xin “đậm hơn”). */
-body.light-mode .table-view tbody tr.highlighted .tien-no,
-body.light-mode .table-view tbody tr.highlighted .tien-no.high,
-body.light-mode .table-view tbody tr.highlighted .tien-no.low,
-body.light-mode .table-view tbody tr.highlighted .tien-no .mil-digit,
-body.light-mode .table-view tbody tr.highlighted-purple .tien-no,
-body.light-mode .table-view tbody tr.highlighted-purple .tien-no.high,
-body.light-mode .table-view tbody tr.highlighted-purple .tien-no.low,
-body.light-mode .table-view tbody tr.highlighted-purple .tien-no .mil-digit { color: #b91c1c !important; }
+/* ⛔ ĐÃ GỠ 2026-11-01 (cùng yêu cầu “khi nhấn 2 lần đánh dấu, thì giữ nguyên màu số tiền ở light
+   mode”): khối 8 selector ép `.tien-no` + `.mil-digit` của hàng ĐƯỢC ĐÁNH DẤU về `#b91c1c
+   !important`. Nay hàng đánh dấu giữ nguyên cặp màu theo mức nợ như hàng thường
+   (`.high` `#be123c` · `.low` `#065f46` · `.mid` `#8a6516`, xem nhóm rule ngay trên). */
 
 tbody td { padding: 5px 8px; font-size: var(--fs-tb); vertical-align: middle; }
 tbody td:not(.cell-ghi) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -8268,7 +8278,11 @@ body:not(.light-mode) .kh-card .kh-phone-row .kh-phone .ic { color: currentColor
 .kh-card {
   position: relative;
   border-radius: 12px;   /* ⟳ 2026-10-28 (yêu cầu “cho 4 góc viền đừng bo cong quá”): 20px → **12px**. Lịch sử: 14 → 20 (lượt “cong thêm”) → 12 (lượt này). ⚠️ Vệt màu là VIỀN TRÁI nên nó vẫn đi theo đường bo ở MỌI bán kính — giảm bán kính KHÔNG làm hở góc. Vệt trái (`::before` 5px) bị `overflow: hidden` cắt theo ĐÚNG đường bo này nên hai đầu vệt cong theo góc — bo càng lớn thì đầu vệt càng mềm. ⚠️ `overflow: hidden` là thứ làm việc đó: ⛔ đừng gỡ. */
-  padding: 8px 26px 8px 8px;
+  /* ⟳ 2026-11-01 (yêu cầu “cho khoảng cách viền trên và viền dưới thẻ sát với các thông tin trong
+     thẻ”): đệm DỌC **8 → 5px**. Đo 533px trước khi sửa: khe viền-trên→tên **9,6px**, khe đáy tab→
+     viền-dưới **11,6px**; sau: **6,6 / 7,2px**. Đệm NGANG giữ nguyên (phải 26px để chừa mũi tên ›,
+     trái 8px rồi rule `body .kh-card.kh-card` hạ còn 4px cho thanh màu 5px). */
+  padding: 5px 26px 5px 8px;
   --card-accent: #10b981;
 }
 .kh-card.tier-high { --card-accent: #ef4444; }
