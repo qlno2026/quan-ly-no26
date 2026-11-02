@@ -2572,7 +2572,7 @@ body.light-mode .cfg .page-actions > .page-act:only-child { box-shadow: 0 1px 3p
   background: var(--dk-card);
   /* Viền dùng chung một màu cho MỌI control của thanh công cụ (xem --ctl-vien)
      để ô tìm kiếm, 2 ô lọc và nút xuất file trông cùng một hệ. */
-  border: 1px solid var(--ctl-vien);
+  border: 1px solid var(--ctl-line);   /* ⟳ 2026-11-02 (yêu cầu “đổi màu viền tab tìm kiếm như nút cài đặt cả 2 chế độ”): `--ctl-vien` (alpha 0,28, quá mờ) → **`--ctl-line`** = ĐÚNG token viền nút ⚙ ở dark (`rgba(148,163,184,0.8)`, đo live). Bản light đã sẵn `var(--ctl-light-line)` qua `box-shadow` của `body.light-mode .search-box` (`#64748b`) nên 2 theme tự khớp nút cài đặt. ⚠️ `:focus` vẫn xanh `#3b82f6` (dấu hiệu đang gõ) — cố ý. */
   border-radius: 10px;
   /* padding dọc 8px → 4px: với `box-sizing: border-box` và `height: 36px`, padding
      8px chỉ để lại content box 18px < dòng chữ 21.6px → chữ bị bóp/cắt đuôi.
@@ -3234,6 +3234,18 @@ body.light-mode .loai-tab.active[data-val="2-3tr"], body.light-mode .loai-tab.ac
 body.light-mode .loai-tab.active[data-val="duoi1tr"], body.light-mode .loai-tab.active[data-val="3-5tr"],
 body.light-mode .loai-tab.active[data-val="tren5tr"] { background: #1d4ed8; color: #ffffff; }   /* ⟳ 2026-10-28 (yêu cầu “khi chọn tab nào hiện màu xanh như dark mode”): TRẢ LẠI **nền XANH ĐẶC + chữ TRẮNG**, và dùng ĐÚNG màu của dark (rule `body:not(.light-mode) .loai-tab.active` ngay trên) thay cho cặp pastel `#dbeafe` + `#2563eb` của lượt trước — người dùng đã xem bản pastel và muốn giống dark. ⟳ Cùng ngày (yêu cầu “cho màu xanh đậm 1 tí”): `#3b82f6` → `#2563eb` → (yêu cầu tiếp “cho màu đậm thêm 1 nấc”) **`#1d4ed8`** = blue-700, chữ trắng **6,70:1** ✓ AA (blue-600 được 5,17:1). ⚠️ Đổi ở CẢ 3 chỗ (rule này + `body:not(.light-mode) .loai-tab.active` + `.loai-tab.active` gốc) để 2 theme cùng một mã. */
 
+/* ⟳ 2026-11-02 (yêu cầu “khi chọn thì hiển thị nền xanh viền xanh”, ảnh = viên “Chi tiết”
+   đang chọn): tab ĐANG CHỌN nay có **viền XANH ĐẬM `#1e40af`** (blue-800) thay cho viền xám
+   `--ctl-line` / `--ctl-light-line` của tab thường — trước đó nền đã xanh `#1d4ed8` mà viền vẫn
+   xám 0,8px nên viên xanh bị viền grey bọc ngoài (đo live: `rgba(148,163,184,0.8)`).
+   Màu viền chọn = navy đậm hơn nền 1 nấc (đúng như ảnh) ⇒ vẫn đọc ra đường viền xanh.
+   ⚠️ Phải khai ĐỦ 2 theme + biến thể `[data-val]` (ô tab nào cũng có `data-val`) và đặt SAU
+   khối `.loai-tab.active` ở light (0,3,1) thì mới không bị viền xám đè lại.
+   `border-width` giữ 1px ⇒ ⛔ không đổi kích thước tab. */
+.loai-tab.active, .loai-tab.active[data-val],
+body:not(.light-mode) .loai-tab.active, body:not(.light-mode) .loai-tab.active[data-val],
+body.light-mode .loai-tab.active, body.light-mode .loai-tab.active[data-val] { border-color: #1e40af !important; }   /* ⟳ 2026-11-02 (yêu cầu “hạ viền tab đang chọn xuống navy #1e40af cho dịu hơn”): xanh sáng `#3b82f6` → **`#1e40af`** (blue-800, navy đậm hơn cả nền `#1d4ed8`) ⇒ viền đọc ra như một đường navy mảnh, không còn “viền sáng” nổi quanh viên xanh. Chỉ đổi MÀU — `border-width` vẫn 1px nên tab vẫn cao 40px. */
+
 /* ══ ⟳ 2026-10-28 (tiếp 11) — NỀN MỌI TAB = **NỀN THẺ KHÁCH** ══════════════════════════════════
    Yêu cầu: “cho các tab này màu nền giống với màu nền thẻ” (ảnh = 4 tab ở dark: “Từ 3Tr” nền
    đỏ mận, “Nợ cũ” nền nâu cam, “Tổng hợp” nền xanh navy; “Chi tiết” đang chọn nền xanh dương).
@@ -3273,11 +3285,21 @@ body.light-mode     .loai-tab[data-val]:not(.active):active { background-color: 
    · `!important` + selector đủ mạnh để thắng 2 rule nền phía trên (0,4,1) và `.sort-btn.active`.
    ⛔ Muốn đổi màu viền thì sửa ĐÚNG 1 mã ở đây (đừng sửa `--ctl-line`/`--ctl-light-line`:
    chúng còn vẽ viền ô tìm kiếm, ô lọc, nút ⚙). */
-body .loai-tabs .loai-tab,
-body .loai-tabs .loai-tab.active,
+body .loai-tabs .loai-tab:not(.active),
 body .loai-tabs .loai-tab[data-val]:not(.active),
 body .loai-tabs .sort-btn,
-body .loai-tabs .sort-btn.active { border-color: #2563eb !important; }
+body .loai-tabs .sort-btn.active { border-color: var(--ctl-line) !important; }   /* ⟳ 2026-11-02 (yêu cầu “khi chọn thì hiển thị nền xanh viền xanh”): thêm `:not(.active)` + bỏ `.loai-tab.active` khỏi danh sách — tab ĐANG CHỌN giờ có viền XANH riêng (rule ngay dưới) thay vì viền xám như mọi tab. ⚠️ Thiếu `:not(.active)` là rule `!important` này lại đè viền xanh của tab đang chọn (đo lần đầu: viền vẫn `rgba(148,163,184,0.8)`). */   /* ⟳ 2026-11-02 (yêu cầu “cho viền tab và thẻ dark mode màu như nút cài đặt”): `#2563eb` → **`var(--ctl-line)`** = ĐÚNG token viền của nút ⚙ (`.cfg-btn`, đo dark `rgba(148,163,184,0.8)`). Dùng TOKEN chứ không chép hex ⇒ viền tab tự theo mọi thay đổi của ô điều khiển. Light dùng `--ctl-light-line` — xem rule ngay dưới bản light. */
+body.light-mode .loai-tabs .loai-tab:not(.active),
+body.light-mode .loai-tabs .loai-tab[data-val]:not(.active),
+body.light-mode .loai-tabs .sort-btn,
+body.light-mode .loai-tabs .sort-btn.active { border-color: var(--ctl-light-line) !important; }
+
+/* ⟳ 2026-11-02 (yêu cầu “cho hai nút sắp xếp Danh số / Tiền nợ dùng chung màu viền navy với tab
+   đang chọn”): nút sắp xếp ĐANG CHỌN (`.sort-btn.active`) viền **`#1e40af`** (blue-800) = ĐÚNG viền
+   tab đang chọn, thay cho viền xám `--ctl-line` / `--ctl-light-line`. Nút CHƯA chọn vẫn viền xám
+   như nút ⚙. ⚠️ Phải đặt SAU 2 khối `!important` trên (cùng độ ưu tiên ⇒ thứ tự quyết định). */
+body .loai-tabs .sort-btn.active,
+body.light-mode .loai-tabs .sort-btn.active { border-color: #1e40af !important; }   /* ⟳ 2026-11-02: thêm `:not(.active)` (xem lý do ở rule dark ngay trên) — tab đang chọn tiếp viền xanh từ rule `.loai-tab.active` bên dưới. */   /* ⟳ 2026-11-02 (cùng yêu cầu, bản LIGHT): **`#64748b`** = ĐÚNG viền nút ⚙ ở light (đo `rgb(100,116,139)`). Cần selector `body.light-mode` (0,3,1) để thắng khối dark ở trên (0,2,1) dù cả hai đều `!important`. */
 
 /* ── 📱 2026-10-24 (yêu cầu: “cho dải tab ôm vừa 6 tab trên điện thoại thay vì cuộn ngang, thu
    nhỏ chữ/đệm và cho viền sát vô chữ”) ──────────────────────────────────────────
@@ -4644,13 +4666,38 @@ body:not(.light-mode) .kh-card .kh-dir-btn { border-color: rgba(148,163,184,0.8)
    nền xanh), chỉ còn viền + chữ xanh dương (yêu cầu “kh nào chưa cập nhật vị trí mới thì không
    hiện nền xanh”). */
 body .kh-card > .kh-phone-row .kh-dir-btn { background: transparent; color: #2563eb; }
-body .kh-card > .kh-phone-row .kh-dir-btn.is-on { display: inline-flex; background: #2563eb; border-color: #2563eb; color: #ffffff; }   /* ⟳ 2026-11-02 (yêu cầu “cho kích cỡ nút vị trí bằng nút ảnh” rồi người dùng CHỐT “đổi” khi được báo tương phản): nền `#3b82f6` (blue-500) → **`#2563eb`** (blue-600) — vì chữ đã hạ về **16px** (bằng nút “Ảnh”) nên trắng trên `#3b82f6` chỉ còn **3,68:1** (dưới AA 4,5 cho chữ thường); `#2563eb` đạt **5,17:1** ✓ AA. Chữ vẫn `#ffffff`, viền khai lại cùng mã nền cho viên liền mạch. ⚠️ Trước đó (cùng ngày) rule này từng là `#1d4ed8` → `#3b82f6` (“màu nhạt hơn”) — nay lùi về `#2563eb` đúng 1 nấc giữa hai bản. */   /* ⚠️ Phải viết ĐỦ `body .kh-card > .kh-phone-row` như rule nền ở trên mới thắng được nó (rule rút gọn `.kh-dir-btn.is-on` thua độ ưu tiên). */
+body .kh-card > .kh-phone-row .kh-dir-btn.is-on { display: inline-flex; background: #1e3a8a; border-color: #1e3a8a; color: #ffffff; }   /* ⟳ 2026-11-02 (yêu cầu “cho màu 2 nút sáng hơn 1 tí”): nút “Vị trí” ĐÃ GHIM `#172554` (blue-950) → **`#1e3a8a`** (blue-900) — sáng hơn đúng 1 nấc; nút “Ảnh” `#2e1065` → **`#4c1d95`** (violet-900) cùng lượt.   /* ⟳ 2026-11-02 (“nút vị trí màu xanh đen, nút ảnh màu tím đen”): nút “Vị trí” `#1d4ed8` → **`#172554`** (blue-950 = XANH ĐEN); viên “Ảnh” ĐÃ CÓ ẢNH `#6d28d9` → **`#2e1065`** (violet-950 = TÍM ĐEN, xem rule `.kh-photo.has-photo` ~8485). Chữ trắng **13,9:1** ✓; mũi tên đỏ `#ff6b6b` nổi rõ hơn hẳn trên nền tối. ⚠️ 2 nút vẫn tách hẳn 2 tông như yêu cầu trước.   /* ⟳ 2026-11-02 (“nút vị trí màu xanh dương đậm, nút ảnh màu tím đậm”): nút “Vị trí” `#6d28d9` → **`#1d4ed8`** (blue-700), tím để riêng cho viên “Ảnh” (`#6d28d9`). Chữ trắng **6,70:1** ✓ AA. Mũi tên đỏ `#ff6b6b` giữ nguyên. ⚠️ Nút CHƯA ghim vẫn nền trong suốt — chỉ `.is-on` đổi. ⚠️ Đã đi qua tím 1 lượt (“đổi màu tím đậm”) rồi đảo lại — ⛔ đừng đổi nữa mà không hỏi.   /* ⟳ 2026-11-02 (yêu cầu “cho nền nút vị trí khi đã ghim màu xanh dương đậm”): nền + viền `#3b82f6` (blue-500) → **`#1d4ed8`** (blue-700, đậm 2 nấc). Chữ trắng đạt lại **6,70:1** ✓ AA (bản nhạt `#3b82f6` chỉ 3,68:1). Mũi tên đỏ `#ff6b6b` cũng nổi hơn trên nền đậm này. ⚠️ Vẫn là trạng thái `.is-on` (đã ghim toạ độ) — nút CHƯA ghim vẫn nền trong suốt. ⟳ trước đó cùng ngày: `#2563eb` → `#3b82f6` (“nhạt thêm 1 nấc”) — nay là lần đảo thứ hai.   /* ⟳ 2026-11-02 (yêu cầu “cho màu nền nút vị trí nhạt thêm 1 nấc”): nền + viền `#2563eb` → **`#3b82f6`** (blue-600 → blue-500, đúng 1 nấc). ⚠️ Hệ quả đã biết: chữ trắng 16px trên `#3b82f6` = **3,68:1** — dưới AA 4,5 cho chữ thường (trước đó `#2563eb` đạt 5,17:1). Đây là đúng yêu cầu “nhạt thêm 1 nấc” của người dùng; muốn vừa nhạt vừa AA thì phải tăng cỡ/nét chữ. Trạng thái ĐANG CHẠM vẫn `#1d4ed8` (xem `.kh-dir-btn:active`). ⟳ trước đó cùng ngày: `#3b82f6` → `#2563eb` (đổi chiều).   /* ⟳ 2026-11-02 (yêu cầu “cho kích cỡ nút vị trí bằng nút ảnh” rồi người dùng CHỐT “đổi” khi được báo tương phản): nền `#3b82f6` (blue-500) → **`#2563eb`** (blue-600) — vì chữ đã hạ về **16px** (bằng nút “Ảnh”) nên trắng trên `#3b82f6` chỉ còn **3,68:1** (dưới AA 4,5 cho chữ thường); `#2563eb` đạt **5,17:1** ✓ AA. Chữ vẫn `#ffffff`, viền khai lại cùng mã nền cho viên liền mạch. ⚠️ Trước đó (cùng ngày) rule này từng là `#1d4ed8` → `#3b82f6` (“màu nhạt hơn”) — nay lùi về `#2563eb` đúng 1 nấc giữa hai bản. */   /* ⚠️ Phải viết ĐỦ `body .kh-card > .kh-phone-row` như rule nền ở trên mới thắng được nó (rule rút gọn `.kh-dir-btn.is-on` thua độ ưu tiên). */
 body:not(.light-mode) .kh-card > .kh-phone-row .kh-dir-btn:not(.is-on) { color: #93c5fd; }
-.kh-dir-btn .ic { color: #4ade80; }
-.kh-dir-btn:active { background: #1d4ed8; }   /* ⟳ 2026-11-02 (nền `.is-on` đã về `#2563eb` để đạt AA): trạng thái ĐANG CHẠM `#2563eb` → **`#1d4ed8`** = tối hơn đúng 1 nấc (blue-700) để vẫn thấy phản hồi chạm. */
+.kh-dir-btn .ic { color: #cbd5e1; }   /* ⟳ 2026-11-02 (yêu cầu “cho 2 icon màu TRẮNG XÁM dark mode”): xám đậm `#64748b` → **`#cbd5e1`** (slate-300 = trắng ngả xám, sáng hơn màu chữ `#94a3b8` của nút). ⚠️ Đây là rule GỐC; LIGHT có rule riêng `body.light-mode .kh-card .kh-dir-btn .ic { color: #334155 }` nên không bị ảnh hưởng. Mũi tên ĐÃ GHIM vẫn đỏ. */   /* ⟳ 2026-11-02 (yêu cầu “đổi màu 1 icon như màu chữ nhưng đậm hơn” → người dùng CHỌT “cả hai icon”): mũi tên dẫn đường XANH LÁ `#4ade80` → **`#64748b`** (slate-500 = xám ĐẬM hơn màu chữ `#94a3b8` của nút ở dark). Trạng thái ĐÃ GHIM vẫn đỏ `#ff6b6b` (rule `.is-on .ic` khai sau). */
+.kh-dir-btn:active { background: #172554; }   /* ⟳ 2026-11-02 (nền `.is-on` nay là `#1e3a8a` sau yêu cầu “sáng hơn 1 tí”): trạng thái ĐANG CHẠM lùi 1 nấc xuống **`#172554`** (blue-950) để thấy phản hồi chạm. ⟳ trước đó cùng ngày: `#0f1d3d` · `#1e40af` · `#5b21b6`. */
 body.light-mode .kh-card .kh-dir-btn { color: #1d4ed8; border-color: #64748b; }   /* ⟳ 2026-11-01: viền `#2563eb` → **`#64748b`** = đúng `--ctl-light-line` của tab không active ở light (đo live `rgb(100,116,139)`). */   /* ⟳ 2026-11-01 (yêu cầu “ở light mode bị mất chữ, chỉnh lại màu chữ”): chữ `#ffffff` → **`#2563eb`** — tab Đường CHƯA cập nhật nay có nền TRONG SUỐT nên chữ trắng là vô hình trên thẻ sáng. Trạng thái ĐÃ cập nhật (`.is-on`) vẫn chữ trắng nhờ rule `.is-on` khai sau (độ ưu tiên cao hơn). */   /* ⟳ 2026-10-31: viền `rgba(21,128,61,0.45)` → `#22c55e` → **`#2563eb`** (yêu cầu “cho viền giống viền màu chi tiết” — viền xanh dương chủ đạo, đồng bộ 2 theme). ⟳ cùng ngày: chữ `#5a6b80` → **`#ffffff`** (nền nút đã đổi sang `#1d4ed8` như tab “Chi tiết” đang chọn). */
-body.light-mode .kh-card .kh-dir-btn .ic { color: #22c55e; }
-body.light-mode .kh-card .kh-dir-btn:active { background: #1d4ed8; }   /* ⟳ 2026-11-02: cùng lý do rule dark ngay trên — `#2563eb` → **`#1d4ed8`** (nền thường đã về `#2563eb`). */
+body.light-mode .kh-card .kh-dir-btn .ic { color: #334155; }   /* ⟳ 2026-11-02: xanh lá `#22c55e` → **`#334155`** (slate-700 = xám đậm hơn màu chữ `#475569` của nút ở light). Mũi tên ĐÃ GHIM vẫn đỏ `#dc2626`. */
+body.light-mode .kh-card .kh-dir-btn:active { background: #172554; }   /* ⟳ 2026-11-02: cùng lý do rule dark ngay trên — **`#172554`** (blue-950), vì nền thường `.is-on` đã là `#1e3a8a`. ⟳ trước đó: `#0f1d3d` · `#1e40af` · `#5b21b6`. */   /* ⟳ 2026-11-02: cùng lý do rule dark ngay trên — `#2563eb` → **`#1d4ed8`** (nền thường đã về `#2563eb`). */
+/* ══ 2026-11-02 — CHỮ TAB “VỊ TRÍ” = ĐÚNG MÀU CHỮ TAB “ẢNH” ═════════════════════════════════
+   Yêu cầu: “cho màu chữ nút vị trí giống như nút ảnh”. Đo live trước khi sửa:
+     · light: Vị trí `rgb(29,78,216)` (blue) · Ảnh `rgb(71,85,105)` (`#475569`)
+     · dark : Vị trí `rgb(147,197,253)` (blue) · Ảnh `rgb(148,163,184)` (`#94a3b8`)
+   Nay 2 tab cùng MỘT màu chữ (chép đúng giá trị ĐANG ĐO của tab “Ảnh”, vì đó là vế “giống như”).
+   ⚠️ `:not(.is-on)` là BẮT BUỘC: khách ĐÃ cập nhật vị trí thì tab mang NỀN XANH + chữ TRẮNG
+   (rule `.kh-dir-btn.is-on` ở trên) — đổi sang xám là mất chữ trên nền xanh.
+   ⚠️ Phải có tiền tố `body .kh-card > .kh-phone-row` (0,4,1) mới thắng được rule nền
+   `body .kh-card > .kh-phone-row .kh-dir-btn { color: #2563eb }`; bản dark thêm
+   `body:not(.light-mode)` (0,5,1) để thắng cả rule `#93c5fd` phía trên (cùng 0,5,1, khai TRƯỚC).
+   ⛔ KHÔNG đổi màu ICON mũi tên (`.kh-dir-btn .ic` vẫn xanh lá) — yêu cầu chỉ nói “màu chữ”. */
+body .kh-card > .kh-phone-row .kh-dir-btn:not(.is-on) { color: #475569; }
+body:not(.light-mode) .kh-card > .kh-phone-row .kh-dir-btn:not(.is-on) { color: #94a3b8; }
+
+/* ══ 2026-11-02 — ICON CAMERA MÀU XANH LÁ ════════════════════════════════════════════════
+   Yêu cầu: “cho icon camera màu xanh lá”. Chọn cặp xanh lá SẴN CÓ của app (không sinh tông mới):
+   dark **`#4ade80`** = ĐÚNG màu mũi tên dẫn đường / icon ghim (5,2:1 trên thẻ “Chuẩn” `#1a1f28` ✓
+   dư ngưỡng 3:1 cho đồ hoạ) · light **`#16a34a`** (green-600 ≈ **3,1:1** trên thẻ `#f8fafc` —
+   `#22c55e` của mũi tên chỉ 2,2:1 nên không dùng được cho ICON ở nền sáng).
+   ⚠️ Phải khai ĐÍCH DANH `body .kh-card > .kh-phone-row > .kh-photo .ic` (0,4,1) + bản dark
+   (0,5,1): rule `body:not(.light-mode) .kh-card .kh-photo .ic { color: #ffffff }` (~dòng 1683)
+   đang thắng mọi rule ngắn hơn. Bản light nằm sau nên vẫn thắng rule light cũ (cùng 0,4,1).
+   ℹ️ Chỉ đổi ICON: chữ “Ảnh” giữ nguyên màu (vừa đồng bộ với tab “Vị trí” ở trên).
+   ⚠️ LUẬT THẮNG CUỘC NẰM Ở CHỖ KHÁC: 2 rule icon camera được khai ở khối “2b) NÚT 📷 TRONG HÀNG
+   MÃ KH” (~dòng 8440, sau khối này) với CÙNG độ ưu tiên ⇒ khai ở đây là BỊ ĐÈ. Xem ở đó. */
 /* ⛔ ĐÃ GỠ 2026-10-31: `body .kh-card > .kh-phone-row.has-dir .kh-photo { margin-left: 2px }` — nút 📷
    đã rời `.kh-phone-row` về hàng MÃ KH. */
 /* ⟳ 2026-10-31 (yêu cầu “thêm nút Ghim kế nút đường, các chức năng ở hàng địa chỉ dời xuống nút
@@ -4957,6 +5004,20 @@ body:not(.light-mode) .kh-card .kh-phone .ic { color: var(--ic-red); }
 body:not(.light-mode) .kh-card .kh-ma .ic { color: #a7e8f5; }   /* ⟳ 2026-10-27 (yêu cầu “icon + viền mã KH sang tông teal”): #ffbf4d (amber) → teal nhạt, đồng bộ dải `#2E86AA`. */
 body:not(.light-mode) .kh-card .kh-ghichu-row > .ic,
 body:not(.light-mode) .kh-card .kh-abc-ico { color: #7db4ff; }
+/* ══ 2026-11-02 — 2 ICON HÀNG GHI CHÚ/ABC: SVG MỚI + ĐẬM HƠN 1 NẤC ═══════════════════════════
+   Yêu cầu: “cho icon trong ảnh đậm hơn 1 nấc”, “đổi icon ghi chú”, “đổi icon hàng abc bằng icon khác”.
+   Hai emoji cũ (✏️ hàng ghi chú · 🔠 hàng ABC) đã đổi thành 2 symbol MỚI trong sprite
+   (`#i-note` · `#i-bookmark`) — bắt buộc, vì emoji do HĐH vẽ nên `color` không ăn, không thể làm
+   “đậm hơn”. Nay 2 icon ăn `currentColor` nên đều tô được:
+     · light: `--ic-blue` `#3b82f6` → **`#2563eb`** (blue-600, đậm hơn 1 nấc, 5,17:1 trên thẻ sáng ✓)
+     · dark : `#7db4ff` → **`#60a5fa`** (blue-400, đậm/đặc hơn 1 nấc, ~5,9:1 trên thẻ “Chuẩn” ✓)
+   ⚠️ Rule cũ bên trên chỉ khớp `.kh-ghichu-row > .ic` (svg là con TRỰC TIẾP) — nay svg nằm trong
+   `span.kh-ghichu-ico` nên phải khai thêm selector đó, không thì icon ghi chú ăn màu chữ xám.
+   ⚠️ `flex-shrink: 0` để icon không bị bóp khi hàng ghi chú chật; 16px = đúng cỡ icon của thẻ. */
+.kh-ghichu-ico, .kh-abc-ico { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: #2563eb; }
+.kh-ghichu-ico .ic, .kh-abc-ico .ic { width: 16px; height: 16px; display: block; }
+body:not(.light-mode) .kh-card .kh-ghichu-ico,
+body:not(.light-mode) .kh-card .kh-abc-ico { color: #60a5fa; }
 /* Cùng lượt 25q — dark: 📌 TÍM `#a78bfa` (4,47 trên nền thẻ sáng nhất `#2e3644`, 6,07 trên “Chuẩn”)
    · ➤ XANH LÁ **`#b3f1ca`** (⟳ 2026-10-26: `#4ade80` → `#77e6a0` → `#99ecb8` → **`#b3f1ca`**, 3 nấc
    nhạt dần theo 3 yêu cầu; **đúng** màu chữ địa chỉ đã ghim ở dark — xem rule `.kh-addr-line.is-pinned`).
@@ -6296,10 +6357,10 @@ body:not(.light-mode) .cd-period-num small { color: #64748b; }
      tên KH `15 → 16,5px`, viên SĐT `19 → 20,5px` (đệm `7px 13px → 8px 14px`), nút X `24 → 27px`.
      Đo live 533px: dải xanh **61,6 → 71,4px** (+16%); 320px: vẫn 1 hàng viên SĐT, mã KH tự xuống
      dòng (`word-break: break-all`), KHÔNG tràn ngang. */
-  #modal .cd-head { padding: 14px 13px; gap: 11px; }
+  #modal .cd-head { padding: 23px 13px; gap: 11px; }   /* ⟳ 2026-11-02 (yêu cầu “cho nền xanh bảng chi tiết to hơn”, ảnh = dải xanh đầu tấm “Chi tiết”): ĐỆM DỌC `14px → **23px**` và giữ đệm ngang 13px ⇒ dải xanh **91,2 → ~111px** (+22%). Chọn nới ĐẾM thay vì phóng chữ vì bề rộng: viên SĐT + mã KH phải nằm trên cùng một hàng — phóng viên SĐT lên 21px làm vùng chữ còn 169px, trong khi mã KH 13 ký tự ở 24px cần ~187px ⇒ MÃ KH XUỐNG 2 DÒNG (đã đo, trông xé hàng như ảnh cũ). Với cỡ hiện tại (mã 23px · tên 17px · SĐT 19px) mã KH vẫn **1 DÒNG** (đo live 386px: vùng chữ 194px). */
   #modal .cd-x { width: 27px; height: 27px; font-size: 15px; }
-  #modal .cd-code { font-size: 22px; }   /* ⟳ 2026-10-30: 22 → **20px** (nhỏ 1 nấc) cùng lượt với nét `600` — xem rule `.cd-code` gốc. ⟳ 2026-11-02: 20 → **22px** (dải xanh to hơn). */
-  #modal .cd-name { font-size: 16.5px; }   /* ⟳ 2026-11-02: 15 → **16,5px** (dải xanh to hơn). */
+  #modal .cd-code { font-size: 22px; }   /* ⟳ 2026-11-02 (dải xanh to hơn): GIỮ **22px** — đã thử 23/24px, mã KH 13 ký tự cần 187–194px mà vùng chữ chỉ có 184px ⇒ XUỐNG 2 DÒNG (đo live). Muốn nâng cỡ thì phải bỏ đệm ngang hoặc hạ viên SĐT trước. ⟳ 2026-10-30: 22 → 20px (nhỏ 1 nấc) cùng lượt với nét `600`. */
+  #modal .cd-name { font-size: 17px; }   /* ⟳ 2026-11-02 (dải xanh to hơn): 16,5 → **17px** (nhẹ — phóng hơn nữa sẽ ăn bề rộng của mã KH). */
   /* ⟳ 2026-10-30 (yêu cầu “cho hàng sdt nằm xích vô và to hơn”): `margin-right: 6px` = bù lại
      `margin-right: -6px` của `.cd-head-side` ⇒ viên SĐT dừng ở mốc **12px** tính từ mép phải thẻ
      (bằng đệm `.cd-head`) thay vì 6px; X phía trên GIỮ sát góc như yêu cầu trước. Cỡ `16,5 → 19px`
@@ -6337,6 +6398,17 @@ body:not(.light-mode) .cd-period-num small { color: #64748b; }
      rộng ra ~127px. ⛔ Đừng nâng lại nếu chưa đo ở 320px. */
   #modal .cd-period-ky { font-size: 15px; }
   #modal .cd-period-num { font-size: 18px; }
+  /* ⟳ 2026-11-02 (yêu cầu “cho nền xanh bảng chi tiết to hơn” — hạ riêng khổ RẤT HẸP): ở 320px
+     dải xanh phóng to ở khối 639,98px bị CỘT PHẢI (viên SĐT 21px = 181,7px) chiếm mất chỗ ⇒ mã KH
+     còn **96px** và XUỐNG **3 DÒNG** (dải cao **148px**). Hạ viên SĐT về 19px + đệm 7/13
+     ⇒ vùng chữ rộng thêm ~16px, mã KH 24 → **20px** nên chỉ còn **2 DÒNG**. Vẫn TO hơn bản trước
+     lượt này (19/22) ở cột phải và cao hơn dải cũ (91,2 → **~105px**). ⛔ Đừng nâng lại nếu chưa
+     đo ở 320px. */
+  #modal .cd-head { padding: 16px 13px; gap: 11px; }
+  #modal .cd-x { width: 26px; height: 26px; font-size: 14px; }
+  #modal .cd-code { font-size: 20px; }
+  #modal .cd-name { font-size: 16px; }
+  #modal .cd-phone { font-size: 19px; padding: 7px 13px; }
 }
 
 .info-row {
@@ -8363,8 +8435,8 @@ body:not(.light-mode) .kh-card .kh-phone-row .kh-phone .ic { color: #ff7a7a !imp
 }
 .kh-card:not(.highlighted):not(.highlighted-purple) { box-shadow: 0 1px 3px rgba(0,0,0,0.34); }
 body.light-mode .kh-card:not(.highlighted):not(.highlighted-purple) { box-shadow: 0 1px 2px rgba(15,23,42,0.07); }
-body.light-mode .kh-card { border-color: #94a3b8; }   /* ⟳ 2026-10-31 (yêu cầu “cho viền nền thẻ đậm hơn 1 tí cả 2 chế độ”): slate-300 `#cbd5e1` → **slate-400 `#94a3b8`** (đậm lại ĐÚNG 1 nấc — đảo chiều lệnh “nhạt 1 tí” của 2026-10-28). ⚠️ Chỉ đổi 3 viền TRÊN/PHẢI/DƯỚI — viền TRÁI là thanh màu (đặt riêng, không ăn rule này). */
-body:not(.light-mode) .kh-card:not(.highlighted):not(.highlighted-purple) { border-color: #45526a; }   /* ⟳ 2026-11-01 (yêu cầu “viền thẻ màu xám xanh MỎNG”): `#4b5a72` → **`#333e49`** = ĐÚNG màu viền đo được trong ảnh người dùng gửi (ảnh 320×557: mép phải thẻ `#333e49`, thân thẻ `#1b1f28`) — xám-xanh dịu, ở 1px trông mảnh chứ không thành khung. ⛔ Đừng đậm lại: `#4b5a72` cũ trông như khung viền. */   /* ⟳ 2026-11-01 (yêu cầu “cho viền thẻ màu xám xanh”): trắng alpha `rgba(255,255,255,0.26)` → **xám-xanh `#4b5a72`** (slate ngả xanh, cùng họ với viền light `#94a3b8`). ⚠️ Chỉ 3 viền TRÊN/PHẢI/DƯỚI — thanh TRÁI vẫn giữ màu ngữ nghĩa (`--card-accent`). */   /* ⟳ 2026-10-31 (yêu cầu “cho viền nền thẻ đậm hơn 1 tí cả 2 chế độ”): trắng alpha **0,20 → 0,26** (đậm lại 1 nấc, đối xứng với bản sáng `#94a3b8`). ⚠️ Chỉ thẻ THƯỜNG — 2 thẻ đánh dấu giữ viền tím/xanh riêng. */
+body.light-mode .kh-card { border-color: var(--ctl-light-line); }   /* ⟳ 2026-11-02 (yêu cầu “cho viền tab và thẻ light mode màu như nút cài đặt”): `#2563eb` → **`var(--ctl-light-line)`** = ĐÚNG token viền nút ⚙ ở light (`.cfg-btn`, đo `rgb(100,116,139)` = `#64748b`), trùng màu viền tab vừa đổi cùng lượt. Dùng TOKEN ⇒ tab + thẻ + ô điều khiển luôn cùng một mã. ⚠️ Chỉ 3 viền TRÊN/PHẢI/DƯỚI — viền TRÁI là thanh màu ngữ nghĩa (`--card-accent`) đặt riêng bên dưới. */   /* ⟳ 2026-11-02 (trước đó, “đồng bộ 1 màu với tab”): slate-400 `#94a3b8` → `#2563eb`. ⟳ 2026-10-31 (yêu cầu “cho viền nền thẻ đậm hơn 1 tí cả 2 chế độ”): slate-300 `#cbd5e1` → **slate-400 `#94a3b8`** (đậm lại ĐÚNG 1 nấc — đảo chiều lệnh “nhạt 1 tí” của 2026-10-28). ⚠️ Chỉ đổi 3 viền TRÊN/PHẢI/DƯỚI — viền TRÁI là thanh màu (đặt riêng, không ăn rule này). */
+body:not(.light-mode) .kh-card:not(.highlighted):not(.highlighted-purple) { border-color: var(--ctl-line); }   /* ⟳ 2026-11-02 (yêu cầu “cho viền tab và thẻ dark mode màu như nút cài đặt”): `#2563eb` → **`var(--ctl-line)`** = ĐÚNG token viền nút ⚙ ở dark (đo `rgba(148,163,184,0.8)`), trùng viền tab vừa đổi cùng lượt. ⚠️ Chỉ 3 viền TRÊN/PHẢI/DƯỚI; thanh TRÁI vẫn `--card-accent` (đỏ/xanh theo mức nợ). ⟳ 2026-11-02 (trước đó, “đồng bộ 1 màu với tab”): xám-xanh `#45526a` → `#2563eb`. ⟳ 2026-11-01 (yêu cầu “viền thẻ màu xám xanh MỎNG”): `#4b5a72` → **`#333e49`** = ĐÚNG màu viền đo được trong ảnh người dùng gửi (ảnh 320×557: mép phải thẻ `#333e49`, thân thẻ `#1b1f28`) — xám-xanh dịu, ở 1px trông mảnh chứ không thành khung. ⛔ Đừng đậm lại: `#4b5a72` cũ trông như khung viền. */   /* ⟳ 2026-11-01 (yêu cầu “cho viền thẻ màu xám xanh”): trắng alpha `rgba(255,255,255,0.26)` → **xám-xanh `#4b5a72`** (slate ngả xanh, cùng họ với viền light `#94a3b8`). ⚠️ Chỉ 3 viền TRÊN/PHẢI/DƯỚI — thanh TRÁI vẫn giữ màu ngữ nghĩa (`--card-accent`). */   /* ⟳ 2026-10-31 (yêu cầu “cho viền nền thẻ đậm hơn 1 tí cả 2 chế độ”): trắng alpha **0,20 → 0,26** (đậm lại 1 nấc, đối xứng với bản sáng `#94a3b8`). ⚠️ Chỉ thẻ THƯỜNG — 2 thẻ đánh dấu giữ viền tím/xanh riêng. */
 
 /* 2) BỎ HAI DẢI TEAL: trả .kh-card-top và .kh-mid-row về nền thẻ, giữ đúng khe 3px.
    ⟳ 2026-10-28 (yêu cầu “cho icon camera ra nằm dưới góc hàng sdt”): nút 📷 ĐÃ RỜI
@@ -8407,15 +8479,44 @@ body:not(.light-mode) .kh-card .kh-mid-row .kh-photo.has-photo,
 body:not(.light-mode) .kh-card .kh-mid-row .kh-photo.has-photo .ic,
 body:not(.light-mode) .kh-card > .kh-phone-row > .kh-photo.has-photo,
 body:not(.light-mode) .kh-card > .kh-phone-row > .kh-photo.has-photo .ic { color: #93c5fd; }
+/* ══ 2026-11-02 — ICON CAMERA MÀU XANH LÁ (yêu cầu “cho icon camera màu xanh lá”) ══════════════
+   Đặt Ở ĐÂY (SAU 4 khối màu `.kh-photo` ngay trên, cùng độ ưu tiên) mới thắng được — bản đầu khai
+   cạnh rule `.kh-dir-btn` (~dòng 4677) đã bị chính 4 khối này đè (đo live vẫn ra `#475569`).
+   Cặp màu xanh lá SẴN CÓ của app (không sinh tông mới): dark **`#4ade80`** = ĐÚNG màu mũi tên dẫn
+   đường / icon ghim (5,2:1 trên thẻ “Chuẩn” `#1a1f28` ✓ dư ngưỡng 3:1 cho đồ hoạ) · light
+   **`#16a34a`** (green-600 ≈ **3,1:1** trên thẻ `#f8fafc`; `#22c55e` của mũi tên chỉ 2,2:1 nên
+   không đủ cho icon ở nền sáng). Áp cho MỌI trạng thái (kể cả `.has-photo` — nút khi đó có nền
+   xanh dương, icon xanh lá vẫn đọc được và đúng yêu cầu “icon camera màu xanh lá”).
+   ⚠️ Danh sách selector phải dài BẰNG các khối trên (`.kh-mid-row` + `.kh-phone-row`, cả `.ic`
+   và thân nút) để `.ic` không bị `currentColor` kéo về màu chữ xám khi `.has-photo` đổi màu nút. */
+/* ⟳ 2026-11-02 (yêu cầu “đổi màu 1 icon như màu chữ nhưng đậm hơn”, CHỐT “cả hai icon”): camera XANH LÁ
+   → xám ĐẬM hơn màu chữ của nút: light `#16a34a` → **`#334155`** (slate-700, chữ là `#475569`) ·
+   dark `#4ade80` → **`#64748b`** (slate-500, chữ là `#94a3b8`). Nay 2 icon cùng một tông xám với nhãn,
+   chỉ đậm hơn 1 nấc ⇒ hết “chói” màu xanh.
+   ⚠️ Khách ĐÃ CÓ ẢNH thì icon vẫn TRẮNG (rule `.has-photo .ic` khai sau, nền tím) — xám trên nền
+   tím + 16px sẽ không đọc được. */
+body.light-mode .kh-card > .kh-phone-row > .kh-photo .ic { color: #334155; }
+body.light-mode .kh-card > .kh-phone-row > .kh-photo.has-photo .ic { color: #ffffff; }
+body:not(.light-mode) .kh-card > .kh-phone-row > .kh-photo .ic { color: #cbd5e1; }   /* ⟳ 2026-11-02 (“cho 2 icon màu trắng xám dark mode”): `#64748b` → **`#cbd5e1`** (slate-300) — cùng mã với mũi tên “Vị trí”. LIGHT giữ `#334155`. */
+body:not(.light-mode) .kh-card > .kh-phone-row > .kh-photo.has-photo .ic { color: #ffffff; }
 /* ⟳ 2026-11-01 (yêu cầu “tab Ảnh cũng đổi màu theo trạng thái: có ảnh thì nền xanh dương giống
    tab Ảnh cũng đổi màu theo trạng thái, có ảnh thì có nền tím”): khách ĐÃ CÓ ẢNH ⇒ tab “Ảnh”
    **nền TÍM `#8b5cf6`** (đúng màu nút “Toạ độ” của tấm Chi tiết) + chữ/icon trắng.
    Chưa có ảnh ⇒ giữ dáng viên thuốc trong suốt (viền xanh, chữ xám).
    ⚠️ Phải khai SAU 2 rule `.has-photo` ở trên và ĐỦ `body .kh-card > .kh-phone-row` mới thắng. */
 body:not(.light-mode) .kh-card > .kh-phone-row > .kh-photo.has-photo,
-body.light-mode .kh-card > .kh-phone-row > .kh-photo.has-photo { background: #7c3aed; border-color: #7c3aed; color: #ffffff; }   /* ⟳ 2026-11-01 (rà tương phản): `#8b5cf6` cho chữ trắng chỉ **4,23:1** (dưới AA 4,5) ⇒ hạ 1 nấc xuống violet-600 `#7c3aed` = **5,70:1** ✓, vẫn rõ là tím. */
+body.light-mode .kh-card > .kh-phone-row > .kh-photo.has-photo { background: #4c1d95; border-color: #4c1d95; color: #ffffff; }   /* ⟳ 2026-11-02 (yêu cầu “cho màu 2 nút sáng hơn 1 tí”): `#2e1065` (violet-950) → **`#4c1d95`** (violet-900) — sáng hơn đúng 1 nấc, vẫn là tím đậm.   /* ⟳ 2026-11-02 (“nút ảnh màu tím đen”): `#6d28d9` (violet-700) → **`#2e1065`** (violet-950 = tím đen), trong khi nút “Vị trí” đã ghim về **`#172554`** (xanh đen). ⚠️ Đây là rule dùng CHUNG 2 theme (selector dark nằm ở dòng ngay trên).   /* ⟳ 2026-11-02 (“nút vị trí màu xanh dương đậm, nút ảnh màu tím đậm”): viên “Ảnh” khi ĐÃ CÓ ẢNH `#7c3aed` (violet-600) → **`#6d28d9`** (violet-700) = tím ĐẬM hơn đúng 1 nấc; nút “Vị trí” đã trả về xanh dương `#1d4ed8` nên 2 viên tách hẳn màu. Chữ/icon trắng **7,00:1** ✓ AA (bản `#7c3aed` chỉ 5,70:1). ⚠️ Rule này nằm SAU 2 rule `.has-photo` ở trên và phải khai ĐỦ `body.light-mode .kh-card > .kh-phone-row` mới thắng. ⟳ 2026-11-01 (rà tương phản): `#8b5cf6` → `#7c3aed`. */
 body:not(.light-mode) .kh-card > .kh-phone-row > .kh-photo.has-photo .ic,
 body.light-mode .kh-card > .kh-phone-row > .kh-photo.has-photo .ic { color: #ffffff; }
+
+/* ⟳ 2026-11-02 (yêu cầu “cho màu 2 nút ở light mode sáng hơn 1 tí”): 2 viên đang dùng CHUNG màu với
+   dark (`#1e3a8a` / `#4c1d95`) ⇒ ở LIGHT nền thẻ sáng nên trông nặng. Khai RIÊNG cho light, sáng hơn
+   đúng 1 nấc: “Vị trí” đã ghim **`#1e40af`** (blue-800) · “Ảnh” có ảnh **`#5b21b6`** (violet-800).
+   Chữ vẫn `#ffffff` (blue-800 = **8,72:1** · violet-800 = **8,90:1** ✓ dư AA).
+   ⚠️ Phải khai SAU rule `.is-on` / `.has-photo` dùng chung 2 theme và ĐỦ `body.light-mode .kh-card >
+   .kh-phone-row` mới thắng. DARK KHÔNG đụng (`#1e3a8a` / `#4c1d95`). */
+body.light-mode .kh-card > .kh-phone-row .kh-dir-btn.is-on { background: #1e40af; border-color: #1e40af; color: #ffffff; }
+body.light-mode .kh-card > .kh-phone-row > .kh-photo.has-photo { background: #5b21b6; border-color: #5b21b6; color: #ffffff; }
 
 /* 3) TÊN KH: trả lại màu chữ theo theme (bản cũ ép trắng vì nằm trên dải teal). */
 body.light-mode .kh-card .kh-idcol .kh-name { color: #1e293b !important; }   /* ⟳ 2026-10-28 (yêu cầu “cho tên kh màu đen nhạt xuống 1 tí”): slate-900 `#0f172a` → **slate-800 `#1e293b`** (nhạt 1 nấc, vẫn ~13:1 trên thẻ `#f8fafc`). */
@@ -8543,7 +8644,77 @@ body .kh-card.kh-card {
    cũng (0,4,1) và đứng SAU rule 2 lớp ⇒ nếu chỉ khai `body .kh-card.kh-card` (0,2,1) thì ở DARK
    nó đè mất màu vệt (đúng lỗi người dùng báo: “ở dark mode bị mất màu thanh này”). Thanh tím vẫn
    hiện vì rule `.multi-hd` bên dưới đã đủ (0,4,1). */
-body .kh-card.kh-card:not(.highlighted):not(.highlighted-purple) { border-left-color: var(--card-accent); }
+body .kh-card.kh-card:not(.highlighted):not(.highlighted-purple) { border-left-color: var(--card-accent) !important; }   /* ⚠️ `!important` BẮT BUỘC từ 2026-11-02: rule gộp viền thẻ (`body:not(.light-mode) .kh-card:not(.highlighted)…` 0,4,1 và `body.light-mode .kh-card` 0,2,1) khai `border-color` cho CẢ 4 viền ⇒ thanh TRÁI bị đè thành xám (đo live: `rgba(148,163,184,0.55)` thay vì màu mức nợ — đúng lỗi người dùng báo “cho màu thanh ở thẻ quay lại”). Giữ `!important` thì sau này đổi viền ngoài không làm mất thanh màu. */
+/* ⟳ 2026-11-02 (yêu cầu “cho màu thanh ở thẻ quay lại cùng với màu tiền nợ dark mode”): thanh trái
+   ở DARK lấy ĐÚNG màu CHỮ SỐ TIỀN (`.kh-tien.high/.mid/.low` ở dark) thay vì bộ `#ef4444/#10b981`
+   (bộ đó vẫn dùng cho LIGHT — yêu cầu chỉ nói dark). Đo live trước khi sửa: `.kh-tien.mid` =
+   `rgb(253,230,138)` = `#fde68a` ⇒ thanh “mid” cũng phải `#fde68a`.
+   ⚠️ Dùng biến `--card-accent` (thẻ đọc biến này cho `border-left-color`) chứ không đổi 3 rule
+   `body .kh-card.kh-card…` ⇒ không phải lo độ ưu tiên. */
+body:not(.light-mode) .kh-card.tier-high { --card-accent: #ff8888; }
+body:not(.light-mode) .kh-card.tier-mid  { --card-accent: #fde68a; }
+body:not(.light-mode) .kh-card.tier-low  { --card-accent: #86efac; }
+/* ⚠️ PHẢI khai ĐÍCH DANH `border-left-color` nữa: các rule cũ ở dưới (`body .kh-card.kh-card.tier-low
+   { --card-accent: #12a06a }` ~8877 và bộ `body.light-mode .kh-card…`) khai SAU nên THẮNG biến
+   `--card-accent` ⇒ đo live vẫn ra `rgb(78,168,114)` chứ không phải `#86efac`. Đặt Ở CUỐI style +
+   `!important` để thắng cả rule `border-left-color: var(--card-accent) !important` phía trên.
+   Đo lại sau khi sửa: thanh = ĐÚNG chữ số tiền (`tier-mid` → `rgb(253,230,138)` = `.kh-tien.mid`). */
+/* ⟳ 2026-11-02 (yêu cầu “cho thanh màu trong ảnh giống màu NỀN số tiền ở dark mode”): thanh trái
+   đang chép màu CHỮ số tiền (`#ff8888`/`#fde68a`/`#86efac`) → nay chép ĐÚNG **`background` của viên
+   `.kh-tien.pay-tap`** ở dark (đo live: high **`rgba(248,113,113,0.12)`** · low
+   **`rgba(74,222,128,0.12)`** · mid **`rgba(251,191,36,0.14)`**). Để nguyên alpha ⇒ thanh và viên
+   tiền “hoà” cùng một lớp sơn trên nền thẻ, đúng cặp màu người dùng thấy.
+   ⚠️ Hệ quả CỐ Ý: thanh trầm hơn hẳn bản chữ (vd high: trên thẻ `#1a1f28` ra ~`rgb(53,41,49)`).
+   ⛔ Đừng trả về bản sáng của chữ — người dùng vừa yêu cầu đổi từ bản đó. */
+/* ⚠️ PHẢI viết `.kh-card.kh-card` + 2 `:not(...)` = (0,6,1) mới thắng rule
+   `body .kh-card.kh-card:not(.highlighted):not(.highlighted-purple)` (0,5,1) ở trên — độ ưu tiên
+   CAO HƠN thứ tự, nên bản ngắn (0,3,1) đã bị đè (đo live lần đầu: thanh vẫn `rgb(255,136,136)`). */
+/* ⟳ 2026-11-02 (yêu cầu “cho màu thanh này quay lại lúc đầu, nhưng cho màu đừng chói quá”): bỏ lớp
+   nền ô tiền (alpha 0,12/0,14 ⇒ vệt gần như mất màu trong ảnh người dùng) — TRẢ VỀ màu CHỮ số tiền
+   `255,136,136` / `253,230,138` / `134,239,172`, nhưng hạ độ đậm còn **alpha 0,75** ⇒ trên thẻ
+   `#1a1f28` ra **`#c66e70`** / **`#c4b471`** / **`#6bbb8b`**: vẫn rõ là đỏ-hồng / vàng / xanh như bản
+   đầu, nhưng dịu hơn hẳn bản chữ đặc (`#ff8888` / `#fde68a` / `#86efac`) — đúng ý “đừng chói quá”.
+   ℹ️ Đây là điểm giữa của 2 bản đã có: bản “giảm chói” 2026-11-01 (`#bf6470`/`#bb9a4a`/`#4ea872`)
+   quá tối, bản “chép chữ tiền” quá chói. Muốn dịu/sáng thêm thì chỉnh ĐÚNG 1 số alpha ở 3 dòng này. */
+body:not(.light-mode) .kh-card.kh-card.tier-high:not(.highlighted):not(.highlighted-purple) { border-left-color: rgba(255,136,136,0.75) !important; }
+body:not(.light-mode) .kh-card.kh-card.tier-mid:not(.highlighted):not(.highlighted-purple)  { border-left-color: rgba(253,230,138,0.75) !important; }
+body:not(.light-mode) .kh-card.kh-card.tier-low:not(.highlighted):not(.highlighted-purple)  { border-left-color: rgba(134,239,172,0.75) !important; }
+/* ⟳ 2026-11-02 (yêu cầu “cho thanh màu đỏ ở thẻ light mode nhạt xuống 1 tí”): thanh trái thẻ
+   NỢ LỚN ở LIGHT `#e11d48` (đo live `rgb(225,29,72)`) → **`#f43f5e`** (rose-500, nhạt đúng 1 nấc
+   trong cùng họ đỏ-hồng). `!important` để thắng bộ `--card-accent` khai ở ~8788/8877.
+   ⚠️ CHỈ light + CHỈ tier-high: 2 mức còn lại (mid vàng · low xanh) giữ nguyên như ảnh trước đó. */
+body.light-mode .kh-card.tier-high { border-left-color: #f43f5e !important; }
+
+/* ══ 2026-11-02 — KHÔNG ĐỂ NÚT “Ảnh” XUỐNG HÀNG (yêu cầu “không cho nút ảnh xuống hàng”) ═════
+   Hiện tượng: ở khổ 386px, hàng `.kh-phone-row` rộng **318px** mà tổng 3 viên = SĐT 148 + “Vị trí”
+   79 + “Ảnh (1)” ~93 + 2 khe 8 = **336px** ⇒ flex-wrap đẩy “Ảnh” xuống dòng 2.
+   Sửa 3 nấc (cộng lại chừa ~14px): `column-gap 8 → **6px**` · đệm ngang 2 viên nút `10 → **8px**`
+   (mỗi nút −4px) · và **`flex-wrap: nowrap`** để dù có hụt vài px cũng KHÔNG xuống hàng.
+   ⚠️ `nowrap` bắt buộc đi kèm khả năng CO của viên SĐT (`min-width: 0` + `overflow: hidden`), nếu
+   không thì viên SĐT sẽ tràn ra ngoài thẻ (thẻ có `overflow: hidden` nên sẽ bị CẮT mất chữ).
+   Số điện thoại chỉ bị cắt khi thực sự hết chỗ (khách có nhãn “Ảnh (n)” + số dài). */
+body .kh-card > .kh-phone-row { flex-wrap: nowrap; column-gap: 6px; }
+body .kh-card > .kh-phone-row .kh-dir-btn,
+body .kh-card > .kh-phone-row > .kh-photo { padding-left: 8px; padding-right: 8px; }
+body .kh-card > .kh-phone-row > .kh-phone { min-width: 0; flex: 0 1 auto; overflow: hidden; }
+
+/* ══ 2026-11-02 — ĐÃ GHIM VỊ TRÍ ⇒ MŨI TÊN CHUYỂN MÀU ĐỎ ══════════════════════════════════
+   Yêu cầu: “khi ghi vị trí thì mũi tên đổi sang màu đỏ”. Trạng thái “đã ghi vị trí” chính là class
+   `.is-on` trên nút (do `renderCards`/`pinApply` gắn theo `pinOn(ma)`) — nút khi đó có nền xanh
+   `#3b82f6` + chữ trắng, mũi tên xanh lá (`.kh-dir-btn .ic`).
+   Nay mũi tên đỏ khi `.is-on`: dark **`#ff6b6b`** (đỏ nhạt, 2,4:1 trên nền xanh — đủ nhận ra, đỏ
+   đậm `#dc2626` sẽ chìm vào nền xanh chỉ còn ~1,4:1) · light **`#dc2626`** (nền nút light cũng
+   `#3b82f6` nhưng nét đâm hơn cho hợp tông sáng).
+   ⚠️ Selector phải dài hơn `body.light-mode .kh-card .kh-dir-btn .ic` (0,3,1) và
+   `body .kh-card > .kh-phone-row .kh-dir-btn .ic` — nên dùng đúng đường `body .kh-card >
+   .kh-phone-row … .is-on .ic` (0,4,1/0,5,1). ⛔ Không đụng mũi tên ở tab “Đường” của tấm chi tiết. */
+body .kh-card > .kh-phone-row .kh-dir-btn.is-on .ic { color: #ff6b6b; }
+body.light-mode .kh-card > .kh-phone-row .kh-dir-btn.is-on .ic { color: #dc2626; }
+
+/* Icon 2 tab này nay là EMOJI (yêu cầu “đổi emoji vị trí/camera qua emoji này”) ⇒ cỡ icon do
+   `font-size` quyết, ⛔ không dùng `.ic { width }`. 15px = xấp xỉ 18px của icon SVG cũ. */
+body .kh-card > .kh-phone-row .kh-dir-btn .em,
+body .kh-card > .kh-phone-row > .kh-photo .em { font-size: 15px; line-height: 1; }
 /* ⛔ ĐÃ GỠ (2026-11-01, yêu cầu “bỏ màu nợ cũ”): trước là
    `body .kh-card.kh-card.multi-hd:not(.highlighted):not(.highlighted-purple) { border-left-color: var(--multi-hd); }`
    ⇒ thẻ ≥2 HĐ luôn TÍM. Nay thanh trái ăn `--card-accent` (màu số tiền) cho mọi thẻ. */
@@ -8798,7 +8969,7 @@ body:not(.light-mode) .kh-card.kh-card.kh-card .kh-card-top .kh-tien.high .mil-d
    `.multi-hd` không còn tô thanh nữa; màu chỉ còn 3 nấc của số tiền. */
 body .kh-card.kh-card.tier-low  { --card-accent: #12a06a; }
 body .kh-card.kh-card.tier-mid  { --card-accent: #bb8a1e; }
-body .kh-card.kh-card.tier-high { --card-accent: #e11d48; }
+body .kh-card.kh-card.tier-high { --card-accent: #f43f5e; }   /* ⟳ 2026-11-02 (yêu cầu “cho thanh màu đỏ ở thẻ light mode nhạt xuống 1 tí”): `#e11d48` → **`#f43f5e`** (rose-500, nhạt đúng 1 nấc). ⚠️ ĐÂY mới là rule QUYẾT ĐỊNH ở light — bộ `body.light-mode .kh-card.tier-high` ở trên chỉ đặt biến, còn rule (0,3,1) NÀY khai sau nên thắng. */
 /* ⟳ 2026-11-01 (yêu cầu “cho màu thanh này ở dark mode màu KHÔNG QUÁ CHÓI”): vệt trái GIẢM CHÓI —
    cùng họ màu với số tiền nhưng hạ độ sáng ~1/4 thay vì chép nguyên `#86efac` / `#fde68a` / `#ff8888`
    (ba mã đó ở 5px trên nền than là nguồn sáng duy nhất của thẻ nên rất chóa):
@@ -8806,9 +8977,14 @@ body .kh-card.kh-card.tier-high { --card-accent: #e11d48; }
    ⚠️ CỐ Ý khác màu CHỮ của viên tiền: chữ cần sáng để đọc, thanh chỉ cần nhận ra mức nợ.
    ⛔ Đừng trả về bản sáng của chữ — người dùng đã báo “quá chói”. Muốn sáng hơn 1 nấc thì
    `#5fbd8a` / `#c9a856` / `#cc747c`. */
-body:not(.light-mode) .kh-card.kh-card.tier-low  { --card-accent: #4ea872; }
-body:not(.light-mode) .kh-card.kh-card.tier-mid  { --card-accent: #bb9a4a; }
-body:not(.light-mode) .kh-card.kh-card.tier-high { --card-accent: #bf6470; }
+/* ⟳ 2026-11-02 (yêu cầu “cho màu thanh ở thẻ quay lại cùng với màu tiền nợ dark mode”): TRẢ 3 mã về
+   ĐÚNG màu CHỮ số tiền ở dark — `#86efac` / `#fde68a` / `#ff8888` — thay bộ “giảm chói”
+   `#4ea872` / `#bb9a4a` / `#bf6470` của 2026-11-01. Đo live sau khi sửa: thanh = chữ tiền
+   (`rgb(134,239,172)` · `rgb(253,230,138)` · `rgb(255,136,136)`).
+   ℹ️ Bộ “giảm chói” cũ bị người dùng đảo lại — đây là lần đảo thứ hai của ô này. */
+body:not(.light-mode) .kh-card.kh-card.tier-low  { --card-accent: #86efac; }
+body:not(.light-mode) .kh-card.kh-card.tier-mid  { --card-accent: #fde68a; }
+body:not(.light-mode) .kh-card.kh-card.tier-high { --card-accent: #ff8888; }
 /* ⛔ ĐÃ GỠ (2026-11-01, yêu cầu “cho màu và nền, nét chữ số tiền đồng bộ với light mode”): trước là
    `font-weight: 700 !important` + `font-size: calc(var(--fs-card-big) + 1px)` cho dark ⇒ nay dark
    dùng ĐÚNG nét chữ của light: **weight 500** (`!important` sẵn có ở `.kh-card .kh-tien` ~7132) và
@@ -8903,6 +9079,77 @@ body .kh-card .kh-idcol .kh-name {
   .kh-card { padding-right: 8px !important; border-radius: 10px !important; }
   .kh-card-top .kh-tien { background: transparent !important; padding: 0 !important; }
 }
+
+/* ══ 2026-11-02 — VIỀN THẺ / NÚT “VỊ TRÍ” / NÚT “ẢNH” NHẠT ĐI 1 NẤC (CẢ 2 CHẾ ĐỘ) ══════════
+   Yêu cầu: “cho màu viền thẻ và nút vị trí,nút ảnh nhạt xuống 1 tí ở cả 2 chế độ”.
+   Trước lượt này cả 3 đang dùng ĐÚNG token nút cài đặt (`--ctl-line` dark `rgba(148,163,184,0.8)` ·
+   `--ctl-light-line` light `#64748b`). Nay hạ 1 nấc — khai TOKEN RIÊNG để sau này đổi viền nút ⚙
+   KHÔNG kéo theo 3 chỗ này (và ngược lại):
+     · dark : `rgba(148,163,184,0.55)` (alpha 0,8 → 0,55)
+     · light: `#94a3b8` (slate-400, nhạt hơn `#64748b` đúng 1 nấc)
+   ⚠️ Chỉ 3 viền TRÊN/PHẢI/DƯỚI của thẻ — thanh TRÁI vẫn `--card-accent`.
+   ⚠️ Phải khai ĐỦ selector cho 2 nút (`.kh-dir-btn` + `.kh-photo`), và `body:not(.light-mode)` để
+   thắng các rule `body:not(.light-mode) .kh-card .kh-dir-btn { border-color: rgba(148,163,184,0.8) }`
+   (0,4,1) / `… .kh-photo:not(.has-photo) { border-color: rgba(148,163,184,0.8) }` (0,5,1).
+   ⛔ KHÔNG đụng trạng thái đã chọn: `.kh-dir-btn.is-on` (nền xanh) và `.kh-photo.has-photo`
+   (nền tím) — chúng báo “đã cập nhật/đã có ảnh”, làm nhạt là mất dấu. */
+:root { --card-line: rgba(148,163,184,0.55); }
+body.light-mode { --card-line: #94a3b8; }
+body.light-mode .kh-card { border-color: var(--card-line); }
+body:not(.light-mode) .kh-card:not(.highlighted):not(.highlighted-purple) { border-color: var(--card-line); }
+/* ⟳ 2026-11-02 (yêu cầu “cho viền xanh dương nhạt”): viền 2 viên “Vị trí” / “Ảnh” khi CHƯA chọn (chưa có
+   toạ độ / chưa có ảnh) từ xám `--card-line` → **xanh dương NHẠT `#60a5fa`** (blue-400), CẢ 2 theme.
+   Trạng thái ĐÃ chọn giữ nguyên (`#1e3a8a` / `#1e40af` cho Vị trí, `#4c1d95` / `#5b21b6` cho Ảnh).
+   ⚠️ Chỉ đổi đúng 3 selector này (2 nút), KHÔNG đụng `--card-line` của thẻ — thẻ vẫn viền xám như cũ. */
+body .kh-card > .kh-phone-row .kh-dir-btn:not(.is-on),
+body.light-mode .kh-card > .kh-phone-row > .kh-photo:not(.has-photo),
+body:not(.light-mode) .kh-card > .kh-phone-row > .kh-photo:not(.has-photo) { border-color: #60a5fa; }
+/* ⚠️ 2 selector của nút “Ảnh” BẮT BUỘC phải có tiền tố theme (0,5,1): rule cũ
+   `body:not(.light-mode) … .kh-photo:not(.has-photo)` cũng 0,5,1 và khai TRƯỚC ⇒ bản không có
+   `body:not(.light-mode)` (0,4,1) BỊ ĐÈ (đã đo: viền vẫn `0,8` trong khi thẻ đã `0,55`). */
+
+/* ══ 2026-11-02 — TRƯỢT THẺ SANG TRÁI ĐỂ HIỆN 2 NÚT “Quay lại” / “Xoá” ══════════════════════════
+   Yêu cầu: “thêm tuỳ chọn khi trượt thẻ qua trái sẽ hiện nút xoá,quay lại”.
+   Cách làm: `renderCards()` gọi `initSwipeCards()` để BỌC mỗi `.kh-card` trong một `.kh-swipe`
+   (khung `overflow: hidden`) + chèn sẵn 2 nút NẰM DƯỚI thẻ (`.kh-swipe-acts`, absolute mép phải).
+   Trượt thẻ sang trái = `translateX(-128px)` ⇒ lộ ra 2 nút. Vì sao BỌC SAU khi render thay vì sửa
+   template: template thẻ dài ~130 dòng dựng inline trong `renderCards`, sửa nó là phải chèn thêm
+   markup vào CẢ 2 nhánh (thẻ thường + “Nợ cũ”); bọc sau render chỉ đụng DOM, ⛔ không đổi cấu trúc
+   dữ liệu/markup của thẻ.
+   ⚠️ `touch-action: pan-y` là BẮT BUỘC: thiếu nó trình duyệt dành cử chỉ ngang cho việc khác và
+   thẻ sẽ không trượt trên máy thật (desktop vẫn chạy vì dùng chuột).
+   ⚠️ `.kh-swipe` phải là `border-radius: 12px` = ĐÚNG bán kính thẻ, nếu không góc thẻ bị cắt vuông.
+   ⚠️ `.kh-card` phải có `z-index: 1` (thẻ nằm TRÊN 2 nút) + `background` riêng (đã có sẵn từ rule
+   `.kh-card`), nếu không 2 nút sẽ hiện xuyên qua thân thẻ.
+   ⛔ Đừng gắn `transform` cho `.kh-card` bằng rule thường (không có class `.open`): hàm
+   `bindSwipeCard()` gán transform TRỰC TIẾP khi đang kéo, rule chỉ lo trạng thái ĐÃ Mở. */
+.kh-swipe { position: relative; overflow: hidden; border-radius: 12px; touch-action: pan-y; }
+.kh-swipe-acts { position: absolute; top: 0; right: 0; bottom: 0; display: flex; align-items: stretch; z-index: 0; }
+.kh-swipe-btn { width: 76px; border: 0; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; line-height: 1.15; color: #ffffff; cursor: pointer; }
+.kh-swipe-del { background: #dc2626; }
+.kh-swipe-del:active { background: #b91c1c; }
+.kh-swipe > .kh-card { position: relative; z-index: 1; transition: transform 0.18s ease; background-color: var(--dk-card); }
+body.light-mode .kh-swipe > .kh-card { background-color: var(--light-card); }
+.kh-swipe.open > .kh-card { transform: translateX(-76px); }
+
+/* ══ 2026-11-02 — HỘP XÁC NHẬN “Có / Không” KHI XOÁ THẺ ══════════════════════════════════
+   Yêu cầu: “khi nhấn xoá thêm 1 lần xác nhận có và không”. Tự dựng bằng DOM (không dùng
+   `confirm()` của trình duyệt vì hộp đó hiện chữ “OK/Cancel” theo ngôn ngữ máy, không đúng ý
+   “Có/Không”, và bị chặn trong một số webview).
+   ⚠️ z-index 4000: phải NỔI TRÊN mọi tấm khác (`.modal` ~1000) để không bị che khi bấm từ thẻ
+   đang mở “Chi tiết”. */
+.sc-overlay { position: fixed; inset: 0; z-index: 4000; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(2,6,23,0.55); }
+.sc-overlay.open { display: flex; }
+.sc-box { width: 100%; max-width: 330px; border-radius: 14px; padding: 16px 16px 12px; background: #ffffff; color: #0f172a; font-family: 'Inter', sans-serif; box-shadow: 0 12px 40px rgba(0,0,0,0.45); }
+.sc-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.sc-text { font-size: 13.5px; line-height: 1.45; color: #475569; margin-bottom: 14px; }
+.sc-acts { display: flex; gap: 8px; justify-content: flex-end; }
+.sc-acts button { min-width: 78px; padding: 9px 12px; border-radius: 10px; border: 1px solid transparent; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
+.sc-no { background: #e2e8f0; color: #1e293b; }
+.sc-no:active { background: #cbd5e1; }
+.sc-yes { background: #dc2626; color: #ffffff; }
+.sc-yes:active { background: #b91c1c; }
+@media print { .kh-swipe-acts { display: none !important; } .kh-swipe.open > .kh-card { transform: none !important; } }
 </style>
 </head>
 <body>
@@ -9112,6 +9359,20 @@ body .kh-card .kh-idcol .kh-name {
        ăn `currentColor` (⛔ không hard-code màu). -->
   <symbol id="i-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 5h16.8l-6.6 7.6v7l-3.6 2v-9z"/></symbol>
   <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1.1"/></symbol>
+  <!-- ══ 2026-11-02 (yêu cầu “đổi icon ghi chú” + “đổi icon hàng abc bằng icon khác”,
+       “cho icon trong ảnh đậm hơn 1 nấc”): 2 icon MỚI thay 2 EMOJI (✏️/🔠). Vì sao phải đổi sang
+       SVG chứ không đổi màu emoji: emoji do HỆ ĐIỀU HÀNH vẽ, CSS `color` KHÔNG ăn ⇒ không thể
+       “đậm hơn 1 nấc” được. Theo đúng 3 quy tắc icon của app: lưới 24×24 · nét 2.2 · currentColor.
+       · `#i-note`     = TỜ GHI CHÚ (giấy gập góc + 3 dòng) — thay bút chì ✏️ của hàng ghi chú
+       · `#i-bookmark` = DẢI ĐÁNH DẤU (bookmark) — thay 🔠 của hàng ABC; không trùng `#i-tag`
+       (mã KH) / `#i-hash` (mã KV) / `#i-notebook` (mã sổ). -->
+  <symbol id="i-note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.4" y="6" width="12.8" height="15" rx="2"/><path d="M6.6 10.6h6.4M6.6 13.7h6.4M6.6 16.8h6.4"/><path d="M6.2 6V3.6M9.8 6V3.6M13.4 6V3.6"/><path d="M19.5 3.4l1.6 1.6-7.7 7.7-2.2.6.6-2.2z"/></symbol>
+  <!-- ⟳ 2026-11-02 (yêu cầu “đổi icon abc qua icon này”, ảnh = SỔ ĐỊA CHỈ: bìa xanh, người ở giữa,
+       3 tab màu ở mép): thay `#i-bookmark` bằng **`#i-address` = sổ địa chỉ/danh bạ** — đúng vật
+       thể trong ảnh (bìa có gáy + 3 tab ở mép trái + đầu và vai người ở giữa). Giữ đúng 3 quy tắc
+       icon (lưới 24 · nét 2.2 · currentColor) nên vẫn tô được theo theme. ⚠️ Đây là icon RIÊNG của
+       hàng ABC — ⛔ đừng dùng `#i-people` (icon nhân viên ở ô lọc) hay `#i-notebook` (mã sổ). -->
+  <symbol id="i-address" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5.6" y="3" width="13.8" height="18" rx="2.2"/><circle cx="12.5" cy="9.6" r="2.1"/><path d="M8.9 16.9a3.6 3.6 0 0 1 7.2 0"/><path d="M5.6 7.4H2.8M5.6 12H2.8M5.6 16.6H2.8"/></symbol>
   <!-- 🚫 `i-pencil-bold` — ĐÃ XOÁ ở lượt “cho các icon mang phong cách tối giản”: hàng “ghi chú”
        của thẻ KH nay dùng `#i-pencil` (cây viết NÉT, lưới 24). Phần dưới là LỊCH SỬ của bản đặc
        đã bỏ — ĐỪNG dựng lại.
@@ -13016,6 +13277,13 @@ function applyFilters() {
   filtered.sort(rowCompare);
 
   // Giữ bản ghi gốc (sau lọc) trước khi gộp theo KH — để thống kê KH/HĐ/tổng tiền
+  /* ⟳ 2026-11-02 — BỎ CÁC KHÁCH ĐÃ “XOÁ” (trượt thẻ → Xoá) KHỎI DANH SÁCH HIỂN THỊ.
+     Yêu cầu: “khi xoá thì kh đó chỉ mất trên thẻ, còn file excel dữ liệu vẫn còn kh bị xoá”.
+     Vì vậy KHÔNG đụng `allData` (nguồn của `exportExcel`) — chỉ lọc ở đây, và đặt TRƯỚC dòng
+     `rawRows` để hàng đếm “HĐ/KH”, tấm “Nợ cũ”, bảng và phân trang đều đồng bộ theo.
+     ⚠️ Khoá theo `ma_khach_hang` (khách không có mã thì dùng tên) — giống cách `keepSet` bên dưới. */
+  const _hiddenNow = hiddenSet();
+  if (_hiddenNow.size) filtered = filtered.filter(r => !_hiddenNow.has(String(r.ma_khach_hang || r.ten_khach_hang || '')));
   const rawRows = filtered;
   /* 💰 TAB KHOẢNG NỢ (2026-10-26): `loaiRange()` trả `[min, max)` cho `1tr` · `1-2tr` · `2-3tr`,
      `null` cho mọi tab khác ⇒ chỉ cần 1 điều kiện thay vì rải `currentTab === '1tr'` khắp nơi. */
@@ -13993,9 +14261,9 @@ function renderCards(q='') {
            ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
       ${r.dia_chi ? `<div class="kh-addr-line${pinHere ? ' is-pinned' : ''}" style="margin-top:5px" ondblclick="event.stopPropagation()"><span class="kh-addr-acts"><button type="button" class="kh-pin-btn${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" tabindex="-1" aria-hidden="true"><span class="em" aria-hidden="true">📍</span></button><button type="button" class="kh-nav-btn" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí đã ghim"><svg class="ic" width="17" height="17" aria-hidden="true"><use href="#i-nav"/></svg></button></span><span class="kh-addr-txt">${hi(trimDiaChi(r.dia_chi),q)}</span></div>` : ''}
       <div class="kh-ghichu-row">
-        <span class="em" aria-hidden="true" style="margin-right:6px">✏️</span>
+        <span class="em kh-ghichu-ico" aria-hidden="true" style="margin-right:6px" title="Ghi chú">📝</span>
         <input type="text" class="kh-ghichu-input" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" oninput="saveGhiChu(this)" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()" onpointerdown="event.stopPropagation()" onpointerup="event.stopPropagation()">
-        ${r.abc ? `<span class="kh-abc-wrap" style="margin-left:8px;display:flex;align-items:center;gap:4px;flex-shrink:0;min-width:0"><span class="em kh-abc-ico" aria-hidden="true">🔠</span><span class="kh-abc" style="font-size:var(--fs-card)">${hi(r.abc,q)}</span></span>` : ''}
+        ${r.abc ? `<span class="kh-abc-wrap" style="margin-left:8px;display:flex;align-items:center;gap:4px;flex-shrink:0;min-width:0"><span class="em kh-abc-ico" aria-hidden="true" title="ABC">📇</span><span class="kh-abc" style="font-size:var(--fs-card)">${hi(r.abc,q)}</span></span>` : ''}
       </div>
       <!-- ⟳ 2026-10-24 (yêu cầu: “dời hàng địa chỉ xuống dưới ghi chú”): dòng ĐỊA CHỈ rời khỏi
            khối giữa (kh-card-mid) và xuống CUỐI THẺ, ngay dưới hàng ghi chú. Vì thẻ là khối
@@ -14022,7 +14290,7 @@ function renderCards(q='') {
       <div class="kh-phone-row${pinHere ? ' has-dir' : ''}">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="margin-right:2px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}<!-- ⟳ 2026-10-31 (yêu cầu “đổi vị trí 2 nút này”): **ĐƯỜNG đứng TRƯỚC, GHIM đứng SAU**
              (trước là Ghim → Đường). ⚠️ Đổi thứ tự thì phải đổi CẢ margin bám phải — xem 3 rule
              .kh-phone-row + margin-left trong phần CSS: nút ĐẦU của cụm giữ auto.
-             ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG một template literal). -->${r.ma_khach_hang ? `<button type="button" class="kh-dir-btn${pinHere ? ' is-on' : ''}" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinTabTap(this)" aria-label="Vị trí khách hàng — mở menu"><svg class="ic" aria-hidden="true"><use href="#i-gmap"/></svg><span class="kh-dir-txt">Vị trí</span></button>` : ''}${r.ma_khach_hang ? `<button type="button" class="kh-photo${pc ? ' has-photo' : ''}" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang || '')}" data-ky="${esc(r.thang_no || '')}" onclick="event.stopPropagation();photoTap(this)" aria-label="${pc ? 'Xem ảnh của khách (' + pc + ')' : 'Chụp ảnh khách hàng'}"><svg class="ic" aria-hidden="true"><use href="#i-camera"></use></svg><span class="kh-photo-txt">Ảnh${pc ? ' (' + pc + ')' : ''}</span></button>` : ''}</div>
+             ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG một template literal). -->${r.ma_khach_hang ? `<button type="button" class="kh-dir-btn${pinHere ? ' is-on' : ''}" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinTabTap(this)" aria-label="Vị trí khách hàng — mở menu"><svg class="ic" aria-hidden="true"><use href="#i-nav"/></svg><span class="kh-dir-txt">Vị trí</span></button>` : ''}${r.ma_khach_hang ? `<button type="button" class="kh-photo${pc ? ' has-photo' : ''}" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang || '')}" data-ky="${esc(r.thang_no || '')}" onclick="event.stopPropagation();photoTap(this)" aria-label="${pc ? 'Xem ảnh của khách (' + pc + ')' : 'Chụp ảnh khách hàng'}"><svg class="ic" aria-hidden="true"><use href="#i-camera"></use></svg><span class="kh-photo-txt">Ảnh${pc ? ' (' + pc + ')' : ''}</span></button>` : ''}</div>
       <button type="button" class="kh-chev" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();openCardDetail(this)" ondblclick="event.stopPropagation()" aria-label="Xem chi tiết khách hàng"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-chev"></use></svg></button>
     </div>`;
   }).join('');
@@ -14030,7 +14298,169 @@ function renderCards(q='') {
   fitLabelCols();  // 2026-10-26: 3 giá trị Mã KV / Mã sổ / Số TBI thẳng một cột (xem `fitLabelCols`)
   fitTbiAlign();   // 2026-10-26: cụm ⚡số TBI thẳng cột với viên mã KH (xem `fitTbiAlign`)
   fitAbcAlign();   // 2026-10-26: icon 🏷 hàng ABC thẳng cột với icon 🏷 viên mã KH (xem `fitAbcAlign`)
+  initSwipeCards();  // 2026-11-02: bọc thẻ + gắn cử chỉ TRƯỢT SANG TRÁI (hiện “Quay lại” / “Xoá”)
 }
+
+/* ══ 2026-11-02 — TRƯỢT THẺ SANG TRÁI: HIỆN “Quay lại” + “Xoá” ══════════════════════════════
+   Yêu cầu: “thêm tuỳ chọn khi trượt thẻ qua trái sẽ hiện nút xoá,quay lại”.
+   · `initSwipeCards()` chạy sau MỖI lần `renderCards()` ⇒ bọc lại từ đầu, idempotent (bỏ qua thẻ
+     đã nằm trong `.kh-swipe`).
+   · `bindSwipeCard()`: ngưỡng rời tay **64px** (nửa 128px) mới giữ mở; kéo lệch dọc > ngang ⇒
+     NHƯỜNG cho việc cuộn trang (không cướp cử chỉ cuộn).
+   · `_swipeBlockUntil`: sau khi trượt, chặn `click` 350ms — nếu không thì vuốt xong là thẻ tự mở
+     tấm “Chi tiết”/copy tên (các handler cũ đều nằm trong thẻ).
+   · XOÁ = bỏ MỌI hoá đơn của mã KH đó khỏi `allData` rồi `saveData()` + `applyFilters()`;
+     bản sao lưu vào `_swipeUndo` ⇒ “Quay lại” khôi phục ĐÚNG số hoá đơn vừa xoá.
+     ⚠️ Không có hộp xác nhận: đã có “Quay lại” + toast báo số hoá đơn đã xoá.
+   · chỉ bấm được khi 2 nút đã lộ ra (`.open`); bấm lúc đang đóng thì bàn phím/thẻ vẫn xử lý như cũ. */
+const SWIPE_W = 76;   /* ⟳ 2026-11-02 (yêu cầu “bỏ nút quay lại”): chỉ còn 1 nút “Xoá” (76px) ⇒ 128 → 76px. */
+let _swipeBlockUntil = 0;
+/* Danh sách khách ĐÃ ẨN KHỎI DANH SÁCH THẺ — 2026-11-02 (yêu cầu “khi xoá thì kh đó chỉ mất trên
+   thẻ, còn file excel dữ liệu vẫn còn kh bị xoá”):
+   ⛔ KHÔNG xoá khỏi `allData` nữa (bản đầu của lượt này có xoá — SAI, vì `exportExcel` đọc
+   `allData` ⇒ xuất file sẽ MẤT khách đó). Nay chỉ ghi mã KH vào khoá RIÊNG dưới đây rồi `applyFilters()`
+   lọc bỏ khi vẽ danh sách ⇒ dữ liệu gốc nguyên vẹn, xuất Excel vẫn đủ.
+   `_hiddenSet` là cache (Set) để không phải `JSON.parse` 2.900 dòng mỗi lần lọc. */
+const HIDE_KEY = 'qlno_hidden_cards_v1';
+let _hiddenSet = null;
+function hiddenSet() {
+  if (_hiddenSet) return _hiddenSet;
+  try { _hiddenSet = new Set((JSON.parse(localStorage.getItem(HIDE_KEY) || '[]') || []).map(String)); }
+  catch (e) { _hiddenSet = new Set(); }
+  return _hiddenSet;
+}
+function isHiddenCard(ma) { return hiddenSet().has(String(ma || '')); }
+function hideCard(ma) {
+  if (!ma) return;
+  hiddenSet().add(String(ma));
+  try { localStorage.setItem(HIDE_KEY, JSON.stringify(Array.from(hiddenSet()))); } catch (e) {}
+}
+
+function initSwipeCards() {
+  ['cardList', 'oldCardList'].forEach(function (id) {
+    const list = document.getElementById(id);
+    if (!list) return;
+    Array.prototype.slice.call(list.children).forEach(function (node) {
+      if (!node.classList || !node.classList.contains('kh-card')) return;
+      if (node.parentElement && node.parentElement.classList.contains('kh-swipe')) return;
+      const wrap = document.createElement('div');
+      wrap.className = 'kh-swipe';
+      list.insertBefore(wrap, node);
+      wrap.appendChild(node);
+      const acts = document.createElement('div');
+      acts.className = 'kh-swipe-acts';
+      /* ⟳ 2026-11-02 (yêu cầu “bỏ nút quay lại”): CHỈ còn nút “Xoá” — bỏ hẳn nút “Quay lại”
+         cùng hàm `swipeUndo` và biến `_swipeUndo`. Hoàn tác nay không cần vì XOÁ CHỈ ẨN THẺ
+         (dữ liệu gốc vẫn nguyên, xem `HIDE_KEY`). */
+      acts.innerHTML = '<button type="button" class="kh-swipe-btn kh-swipe-del" onclick="swipeDelete(event)">Xoá</button>';
+      wrap.insertBefore(acts, node);
+      bindSwipeCard(wrap, node);
+    });
+  });
+}
+
+function setSwipe(wrap, card, open) {
+  wrap.classList.toggle('open', !!open);
+  card.style.transform = open ? 'translateX(-' + SWIPE_W + 'px)' : '';
+}
+
+function closeSwipes(except) {
+  document.querySelectorAll('.kh-swipe.open').forEach(function (w) {
+    if (w === except) return;
+    const c = w.querySelector('.kh-card');
+    if (c) setSwipe(w, c, false); else w.classList.remove('open');
+  });
+}
+
+function bindSwipeCard(wrap, card) {
+  let x0 = 0, y0 = 0, dx = 0, dragging = false, moved = false;
+  card.addEventListener('pointerdown', function (e) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    x0 = e.clientX; y0 = e.clientY; dx = 0; moved = false; dragging = true;
+    card.style.transition = 'none';
+  }, { passive: true });
+  card.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    const mx = e.clientX - x0, my = e.clientY - y0;
+    if (!moved) {
+      if (Math.abs(mx) < 10) return;
+      if (Math.abs(my) > Math.abs(mx) * 1.4) { dragging = false; card.style.transition = ''; return; }
+      moved = true;
+    }
+    const base = wrap.classList.contains('open') ? -SWIPE_W : 0;
+    dx = Math.max(-SWIPE_W, Math.min(0, base + mx));
+    card.style.transform = 'translateX(' + dx + 'px)';
+  }, { passive: true });
+  function finish() {
+    if (!dragging) return;
+    dragging = false;
+    card.style.transition = '';
+    if (!moved) return;                      // chỉ chạm (không trượt): giữ nguyên trạng thái
+    const open = dx < -SWIPE_W / 2;
+    if (open) closeSwipes(wrap);
+    setSwipe(wrap, card, open);
+    _swipeBlockUntil = Date.now() + 350;     // nuốt cú click bắn theo sau cú trượt
+  }
+  card.addEventListener('pointerup', finish);
+  card.addEventListener('pointercancel', finish);
+  card.addEventListener('click', function (e) {
+    if (Date.now() < _swipeBlockUntil) { e.stopPropagation(); e.preventDefault(); }
+  }, true);
+}
+
+/* Bấm “Xoá” trong khay trượt ⇒ MỞ HỘP XÁC NHẬN (Có / Không) — ⛔ chưa xoá gì ở bước này. */
+function swipeDelete(ev) {
+  ev.stopPropagation();
+  ev.preventDefault();
+  const wrap = ev.currentTarget.closest('.kh-swipe');
+  const card = wrap && wrap.querySelector('.kh-card');
+  const ma = card && card.dataset ? card.dataset.ma : '';
+  if (!ma) return;
+  const nameEl = card.querySelector('.kh-name');
+  const name = (nameEl ? nameEl.textContent : ma).trim();
+  openSwipeConfirm(ma, name);
+}
+
+function openSwipeConfirm(ma, name) {
+  let ov = document.getElementById('khHideConfirm');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = 'khHideConfirm';
+    ov.className = 'sc-overlay';
+    ov.innerHTML = '<div class="sc-box"><div class="sc-title">Xoá khỏi danh sách thẻ?</div>'
+                 + '<div class="sc-text"></div>'
+                 + '<div class="sc-acts"><button type="button" class="sc-no">Không</button>'
+                 + '<button type="button" class="sc-yes">Có</button></div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click', function (e) { if (e.target === ov) closeSwipeConfirm(); });
+    ov.querySelector('.sc-no').addEventListener('click', closeSwipeConfirm);
+    ov.querySelector('.sc-yes').addEventListener('click', confirmSwipeDelete);
+  }
+  ov.dataset.ma = ma;
+  ov.querySelector('.sc-text').textContent =
+    name + ' sẽ bị ẩn khỏi danh sách thẻ. Dữ liệu vẫn còn và vẫn xuất ra file Excel bình thường.';
+  ov.classList.add('open');
+}
+
+function closeSwipeConfirm() {
+  const ov = document.getElementById('khHideConfirm');
+  if (ov) ov.classList.remove('open');
+}
+
+function confirmSwipeDelete() {
+  const ov = document.getElementById('khHideConfirm');
+  const ma = ov ? ov.dataset.ma : '';
+  closeSwipeConfirm();
+  if (!ma) return;
+  hideCard(ma);
+  applyFilters();     // ⚠️ KHÔNG `saveData()`: không có gì trong `allData` bị đổi ⇒ file Excel giữ nguyên
+  showToast('✓ Đã ẩn KH ' + ma + ' khỏi danh sách thẻ (dữ liệu Excel vẫn còn)');
+}
+
+// Chạm ra ngoài thẻ đang mở (hoặc cuộn) thì đóng lại — không để nhiều thẻ cùng mở.
+document.addEventListener('pointerdown', function (e) {
+  if (!e.target.closest || !e.target.closest('.kh-swipe')) closeSwipes(null);
+}, true);
 
 // TABLE (desktop)
 /* ⛔ DẠNG BẢNG ĐANG BỊ ẨN THÌ KHÔNG VẼ (⟳ 2026-10-16h — tối ưu độ trễ gõ ô tìm kiếm).
