@@ -1984,12 +1984,12 @@ body.light-mode .summary-table td:first-child { background: #e2e8f0 !important; 
 body.light-mode .summary-table .ten-nv-cell { background: #e2e8f0 !important; color: #334155; border-right: 1px solid #8a93a0 !important; border-bottom: none !important; }
 body.light-mode .summary-table tfoot td:first-child { background: #e2e8f0 !important; color: #000000 !important; }
 body.light-mode .summary-table td { color: #000000; border-bottom: none; background: var(--light-card) !important; }
-body.light-mode .summary-table td:nth-child(2), body.light-mode .summary-table td:nth-child(3), body.light-mode .summary-table td:nth-child(4), body.light-mode .summary-table td:nth-child(5), body.light-mode .summary-table td:nth-child(6) { color: #c2410c !important; background: var(--light-card) !important; }   /* ⟳ 2026-11-03 (yêu cầu “cho màu chữ số liệu sáng hơn bảng tổng hợp light mode”): `#9a3412` (orange-800) → **`#c2410c`** (orange-700, sáng hơn 1 nấc cùng tông). */
-body.light-mode .summary-table td:nth-child(7), body.light-mode .summary-table td:nth-child(8), body.light-mode .summary-table td:nth-child(9) { color: #1d4ed8 !important; background: var(--light-card) !important; }   /* ⟳ 2026-11-03 (cùng yêu cầu): `#1e40af` → **`#1d4ed8`** (sáng hơn 1 nấc). */
-body.light-mode .summary-table td:nth-child(10), body.light-mode .summary-table td:nth-child(11), body.light-mode .summary-table td:nth-child(12) { color: #047857 !important; background: var(--light-card) !important; }   /* ⟳ 2026-11-03 (cùng yêu cầu): `#065f46` → **`#047857`** (sáng hơn 1 nấc). */
+body.light-mode .summary-table td:nth-child(2), body.light-mode .summary-table td:nth-child(3), body.light-mode .summary-table td:nth-child(4), body.light-mode .summary-table td:nth-child(5), body.light-mode .summary-table td:nth-child(6) { color: #ea580c !important; background: var(--light-card) !important; }   /* ⟳ 2026-11-04 (yêu cầu “cho màu chữ sáng hơn cho dễ đọc bảng này”): `#c2410c` → **`#ea580c`** (orange-600, sáng 1 nấc). */   /* ⟳ 2026-11-03 (yêu cầu “cho màu chữ số liệu sáng hơn bảng tổng hợp light mode”): `#9a3412` (orange-800) → **`#c2410c`** (orange-700, sáng hơn 1 nấc cùng tông). */
+body.light-mode .summary-table td:nth-child(7), body.light-mode .summary-table td:nth-child(8), body.light-mode .summary-table td:nth-child(9) { color: #2563eb !important; background: var(--light-card) !important; }   /* ⟳ 2026-11-04 (cùng yêu cầu): `#1d4ed8` → **`#2563eb`** (blue-600, sáng 1 nấc). */   /* ⟳ 2026-11-03 (cùng yêu cầu): `#1e40af` → **`#1d4ed8`** (sáng hơn 1 nấc). */
+body.light-mode .summary-table td:nth-child(10), body.light-mode .summary-table td:nth-child(11), body.light-mode .summary-table td:nth-child(12) { color: #059669 !important; background: var(--light-card) !important; }   /* ⟳ 2026-11-04 (cùng yêu cầu): `#047857` → **`#059669`** (emerald-600, sáng 1 nấc). */   /* ⟳ 2026-11-03 (cùng yêu cầu): `#065f46` → **`#047857`** (sáng hơn 1 nấc). */
 body.light-mode .summary-table tr:hover { background: #bfdbfe; }
 body.light-mode .summary-table tfoot td:nth-child(n) { color: #000000; background: #e2e8f0 !important; border-bottom: none !important; }
-body.light-mode .summary-table .tien-no-cell { color: #c2410c; background: var(--light-card) !important; }   /* ⟳ 2026-11-03: cùng nấc sáng với nhóm cột 2–6. */
+body.light-mode .summary-table .tien-no-cell { color: #ea580c; background: var(--light-card) !important; }   /* ⟳ 2026-11-04: cùng nấc sáng với nhóm cột 2–6. */   /* ⟳ 2026-11-03: cùng nấc sáng với nhóm cột 2–6. */
 /* Mũi tên ↕ (11px, `.sa-sum`) trên header mới + trạng thái đang sắp xếp của nó — xem chú thích ở
    khối trên. Đo live: chưa sắp xếp **5,22 ✓** · đang sắp xếp **5,22 ✓** (dark: **6,93 / 6,99 ✓**).
    ⛔ KHÔNG cần rule `th:hover` cho light: nhãn `th` đã bị `color … !important` ở trên giữ `#334155`
@@ -2781,6 +2781,10 @@ body.light-mode .search-clear:active { background: #dc2626; color: #ffffff; }
    lúc ĐANG CHẠM phải ĐỔI SANG NỀN XANH + CHỮ TRẮNG (5,17:1 ✓) chứ ⛔ KHÔNG dùng lại nền xám
    `#e2e8f0`: chữ `#2563eb` trên `#e2e8f0` chỉ **4,16:1** (trượt AA 4,5:1). */
 .lpsdt-act:active { background: #2563eb; color: #ffffff; filter: brightness(0.97); }
+/* ⇢ 2026-11-04 (yêu cầu “cho chữ này to hơn 1 nấc”): chữ các mục của HỘP VỊ TRÍ (`.lpsdt-act` trong
+   `#pinBox` + `#dirBox`) **15 → 17px**. ⚠️ Khai RIÊNG theo hộp (⛔ không sửa `.lpsdt-act` ở trên) để
+   hộp nhấn-giữ SỐ ĐIỆN THOẠI giữ nguyên cỡ chữ. */
+#pinBox .lpsdt-act, #dirBox .lpsdt-act { font-size: 17px; }
 /* ⟳ 2026-10-19 (yêu cầu “bỏ màu nền, khi chọn mới hiện màu nền” — người dùng CHỐT bỏ nền ĐẶC của
    CẢ 2 nút màu, tức nút Zalo này lẫn nút “Đóng” `.lpcb-btn`): nút Zalo nay **NỀN TRONG SUỐT** +
    viền & chữ `#0068ff` (**4,74:1** ✓) — vẫn đọc ra “nút Zalo” nhờ màu thương hiệu, mà không còn
@@ -3177,6 +3181,9 @@ body:not(.light-mode) .filter-select[data-active="1"] { background-color: var(--
 .loai-tab[data-val=""]          { background: rgba(16,185,129,0.11); color: #6ee7b7; }
 .loai-tab[data-val="old"]       { background: rgba(239,68,68,0.11);  color: #fca5a5; }
 .loai-tab[data-val="oldky"]     { background: rgba(249,115,22,0.11); color: #fdba74; }
+/* ⟳ 2026-11-04 (yêu cầu “thêm 1 tab Nhiều kỳ, nằm trước tab Nợ cũ”): tab LỌC KH có từ 2 HOÁ ĐƠN
+   trở lên — hue XANH DA TRỜI để không lẫn với cam của “Nợ cũ” / đỏ của “Từ 3Tr”. */
+.loai-tab[data-val="nhieuky"]   { background: rgba(14,165,233,0.11); color: #7dd3fc; }
 .loai-tab[data-val="summary"]   { background: rgba(59,130,246,0.11); color: #93c5fd; }
 /* ⟳ 2026-10-26: 3 TAB MỚI (yêu cầu “cho hiển thị thêm hàng tab 1-2Tr, 2-3Tr, chú ý bằng lướt
    ngang”) — nền/chữ theo ĐÚNG hệ màu ở trên (alpha ở dark, nền đặc ở light), mỗi tab một hue:
@@ -3202,6 +3209,7 @@ body:not(.light-mode) .filter-select[data-active="1"] { background-color: var(--
    nên light mode KHÔNG đổi (light dùng rule riêng, cũng `#2563eb`). */
 body:not(.light-mode) .loai-tab[data-val="old"]   { background: rgba(239,68,68,0.08); color: #fecaca; }
 body:not(.light-mode) .loai-tab[data-val="oldky"] { background: rgba(249,115,22,0.08); color: #fed7aa; }
+body:not(.light-mode) .loai-tab[data-val="nhieuky"] { background: rgba(14,165,233,0.08); color: #bae6fd; }
 body:not(.light-mode) .loai-tab.active,
 body:not(.light-mode) .loai-tab.active[data-val] { background: #1d4ed8; color: #ffffff; }   /* ⚠️ Phải có cả biến thể `[data-val]` (0,4,0) — giống bài học ở light mode: tab ĐANG CHỌN mà mang `data-val` thì bị 3 rule màu ở trên đè nếu thiếu. ⟳ 2026-10-28 (yêu cầu “cho màu xanh đậm 1 tí”, ảnh = viên tab đang chọn): `#3b82f6` (blue-500, 3,68:1) → `#2563eb` (blue-600, 5,17:1) → **`#1d4ed8`** (blue-700, chữ trắng **6,70:1** ✓ AA) theo yêu cầu tiếp “cho màu đậm thêm 1 nấc”; `#1d4ed8` = ĐÚNG `HEADER_FIXED_BG`/`--hdr-bg` của header nên không sinh mã mới. ⚠️ phải đổi CẢ rule light (0,3,1) bên dưới để 2 theme cùng một mã. */
 .loai-tab.active { background: #1d4ed8; color: #ffffff; }
@@ -3215,6 +3223,7 @@ body:not(.light-mode) .loai-tab.active[data-val] { background: #1d4ed8; color: #
 body.light-mode .loai-tab[data-val=""]        { background: #f0fdf4; color: #15803d; }
 body.light-mode .loai-tab[data-val="old"]     { background: #fef2f2; color: #b91c1c; }
 body.light-mode .loai-tab[data-val="oldky"]   { background: #fff7ed; color: #c2410c; }
+body.light-mode .loai-tab[data-val="nhieuky"] { background: #f0f9ff; color: #0369a1; }
 body.light-mode .loai-tab[data-val="summary"] { background: #eff6ff; color: #1d4ed8; }
 /* ⟳ 2026-10-26: nền ĐẶC cho 3 tab mới ở light (alpha ghép lên toolbar trắng ra màu bẩn). */
 body.light-mode .loai-tab[data-val="1-2tr"] { background: #fefce8; color: #a16207; }
@@ -3232,7 +3241,8 @@ body.light-mode .loai-tab[data-val="tren5tr"] { background: #fef2f2; color: #b91
    bằng đúng (0,3,1) mà đến sau. */
 body.light-mode .loai-tab.active, body.light-mode .loai-tab.active[data-val=""],
 body.light-mode .loai-tab.active[data-val="old"], body.light-mode .loai-tab.active[data-val="oldky"],
-body.light-mode .loai-tab.active[data-val="summary"], body.light-mode .loai-tab.active[data-val="1-2tr"],
+body.light-mode .loai-tab.active[data-val="summary"], body.light-mode .loai-tab.active[data-val="nhieuky"],
+body.light-mode .loai-tab.active[data-val="1-2tr"],
 body.light-mode .loai-tab.active[data-val="2-3tr"], body.light-mode .loai-tab.active[data-val="marked"],
 body.light-mode .loai-tab.active[data-val="duoi1tr"], body.light-mode .loai-tab.active[data-val="3-5tr"],
 body.light-mode .loai-tab.active[data-val="tren5tr"] { background: #1d4ed8; color: #ffffff; }   /* ⟳ 2026-10-28 (yêu cầu “khi chọn tab nào hiện màu xanh như dark mode”): TRẢ LẠI **nền XANH ĐẶC + chữ TRẮNG**, và dùng ĐÚNG màu của dark (rule `body:not(.light-mode) .loai-tab.active` ngay trên) thay cho cặp pastel `#dbeafe` + `#2563eb` của lượt trước — người dùng đã xem bản pastel và muốn giống dark. ⟳ Cùng ngày (yêu cầu “cho màu xanh đậm 1 tí”): `#3b82f6` → `#2563eb` → (yêu cầu tiếp “cho màu đậm thêm 1 nấc”) **`#1d4ed8`** = blue-700, chữ trắng **6,70:1** ✓ AA (blue-600 được 5,17:1). ⚠️ Đổi ở CẢ 3 chỗ (rule này + `body:not(.light-mode) .loai-tab.active` + `.loai-tab.active` gốc) để 2 theme cùng một mã. */
@@ -3364,7 +3374,10 @@ body.light-mode .loai-tabs .sort-btn.active { border-color: #1e40af !important; 
      ⚠️ Selector phải là (0,3,0) `.loai-tabs .sort-btn.loai-sort-btn`: rule gốc 16px nằm SAU khối
      `@media` này trong file (khối `.adv-*` dùng chung) ⇒ cùng độ ưu tiên là rule gốc ĐÈ, nút đứng
      ở 16px trong khi tab 24px (đã đo và bắt được đúng lỗi này). */
-  .loai-tabs .sort-btn.loai-sort-btn { padding: 0 6px; gap: 3px; font-size: clamp(10.5px, calc(5.52vw - 3.2px), 20px); }
+  /* ⟳ 2026-11-04 (yêu cầu “đồng bộ cỡ chữ các tab”): biểu thức `- 3.2px / trần 20` → **`- 2.2px / trần 21`**
+     = ĐÚNG biểu thức của `.loai-tab` ngay trên ⇒ 2 nút “Danh số / Tiền nợ” không còn bé hơn tab 1px
+     (đo trước khi sửa: tab 20,67px · nút 19,67px ở khổ 414px). */
+  .loai-tabs .sort-btn.loai-sort-btn { padding: 0 6px; gap: 3px; font-size: clamp(10.5px, calc(5.52vw - 2.2px), 21px); }
   .loai-tabs .sort-btn .sort-ico { width: 13px; height: 13px; }
   .loai-tabs .sort-btn .sort-arrow { width: 12px; height: 12px; }
   .loai-tab .loai-tab-ic { width: 13px; height: 13px; }
@@ -4595,7 +4608,7 @@ body.light-mode .kh-card-top .kh-tien { background: var(--light-card); }
    `margin-top: 3px` cho mọi hàng = “khoảng cách các hàng xa nhau 1 tí” (yêu cầu cùng lượt). */
 /* ⚠️ `flex-wrap: wrap` là lưới an toàn: khách ĐÃ có ảnh thì nút hiện chữ “Ảnh (n)” — ở khổ 320px
    nhãn đó + danh số có thể dài hơn hàng ⇒ nút xuống dòng còn hơn TRÀN ngang thẻ. */
-.kh-ds-row { flex: 0 0 100%; display: flex; align-items: center; gap: 2px 6px; flex-wrap: wrap; min-width: 0; margin-top: 3px; }
+.kh-ds-row { flex: 0 0 100%; display: flex; align-items: center; gap: 2px 6px; flex-wrap: wrap; min-width: 0; margin-top: 2px; }   /* ⟳ 2026-11-04: khe trên 3 → **2px** (cùng lượt “các hàng gần nhau hơn 1 tí”). */
 /* ⟳ 2026-10-25 (yêu cầu “cho nút camera nằm xích ra”): nút 📷 bị ĐẨY SÁNG PHẢI hết hàng
    (`margin-left: auto`) thay vì bám ngay sau nhãn/viên mã KV. Nhờ vậy 2 đầu hàng dùng hết bề
    rộng thẻ: nhãn trái — nút phải. ⚠️ Khi hàng phải xuống dòng (thẻ rất hẹp) nút vẫn tự bám mép
@@ -4609,7 +4622,7 @@ body.light-mode .kh-card-top .kh-tien { background: var(--light-card); }
    ⇒ chữ bắt đầu ở 27,95px tính từ mép thẻ = **ĐÚNG mốc của chữ mã sổ** (hàng dưới), khe so với mép
    icon còn **3px** (16px icon + 2px margin của `.lbl-ic` + 1px gap). ⚠️ KHÔNG sửa token
    `--vien-pad-x`: nó còn dùng cho viên MÃ KH + SĐT (đang là “viên” thật, cần đệm). */
-.kh-ds-row .kh-danhso { padding-left: var(--vien-pad-x); }   /* ⟳ 2026-11-02 (yêu cầu “cho nền danh số …”): viên danh số CÓ LẠI NỀN (dark `#253650` · light `#e8f0fe`) ⇒ TRẢ LẠI đệm trái **6px** (`--vien-pad-x`), nếu để 0 thì chữ dính sát mép bo tròn của viên. ⚠️ Hệ quả: chữ danh số xê PHẢI 6px, KHÔNG còn thẳng cột với chữ mã sổ (yêu cầu 2026-10-26 “xích vào icon”) — muốn canh lại thì phải bỏ nền viên, không thể vừa có nền vừa dính mép. */
+.kh-ds-row .kh-danhso { padding-left: var(--vien-pad-x); margin-left: calc(-1 * var(--vien-pad-x)); }   /* ⟳ 2026-11-04 (yêu cầu “cho hàng mã kh thẳng hàng với hàng dưới”): viên danh số lùi vào đúng đệm trái của nó ⇒ **CHỮ** trong viên thẳng cột với “PB…” của Mã KH và “2026…” của Số TBI (trước: viên bắt đầu ở mốc chung nhưng chữ xê phải 6px). */   /* ⟳ 2026-11-02 (yêu cầu “cho nền danh số …”): viên danh số CÓ LẠI NỀN (dark `#253650` · light `#e8f0fe`) ⇒ TRẢ LẠI đệm trái **6px** (`--vien-pad-x`), nếu để 0 thì chữ dính sát mép bo tròn của viên. ⚠️ Hệ quả: chữ danh số xê PHẢI 6px, KHÔNG còn thẳng cột với chữ mã sổ (yêu cầu 2026-10-26 “xích vào icon”) — muốn canh lại thì phải bỏ nền viên, không thể vừa có nền vừa dính mép. */
 /* ⟳ 2026-10-27 (yêu cầu “cho mã sổ nằm sau danh số, và bỏ chữ mã sổ”): mã sổ RỜI hàng riêng
    (`.kh-sub-row`), nay đứng NGAY SAU viên danh số trên CÙNG hàng 1 và chỉ còn icon 📒 + giá trị
    — nhãn chữ “Mã sổ:” đã gỡ ở markup. `gap` của `.kh-ds-row` chỉ **1px** nên khe do
@@ -4635,7 +4648,7 @@ body.light-mode .kh-card-top .kh-tien { background: var(--light-card); }
 /* ⟳ 2026-10-27 (yêu cầu “dời sđt xuống dưới hàng số tbi, không dời mã kh”): hàng SĐT mới nằm
    trên NỀN THẺ (không còn dải xanh) ⇒ chữ phải theo theme, không dùng màu chữ-trắng của dải.
    Dùng `!important` + specificity (0,4,1) để thắng rule `body.light-mode .kh-card .kh-phone`. */
-.kh-phone-row { display: flex; align-items: center; gap: 1px; margin-top: 3px; flex-wrap: wrap; }   /* ⟳ 2026-10-27: 4 → 3px theo yêu cầu “mọi hàng cách nhau 3px” */body:not(.light-mode) .kh-card .kh-phone-row .kh-phone { color: #93c5fd !important; }
+.kh-phone-row { display: flex; align-items: center; gap: 1px; margin-top: 2px; flex-wrap: wrap; }   /* ⟳ 2026-11-04: khe trên 3 → **2px** (cùng lượt “các hàng gần nhau hơn 1 tí”). ⟳ 2026-10-27: 4 → 3px theo yêu cầu “mọi hàng cách nhau 3px” */body:not(.light-mode) .kh-card .kh-phone-row .kh-phone { color: #93c5fd !important; }
 body.light-mode .kh-card .kh-phone-row .kh-phone { color: #1e3a8a !important; }
 /* ⟳ 2026-10-31 (yêu cầu “khi kh có cập nhật vị trí mới thì sẽ hiện tab Đường ở kế camera”):
    Tab “Đường” đứng NGAY TRÁI nút 📷 ở hàng SĐT cuối thẻ, CHỈ hiện khi khách ĐÃ GHIM
@@ -4850,7 +4863,7 @@ body .kh-card > .kh-phone-row > .kh-dir-btn:first-child { margin-left: auto; }
    nằm CÙNG DÒNG. `margin-top: 3px` giữ nguyên để khe so với hàng danh số ở trên.
    ⚠️ `fitTbiAlign()` trước đây đẩy cụm TBI sang phải cho thẳng cột với viên mã KH — nay TBI
    đứng riêng một dòng nên hàm tự bỏ qua (cần `.kh-sep` mới chạy, xem hàm đó). */
-.kh-sub-row { flex: 0 0 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 0; min-width: 0; margin-top: 3px; }
+.kh-sub-row { flex: 0 0 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 0; min-width: 0; margin-top: 2px; }   /* ⟳ 2026-11-04: khe trên 3 → **2px** (cùng lượt “các hàng gần nhau hơn 1 tí”, xem `--row-gap`). */
 .kh-sub-line { display: flex; align-items: center; gap: 1px; min-width: 0; }
 /* ⟳ 2026-10-26 (yêu cầu “đẩy hàng số TBI ra ngang với mã KH” — người dùng chốt: **canh phải,
    mép trái cụm ⚡số TBI thẳng cột với mép trái viên mã KH** ở hàng dưới):
@@ -5059,6 +5072,13 @@ body.light-mode .kh-ma-lbl { color: #74839a; }
    dấu `-` ở lại cuối dòng 1 (đọc như lỗi “0909152332 -”) còn viên rơi xuống dòng 2.
    `.kh-mid-row` vẫn `flex-wrap` nên khối này rơi xuống NGUYÊN CỤM (không bao giờ tách dấu khỏi mã). */
 .kh-ma-group { display: inline-flex; align-items: center; gap: 1px; min-width: 0; }
+/* ⇢ 2026-11-04 (yêu cầu “cho hàng mã kh thẳng hàng với hàng dưới”): 3 nhãn “Mã KH:” · “Mã KV:” ·
+   “Số TBI:” nay có CÙNG bề rộng **3,65em** (≈65,7px ở 18px) + cùng khe 1px ⇒ 3 giá trị xuất phát
+   từ MỘT mốc. Đo TRƯỚC khi sửa: Mã KH 83,9 · Mã KV 80,8 · Số TBI 81,6 ⇒ lệch 2–3px.
+   ⚠️ Dùng `em` (không px) để thẳng hàng ở mọi mức cỡ chữ người dùng chọn.
+   ⚠️ `.kh-ma-lbl` phải bỏ `margin-right: 4px` cũ — nếu không hàng Mã KH lại xê phải 4px. */
+.kh-ma-lbl, .kh-ds-row .kh-card-lbl, .kh-sub-row .kh-card-lbl { width: 3.65em; min-width: 3.65em; margin-right: -2.5px; flex: 0 0 auto; }   /* ⟳ 2026-11-04 (“cho mã kh xích về bên trái 1 tí nữa”): `margin-right` 0 → **-2,5px** ⇒ 3 giá trị xê trái 3px (83,5 → **80,5**), vẫn THẲNG cột với nhau. Không hạ `width` được (nhãn “Số TBI:” rộng 63,8px sẽ xuống 2 dòng). */
+.kh-sub-row .kh-card-lbl { margin-right: -1.5px; }   /* +1px khe của hàng ⇒ tổng xê = -2,5px như 2 hàng kia. */
 /* ⟳ 2026-10-26: khi nhãn CÓ CHỮ, dấu `-` của hàng “mã sổ · số TBI” phải hở ra 2 bên — `.kh-sogcs`
    còn mang `margin-right: -1px` (mẹo giữ chiều cao của lượt 2026-10-26) nên 2 bên dấu chỉ còn
    ~2px và chữ dính vào dấu (“PS-0472-”). 1px → **3px** cho khớp khe 4px của nhãn.
@@ -5238,7 +5258,7 @@ body.light-mode .ghi-chu-input:not(:placeholder-shown) { color: #1f2937; }
      CSS, nên đổi `--row-gap` phải sửa CẢ chỗ đó, hoặc để nguyên 5px cho khớp.
    · ⛔ Không áp cho `.kh-card-top` / `.kh-mid-row` (chúng là dải nền coban liền khối, khe do
      padding của chính dải quyết định). */
-.kh-card { --row-gap: 3px; }   /* ⟳ 2026-11-03 (yêu cầu “cho khoảng cách các hàng ở thẻ gần nhau 1 tí”): **5 → 3px**. ⚠️ Biến này điều khiển khe của MỌI hàng ngoài `.kh-card-mid` (địa chỉ · 2 dòng mã sổ/số TBI · mép khối giữa) — đừng sửa lẻ từng chỗ. */
+.kh-card { --row-gap: 2px; }   /* ⟳ 2026-11-04 (yêu cầu “cho khoảng cách các hàng ở thẻ gần nhau hơn 1 tí”): **3 → 2px** — khe mọi hàng của thẻ hẹp thêm 1px (mỗi thẻ thấp ~4px). ⚠️ Phải hạ CẢ 4 `margin-top: 3px` cứng của `.kh-ds-row` · `.kh-sub-row` · `.kh-phone-row` · `.kh-addr-line` (inline), không sửa mình biến này.   /* ⟳ 2026-11-03 (yêu cầu “cho khoảng cách các hàng ở thẻ gần nhau 1 tí”): **5 → 3px**. ⚠️ Biến này điều khiển khe của MỌI hàng ngoài `.kh-card-mid` (địa chỉ · 2 dòng mã sổ/số TBI · mép khối giữa) — đừng sửa lẻ từng chỗ. */
 .kh-card > .kh-card-mid > .kh-ds-row,
 .kh-card > .kh-card-mid > .kh-sub-row,
 .kh-card > .kh-ghichu-row,
@@ -8357,13 +8377,17 @@ body.force-desktop .table-view { display: block; }
    thành một khối. ⚠️ Khe dưới dải mã KH → khối giữa VẪN 3px (yêu cầu “mọi hàng 3px”). */
 .kh-card > .kh-card-top { margin-bottom: 0; }
 .kh-card > .kh-mid-row { margin-top: 0; }
-.kh-card > .kh-mid-row { margin-bottom: 3px; }
+.kh-card > .kh-mid-row { margin-bottom: 2px; }
 .kh-card > .kh-card-mid { gap: 0; }   /* khử `gap: 1px` của khối giữa — nếu không khe Mã KV ↔ Số TBI thành 4px */
+/* ⟳ 2026-11-04 (yêu cầu “cho khoảng cách các hàng ở thẻ gần nhau hơn 1 tí”): CẢ 5 khe dưới
+   **3 → 2px** (= `--row-gap`). ⚠️ Đây là các rule CÓ ĐỘ ƯU TIÊN CAO NHẤT cho khe hàng của thẻ
+   (`.kh-card > …`) — sửa `.kh-ds-row`/`.kh-sub-row`/`.kh-phone-row`/`.kh-addr-line` mà không
+   sửa khối này thì trình duyệt vẫn tính 3px. */
 .kh-card > .kh-card-mid > .kh-ds-row,
-.kh-card > .kh-card-mid > .kh-sub-row { margin-top: 3px; }
-.kh-card > .kh-phone-row { margin-top: 3px; }
-.kh-card > .kh-ghichu-row { margin-top: 3px; }
-.kh-card > .kh-addr-line { margin-top: 3px !important; }   /* = `--row-gap` mới (2026-11-03: 5 → 3px) */
+.kh-card > .kh-card-mid > .kh-sub-row { margin-top: 2px; }
+.kh-card > .kh-phone-row { margin-top: 2px; }
+.kh-card > .kh-ghichu-row { margin-top: 2px; }
+.kh-card > .kh-addr-line { margin-top: 2px !important; }   /* = `--row-gap` mới (2026-11-04: 3 → 2px) */
 /* ══ 2026-10-27 (yêu cầu “màu số tiền ở dark mode nhạt xuống 1 nấc”) ═════════════════════
    Chỉ DARK + chỉ số tiền trên dải đầu thẻ (`.kh-card-top .kh-tien`): đỏ `#ff8888` → **`#ffa0a0`**,
    vàng `#fde68a` → **`#fde9b0`**, xanh `#86efac` → **`#a7f3d0`**, kể cả chữ số triệu
@@ -8556,9 +8580,9 @@ body.light-mode .kh-card .kh-mid-row .kh-ma .ic { color: #1d4ed8; }
 body.light-mode .kh-card .kh-card-top .kh-tien { background: #ecfdf5; border-radius: 999px; padding: 2px 9px; }
 body.light-mode .kh-card .kh-card-top .kh-tien.high { background: #fef2f2; }
 body.light-mode .kh-card .kh-card-top .kh-tien.mid { background: #fffbeb; }
-body:not(.light-mode) .kh-card .kh-card-top .kh-tien { background: rgba(74,222,128,0.12); border-radius: 999px; padding: 2px 9px; }
-body:not(.light-mode) .kh-card .kh-card-top .kh-tien.high { background: rgba(248,113,113,0.12); }
-body:not(.light-mode) .kh-card .kh-card-top .kh-tien.mid { background: rgba(251,191,36,0.14); }
+body:not(.light-mode) .kh-card .kh-card-top .kh-tien { background: rgba(74,222,128,0.08); border-radius: 999px; padding: 2px 9px; }   /* ⟳ 2026-11-04 (“nền số tiền thẻ dark mode nhạt xuống 1 nấc”): alpha 0,12 → **0,08**. */
+body:not(.light-mode) .kh-card .kh-card-top .kh-tien.high { background: rgba(248,113,113,0.08); }   /* ⟳ 2026-11-04: alpha 0,12 → **0,08** (nhạt 1 nấc). */
+body:not(.light-mode) .kh-card .kh-card-top .kh-tien.mid { background: rgba(251,191,36,0.10); }   /* ⟳ 2026-11-04: alpha 0,14 → **0,10** (nhạt 1 nấc). */
 
 /* 4b) DƯỚI 2 TRIỆU = MỘT MÀU XANH (yêu cầu “dưới 2 triệu cho 1 màu xanh”, 2026-10-28).
    `fmtHtml` bọc CHỮ SỐ TRIỆU đầu tiên của số 1.000.000–1.999.999 trong `.mil-digit`, và rule cũ
@@ -8703,7 +8727,7 @@ body:not(.light-mode) .kh-card.kh-card.tier-low:not(.highlighted):not(.highlight
    NỢ LỚN ở LIGHT `#e11d48` (đo live `rgb(225,29,72)`) → **`#f43f5e`** (rose-500, nhạt đúng 1 nấc
    trong cùng họ đỏ-hồng). `!important` để thắng bộ `--card-accent` khai ở ~8788/8877.
    ⚠️ CHỈ light + CHỈ tier-high: 2 mức còn lại (mid vàng · low xanh) giữ nguyên như ảnh trước đó. */
-body.light-mode .kh-card.tier-high:not(.highlighted):not(.highlighted-purple) { border-left-color: #f43f5e !important; }   /* ⟳ 2026-11-03 (yêu cầu “kiểm tra vẫn còn thanh màu đỏ ở light mode khi chọn đánh dấu”): ĐÂY là thủ phạm —
+body.light-mode .kh-card.tier-high:not(.highlighted):not(.highlighted-purple) { border-left-color: #fb7185 !important; }   /* ⟳ 2026-11-03 (yêu cầu “kiểm tra vẫn còn thanh màu đỏ ở light mode khi chọn đánh dấu”): ĐÂY là thủ phạm —
    rule cũ thiếu `:not(.highlighted)` nên mọi thẻ nợ LỚN ở light vẫn bị tô viền trái `#f43f5e` (đỏ hồng) KỂ CẢ khi đã đánh dấu
    (2 rule dark tương ứng ~8698–8700 đã có `:not(...)` từ trước, chỉ bản light này sót). Nay thẻ ĐÁNH DẤU dùng viền 3px `#1f86bd`. */
 
@@ -8962,7 +8986,7 @@ body .kh-card.kh-card.kh-card .kh-card-top .kh-tien { border-radius: 999px; padd
    ⟳ cùng lượt (yêu cầu “nền số tiền nhỏ xanh lá nhạt · trung vàng nhạt · cao đỏ nhạt”): nền viên dark
    đổi sang 3 tint NHẠT nhưng KHÁC TÔNG rõ: low **`#dcfce7`** (green-100) · mid **`#fef9c3`** (yellow-100) ·
    high **`#fee2e2`** (red-100). Chữ giữ bản đậm của light ⇒ tương phản vẫn đạt (xem số đo ở run.md). */
-body:not(.light-mode) .kh-card.kh-card.kh-card .kh-card-top .kh-tien { background: rgba(74,222,128,0.12); border: 0; box-shadow: none; }   /* ⟳ 2026-11-01 (yêu cầu “màu số tiền dark mode NHƯ TRONG ẢNH”): trả viên tiền về kiểu ẢNH — nền TINT MỜ của chính màu chữ (12%) + chữ SÁNG, KHÔNG còn viên pastel đặc. Đo từ ảnh người dùng gửi: nền viên `#393627` = `rgba(251,191,36,0.14)` chồng lên thẻ `#1b1f28` ⇒ đúng thông số này. */
+body:not(.light-mode) .kh-card.kh-card.kh-card .kh-card-top .kh-tien { background: rgba(74,222,128,0.08); border: 0; box-shadow: none; }   /* ⟳ 2026-11-04 (“nền số tiền thẻ dark mode nhạt xuống 1 nấc”): alpha **0,12 → 0,08** (rule này khai SAU nên nó mới là cái hiển thị). */   /* ⟳ 2026-11-01 (yêu cầu “màu số tiền dark mode NHƯ TRONG ẢNH”): trả viên tiền về kiểu ẢNH — nền TINT MỜ của chính màu chữ (12%) + chữ SÁNG, KHÔNG còn viên pastel đặc. Đo từ ảnh người dùng gửi: nền viên `#393627` = `rgba(251,191,36,0.14)` chồng lên thẻ `#1b1f28` ⇒ đúng thông số này. */
 /* mức LOW (< 1tr): chữ XANH LÁ ĐẬM — ⟳ 2026-11-01 (yêu cầu “màu số tiền ở thẻ light mode đậm
    hơn 1 nấc”): light `#047857` → **`#065f46`** (emerald-800). Dark giữ `#86efac` (rule ngay dưới). */
 body .kh-card.kh-card.kh-card .kh-card-top .kh-tien.low,
@@ -8983,7 +9007,7 @@ body:not(.light-mode) .kh-card.kh-card.kh-card .kh-card-top .kh-tien.low .mil-di
    ⚠️ Hệ quả ĐÃ ĐO: vàng kim xuống **≈4,0:1** · đỏ hồng **≈3,3:1** trên nền mới — chữ 19px weight 500
    KHÔNG đạt AA 4,5 nhưng vẫn trên 3:1; muốn lại AA thì phải trả nền về nấc trước hoặc làm chữ đậm hơn. */
 body .kh-card.kh-card.kh-card .kh-card-top .kh-tien.mid { background: #fbeecd; }
-body:not(.light-mode) .kh-card.kh-card.kh-card .kh-card-top .kh-tien.mid { background: rgba(251,191,36,0.14); }   /* ⟳ 2026-11-01 (ảnh người dùng): nền tint vàng mờ 14% (đo trong ảnh = `#3a3527` trên thẻ `#1b1f28`). */
+body:not(.light-mode) .kh-card.kh-card.kh-card .kh-card-top .kh-tien.mid { background: rgba(251,191,36,0.10); }   /* ⟳ 2026-11-04: alpha **0,14 → 0,10**. */   /* ⟳ 2026-11-01 (ảnh người dùng): nền tint vàng mờ 14% (đo trong ảnh = `#3a3527` trên thẻ `#1b1f28`). */
 /* ⟳ 2026-11-01 (light ĐẬM hơn 1 nấc): vàng kim `#d9b34a` → **`#cfa63a`** (vẫn 4,5:1 trên nền
    nâu; ⛔ đừng tối thêm nữa — chữ 19px weight 500 không đạt ngưỡng “chữ lớn”, xuống nữa là trượt AA). */
 body .kh-card.kh-card.kh-card .kh-card-top .kh-tien.mid,
@@ -8998,7 +9022,7 @@ body .kh-card.kh-card.kh-card .kh-card-top .kh-tien.mid .mil-digit { color: #8a6
    (hồng đậm 1 nấc, vẫn rõ là hổng nhạt). Đổi LUÔN bản dark cùng mã — dark đang đồng bộ 1:1 với light
    theo yêu cầu ngay trước, sửa một bên là hai theme lệch nhau. Đo: chữ `#be123c` trên nền mới = **4,4:1**. */
 body .kh-card.kh-card.kh-card .kh-card-top .kh-tien.high { background: #f9ccd8; }
-body:not(.light-mode) .kh-card.kh-card.kh-card .kh-card-top .kh-tien.high { background: rgba(248,113,113,0.12); }   /* ⟳ 2026-11-01 (ảnh người dùng): nền tint đỏ mờ 12% (đo trong ảnh = `#332932` trên thẻ `#1b1f28`). */   /* ⟳ 2026-11-01 (nhắc lại “cao màu đỏ nhạt”): red-100 `#fee2e2` → **red-200 `#fecaca`** (đỏ nhạt nhìn rõ là đỏ). */   /* ⟳ 2026-11-01 (yêu cầu đồng bộ light): `#b62e51` → **`#fbdbe2`** = ĐÚNG nền viên light. */
+body:not(.light-mode) .kh-card.kh-card.kh-card .kh-card-top .kh-tien.high { background: rgba(248,113,113,0.08); }   /* ⟳ 2026-11-04: alpha **0,12 → 0,08**. */   /* ⟳ 2026-11-01 (ảnh người dùng): nền tint đỏ mờ 12% (đo trong ảnh = `#332932` trên thẻ `#1b1f28`). */   /* ⟳ 2026-11-01 (nhắc lại “cao màu đỏ nhạt”): red-100 `#fee2e2` → **red-200 `#fecaca`** (đỏ nhạt nhìn rõ là đỏ). */   /* ⟳ 2026-11-01 (yêu cầu đồng bộ light): `#b62e51` → **`#fbdbe2`** = ĐÚNG nền viên light. */
 /* ⟳ 2026-11-01 (light ĐẬM hơn 1 nấc): đỏ hồng `#fb7185` → **`#f43f5e`** (rose-500). */
 body .kh-card.kh-card.kh-card .kh-card-top .kh-tien.high,
 body .kh-card.kh-card.kh-card .kh-card-top .kh-tien.high .mil-digit { color: #be123c; }
@@ -9014,7 +9038,7 @@ body:not(.light-mode) .kh-card.kh-card.kh-card .kh-card-top .kh-tien.high .mil-d
    `.multi-hd` không còn tô thanh nữa; màu chỉ còn 3 nấc của số tiền. */
 body .kh-card.kh-card.tier-low  { --card-accent: #12a06a; }
 body .kh-card.kh-card.tier-mid  { --card-accent: #bb8a1e; }
-body .kh-card.kh-card.tier-high { --card-accent: #f43f5e; }   /* ⟳ 2026-11-02 (yêu cầu “cho thanh màu đỏ ở thẻ light mode nhạt xuống 1 tí”): `#e11d48` → **`#f43f5e`** (rose-500, nhạt đúng 1 nấc). ⚠️ ĐÂY mới là rule QUYẾT ĐỊNH ở light — bộ `body.light-mode .kh-card.tier-high` ở trên chỉ đặt biến, còn rule (0,3,1) NÀY khai sau nên thắng. */
+body .kh-card.kh-card.tier-high { --card-accent: #fb7185; }   /* ⟳ 2026-11-04 (yêu cầu “cho thanh viền đỏ ở light mode nhạt xuống 1 nấc”): `#f43f5e` (rose-500) → **`#fb7185`** (rose-400, nhạt đúng 1 nấc trong cùng họ). Thanh trái thẻ nợ lớn = màu này.   /* ⟳ 2026-11-02 (yêu cầu “cho thanh màu đỏ ở thẻ light mode nhạt xuống 1 tí”): `#e11d48` → **`#f43f5e`** (rose-500, nhạt đúng 1 nấc). ⚠️ ĐÂY mới là rule QUYẾT ĐỊNH ở light — bộ `body.light-mode .kh-card.tier-high` ở trên chỉ đặt biến, còn rule (0,3,1) NÀY khai sau nên thắng. */
 /* ⟳ 2026-11-01 (yêu cầu “cho màu thanh này ở dark mode màu KHÔNG QUÁ CHÓI”): vệt trái GIẢM CHÓI —
    cùng họ màu với số tiền nhưng hạ độ sáng ~1/4 thay vì chép nguyên `#86efac` / `#fde68a` / `#ff8888`
    (ba mã đó ở 5px trên nền than là nguồn sáng duy nhất của thẻ nên rất chóa):
@@ -9199,9 +9223,11 @@ body .kh-card > .kh-phone-row > .kh-photo.has-photo .em { opacity: 1; }   /* ⟳
    `bindSwipeCard()` gán transform TRỰC TIẾP khi đang kéo, rule chỉ lo trạng thái ĐÃ Mở. */
 .kh-swipe { position: relative; overflow: hidden; border-radius: 14px; touch-action: pan-y; }   /* ⟳ 2026-11-03: 12 → **14px** = ĐÚNG bán kính `.kh-card` mới (thẻ bo 14px thì khung bọc cũng phải 14px, nếu không góc thẻ bị cắt vuông). */
 .kh-swipe-acts { position: absolute; top: 0; right: 0; bottom: 0; display: flex; align-items: stretch; z-index: 0; }
-.kh-swipe-btn { width: 76px; border: 0; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; line-height: 1.15; color: #ffffff; cursor: pointer; }
-.kh-swipe-del { background: #ef4444; }   /* ⟳ 2026-11-03 (yêu cầu “cho màu đỏ bảng xoá nhạt hơn”): `#dc2626` (red-600) → **`#ef4444`** (red-500, nhạt hơn 1 nấc). ⚠️ Chữ trắng trên nền này = **3,76:1** — dưới AA 4,5 cho chữ thường NHƯNG chữ 14px nét 600 của nút nằm ở ranh giới; muốn chắc ăn thì tăng nét/cỡ hoặc lùi về `#e5484d`. */
-.kh-swipe-del:active { background: #dc2626; }   /* ⟳ 2026-11-03: trạng thái ĐANG CHẠM lùi 1 nấc (`#b91c1c` → `#dc2626`) để vẫn thấy phản hồi khi nền thường đã nhạt. */
+.kh-swipe-btn { width: 76px; border: 0; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 17px; font-weight: 600; line-height: 1.15; color: #ffffff; cursor: pointer; }   /* ⟳ 2026-11-04 (yêu cầu “cho chữ xoá to hơn”): **14px → 17px** (nút rộng 76px vẫn đủ cho chữ “Xoá”). */
+.kh-swipe-del { background: #b91c1c; color: #fee2e2; }   /* ⟳ 2026-11-04 (yêu cầu “cho bảng xoá màu ở dark mode như light mode”): dark lấy ĐÚNG cặp của light (`#b91c1c` + `#fee2e2`, **6,4:1** ✓ AA). Lịch sử ô này (dark): `#dc2626` → `#ef4444` → `#f87171` → `#ff8888` → nay `#b91c1c`. */
+body.light-mode .kh-swipe-del { background: #b91c1c; color: #fee2e2; }   /* ⟳ 2026-11-04: light lấy màu chữ nợ cao ở light (`#b91c1c`), chữ trắng hồng **6,4:1** ✓ AA. */   /* ⟳ 2026-11-04 (2 yêu cầu liên tiếp: “màu bảng xoá như màu số tiền nợ cao” + “chữ đỏ đậm trên nền hồng nhạt”): nền hồng nhạt **`#fecdd3`** (rose-200, cùng họ với màu số tiền nợ cao) + chữ **`#b91c1c`** (đỏ đậm = màu số tiền nợ cao ở light) ⇒ tương phản **5,9:1** ✓ AA. Lịch sử ô này: `#dc2626` → `#ef4444` → `#f87171` → nay `#fecdd3` + chữ đỏ. */   /* ⟳ 2026-11-04 (yêu cầu “màu đỏ nhạt lại”): `#ef4444` (red-500) → **`#f87171`** (red-400, nhạt 1 nấc). ⚠️ Chữ trắng 17px nét 600 trên nền này ≈ **2,8:1** — dưới AA; đây là đúng yêu cầu “nhạt lại”, nếu cần đọc rõ hơn thì tăng cỡ/nét hoặc dùng chữ đậm `#7f1d1d`. */   /* ⟳ 2026-11-03 (yêu cầu “cho màu đỏ bảng xoá nhạt hơn”): `#dc2626` (red-600) → **`#ef4444`** (red-500, nhạt hơn 1 nấc). ⚠️ Chữ trắng trên nền này = **3,76:1** — dưới AA 4,5 cho chữ thường NHƯNG chữ 14px nét 600 của nút nằm ở ranh giới; muốn chắc ăn thì tăng nét/cỡ hoặc lùi về `#e5484d`. */
+.kh-swipe-del:active { background: #991b1b; color: #fee2e2; }   /* ⟳ 2026-11-04: ĐANG CHẠM = ĐÚNG cặp `:active` của light (đậm hơn 1 nấc). */
+body.light-mode .kh-swipe-del:active { background: #991b1b; color: #fee2e2; }   /* ⟳ 2026-11-04: ĐANG CHẠM đậm hơn 1 nấc (rose-300 + đỏ sậm) để vẫn thấy phản hồi. */   /* ⟳ 2026-11-04: trạng thái ĐANG CHẠM lùi 1 nấc theo nền mới (`#dc2626` → `#ef4444`). */   /* ⟳ 2026-11-03: trạng thái ĐANG CHẠM lùi 1 nấc (`#b91c1c` → `#dc2626`) để vẫn thấy phản hồi khi nền thường đã nhạt. */
 .kh-swipe > .kh-card { position: relative; z-index: 1; transition: transform 0.18s ease; background-color: var(--dk-card); }
 body.light-mode .kh-swipe > .kh-card { background-color: var(--light-card); }
 .kh-swipe.open > .kh-card { transform: translateX(-76px); }
@@ -9295,17 +9321,17 @@ body.light-mode .kh-swipe > .kh-card { background-color: var(--light-card); }
 @media (max-width: 639.98px) {
   body.light-mode.force-desktop .table-view tbody td:nth-child(2) .ma-kh { color: #1f2937 !important; }
   body.light-mode.force-desktop .table-view tbody td:nth-child(3).cell-tenkh { color: #1e293b !important; }
-  body.light-mode.force-desktop .table-view tbody td:nth-child(5) { color: #334155 !important; }   /* ⟳ 2026-11-03 (“mã sổ, số tbi nhạt xuống 1 nấc”): `#1e293b` → `#334155`. */
+  body.light-mode.force-desktop .table-view tbody td:nth-child(5) { color: #74839a !important; }   /* ⟳ 2026-11-04 (yêu cầu “cho mã sổ, số tbi màu chữ như chữ tháng”): `#334155` → **`#74839a`** = ĐÚNG màu chữ tháng (td7 .badge, rule ngay dưới). */
   body.light-mode.force-desktop .table-view tbody td:nth-child(6) { color: #1f2937 !important; }
   body.light-mode.force-desktop .table-view tbody td:nth-child(7) .badge { color: #74839a !important; }
   body.light-mode.force-desktop .table-view tbody td:nth-child(9) .phone { color: #2457b8 !important; }
-  body.light-mode.force-desktop .table-view tbody td:nth-child(10) { color: #334155 !important; }   /* ⟳ 2026-11-03 (“số tbi nhạt xuống 1 nấc”): `#1e293b` → `#334155`. */
+  body.light-mode.force-desktop .table-view tbody td:nth-child(10) { color: #74839a !important; }   /* ⟳ 2026-11-04 (cùng yêu cầu): `#334155` → **`#74839a`** = màu chữ tháng. */
   body:not(.light-mode).force-desktop .table-view tbody td:nth-child(2) .ma-kh { color: #cbd5e1 !important; }
   body:not(.light-mode).force-desktop .table-view tbody td:nth-child(3).cell-tenkh { color: #cbd5e1 !important; }
-  body:not(.light-mode).force-desktop .table-view tbody td:nth-child(5) { color: #dbe4ee !important; }   /* ⟳ 2026-11-03 (lần 2 “nhạt xuống 1 nấc”): `#cbd5e1` → **`#dbe4ee`**. */
+  body:not(.light-mode).force-desktop .table-view tbody td:nth-child(5) { color: #94a3b8 !important; }   /* ⟳ 2026-11-04 (yêu cầu “cho mã sổ, số tbi màu chữ như chữ tháng”): `#dbe4ee` → **`#94a3b8`** = ĐÚNG màu chữ tháng ở dark (badge của td7). */
   body:not(.light-mode).force-desktop .table-view tbody td:nth-child(6) { color: #cbd5e1 !important; }
   body:not(.light-mode).force-desktop .table-view tbody td:nth-child(9) .phone { color: #8dbbff !important; }
-  body:not(.light-mode).force-desktop .table-view tbody td:nth-child(10) { color: #dbe4ee !important; }   /* ⟳ 2026-11-03 (lần 2 “nhạt xuống 1 nấc”): `#cbd5e1` → **`#dbe4ee`**. */
+  body:not(.light-mode).force-desktop .table-view tbody td:nth-child(10) { color: #94a3b8 !important; }   /* ⟳ 2026-11-04 (cùng yêu cầu): `#dbe4ee` → **`#94a3b8`** = màu chữ tháng ở dark. */
   /* ⟳ 2026-11-03 (yêu cầu “cho danh số có nền như khi xem trên điện thoại”): ô DANH SỐ (nth-child 6)
      được VIÊN THUỐC như `.kh-danhso` trên thẻ — cùng nền, cùng bo góc 999px, cùng màu chữ:
      light `#e8f0fe` / `#1f2937` · dark `#253650` / `#cbd5e1`.
@@ -9846,21 +9872,24 @@ body.light-mode .kh-swipe > .kh-card { background-color: var(--light-card); }
              về vị trí cũ”) — nó đã trở lại hàng tìm kiếm, xem markup `#advBtn` phía trên. -->
         <div class="loai-tabs" id="loaiTabs" role="tablist" aria-label="Chi tiết nợ">
           <button class="loai-tab active" type="button" role="tab" aria-selected="true" data-val="" onclick="selectLoai('')"><span class="loai-tab-ic"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-receipt"/></svg></span><span>Chi tiết</span></button>
-          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="old" onclick="selectLoai('old')"><span class="nhom-dot" style="background:#ef4444"></span><span>Từ 3Tr</span></button>
-          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="oldky" onclick="selectLoai('oldky')"><span class="nhom-dot" style="background:#8b5cf6"></span><span>Nợ cũ</span></button>
-          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="summary" onclick="selectLoai('summary')"><span class="nhom-dot" style="background:#3b82f6"></span><span>Tổng hợp</span></button>
+          <!-- ⇢ 2026-11-04 (“cho các tab đều có icon”): MỌI tab dùng `.loai-tab-ic` (icon nét) thay cho
+               chấm màu `.nhom-dot`; icon hiện ở MỌI khổ (xem khối CSS cuối `<style>`). -->
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="old" onclick="selectLoai('old')"><span class="loai-tab-ic"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-bolt"/></svg></span><span>Từ 3Tr</span></button>
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="nhieuky" onclick="selectLoai('nhieuky')"><span class="loai-tab-ic"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-hourglass"/></svg></span><span>Nhiều kỳ</span></button>
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="oldky" onclick="selectLoai('oldky')"><span class="loai-tab-ic"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-calendar"/></svg></span><span>Nợ cũ</span></button>
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="summary" onclick="selectLoai('summary')"><span class="loai-tab-ic"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-chart"/></svg></span><span>Tổng hợp</span></button>
           <!-- 💰 2026-10-26 (yêu cầu “5 chip tiền nợ (≤1 triệu … ≥5 triệu) + Chú ý, nằm cùng hàng với
                tab tổng hợp”): 5 nút khoảng tiền + “Chú ý” RỜI tấm “Lọc theo yêu cầu”, lên làm TAB
                ngay sau “Tổng hợp”. Mọi tab đi CHUNG `selectLoai(val)` ⇒ khoảng tiền do
                `LOAI_RANGE` lo (đầu dưới bao gồm, đầu trên không) — ⛔ đừng viết bộ lọc thứ hai.
                ⚠️ Nhãn RÚT GỌN cho vừa tab (tên đầy đủ ở `loaiNames` + nhãn ô “Chi tiết nợ”)
                — cùng kiểu “Từ 3Tr” / “Nợ cũ”. -->
-          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="duoi1tr" onclick="selectLoai('duoi1tr')"><span class="nhom-dot" style="background:#22c55e"></span><span>≤ 1Tr</span></button>
-          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="1-2tr" onclick="selectLoai('1-2tr')"><span class="nhom-dot" style="background:#facc15"></span><span>1-2Tr</span></button>
-          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="2-3tr" onclick="selectLoai('2-3tr')"><span class="nhom-dot" style="background:#f59e0b"></span><span>2-3Tr</span></button>
-          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="3-5tr" onclick="selectLoai('3-5tr')"><span class="nhom-dot" style="background:#f97316"></span><span>3-5Tr</span></button>
-          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="tren5tr" onclick="selectLoai('tren5tr')"><span class="nhom-dot" style="background:#ef4444"></span><span>≥ 5Tr</span></button>
-          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="marked" onclick="selectLoai('marked')"><span class="nhom-dot" style="background:#b45309"></span><span>Chú ý</span></button>
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="duoi1tr" onclick="selectLoai('duoi1tr')"><span class="loai-tab-ic"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-dollar"/></svg></span><span>≤ 1Tr</span></button>
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="1-2tr" onclick="selectLoai('1-2tr')"><span class="loai-tab-ic"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-dollar"/></svg></span><span>1-2Tr</span></button>
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="2-3tr" onclick="selectLoai('2-3tr')"><span class="loai-tab-ic"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-dollar"/></svg></span><span>2-3Tr</span></button>
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="3-5tr" onclick="selectLoai('3-5tr')"><span class="loai-tab-ic"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-dollar"/></svg></span><span>3-5Tr</span></button>
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="tren5tr" onclick="selectLoai('tren5tr')"><span class="loai-tab-ic"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-dollar"/></svg></span><span>≥ 5Tr</span></button>
+          <button class="loai-tab" type="button" role="tab" aria-selected="false" data-val="marked" onclick="selectLoai('marked')"><span class="loai-tab-ic"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-tag"/></svg></span><span>Chú ý</span></button>
           <!-- ⮻ 2026-10-26 (yêu cầu “cho 2 tab này ra nằm cùng với hàng tab chú ý”): 2 nút
                **“Danh số / Tiền nợ”** RỜI tấm “Lọc theo yêu cầu” ⇒ về ĐÂY, NGAY SAU tab “Chú ý”
                và nằm TRONG `#loaiTabs` ⇒ cùng hàng, cùng lướt ngang với các tab, không tốn thêm
@@ -11305,7 +11334,7 @@ function loaiRange(v) { return LOAI_RANGE[v] || null; }
 function switchTab(tab) {
  // chế độ Cảnh báo chỉ ở bảng Chi tiết nợ
   currentTab = tab;
-  const showDetail = (tab === 'detail' || tab === 'marked' || tab === 'called' || tab === 'notcalled');
+  const showDetail = (tab === 'detail' || tab === 'marked' || tab === 'called' || tab === 'notcalled' || tab === 'nhieuky');
   const showOld = (tab === 'old' || tab === 'oldky' || !!loaiRange(tab));
   document.getElementById('detailView').style.display = showDetail ? 'block' : 'none';
   document.getElementById('summaryView').style.display = tab === 'summary' ? 'block' : 'none';
@@ -11719,7 +11748,7 @@ function toggleLoaiDropdown() {
     });
   }
 }
-const loaiNames = { oldky: 'Nợ cũ, nhiều kỳ', old: 'Nợ ≥ 3Tr', '1tr': 'Nợ 1Tr đến 3Tr', '1-2tr': 'Nợ 1Tr đến 2Tr', '2-3tr': 'Nợ 2Tr đến 3Tr', 'duoi1tr': 'Nợ dưới 1Tr', '3-5tr': 'Nợ 3Tr đến 5Tr', 'tren5tr': 'Nợ từ 5Tr trở lên', summary: 'Tổng hợp nợ', marked: 'Chú ý', called: 'KH đã gọi', notcalled: 'KH chưa gọi' };
+const loaiNames = { nhieuky: 'Khách nhiều kỳ (từ 2 HĐ)', oldky: 'Nợ cũ, nhiều kỳ', old: 'Nợ ≥ 3Tr', '1tr': 'Nợ 1Tr đến 3Tr', '1-2tr': 'Nợ 1Tr đến 2Tr', '2-3tr': 'Nợ 2Tr đến 3Tr', 'duoi1tr': 'Nợ dưới 1Tr', '3-5tr': 'Nợ 3Tr đến 5Tr', 'tren5tr': 'Nợ từ 5Tr trở lên', summary: 'Tổng hợp nợ', marked: 'Chú ý', called: 'KH đã gọi', notcalled: 'KH chưa gọi' };
 /* ✂️ TÊN VIẾT TẮT cho ô lọc nhóm — **ĐÃ ĐƯA TRỞ LẠI** theo yêu cầu người dùng:
    “cho tên viết tắt, ví dụ BT Dũng”.
 
@@ -12032,6 +12061,7 @@ function selectLoai(val) {
   if (val === 'summary') switchTab('summary');
   else if (val === 'old') switchTab('old');
   else if (val === 'oldky') switchTab('oldky');
+  else if (val === 'nhieuky') switchTab('nhieuky');   /* ⟳ 2026-11-04: tab “Nhiều kỳ” — KH có từ 2 HOÁ ĐƠN trở lên (xem `applyFilters`). */
   else if (loaiRange(val)) switchTab(val);
   else if (val === 'marked') switchTab('marked');
   else if (val === 'called') switchTab('called');
@@ -12150,6 +12180,154 @@ window.addEventListener('resize', () => { _loaiTabW = 0; _loaiTabKey = ''; equal
 if (document.fonts && document.fonts.ready) {
   document.fonts.ready.then(() => { _loaiTabW = 0; _loaiTabKey = ''; equalizeLoaiTabs(); });
 }
+
+/* ⇄ NHẤN-GIỮ TAB RỒI KÉO ĐỂ ĐỔI VỊ TRÍ (2026-11-04 — yêu cầu “khi nhấn giữ tab thì sẽ di chuyển
+   để đổi vị trí các tab”).
+   Cách làm: GIỮ 450ms ⇒ tab “nhấc lên” (`.tab-dragging`) ⇒ kéo ngang, tab tự chèn vào chỗ con trỏ
+   đang đứng (so tâm tab kia: qua nửa thì chèn SAU, chưa qua thì chèn TRƯỚC). Thả tay ⇒ lưu thứ tự.
+   · Thứ tự lưu ở `qlno_tab_order_v1` (mảng `data-val`), áp lại MỖI LẦN mở app (`tabOrderApply`).
+     Tab mới thêm sau này không có trong mảng thì nằm CUỐI — không mất tab nào.
+   · Trước 450ms mà kéo quá 8px ⇒ HUỶ giữ (đó là vuốt để cuộn dải, không phải kéo tab).
+   · Trên cảm ứng phải `e.preventDefault()` trong `touchmove` (listener **passive:false**) — nếu không,
+     trình duyệt giành cử chỉ để cuộn dải và bắn `pointercancel` ⇒ tab rơi về chỗ cũ giữa chừng.
+     ⛔ Đừng đổi `touch-action` của `.loai-tab` sang `none`/`pan-y`: như vậy người dùng KHÔNG còn
+     vuốt ngang được dải tab (10 tab ⇒ phải cuộn), mà việc cuộn đó mới là thao tác thường ngày.
+   · Nuốt cú `click` bắn theo sau khi vừa kéo (trong 400ms) ⇒ không đổi bộ lọc ngoài ý muốn.
+     Dùng pha CAPTURE để chặn trước `onclick` inline của tab. */
+const TAB_ORDER_KEY = 'qlno_tab_order_v1';
+const TAB_HOLD_MS = 450;
+const TAB_DRAG_SLOP = 8;
+let _tabDragEl = null;       /* tab đang được kéo */
+let _tabDragEndAt = 0;       /* mốc vừa thả — dùng để nuốt click */
+function tabOrderApply() {
+  const box = document.getElementById('loaiTabs');
+  if (!box) return;
+  let order = [];
+  try { order = JSON.parse(localStorage.getItem(TAB_ORDER_KEY) || '[]'); } catch (e) { order = []; }
+  if (!Array.isArray(order) || !order.length) return;
+  const tabs = Array.from(box.querySelectorAll('.loai-tab'));
+  const map = {};
+  tabs.forEach(t => { map[t.dataset.val || ''] = t; });
+  const used = {};
+  order.forEach(v => {
+    const t = map[v];
+    if (t && !used[v]) { box.appendChild(t); used[v] = 1; }
+  });
+  /* Tab không có trong bản lưu (mới thêm ở bản cập nhật) ⇒ giữ nguyên thứ tự gốc, nằm cuối. */
+  tabs.forEach(t => { const v = t.dataset.val || ''; if (!used[v]) box.appendChild(t); });
+  /* ⇢ 2026-11-04 (yêu cầu “cho 2 tab danh số và tiền nợ khi xem trên máy tính dời về cuối”):
+     hai nút sắp xếp PHẢI luôn nằm CUỐI dải. Lý do chúng từng nhảy lên ĐẦU: mọi vòng lặp trên
+     dùng `box.appendChild(tab)` ⇒ tab bị dời ra sau 2 nút, còn 2 nút đứng nguyên ở vị trí đầu.
+     Nay append lại 2 nút sau khi xếp xong ⇒ đúng thứ tự markup (…Chú ý · Danh số · Tiền nợ). */
+  box.querySelectorAll('.loai-sort-btn').forEach(b => box.appendChild(b));
+}
+function tabOrderSave() {
+  const box = document.getElementById('loaiTabs');
+  if (!box) return;
+  const order = Array.from(box.querySelectorAll('.loai-tab')).map(t => t.dataset.val || '');
+  try { localStorage.setItem(TAB_ORDER_KEY, JSON.stringify(order)); } catch (e) {}
+}
+function initTabReorder() {
+  const box = document.getElementById('loaiTabs');
+  if (!box) return;
+  tabOrderApply();
+  equalizeLoaiTabs();
+
+  let holdTimer = null, startX = 0, startY = 0, lastX = 0, pressEl = null;
+
+  function cancelHold() { if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; } }
+  function moveTo(x, y) {
+    if (!_tabDragEl) return;
+    lastX = x;
+    const over = document.elementFromPoint(x, y);
+    const other = over && over.closest ? over.closest('.loai-tab') : null;
+    if (!other || other === _tabDragEl || other.parentElement !== box) return;
+    const r = other.getBoundingClientRect();
+    if (x > r.left + r.width / 2) other.after(_tabDragEl); else other.before(_tabDragEl);
+    equalizeLoaiTabs();
+  }
+  function endDrag() {
+    cancelHold();
+    if (!_tabDragEl) return;
+    _tabDragEl.classList.remove('tab-dragging');
+    _tabDragEl.style.pointerEvents = '';
+    _tabDragEl = null;
+    _tabDragEndAt = Date.now();
+    tabOrderSave();
+    equalizeLoaiTabs();
+  }
+
+  box.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    const tab = e.target.closest && e.target.closest('.loai-tab');
+    if (!tab) return;
+    pressEl = tab; startX = e.clientX; startY = e.clientY; lastX = e.clientX;
+    cancelHold();
+    holdTimer = setTimeout(() => {
+      holdTimer = null;
+      if (!pressEl) return;
+      _tabDragEl = pressEl;
+      _tabDragEl.classList.add('tab-dragging');
+      /* Trong lúc kéo phải cho `elementFromPoint` nhìn XUYÊN QUA tab đang kéo. */
+      _tabDragEl.style.pointerEvents = 'none';
+      if (navigator.vibrate) { try { navigator.vibrate(15); } catch (e2) {} }
+    }, TAB_HOLD_MS);
+  });
+
+  box.addEventListener('pointermove', e => {
+    if (!_tabDragEl) {
+      if (holdTimer && (Math.abs(e.clientX - startX) > TAB_DRAG_SLOP || Math.abs(e.clientY - startY) > TAB_DRAG_SLOP)) cancelHold();
+      return;
+    }
+    if (Math.abs(e.clientX - lastX) < 1) return;
+    moveTo(e.clientX, e.clientY);
+  });
+
+  box.addEventListener('pointerup', endDrag);
+  box.addEventListener('pointercancel', endDrag);
+
+  /* Cảm ứng: chặn cuộn dải khi đang kéo (xem chú thích đầu khối). */
+  box.addEventListener('touchmove', e => {
+    if (!_tabDragEl) return;
+    e.preventDefault();
+    const t = e.touches && e.touches[0];
+    if (t) moveTo(t.clientX, t.clientY);
+  }, { passive: false });
+  /* Nhấn-giữ trên điện thoại hay bật menu “Sao chép/Lưu ảnh…” ⇒ chặn khi đang kéo. */
+  box.addEventListener('contextmenu', e => { if (_tabDragEl) e.preventDefault(); });
+  /* Nuốt click phát sinh sau khi kéo (pha capture, chạy trước `onclick` inline). */
+  box.addEventListener('click', e => {
+    if (Date.now() - _tabDragEndAt < 400) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
+}
+/* CSS của trạng thái kéo — khai bằng DOM cho gọn (khối CSS đã quá dài). */
+(function injectTabDragCss() {
+  const st = document.createElement('style');
+  st.textContent = '.loai-tab.tab-dragging{opacity:.85;transform:scale(1.05);box-shadow:0 8px 20px rgba(0,0,0,.38);z-index:5;position:relative}'
+    + '.loai-tabs{scroll-behavior:auto}'
+    /* ⇢ 2026-11-04 (“cho các tab đều có icon”): HIỆN icon ở MỌI khổ. Hai khối @media cũ
+       (max-width:560px và min-width:560px) khai `display:none` cho đúng selector này ⇒ phải
+       đặt ở style TIÊM SAU CÙNG + `!important` mới thắng (media KHÔNG cộng độ ưu tiên, nhưng
+       file có 3-4 khối khai trùng selector ở đủ mọi khổ). */
+    + '.loai-tab .loai-tab-ic{display:inline-flex!important;width:auto!important;height:15px;color:currentColor;flex-shrink:0;align-items:center}'
+    + '.loai-tab .loai-tab-ic svg{width:15px;height:15px;display:block}'
+    /* ⇢ 2026-11-04 (yêu cầu “cho icon có màu xanh và đồng bộ kích thước bằng nhau”):
+       ⓐ MÀU: icon các tab ăn token xanh `--ic-hash` (dark `#35a3e0` · light `#2563eb`) thay vì
+          `currentColor` xám; RIÊNG tab ĐANG CHỌN giữ `currentColor` = chữ TRẮNG trên nền xanh.
+       ⓑ CỠ: khung icon vẫn 15×15 cho MỌI tab, nhưng bề cao MỰC của từng hình khác nhau
+          (đo `getBBox`: chart 10,5 · calendar 10,9 · còn lại 12–12,5) ⇒ phóng 2 hình “lọt thỏm”
+          cho bằng các hình khác (1,14 / 1,10). Chỉ phóng CSS, KHÔNG đổi khung ⇒ không cắt chữ. */
+    + '.loai-tab:not(.active) .loai-tab-ic{color:var(--ic-hash)!important}'
+    + '.loai-tab .loai-tab-ic svg{transform-box:fill-box;transform-origin:center}'
+    + '.loai-tab[data-val="oldky"] .loai-tab-ic svg{transform:scale(1.1)}'
+    + '.loai-tab[data-val="summary"] .loai-tab-ic svg{transform:scale(1.14)}'
+    /* ⇢ 2026-11-04 (yêu cầu “cho chữ các tab khi xem trên máy tính bằng nhau”): 2 nút sắp xếp
+       “Danh số / Tiền nợ” ở MÁY TÍNH đang nặng **500** trong khi mọi tab là **400** ⇒ chữ trông
+       “to hơn”. Nay cùng 500 → **400**, cùng 16px như tab. Chỉ ≥640px (điện thoại giữ nguyên). */
+    + '@media (min-width:640px){.loai-tabs .sort-btn.loai-sort-btn{font-weight:400}}';
+  document.head.appendChild(st);
+})();
+initTabReorder();
 
 /* 🚫 ĐÃ XOÁ Ô LỌC "Mã sổ" (mã sổ GCS) — theo yêu cầu người dùng (“bỏ tab mã sổ”).
    Đã xoá cả 3 tầng:
@@ -13023,7 +13201,7 @@ function tienTag(v) {
 function listShotFileName() {
   const g = function (id) { return document.getElementById(id); };
   const TAB_TAG = {
-    old: 'tren 3tr', oldky: 'no cu', summary: 'tong hop', marked: 'chu y',
+    old: 'tren 3tr', oldky: 'no cu', nhieuky: 'nhieu ky', summary: 'tong hop', marked: 'chu y',
     called: 'da goi', notcalled: 'chua goi',
     duoi1tr: 'duoi 1tr', '1tr': '1-3tr', '1-2tr': '1-2tr', '2-3tr': '2-3tr',
     '3-5tr': '3-5tr', tren5tr: 'tren 5tr'
@@ -13480,7 +13658,7 @@ function applyFilters() {
 
   // Group per KH in the detail-like tabs (incl. the 2 old-debt tabs + các tab khoảng nợ) so a KH with
   // several hoá đơn shows as ONE card/row (tiền cộng dồn, tháng gộp lại)
-  if (currentTab === 'detail' || currentTab === 'marked' || currentTab === 'called' || currentTab === 'notcalled' || currentTab === 'old' || currentTab === 'oldky' || rangeTab) {
+  if (currentTab === 'detail' || currentTab === 'marked' || currentTab === 'called' || currentTab === 'notcalled' || currentTab === 'nhieuky' || currentTab === 'old' || currentTab === 'oldky' || rangeTab) {
     const groupMap = {};
     const groupOrder = [];
     filtered.forEach(r => {
@@ -13506,6 +13684,14 @@ function applyFilters() {
       // KHÔNG bao gồm ⇒ khách nợ đúng 2.000.000 chỉ nằm ở tab `2-3tr` (không trùng tab `1-2tr`).
       keepSet = new Set();
       merged.forEach(r => { if (r.tien_no >= rangeTab[0] && r.tien_no < rangeTab[1]) keepSet.add(r.ma_khach_hang || r.ten_khach_hang); });
+      filtered = merged.filter(r => keepSet.has(r.ma_khach_hang || r.ten_khach_hang));
+    } else if (currentTab === 'nhieuky') {
+      /* ⟳ 2026-11-04 (yêu cầu “thêm 1 tab Nhiều kỳ … trong tab này chỉ hiển thị những KH có từ 2 HĐ
+         trở lên”): gộp theo mã KH xong mới đếm `_count` (= SỐ HOÁ ĐƠN của khách trong lần lọc này)
+         ⇒ chỉ giữ khách có **từ 2 hoá đơn**. Đếm SAU khi gộp là đúng bản chất: mỗi hoá đơn = 1 dòng.
+         Lọc theo ĐIỀU KIỆN NÀY, không dùng `_oldMultiSet` (đó là “nợ cũ ở kỳ khác”, khác nghĩa). */
+      keepSet = new Set();
+      merged.forEach(r => { if ((r._count || 0) >= 2) keepSet.add(r.ma_khach_hang || r.ten_khach_hang); });
       filtered = merged.filter(r => keepSet.has(r.ma_khach_hang || r.ten_khach_hang));
     } else if (isOld3TrTab) {
       // Nợ ≥3Tr: chỉ giữ KH có TỔNG nợ (mọi hoá đơn cũ/mới/nhiều kỳ cộng lại) ≥ 3 triệu
@@ -14020,11 +14206,10 @@ function pinMenuEl() {
          trong nút vị trí”): mục ĐẦU của hộp = **Dẫn đường** — chạm tab “Vị trí” nay CHỈ mở hộp,
          muốn chỉ đường thì chọn ở đây (`pinMenuNav`). */
       '<button class="lpsdt-act" data-act="nav" type="button">' +
-        '<svg class="ic" width="16" height="16" aria-hidden="true" style="vertical-align:middle">' +
-        '<use href="#i-gmap"/></svg>Dẫn đường</button>' +
+        '<svg class="ic" width="16" height="16" aria-hidden="true" style="vertical-align:middle;color:#ef4444">' +
+        '<use href="#i-pin"/></svg>Dẫn đường</button>' +   /* ⟳ 2026-11-04 (“đổi icon đỏ cho hàng dẫn đường”): ghim Google Maps 4 màu → **ghim nét ĐỎ** #i-pin. */
       '<button class="lpsdt-act" data-act="upd" type="button">' +
-        '<svg class="ic" width="16" height="16" aria-hidden="true" style="vertical-align:middle">' +
-        '<use href="#i-pin"/></svg>Cập nhật vị trí mới</button>' +
+        '<span aria-hidden="true" style="font-size:15px;line-height:1;vertical-align:middle;margin-right:2px">📍</span>Cập nhật vị trí mới</button>' +   /* ⟳ 2026-11-04 (“đổi qua icon này ở hàng cập nhật vị trí mới”): icon nét đỏ → **emoji 📍** (ghim đỏ như ảnh mẫu). */   /* ⟳ 2026-11-04 (yêu cầu “đổi icon ở bảng này qua icon ghim đỏ”): icon ghim của mục này tô ĐỎ — xem CSS `.lpsdt-act[data-act="upd"] .ic` ngay dưới khối này. */
       '<button class="lpsdt-act" data-act="unpin" type="button">' +
         '<svg class="ic" width="16" height="16" aria-hidden="true" style="vertical-align:middle">' +
         '<use href="#i-close"/></svg>Bỏ ghim vị trí</button>' +
@@ -14446,11 +14631,11 @@ function renderCards(q='') {
            khách CHƯA ghim thấy nút ghim, khách ĐÃ ghim thấy nút dẫn đường ⇒ không bao giờ
            hiện 2 icon song song). Chức năng ghim/nhấn-giữ/SĐT bấm gọi GIỮ NGUYÊN.
            ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG template literal). -->
-      ${r.dia_chi ? `<div class="kh-addr-line${pinHere ? ' is-pinned' : ''}" style="margin-top:3px"><span class="kh-addr-acts"><button type="button" class="kh-pin-btn${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" tabindex="-1" aria-hidden="true"><span class="em" aria-hidden="true">📍</span></button><button type="button" class="kh-nav-btn" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí đã ghim"><svg class="ic" width="17" height="17" aria-hidden="true"><use href="#i-nav"/></svg></button></span><span class="kh-addr-txt">${hi(trimDiaChi(r.dia_chi),q)}</span></div>` : ''}
+      ${r.dia_chi ? `<div class="kh-addr-line${pinHere ? ' is-pinned' : ''}" style="margin-top:2px"><span class="kh-addr-acts"><button type="button" class="kh-pin-btn${pinHere ? ' is-pinned' : ''}" data-ma="${esc(r.ma_khach_hang)}" tabindex="-1" aria-hidden="true"><span class="em" aria-hidden="true">📍</span></button><button type="button" class="kh-nav-btn" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinNav(this)" aria-label="Dẫn đường tới vị trí đã ghim"><svg class="ic" width="17" height="17" aria-hidden="true"><use href="#i-nav"/></svg></button></span><span class="kh-addr-txt">${hi(trimDiaChi(r.dia_chi),q)}</span></div>` : ''}
       <div class="kh-ghichu-row">
-        <span class="em kh-ghichu-ico" aria-hidden="true" style="margin-right:6px" title="Ghi chú">📝</span>
+        <span class="kh-ghichu-ico" aria-hidden="true" style="margin-right:6px" title="Ghi chú"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-pencil"/></svg></span>   <!-- ⟳ 2026-11-04 (“đổi icon ghi chú thành cây viết”): tag → CÂY VIẾT #i-pencil. -->   <!-- ⟳ 2026-11-04 (“đổi 2 icon này cho nhau”): ghi chú dùng icon TAG, ABC dùng icon GHI CHÚ. -->   <!-- ⟳ 2026-11-04 (“đổi icon đơn nét”): emoji 📝 → NÉT #i-note (bỏ lớp .em để ăn màu của khối .kh-ghichu-ico). -->
         <input type="text" class="kh-ghichu-input" value="${esc(r.ghi_chu||'')}" data-ma="${esc(r.ma_khach_hang)}" oninput="saveGhiChu(this)" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()" onpointerdown="event.stopPropagation()" onpointerup="event.stopPropagation()">
-        ${r.abc ? `<span class="kh-abc-wrap" style="margin-left:8px;display:flex;align-items:center;gap:4px;flex-shrink:0;min-width:0"><span class="em kh-abc-ico" aria-hidden="true" title="ABC">📋</span><span class="kh-abc" style="font-size:var(--fs-card)">${hi(r.abc,q)}</span></span>` : ''}
+        ${r.abc ? `<span class="kh-abc-wrap" style="margin-left:8px;display:flex;align-items:center;gap:4px;flex-shrink:0;min-width:0"><span class="kh-abc-ico" aria-hidden="true" title="ABC"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-note"/></svg></span>   <!-- ⟳ 2026-11-04 (“đổi icon đơn nét”): emoji 📋 → NÉT #i-tag. --><span class="kh-abc" style="font-size:var(--fs-card)">${hi(r.abc,q)}</span></span>` : ''}
       </div>
       <!-- ⟳ 2026-10-24 (yêu cầu: “dời hàng địa chỉ xuống dưới ghi chú”): dòng ĐỊA CHỈ rời khỏi
            khối giữa (kh-card-mid) và xuống CUỐI THẺ, ngay dưới hàng ghi chú. Vì thẻ là khối
@@ -14477,7 +14662,7 @@ function renderCards(q='') {
       <div class="kh-phone-row${pinHere ? ' has-dir' : ''}">${phone ? `<a class="kh-phone" href="tel:${phone.replace(/[^0-9+]/g,'')}" onclick="event.stopPropagation()"><svg class="ic" width="15" height="15" aria-hidden="true" style="margin-right:2px"><use href="#i-call"/></svg>${hi(phone,q)}</a>` : ''}<!-- ⟳ 2026-10-31 (yêu cầu “đổi vị trí 2 nút này”): **ĐƯỜNG đứng TRƯỚC, GHIM đứng SAU**
              (trước là Ghim → Đường). ⚠️ Đổi thứ tự thì phải đổi CẢ margin bám phải — xem 3 rule
              .kh-phone-row + margin-left trong phần CSS: nút ĐẦU của cụm giữ auto.
-             ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG một template literal). -->${r.ma_khach_hang ? `<button type="button" class="kh-dir-btn${pinHere ? ' is-on' : ''}" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinTabTap(this)" aria-label="Vị trí khách hàng — mở menu"><span class="em" aria-hidden="true">📍</span><span class="kh-dir-txt">Vị trí</span></button>` : ''}${r.ma_khach_hang ? `<button type="button" class="kh-photo${pc ? ' has-photo' : ''}" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang || '')}" data-ky="${esc(r.thang_no || '')}" onclick="event.stopPropagation();photoTap(this)" aria-label="${pc ? 'Xem ảnh của khách (' + pc + ')' : 'Chụp ảnh khách hàng'}"><svg class="ic" aria-hidden="true"><use href="#i-camera"></use></svg><span class="kh-photo-txt">Ảnh${pc ? ' (' + pc + ')' : ''}</span></button>` : ''}</div>
+             ⛔ KHÔNG viết dấu backtick trong chú thích này (nó nằm TRONG một template literal). -->${r.ma_khach_hang ? `<button type="button" class="kh-dir-btn${pinHere ? ' is-on' : ''}" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();pinTabTap(this)" aria-label="Vị trí khách hàng — mở menu"><svg class="ic" width="17" height="17" aria-hidden="true"><use href="#i-pin"/></svg><span class="kh-dir-txt">Vị trí</span></button>   <!-- ⟳ 2026-11-04 (“đổi icon này”): emoji 📍 → NÉT #i-pin (ghim dạng đường viền như ảnh mẫu). -->` : ''}${r.ma_khach_hang ? `<button type="button" class="kh-photo${pc ? ' has-photo' : ''}" data-ma="${esc(r.ma_khach_hang)}" data-ten="${esc(r.ten_khach_hang || '')}" data-ky="${esc(r.thang_no || '')}" onclick="event.stopPropagation();photoTap(this)" aria-label="${pc ? 'Xem ảnh của khách (' + pc + ')' : 'Chụp ảnh khách hàng'}"><svg class="ic" aria-hidden="true"><use href="#i-camera"></use></svg><span class="kh-photo-txt">Ảnh${pc ? ' (' + pc + ')' : ''}</span></button>` : ''}</div>
       <button type="button" class="kh-chev" data-ma="${esc(r.ma_khach_hang)}" onclick="event.stopPropagation();openCardDetail(this)" ondblclick="event.stopPropagation()" aria-label="Xem chi tiết khách hàng"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-chev"></use></svg></button>
     </div>`;
   }).join('');
