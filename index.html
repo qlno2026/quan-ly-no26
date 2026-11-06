@@ -2324,6 +2324,13 @@ body.light-mode .cfg-row, body.light-mode .cfg-hd { border-bottom-color: #cbd5e1
    ⚠️ Chỉ áp cho cụm `#pageActions` (3 nút chia đều): nút “Chọn tệp Excel khác” nằm MỘT MÌNH
    trong hàng `Dữ liệu` nên giữ hàng ngang (nhãn 126px thừa chỗ, dọc sẽ xấu). */
 .cfg #pageActions .page-act { flex-direction: column; gap: 1px; }
+/* ⇢ 2026-11-06 (thêm nút “Xuất file cắt”): 4 nút nay chia **2 HÀNG × 2 CỘT** thay vì 1 hàng 4 nút.
+   LÝ DO là số đo, không phải thẩm mỹ: ở viewport 320px mỗi nút chỉ còn **69,6px**, mà nhãn
+   “Xuất file cắt” ở 14px cần **78,7px** ⇒ chữ tràn ra ngoài viền **4,6px mỗi bên** và đè lên nút
+   bên cạnh (đo: `overlapNext = 0,6px`). Chia 2 cột thì mỗi nút **~144px** ở 320 ⇒ thừa chỗ.
+   ⚠️ `flex-wrap` phải khai ở ĐÂY (không phải `.page-actions` gốc) để hàng phân trang không đổi. */
+.cfg #pageActions { flex-wrap: wrap; }
+.cfg #pageActions .page-act { flex: 1 1 calc(50% - 2px); }
 /* ⟳ 2026-10-17f (yêu cầu “cho viền nổi hơn”, ảnh người dùng gửi là nút “Chọn tệp Excel khác”):
    nút này nằm MỘT MÌNH và rộng gấp 3 nút kia nên viền 1px trông như sợi chỉ, chìm hẳn vào tấm trắng.
    Nay cho nó **2px + bóng nhẹ** để “nổi” khỏi tấm.
@@ -3123,6 +3130,35 @@ body:not(.light-mode) .filter-select[data-active="1"] { background-color: var(--
   scrollbar-width: none;
 }
 .loai-tabs::-webkit-scrollbar { width: 0; height: 0; display: none; }
+/* ⇢ 2026-11-06 (yêu cầu “thêm nút mũi tên trái/phải ở hai đầu dải tab”): khung bọc CHỈ để neo 2 nút
+   — ⛔ đừng thêm `padding`/`overflow` ở đây: `.loai-tabs` vẫn phải là phần tử cuộn duy nhất, nếu
+   không `equalizeLoaiTabs()` (đọc `clientWidth` của dải) và `syncLoaiTabs()` sẽ tính sai.
+   Nút nổi (absolute) nên KHÔNG chiếm chỗ của tab; `[hidden]` khi dải không tràn / đã hết phía đó. */
+.loai-tabs-wrap { position: relative; }
+.tab-nav {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 4;
+  width: 26px; height: 26px; padding: 0; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  /* ⚠️ Nền phải ĐẬM hơn dải tab (`--ctl-solid`) để nút nổi lên: đo ảnh chụp 1280px, nút cùng tông
+     dải thì chỉ còn cái viền mảnh, mũi tên gần như chìm. Viền sáng + đổ bóng nhẹ là đủ tách. */
+  background: #1e293b; color: #e2e8f0;
+  border: 1px solid #64748b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+}
+.tab-nav:hover { border-color: #60a5fa; color: #93c5fd; }
+.tab-nav:active { transform: translateY(-50%) scale(0.94); }
+.tab-nav[hidden] { display: none; }
+/* Đẩy nửa nút RA NGOÀI dải: nút che ít chữ tab nhất có thể mà vẫn nằm trong vùng bấm của `.loai-tabs-wrap`. */
+.tab-nav-l { left: -10px; }
+.tab-nav-r { right: -10px; }
+.tab-nav-l .ic { transform: rotate(180deg); }   /* 1 sprite mũi tên phải ⇒ trái = lật 180° */
+body.light-mode .tab-nav { background: #ffffff; color: #1e293b; border-color: #94a3b8; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25); }
+body.light-mode .tab-nav:hover { border-color: #2563eb; color: #1d4ed8; }
+/* ⚠️ Dưới 640px (khổ điện thoại) ẨN HẲN 2 nút: yêu cầu này là “thay cho việc lăn chuột” ở máy tính,
+   còn điện thoại VỐN vuốt ngang được, mà tab ở đó chỉ rộng ~117px — chồng thêm nút 26px là che mất
+   icon/chữ của tab đầu tiên. `display: none` ở đây không đụng tới thuộc tính `hidden` của JS. */
+@media (max-width: 639.98px) { .tab-nav { display: none; } }
 .loai-tab {
   flex: 0 0 auto;
   display: inline-flex;
@@ -7119,6 +7155,34 @@ body.light-mode .adv-act-primary { background: #2563eb; border-color: #2563eb; c
    rộng hơn ở màn lớn: trần chung `.modal` là 560px ⇒ riêng tấm này **640px**. */
 .adv-modal .ky-title { font-size: 23px; font-weight: 500; }   /* ⟳ 2026-10-25n: 20 → **23px** (yêu cầu “cho các tab và chữ to hơn”, vẫn giữ weight 500 của lượt 25c) · ⟳ 2026-10-25c: 26 → 20px (yêu cầu “cho chữ này nhỏ lại”, ảnh = đúng dòng tiêu đề này) · weight 700 → **500** (yêu cầu “cho chữ này nét mỏng lại”). ⚠️ Scope ở `.adv-modal` để tấm “Nợ cũ theo từng kỳ” giữ nguyên 700. */
 .adv-modal { max-width: 640px; }
+/* ── TẤM “MÃ SỔ” (`#soModal`, 2026-11-06) ─────────────────────────────────────────
+   Dùng lại khung `.modal` + `.ky-hd`/`.ky-title`/`.ky-x` của 3 tấm kia (cùng hình dạng,
+   cùng nút ✕) — chỉ thêm danh sách dòng. Màu lấy TOKEN, ⛔ không khai màu rời: dark dùng
+   `--dk-card`/`--border`/`--text-dim`, light ép sang `--light-card`/`--light-edge` như mọi
+   tấm khác. Dòng đang lọc viền `--ic-hash` (cùng cách báo trạng thái của `.sort-btn.active`). */
+.so-modal { max-width: 560px; }
+.so-frame { padding: 0 14px 14px; display: flex; flex-direction: column; min-height: 0; }
+.so-sub { font-size: 14px; color: var(--text-dim); margin: 0 0 8px; }
+/* Ô “Tìm mã sổ” — chép hình dạng của `.adv-in` (ô nhập trong tấm lọc) nhưng 15px cho gọn tấm.
+   ⚠️ Nền `--dk-card` (không phải nền tấm) để thấy được đâu là chỗ gõ, như ghi chú ở `.adv-in`. */
+.so-in { width: 100%; box-sizing: border-box; margin: 0 0 8px; padding: 7px 10px; border-radius: 9px; border: 1px solid var(--border); background: var(--dk-card); color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; }
+.so-in:focus { border-color: #3b82f6; outline: none; }
+.so-in::placeholder { color: #8a95a6; }
+body.light-mode .so-in { background: #ffffff; color: #0f172a; border-color: #d1d5db; }
+body.light-mode .so-in::placeholder { color: #8d98a4; }
+.so-list { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; max-height: min(58vh, 420px); padding-right: 2px; }
+.so-row { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 9px 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--dk-card); color: var(--text); font: inherit; font-size: 15px; cursor: pointer; }
+.so-row .so-ico { flex: 0 0 auto; color: var(--ic-green); }
+.so-row .so-code { font-weight: 600; letter-spacing: 0.2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.so-row .so-meta { margin-left: auto; font-size: 13px; color: var(--text-dim); white-space: nowrap; }
+.so-row[data-active="1"] { border-color: var(--ic-hash); }
+.so-row.so-all { justify-content: center; font-weight: 500; }
+.so-empty { font-size: 14px; color: var(--text-dim); padding: 10px 2px; }
+body.light-mode .so-row { background: var(--light-card); border-color: var(--light-edge); color: #111827; }
+body.light-mode .so-row .so-meta { color: #5b6777; }
+/* Nút “Mã sổ” trong dải tab khi ĐANG lọc theo 1 mã sổ: viền xanh như `.sort-btn.active`
+   nhưng ⛔ KHÔNG tô nền đậm (nó không phải kiểu sắp xếp) — chỉ đổi viền + chữ. */
+#soTabBtn[data-so-active="1"] { border-color: var(--ic-hash); color: var(--ic-hash); }
 
 /* ── RESPONSIVE ─────────────────────────── */
 /* Mobile: cards */
@@ -7261,8 +7325,43 @@ body.force-desktop .table-view { display: block; }
   .header-sub { max-width: 300px; }
   /* Desktop: data 14px */
   tbody td { font-size: var(--fs-tb-desk); padding: 4px 8px; }
-  tbody tr:hover { background: #172f4f !important; }
+  /* ⇢ 2026-11-06 (yêu cầu “khi di chuột đến hàng nào trên máy tính thì hàng đó hiển thị màu xanh
+     dương”): nền hover cũ `#172f4f` là NAVY TỐI, gần như chìm vào nền trang (`#141820`–`#2e3644`)
+     nên di chuột vào hàng KHÔNG thấy đổi gì. Nay là xanh dương rõ: **`#1e3a8a`** (blue-900).
+     Đã đo trên ảnh chụp với đúng màu này: hàng sáng lên rõ, chữ sáng `#e2e8f0` ≈ **8,6:1**, tiền
+     đỏ `#ff8a8a` ≈ **4,3:1**, xanh `#86efac` ≈ **7:1**, vàng `#fde68a` ≈ **8:1** — không token nào
+     của hàng mất đọc. ⛔ Đừng dùng blue-700 (`#1d4ed8`): tiền đỏ chỉ còn ~2,1:1.
+     ⚠️ Vẫn phải `!important` + đặt TRONG `@media (min-width: 640px)`: rule nền `tbody tr:hover`
+     (khổ điện thoại) đứng sau trong tệp và sẽ đè nếu thiếu.
+     ⛔ Không đổi `#93c5fd` của light — ở đó hover ĐÃ là xanh dương nhạt từ trước. */
+  /* ⟳ 2026-11-06 (yêu cầu “làm nền hover hàng bảng nhạt bớt một nấc cho dịu mắt hơn khi xem lâu”):
+     `#1e3a8a` (đặc, bão hoà mạnh) → **`rgba(59,130,246,0.30)`** = cùng họ xanh nhưng trong mờ, dịu
+     hơn hẳn khi nhìn lâu. ĐO trên nền trang thật `#0b0d12`: hàng hover ra **`#193056`**; chữ sáng
+     `#e2e8f0` **10,7:1** · tiền hover `#ffd9d9` **10,1:1** · tiền đỏ thường `#ffa0a0` **6,75:1**.
+     ⛔ Đừng dùng alpha thấp hơn 0.22 (hàng gần như không đổi màu) hay
+     cao hơn 0.42 (quay lại cảm giác chói như cũ). */
+  tbody tr:hover { background: rgba(59,130,246,0.30) !important; }
   body.light-mode tbody tr:hover { background: #93c5fd !important; }
+  /* ⇢ 2026-11-06 (yêu cầu “cho hàng đang hover cũng đổi màu chữ tiền sang tông sáng hơn để dễ đọc
+     trên nền xanh”): khi hàng đang hover, số tiền đang nằm trên NỀN XANH ĐẬM `#1e3a8a` (thay vì nền
+     trang) ⇒ nâng mỗi tông lên ĐÚNG MỘT NẤC trong cùng họ màu, ⛔ đừng đổi sang tông khác:
+       đỏ `#ffa0a0` → **`#ffd9d9`** · đỏ đậm `#ff8888` → **`#ffc7c7`** ·
+       xanh lá `#86efac` → **`#bbf7d0`** · vàng/cam `#fde68a` → **`#fef3c7`**.
+     Đo trên `#1e3a8a`: đỏ **7,98:1** (cũ 5,32) · đỏ đậm **7,03:1** (cũ 4,50) · xanh lá **8,55:1**
+     (cũ 7,38) · vàng **9,30:1** — tất cả đều qua AA 4,5 và sáng rõ cạnh chữ trắng của hàng.
+     ⚠️ `!important` là BẮT BUỘC: màu gốc của `.tien-no`/`.high`/`.low`/`.mid` cũng gán
+     `!important` và đặc hiệu cao hơn (0,2,2) — thiếu là không thấy đổi gì.
+     ⚠️ Hàng LIGHT hover là nền xanh NHẠT `#93c5fd` ⇒ phải ĐẬM LÊN mới đọc được (ngược chiều
+     với dark): đỏ `#7f1d1d` · đỏ đậm `#7f1d1d` · xanh `#064e3b` · cam `#7c2d12`.
+     ⛔ Đừng đổi viên nền `.tien-no` — nó vẫn là “nhãn mức nợ” và đã đủ tương phản trên nền xanh. */
+  body:not(.light-mode) .table-view tbody tr:hover .tien-no { color: #ffd9d9 !important; }
+  body:not(.light-mode) .table-view tbody tr:hover .tien-no.high { color: #ffc7c7 !important; }
+  body:not(.light-mode) .table-view tbody tr:hover .tien-no.low { color: #bbf7d0 !important; }
+  body:not(.light-mode) .table-view tbody tr:hover .tien-no.mid { color: #fef3c7 !important; }
+  body.light-mode .table-view tbody tr:hover .tien-no { color: #7f1d1d !important; }
+  body.light-mode .table-view tbody tr:hover .tien-no.high { color: #7f1d1d !important; }
+  body.light-mode .table-view tbody tr:hover .tien-no.low { color: #064e3b !important; }
+  body.light-mode .table-view tbody tr:hover .tien-no.mid { color: #7c2d12 !important; }
   .ma-kh { font-size: var(--fs-tb-desk); }
   .tien-no { font-size: var(--fs-tb-desk); }
   .cell-dim { font-size: var(--fs-tb-desk); }
@@ -9870,6 +9969,14 @@ body.light-mode .kh-swipe > .kh-card { background-color: var(--light-card); }
              ⛔ sửa màu một bên phải sửa bên kia (xem chú thích CSS `.loai-tabs`).
              ⟳ Nút phễu “Lọc theo yêu cầu” **KHÔNG còn ở dải này** (yêu cầu 2026-10-24 “đưa tab lọc
              về vị trí cũ”) — nó đã trở lại hàng tìm kiếm, xem markup `#advBtn` phía trên. -->
+        <!-- ⇢ 2026-11-06 (yêu cầu “thêm nút mũi tên trái/phải ở hai đầu dải tab để bấm chuyển tab thay vì
+             phải lăn chuột”): bọc dải trong `.loai-tabs-wrap` (chỉ `position: relative`, KHÔNG đệm ⇒
+             bề rộng dải và mọi phép chia của `equalizeLoaiTabs()` giữ nguyên) rồi đặt 2 nút `.tab-nav`
+             nổi ở hai đầu. Nút chỉ hiện khi dải THẬT SỰ TRÀN (`tabNavUpdate()`), và nút ở phía đã hết
+             chỗ luôn bị ẩn ⇒ đầu/cuối dải không bao giờ bị che. ⚠️ `hidden` chứ ⛔ không dùng
+             `opacity`/`visibility`: `hidden` gỡ khỏi bố cục + khỏi tab-order cho người dùng bàn phím. -->
+        <div class="loai-tabs-wrap">
+        <button class="tab-nav tab-nav-l" type="button" id="tabNavL" aria-label="Cuộn dải tab sang trái" onclick="tabScroll(-1)"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-chev"/></svg></button>
         <div class="loai-tabs" id="loaiTabs" role="tablist" aria-label="Chi tiết nợ">
           <button class="loai-tab active" type="button" role="tab" aria-selected="true" data-val="" onclick="selectLoai('')"><span class="loai-tab-ic"><svg class="ic" width="16" height="16" aria-hidden="true"><use href="#i-receipt"/></svg></span><span>Chi tiết</span></button>
           <!-- ⇢ 2026-11-04 (“cho các tab đều có icon”): MỌI tab dùng `.loai-tab-ic` (icon nét) thay cho
@@ -9901,6 +10008,18 @@ body.light-mode .kh-swipe > .kh-card { background-color: var(--light-card); }
                · Chúng KHÔNG mang class `loai-tab` ⇒ `syncLoaiTabs()`/`equalizeLoaiTabs()` (chỉ quét
                  `.loai-tab`) không tô sáng / không gán bề rộng cho chúng; bề rộng theo chữ.
                · Bấm là sắp xếp NGAY tại chỗ (không mở tấm lọc). -->
+          <!-- ⇢ 2026-11-06 (yêu cầu “thêm tab mã sổ trước tab danh số, khi chọn tên nhân viên nào
+               thì chỉ hiển thị mã sổ tên nhân viên đó” → rồi “tab mã sổ là dạng sổ ra xem danh
+               sách, không phải dạng sort”): **“Mã sổ” là nút MỞ DANH SÁCH SỔ**, đứng ngay TRƯỚC
+               “Danh số”. Bấm ⇒ mở tấm `#soModal` liệt kê mọi mã sổ của NHÂN VIÊN đang chọn
+               (mỗi dòng 1 mã + số KH), chạm 1 mã = lọc danh sách theo đúng mã sổ đó.
+               ⛔ KHÔNG phải nút sắp xếp: ⚠️ id đổi thành `soTabBtn` (KHÔNG còn `sortSoGCS`) vì
+               `updateSortButtons()` ghi `arrow.innerHTML` — nút không có `.sort-arrow` là lỗi.
+               Cũng ⛔ đừng gắn class `loai-tab`: nó sẽ bị `syncLoaiTabs()`/`equalizeLoaiTabs()`
+               coi là tab lọc và tự tô sáng theo `data-val`. -->
+          <button class="sort-btn loai-sort-btn" type="button" id="soTabBtn" onclick="openSoList()" aria-label="Mã sổ — xem danh sách sổ" aria-pressed="false" data-so-active="0">
+            <span class="sort-ico"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-notebook"/></svg></span><span class="sort-label">Mã sổ</span>
+          </button>
           <button class="sort-btn loai-sort-btn" type="button" id="sortDanhSo" onclick="sortBy('danh_so')" aria-label="Sắp xếp theo danh số">
             <span class="sort-ico"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-hash"/></svg></span><span class="sort-label">Danh số</span><span class="sort-arrow"><svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort"/></svg></span>
           </button>
@@ -9918,6 +10037,8 @@ body.light-mode .kh-swipe > .kh-card { background-color: var(--light-card); }
                Chi tiết · Từ 3Tr · Nợ cũ · Tổng hợp. Lọc “Chú ý” VẪN dùng được ở ô “Chi tiết nợ”
                ngay trên (data-val="marked") — chỉ là lúc đó KHÔNG tab nào sáng, đúng như ca “1Tr -
                3Tr” đã bỏ trước đó. ⛔ Đừng dựng lại tab này nếu người dùng không yêu cầu. -->
+        </div>
+        <button class="tab-nav tab-nav-r" type="button" id="tabNavR" aria-label="Cuộn dải tab sang phải" onclick="tabScroll(1)"><svg class="ic" width="15" height="15" aria-hidden="true"><use href="#i-chev"/></svg></button>
         </div>
         <!-- ⛔ HÀNG SẮP XẾP “Danh số · Tiền nợ” ĐÃ RỜI thanh công cụ (2026-10-25 — yêu cầu
              “cho tab danh số và tiền nợ, kh đã gọi, kh chưa gọi cho vô nút lọc”): 2 nút nay
@@ -10419,6 +10540,32 @@ body.light-mode .kh-swipe > .kh-card { background-color: var(--light-card); }
   </div>
 </div>
 
+<!-- 📒 TẤM “MÃ SỔ” (`#soModal`) — 2026-11-06. Mở bằng nút **“Mã sổ”** trong dải tab
+     (`#soTabBtn` → `openSoList()`); `#soList` do `soRender()` dựng.
+     · Danh sách lấy từ `allData` **ĐÃ lọc theo NHÂN VIÊN** đang chọn ở ô “Nhân viên” (đúng yêu cầu
+       “chọn tên nhân viên nào thì chỉ hiển thị mã sổ tên nhân viên đó”), gộp theo `ma_sogcs`,
+       mỗi dòng kèm SỐ KH của sổ đó, xếp A→Z.
+     · Chạm 1 dòng = lọc danh sách theo mã sổ (`soPick`); dòng “Hiện tất cả mã sổ” hiện ra khi
+       đang lọc để bỏ lọc (`soClear`).
+     ⛔ Đừng gắn tấm này vào `#advModal` (tấm đó tự khoá cuộn + Xong/Xoá lọc riêng). -->
+<div class="modal-overlay so-overlay" id="soModal" onclick="closeSoListBg(event)">
+  <div class="modal so-modal" role="dialog" aria-modal="true" aria-label="Danh sách mã sổ">
+    <div class="modal-handle"></div>
+    <div class="ky-hd">
+      <span class="ky-title">Mã sổ</span>
+      <button class="ky-x" type="button" onclick="closeSoList()" aria-label="Đóng">✕</button>
+    </div>
+    <div class="so-frame">
+      <div class="so-sub" id="soSub"></div>
+      <!-- ⇢ 2026-11-06 (yêu cầu “thêm ô tìm mã sổ trong tấm Mã sổ”): gõ để lọc danh sách theo MÃ SỔ.
+           Dựng TĨNH ở đây rồi `soFilterList()` chỉ vẽ lại phần danh sách — ⛔ đừng dựng lại ô nhập
+           trong `soRender()` (mất chữ đang gõ và mất focus sau mỗi ký tự). -->
+      <input type="text" id="soQ" class="so-in" placeholder="Tìm mã sổ" autocomplete="off" autocorrect="off" autocapitalize="off" oninput="soFilterList()" aria-label="Tìm mã sổ">
+      <div class="so-list" id="soList"></div>
+    </div>
+  </div>
+</div>
+
 <!-- 📸 TẤM “ẢNH CHỤP MÀN HÌNH” (`#shotModal`) — mở bằng cách CHẠM NÚT MÃ QR ở ô “Mã khách hàng”
      của tấm thanh toán (xem `capturePayShot()`). Nằm NGOÀI `#payModal` và TRÊN nó (`z-index: 320`)
      ⇒ đóng ảnh là quay lại ĐÚNG tấm thanh toán đang mở (tấm đó KHÔNG bị đóng theo).
@@ -10581,6 +10728,12 @@ body.light-mode .kh-swipe > .kh-card { background-color: var(--light-card); }
     <span class="cfg-lb">Tác vụ bảng</span>
     <div class="page-actions" id="pageActions">
       <button id="exportBtn" class="page-act" onclick="closeCfg(); exportExcel()" data-tip="Xuất file Excel" aria-label="Xuất file Excel"><svg class="ic" width="18" height="18" aria-hidden="true"><use href="#i-download"/></svg><span class="page-act-lb">Xuất file</span></button>
+      <!-- ⇢ 2026-11-06 (yêu cầu “thêm nút Xuất file in cắt kế nút xuất file, chỉ xuất những … đang
+           hiển thị … hiển thị thông tin cột như trong ảnh”): nút **“Xuất file cắt”** nằm NGAY SAU
+           “Xuất file”, xuất **đúng danh sách ĐANG HIỂN THỊ** (`filtered` = đã lọc/tìm kiếm/sắp xếp,
+           ẩn khách đã xoá) ra Excel **14 cột theo đúng tệp gốc của công ty** (xem `exportExcelCut`).
+           ⚠️ Nút “Xuất file” cũ GIỮ NGUYÊN 15 cột (có DANH SỐ/THÁNG NỢ/GHI CHÚ/ABC/VI TRI…). -->
+      <button id="exportCutBtn" class="page-act" onclick="closeCfg(); exportExcelCut()" data-tip="Xuất file Excel (chỉ danh sách đang hiển thị)" aria-label="Xuất file cắt — chỉ danh sách đang hiển thị"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/><path d="M20 4 8.1 15.9"/><path d="M8.1 8.1 20 20"/></svg><span class="page-act-lb">Xuất file cắt</span></button>
       <button id="printBtn" class="page-act" onclick="closeCfg(); inBang()" data-tip="In bảng" aria-label="In bảng"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3.4h10v6H7z"/><path d="M7 11.4H5.4A2.4 2.4 0 0 0 3 13.8v4.8A2.4 2.4 0 0 0 5.4 21h13.2A2.4 2.4 0 0 0 21 18.6v-4.8a2.4 2.4 0 0 0-2.4-2.4H17"/><path d="M7 21v-5.6h10V21"/></svg><span class="page-act-lb">In bảng</span></button>
       <button id="backupBtn" class="page-act" onclick="closeCfg(); saoLuuDuLieu()" data-tip="Sao lưu dữ liệu" aria-label="Sao lưu dữ liệu"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.4 21H4.6A1.6 1.6 0 0 1 3 19.4V4.6A1.6 1.6 0 0 1 4.6 3h11.1l4.7 4.7v11.7A1.6 1.6 0 0 1 19.4 21z"/><path d="M16.6 21v-7.4H7.4V21"/><path d="M7.4 3v5.2h7.2"/></svg><span class="page-act-lb">Sao lưu</span></button>
     </div>
@@ -10602,6 +10755,10 @@ body.light-mode .kh-swipe > .kh-card { background-color: var(--light-card); }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 let allData = [], filtered = [], summaryData = [], oldSummaryData = [];
+/* 📒 MÃ SỔ ĐANG LỌC (2026-11-06) — rỗng = không lọc sổ. Do nút “Mã sổ” trong dải tab đặt
+   (`soPick`), được `applyFilters()` áp như một điều kiện lọc NGANG HÀNG với nhân viên.
+   ⚠️ Đặt Ở ĐÂY (trước mọi hàm dùng nó) để không rơi vào TDZ khi `applyFilters()` chạy sớm. */
+let soScope = '';
 let nvScope = '';
 /* ⟳ 2026-10-26 (yêu cầu “khi hiện thẻ KH mặc định là sort theo danh số”): mặc định **`danh_so`
    tăng dần** thay cho “không sắp xếp”. Mở app là danh sách thẻ đã xếp theo danh số và nút
@@ -11128,6 +11285,7 @@ function processFile(file) {
 
   // Reset all state carried over from a previous file
   nvScope = '';
+  soScope = ''; updateSoTab();   // ⇢ 2026-11-06: tệp mới thì bỏ lọc mã sổ (mã sổ cũ không còn nghĩa)
   currentPage = 1;
   sortCol = 'danh_so'; sortDir = 1;   // ⟳ 2026-10-26: nạp tệp mới CŨNG xếp theo danh số (khớp mặc định)
   document.getElementById('searchInput').value = '';
@@ -11728,6 +11886,9 @@ function selectNhom(val) {
     btn.style.background = '';
   }
   document.getElementById('nhomDropdown').style.display = 'none';
+  // ⇢ 2026-11-06: đổi NHÂN VIÊN ⇒ BỎ lọc mã sổ (mã sổ đang lọc có thể không thuộc người mới,
+  // giữ lại là ra danh sách rỗng mà không rõ vì sao).
+  if (soScope) { soScope = ''; updateSoTab(); }
   handleNhomFilter();
 }
 
@@ -12159,7 +12320,14 @@ function equalizeLoaiTabs() {
      cả 10 tab — inline thắng mọi rule CSS, đặt `flex` trong CSS là vô hiệu. */
   const mobile = window.innerWidth < 640;
   const key = (mobile ? 'm' : 'w') + ':' + box.clientWidth;
-  if (_loaiTabKey === key && _loaiTabW > 0 && tabs.every(t => t.style.width === _loaiTabW + 'px')) return;
+  /* ⇢ 2026-11-06 (yêu cầu “cho kích thước tab mã sổ bằng các tab khác”): nút **“Mã sổ”**
+     (`#soTabBtn`, `.sort-btn` chứ KHÔNG phải `.loai-tab`) nay được gán CÙNG bề rộng với 10 tab.
+     Nó không nằm trong `tabs` (vòng đo bên dưới chỉ quét `.loai-tab`) nên phải gán riêng — và
+     phải có mặt trong điều kiện chống lặp, nếu không lần gọi thứ 2 sẽ tưởng “đã đúng” rồi thoát
+     trong khi nút vẫn rộng theo chữ. */
+  const soBtn = document.getElementById('soTabBtn');
+  const soOk = !soBtn || soBtn.style.width === _loaiTabW + 'px';
+  if (_loaiTabKey === key && _loaiTabW > 0 && soOk && tabs.every(t => t.style.width === _loaiTabW + 'px')) return;
   tabs.forEach(t => { t.style.width = ''; });
   let max = 0;
   tabs.forEach(t => { const w = t.getBoundingClientRect().width; if (w > max) max = w; });
@@ -12169,12 +12337,115 @@ function equalizeLoaiTabs() {
   _loaiTabW = w;
   _loaiTabKey = key;
   tabs.forEach(t => { t.style.width = w + 'px'; });
+  if (soBtn) soBtn.style.width = w + 'px';
 }
 /* Dải tab hiện ra / đổi bề rộng (xoay máy, mở tấm Cài đặt…) ⇒ đo lại. */
 if (typeof ResizeObserver !== 'undefined') {
   const __tabBox = document.getElementById('loaiTabs');
   if (__tabBox) new ResizeObserver(() => equalizeLoaiTabs()).observe(__tabBox);
 }
+/* ⇢ 2026-11-06 (yêu cầu “khi xem trên máy tính cũng trượt ngang các tab được như trên điện thoại”):
+   dải `.loai-tabs` VỐN đã `overflow-x: auto` và cuộn được (đo 1280px: `scrollWidth` 1.722 >
+   `clientWidth` 1.239), nhưng **thanh cuộn bị ẩn** (`scrollbar-width: none` + `::-webkit-scrollbar`
+   `height: 0`) nên trên máy tính không có chỗ nào để kéo/ bấm ⇒ nhìn như bị cắt cụt.
+   Điện thoại thì vuốt được vì trình duyệt tự cuộn; máy tính thì KHÔNG (lăn chuột = cuộn TRANG).
+   Nay: lăn chuột khi trỏ vào dải ⇒ cuộn NGANG dải. Quy ước:
+   · `Shift` + lăn = để trình duyệt làm như cũ (⛔ đừng chặn, đó là thoát hiểm khi cần cuộn trang).
+   · Cuộn ngang thật (trackpad 2 ngón ngang: `|deltaX| > |deltaY|`) ⇒ không can thiệp.
+   · Dải không tràn (`scrollWidth <= clientWidth`) ⇒ không chặn, trang cuộn bình thường.
+   ⚠️ Bắt buộc `{ passive: false }` mới `preventDefault()` được (mặc định passive ⇒ lời gọi bị bỏ qua
+   và trang vẫn cuộn theo). */
+(function tabStripWheelScroll() {
+  const box = document.getElementById('loaiTabs');
+  if (!box) return;
+  box.addEventListener('wheel', e => {
+    if (e.shiftKey) return;
+    if (box.scrollWidth <= box.clientWidth) return;
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    const d = e.deltaY || 0;
+    if (!d) return;
+    const before = box.scrollLeft;
+    box.scrollLeft = before + d;
+    if (box.scrollLeft !== before) e.preventDefault();
+  }, { passive: false });
+})();
+/* ⇢ 2026-11-06 (yêu cầu “thêm nút mũi tên trái/phải ở hai đầu dải tab để bấm chuyển tab thay vì
+   phải lăn chuột”):
+   `tabNavUpdate()` = bật/tắt 2 nút theo việc dải có TRÀN hay không và đang ở đâu:
+     · dải không tràn (`scrollWidth <= clientWidth + 2`) ⇒ ẩn CẢ HAI (màn hình rộng / điện thoại).
+     · đang ở đầu ⇒ ẩn nút TRÁI; ở cuối ⇒ ẩn nút PHẢI ⇒ không bao giờ che tab đầu/cuối bằng nút
+       “không làm gì”.
+     · ngưỡng 2px + 1px là để bù sai số làm tròn của `scrollWidth` trên màn hình tỉ lệ lẻ.
+   `tabScroll(dir)` = cuộn MỘT TRANG (70% khung, tối thiểu 140px) — đủ để lộ 1-2 tab mà không nhảy
+   quá xa. ⚠️ Luôn kẹp trong `[0, scrollWidth - clientWidth]` vì `scrollTo` quá biên sẽ làm thanh
+   cuộn “nảy” lại trên vài trình duyệt. Sau khi cuộn mượt thì cập nhật lại nút (`setTimeout` 260ms:
+   sự kiện `scroll` có bắn trong lúc chạy animation nhưng số cuối cùng chỉ đúng khi animation xong). */
+/* ⇢ 2026-11-06 (yêu cầu “cho nút mũi tên tự ẩn sau vài giây không dùng để dải tab gọn hơn”):
+   `_tabNavIdle` = đang "ngủ" ⇒ 2 nút ẩn hẵn, dải tab chỉ còn các tab (gọn như trước khi thêm nút).
+   Bất kỳ THAO TÁC NÀO lên dải (rê chuột vào, lăn, vuốt, bấm, Tab vào bàn phím) ⇒ `tabNavPoke()`
+   đánh thức + hẹn lại 2,6 giây. Hết giờ mà không làm gì ⇒ ngủ lại.
+   ⚠️ `_tabNavIdle` KHÔNG thay cho điều kiện vị trí trong `tabNavUpdate()`: nút phải ẩn cả khi
+   dải không tràn / đã ở đầu-cuối, dù đang thức. Hai điều kiện là HOẶC, ⛔ đừng bỏ vế nào.
+   ⚠️ `pointermove` chỉ gọi `tabNavPoke()` khi đang ngủ (tránh đặt lại timer liên tục làm nút
+   không bao giờ ẩn khi con trỏ đứng yên trên dải). */
+let _tabNavIdle = false;
+let _tabNavTimer = 0;
+const TAB_NAV_IDLE_MS = 2600;
+function tabNavUpdate() {
+  const box = document.getElementById('loaiTabs');
+  const left = document.getElementById('tabNavL');
+  const right = document.getElementById('tabNavR');
+  if (!box || !left || !right) return;
+  const max = box.scrollWidth - box.clientWidth;
+  const over = max > 2;
+  const hide = _tabNavIdle || !over;
+  left.hidden = hide || box.scrollLeft <= 1;
+  right.hidden = hide || box.scrollLeft >= max - 1;
+}
+function tabNavPoke() {
+  _tabNavIdle = false;
+  tabNavUpdate();
+  clearTimeout(_tabNavTimer);
+  _tabNavTimer = setTimeout(() => { _tabNavIdle = true; tabNavUpdate(); }, TAB_NAV_IDLE_MS);
+}
+function tabScroll(dir) {
+  const box = document.getElementById('loaiTabs');
+  if (!box) return;
+  tabNavPoke();   // bấm nút = đang dùng ⇒ nút phải còn đó để bấm tiếp
+  const max = box.scrollWidth - box.clientWidth;
+  if (max <= 2) return;
+  const step = Math.max(140, Math.round(box.clientWidth * 0.7));
+  const start = box.scrollLeft;
+  const next = Math.max(0, Math.min(max, start + dir * step));
+  box.scrollTo({ left: next, behavior: 'smooth' });
+  /* ⚠️ LƯỚI AN TOÀN: có môi trường/tab bị chặn cuộn MƯỢT (lúc kiểm bằng trình duyệt tự động đã gặp:
+     `scrollTo({behavior:'smooth'})` trả về không cuộn, trong khi gán `scrollLeft` thì chạy ngay).
+     Nếu sau ~0,4s vị trí vẫn KHÔNG nhích thì nhảy thẳng — ⛔ đừng bỏ, nếu không nút “bấm không ăn”
+     mà không có lỗi nào trong console. */
+  setTimeout(() => {
+    if (Math.abs(next - start) > 2 && Math.abs(box.scrollLeft - start) < 2) box.scrollLeft = next;
+    tabNavUpdate();
+  }, 400);
+  setTimeout(tabNavUpdate, 260);
+}
+(function initTabNav() {
+  const box = document.getElementById('loaiTabs');
+  if (!box) return;
+  const wrap = box.parentElement;
+  const wake = () => { tabNavPoke(); };
+  box.addEventListener('scroll', () => { if (!_tabNavIdle) tabNavUpdate(); }, { passive: true });
+  box.addEventListener('wheel', wake, { passive: true });
+  wrap.addEventListener('mouseenter', wake);
+  wrap.addEventListener('touchstart', wake, { passive: true });
+  wrap.addEventListener('pointerdown', wake);
+  wrap.addEventListener('focusin', wake);
+  wrap.addEventListener('pointermove', () => { if (_tabNavIdle) tabNavPoke(); });
+  window.addEventListener('resize', () => { if (!_tabNavIdle) tabNavUpdate(); });
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(() => { if (!_tabNavIdle) tabNavUpdate(); }).observe(box);
+  }
+  tabNavPoke();   // lúc mới mở: hiện nút rồi tự ẩn sau 2,6s
+})();
 window.addEventListener('resize', () => { _loaiTabW = 0; _loaiTabKey = ''; equalizeLoaiTabs(); });
 /* Phông Inter tải xong có thể RỘNG KHÁC phông dự phòng đã đo lúc đầu ⇒ đo lại 1 lần. */
 if (document.fonts && document.fonts.ready) {
@@ -13405,13 +13676,19 @@ function listShotDrawPage(rows, o) {
         let txt = '', font = '400 15px ' + F, color = '#334155', align = 'left';
         if (c.k === 'no') { txt = String(o.start + i + 1); font = '400 14px ' + F; color = '#64748b'; align = 'center'; }
         else if (c.k === 'ma') { txt = r.ma; font = '600 15px ' + F; color = '#1d4ed8'; }
-        else if (c.k === 'ten') { txt = r.ten || '—'; font = '600 15px ' + F; color = '#0f172a'; }
+        /* ⇢ 2026-11-06 (yêu cầu “cho tên kh, mã sổ màu chữ nhạt như địa chỉ khi chụp ảnh”): Tên KH và
+           Mã sổ TRƯỚC đây `600 15px #0f172a` (đậm nhất ảnh) ⇒ nay chép ĐÚNG cỡ + nét + màu của cột
+           Địa chỉ (`400 14px #1e293b`) để ba cột chữ đọc cùng một độ nhạt.
+           ⚠️ Cột **Danh số** vẫn `600 14px #0f172a` (yêu cầu 2026-10-31 “danh số màu đậm như tên kh”)
+           ⇒ nay Danh số ĐẬM HƠN Tên KH một nấc — đúng ý mới, ⛔ đừng “sửa” cho bằng nhau.
+           ⚠️ Chỉ áp cho ẢNH (`listShotDrawPage`); bảng/thẻ trong app KHÔNG đổi. */
+        else if (c.k === 'ten') { txt = r.ten || '—'; font = '400 14px ' + F; color = '#1e293b'; }
         /* ⟳ 2026-10-31 (yêu cầu “cho các cột này màu đậm hơn 1 nấc, cột danh số màu đậm như tên kh”):
            Địa chỉ / SĐT / Tháng nợ **`#334155` → `#1e293b`**; cột **Danh số** lấy ĐÚNG màu + nét của
            cột Tên KH (`#0f172a`, weight 600). Trước đó mọi cột phụ đều `#334155` (xám xanh). */
         else if (c.k === 'dia_chi') { txt = r.dia_chi || ''; font = '400 14px ' + F; color = '#1e293b'; }
         else if (c.k === 'danh_so') { txt = r.danh_so || ''; font = '600 14px ' + F; color = '#0f172a'; }
-        else if (c.k === 'so_gcs') { txt = r.so_gcs || ''; font = '600 14px ' + F; color = '#0f172a'; }
+        else if (c.k === 'so_gcs') { txt = r.so_gcs || ''; font = '400 14px ' + F; color = '#1e293b'; }
         else if (c.k === 'so_tbi') { txt = r.so_tbi || ''; font = '400 14px ' + F; color = '#1e293b'; }
         else if (c.k === 'sdt') { txt = r.sdt || ''; color = '#1e293b'; }
         /* ⟳ 2026-11-01 (yêu cầu “cột tháng nợ thêm phần mấy hoá đơn phía sau tháng”): thêm
@@ -13581,6 +13858,118 @@ function closeAdv() {
 // Bấm NỀN MỜ = đóng (như `closeKy`). Bấm vào ruột tấm thì không đóng.
 function closeAdvBg(e) { if (e.target && e.target.id === 'advModal') closeAdv(); }
 
+/* ═══ NÚT “MÃ SỔ” — MỞ DANH SÁCH SỔ (2026-11-06) ══════════════════════════════════════════
+   Yêu cầu: “thêm tab mã sổ trước tab danh số, khi chọn tên nhân viên nào thì chỉ hiển thị mã sổ
+   tên nhân viên đó” + “tab mã sổ là dạng sổ ra xem danh sách chứ không phải dạng sort”.
+
+   Cách chạy:
+   · `openSoList()` dựng danh sách rồi mở `#soModal`.
+   · `soRender()` lấy `allData` **đã lọc theo NHÂN VIÊN đang chọn** (ô “Nhân viên” ở thanh công cụ
+     = `#filterNhom`, cộng thêm `nvScope` nếu có) — ⚠️ ĐÂY chính là chỗ bảo đảm “chọn nhân viên
+     nào thì chỉ thấy mã sổ của người đó”, nên ⛔ đừng lấy `filtered` (nó đang bị lọc bởi chính
+     `soScope` ⇒ mở ra chỉ thấy đúng 1 mã, không đổi được).
+   · Gộp theo `ma_sogcs`, mỗi dòng kèm **số KH** của sổ đó; xếp A→Z bằng `localeCompare('vi')`.
+   · Chạm 1 dòng ⇒ `soPick` gán `soScope` rồi `applyFilters()`; `#soTabBtn` sáng viền
+     (`data-so-active="1"`) và dòng đang lọc trong tấm cũng sáng.
+   ⚠️ Dùng CHỈ SỐ (`soPickIdx`) chứ không nhét mã sổ vào `onclick`: mã sổ là dữ liệu tệp, có thể
+   chứa `'` hoặc `"` làm vỡ attribute.
+   ⚠️ `allData` chưa có dữ liệu ⇒ vẫn mở tấm và báo “Chưa có mã sổ nào…” (đừng `return` sớm). */
+let _soCodes = [];
+function soBaseRows() {
+  const nhom = document.getElementById('filterNhom').value;
+  return allData.filter(r =>
+    (!nhom || r.ma_nhom === nhom) &&
+    (!nvScope || r.nhan_vien === nvScope)
+  );
+}
+function openSoList() {
+  const ov = document.getElementById('soModal');
+  if (!ov) return;
+  const qEl = document.getElementById('soQ');
+  if (qEl) qEl.value = '';   // mở tấm = danh sách đầy đủ (đừng giữ từ khoá của lần trước)
+  soRender();
+  ov.classList.add('open');
+  document.body.style.overflow = 'hidden';   // khoá cuộn nền như các tấm khác
+}
+function closeSoList() {
+  const ov = document.getElementById('soModal');
+  if (ov) ov.classList.remove('open');
+  const other = ['payModal', 'modal', 'kyModal', 'advModal', 'shotModal', 'photoModal']
+    .some(id => { const el = document.getElementById(id); return el && el.classList.contains('open'); });
+  if (!other) document.body.style.overflow = '';
+}
+function closeSoListBg(e) { if (e.target && e.target.id === 'soModal') closeSoList(); }
+let _soMap = new Map();   // mã sổ → { n: số KH, tien: tổng nợ }
+let _soView = [];         // các mã ĐANG HIỂN THỊ (sau ô tìm) — `soPickIdx` đánh chỉ số trên mảng này
+function soRender() {
+  const sub = document.getElementById('soSub');
+  if (!sub) return;
+  _soMap = new Map();
+  soBaseRows().forEach(r => {
+    const ma = String(r.ma_sogcs || '').trim();
+    if (!ma) return;
+    const it = _soMap.get(ma) || { n: 0, tien: 0 };
+    it.n++;
+    it.tien += Number(r.tien_no) || 0;   // ⇢ 2026-11-06: tổng nợ của sổ (yêu cầu hiện cạnh số KH)
+    _soMap.set(ma, it);
+  });
+  _soCodes = [..._soMap.keys()].sort((a, b) => a.localeCompare(b, 'vi'));
+  soDrawRows();
+}
+/* Vẽ danh sách theo từ khoá của ô “Tìm mã sổ”. Chỉ so khớp MÃ SỔ (không tìm theo tên KH/NV) —
+   đúng phạm vi của tấm này. Không phân biệt hoa/thường vì mã sổ trong tệp có thể lẫn cả hai. */
+function soDrawRows() {
+  const list = document.getElementById('soList');
+  const sub = document.getElementById('soSub');
+  if (!list || !sub) return;
+  const q = String((document.getElementById('soQ') || {}).value || '').trim().toUpperCase();
+  _soView = q ? _soCodes.filter(ma => ma.toUpperCase().includes(q)) : _soCodes.slice();
+  const nvLabel = document.getElementById('filterNhom').value || nvScope || '';
+  const dem = q ? (_soView.length + '/' + _soCodes.length) : String(_soCodes.length);
+  sub.textContent = (nvLabel ? 'Sổ của ' + nvLabel + ' · ' : '') + dem + ' mã sổ';
+  if (!_soView.length) {
+    list.innerHTML = '<div class="so-empty">' + (_soCodes.length
+      ? 'Không có mã sổ nào khớp “' + esc(q) + '”.'
+      : 'Chưa có mã sổ nào trong dữ liệu đang xem.') + '</div>';
+    return;
+  }
+  let html = '';
+  if (soScope) {
+    html += '<button class="so-row so-all" type="button" onclick="soPickIdx(-1)">Hiện tất cả mã sổ</button>';
+  }
+  html += _soView.map((ma, i) => {
+    const it = _soMap.get(ma) || { n: 0, tien: 0 };
+    return '<button class="so-row" type="button" data-active="' + (soScope === ma ? '1' : '0') + '" onclick="soPickIdx(' + i + ')">'
+      + '<svg class="ic so-ico" width="16" height="16" aria-hidden="true"><use href="#i-notebook"/></svg>'
+      + '<span class="so-code" title="' + esc(ma) + '">' + esc(ma) + '</span>'
+      + '<span class="so-meta">' + it.n + ' KH · ' + fmt(it.tien) + 'đ</span>'
+      + '</button>';
+  }).join('');
+  list.innerHTML = html;
+}
+function soFilterList() { soDrawRows(); }
+function soPickIdx(i) { soPick(i < 0 ? '' : (_soView[i] || '')); }
+function soPick(ma) {
+  soScope = ma || '';
+  updateSoTab();
+  closeSoList();
+  currentPage = 1;
+  /* Nếu đang đứng ở MỘT TAB LỌC KHÁC (“Nợ ≥ 3Tr”, “Chú ý”, “Nợ cũ”…) thì chọn sổ xong rất dễ
+     ra danh sách RỖNG (khách của sổ đó không thuộc tab đang xem). Chọn sổ = “xem danh sách của
+     sổ này” ⇒ đưa về tab “Chi tiết” (lọc rỗng) trước khi áp mã sổ. */
+  if (currentTab !== 'detail') selectLoai('');
+  applyFilters();
+  saveUiState();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function updateSoTab() {
+  const b = document.getElementById('soTabBtn');
+  if (!b) return;
+  b.dataset.soActive = soScope ? '1' : '0';
+  b.setAttribute('aria-pressed', soScope ? 'true' : 'false');
+  b.setAttribute('aria-label', soScope ? ('Mã sổ đang lọc: ' + soScope) : 'Mã sổ — xem danh sách sổ');
+}
+
 function applyFilters() {
   const q = normVn(document.getElementById('searchInput').value);
   const nhom = document.getElementById('filterNhom').value;
@@ -13592,6 +13981,9 @@ function applyFilters() {
   filtered = allData.filter(r => {
     if (nhom && r.ma_nhom !== nhom) return false;
     if (nvScope && r.nhan_vien !== nvScope) return false;
+    // ⇢ 2026-11-06: lọc theo MÃ SỔ (nút “Mã sổ” → `soPick`). So sánh chuỗi đã trim vì mã sổ
+    // trong tệp có thể có dấu cách thừa; `soScope` rỗng = không lọc.
+    if (soScope && String(r.ma_sogcs || '').trim() !== soScope) return false;
     if (currentTab === 'oldky') {
       // Điều kiện 1: kh có nợ cũ ở các kỳ khác ngoài mốc `currentPeriod`
       if (!_oldMultiSet.has(r.ma_khach_hang || r.ten_khach_hang)) return false;
@@ -13664,11 +14056,17 @@ function applyFilters() {
     filtered.forEach(r => {
       const key = r.ma_khach_hang || r.ten_khach_hang || ('_row_' + Math.random());
       if (!groupMap[key]) {
-        groupMap[key] = { ...r, tien_no: 0, _count: 0 };
+        groupMap[key] = { ...r, tien_no: 0, _count: 0, _hd: [] };
         groupOrder.push(key);
       }
       groupMap[key].tien_no += r.tien_no;
       groupMap[key]._count++;
+      /* ⇢ 2026-11-06: GIỮ TỪNG KỲ của khách để “Xuất file cắt” ghi rõ từng kỳ ở cột `SỐ HĐ NỢ`
+         (yêu cầu “kh nào nhiều kỳ hđ thì hiển thị rõ ra từng kỳ … như kh 1 kỳ hđ”). Mặc định phần
+         gộp chỉ giữ 1 `thang_no` gần nhất ⇒ nếu không lưu ở đây thì thông tin từng đợt bị mất.
+         Chỉ lưu 2 số cần dùng (`m` = tháng nợ, `t` = tiền) — KHÔNG lưu cả bản ghi để không phình
+         bộ nhớ khi tệp có vài nghìn dòng. */
+      groupMap[key]._hd.push({ m: r.thang_no || '', t: Number(r.tien_no) || 0 });
       // Chỉ giữ 1 tháng gần nhất để hiển thị dưới số tiền (không gộp danh sách dài)
       // — áp dụng cho bảng Chi tiết nợ và các bảng nợ cũ (detail/old/oldky/1tr dùng chung nhóm này)
       if (r.thang_no) {
@@ -13840,12 +14238,14 @@ const SORT_ICONS = {
   desc: '<svg width="100%" height="100%" aria-hidden="true"><use href="#i-sort-desc"/></svg>'
 };
 function updateSortButtons() {
-  // `ma_sogcs` → 'sortSoGCS' và 'ten_khach_hang' → 'sortTenKH' là **NO-OP**: tab "Mã Sổ"
-  // đã bị bỏ (từng được chuyển thành ô lọc "Mã sổ", rồi ô lọc đó cũng bị xoá),
-  // tab "Tên KH" đã bị bỏ (`#sortSoGCS` / `#sortTenKH`
+  // `ma_sogcs` → 'sortSoGCS': **NO-OP** trở lại (2026-11-06 cuối ngày) — “Mã sổ” không còn là
+  // nút sắp xếp mà là nút MỞ DANH SÁCH SỔ (`#soTabBtn` → `openSoList`), nên không có
+  // `#sortSoGCS` để tô sáng; `if (!btn) return` bỏ qua. Sắp xếp theo mã sổ vẫn dùng được qua
+  // tiêu đề cột “Mã sổ” trong bảng (`sortBy('ma_sogcs')`).
+  // `ten_khach_hang` → 'sortTenKH' vẫn là **NO-OP**: tab "Tên KH" đã bị bỏ (`#sortTenKH`
   // không còn tồn tại nên `if (!btn) return` bỏ qua — giữ trong map cho tường minh).
-  // Sắp xếp theo cả hai cột vẫn dùng được qua tiêu đề cột trong bảng
-  // (`<th onclick="sortBy('ten_khach_hang')">` / `sortBy('ma_sogcs')`) vẫn còn nguyên.)
+  // Sắp xếp theo cột đó vẫn dùng được qua tiêu đề cột trong bảng
+  // (`<th onclick="sortBy('ten_khach_hang')">` vẫn còn nguyên.)
   const map = { 'danh_so':'sortDanhSo', 'tien_no':'sortTienNo', 'thang_no':'sortThang', 'ma_sogcs':'sortSoGCS', 'ten_khach_hang':'sortTenKH' };
   Object.entries(map).forEach(([col, id]) => {
     const btn = document.getElementById(id);
@@ -17153,6 +17553,204 @@ function exportExcel() {
   const date = new Date().toISOString().slice(0,10);
   XLSX.writeFile(wb, `DS_TongNo_${date}.xlsx`);
 }
+
+/* ═══ “XUẤT FILE CẮT” (2026-11-06 — nút mới kế nút “Xuất file”) ═══════════════════════
+   Yêu cầu: “thêm nút Xuất file in cắt kế nút xuất file, chỉ xuất những file dạng excel đang
+   hiển thị thông tin đang chọn, khi chọn nút xuất file sẽ hiển thị thông tin cột như trong ảnh”.
+
+   Khác `exportExcel` ở ĐÚNG 2 điểm — ⛔ đừng để chúng lẫn nhau:
+   1. DỮ LIỆU: chỉ xuất **`filtered`** = danh sách ĐANG HIỂN THỊ (đã lọc theo nhân viên/nhóm/tab/
+      khoảng tiền/tìm kiếm, đã bỏ khách đã xoá, đã gộp theo KH ở các tab gộp, đúng thứ tự sắp xếp
+      hiện tại). ⛔ KHÔNG lấy `allData` như nút cũ — đó là điểm khác biệt duy nhất về nội dung.
+      Danh sách trống (lọc ra 0 khách) ⇒ báo và DỪNG, không xuất tệp rỗng.
+   2. CỘT: đúng **14 cột theo tệp gốc của công ty** (ảnh người dùng gửi):
+      STT · MA_KHANG · TEN_KHANG · DIA_CHI · MA_SOGCS · MA_GCS · SỐ HĐ NỢ · TỔNG NỢ ·
+      SỐ CT · ĐTKH · NV · BANG CHU · MA NHOM · TIEN_NO.
+   ⚠️ **4 cột `MA_GCS` · `SỐ HĐ NỢ` · `SỐ CT` · `BANG CHU` TRƯỚC ĐÂY ĐỂ TRỐNG**, nay (2026-11-06,
+      yêu cầu “cột MA_GCS là đưa danh số vô, cột số ct là đưa số tbi vô, cột bang chu thì … ghi số
+      tiền bằng chữ của từng kh, cột số hđ nợ … số hoá đơn nợ thực tế từng kh”):
+        · `MA_GCS` ← **`r.danh_so`**
+        · `SỐ CT` ← **`r.so_tbi`**
+        · `BANG CHU` ← **số tiền bằng chữ** của `tien_no` (`docTienVn`, viết ngay dưới hàm này)
+        · `SỐ HĐ NỢ` ← **`<số HĐ>HD-k<tháng nợ>:<số tiền>`** — đúng dạng trong ảnh
+          (`1HD-k1-9/2026:438.890`): số HĐ = `_count` (số hoá đơn của khách, do `applyFilters`
+          gộp lại), `thang_no` đã là `kỳ-tháng/năm` nên chỉ cần thêm tiền tố `k`, tiền theo
+          `toLocaleString('vi-VN')` để có dấu chấm như ảnh. Ở tab KHÔNG gộp (không có `_count`)
+          thì dùng **1** — mỗi dòng là 1 hoá đơn.
+      ⛔ Đừng quay lại để trống 4 cột này; cũng ⛔ đừng đọc `dia_chi`/`so_tbi` từ nguồn khác.
+      NV lấy `nhan_vien`; tệp thực tế của người dùng để trống trường đó (tên NV nằm ở `ma_nhom`)
+      ⇒ rơi về `ma_nhom` để cột NV không trống trơn.
+   ⚠️ Bề rộng cột để Excel tự căn (không khai `!cols`) — 14 cột cố định, không phụ thuộc dữ liệu. */
+function exportExcelCut() {
+  if (!allData.length) { alert('Chưa có dữ liệu để xuất!'); return; }
+  /* “Số hoá đơn nợ” của TỪNG KHÁCH — dựng đúng dạng trong ảnh: `1HD-k1-9/2026:438.890`.
+     · Số HĐ: `_count` (số hoá đơn của khách, do `applyFilters` cộng khi gộp theo KH); tab không
+       gộp thì mỗi dòng là 1 hoá đơn ⇒ 1.
+     · `thang_no` trong dữ liệu đã là `kỳ-tháng/năm` (`1-9/2026`) ⇒ chỉ cần thêm `k`.
+     · Tiền theo `toLocaleString('vi-VN')` = dấu chấm ngăn nghìn, đúng như ảnh.
+     Không có tháng nợ ⇒ chỉ ghi "<n>HD" + tiền, ⛔ đừng để chuỗi dính `k:` rỗng nghĩa. */
+  /* ⇢ 2026-11-06 (yêu cầu “đổi cột SỐ HĐ NỢ sang dạng 4HĐ: k1-6/2026:2.567.557 k1-7/2026:2.690.166,
+     xếp tháng tăng dần”): TỔNG SỐ HOÁ ĐƠN đứng MỘT LẦN ở đầu (`4HĐ:`), sau đó mỗi kỳ chỉ còn
+     `k<tháng nợ>:<tiền>` cách nhau bằng DẤU CÁCH — ⛔ không lặp `1HD-` ở từng kỳ như bản trước,
+     cũng ⛔ không ngăn bằng ` · `.
+     ⚠️ Thứ tự: sắp theo THÁNG TĂNG DẦN (parse bên dưới) — ⛔ đừng bỏ `.sort()`: `_hd` được đẩy vào
+     theo thứ tự danh sách đang sắp xếp (mặc định theo danh số) nên sẽ ra lộn xộn. */
+  const soHDNo = r => {
+    const motKy = hd => 'k' + (String(hd.m || '').trim() || '?') + ':' + (Number(hd.t) || 0).toLocaleString('vi-VN');
+    /* KHÁCH NHIỀU KỲ: mỗi hoá đơn 1 mục, ngăn bằng ` · ` — yêu cầu “kh nào nhiều kỳ hđ thì hiển
+       thị rõ ra từng kỳ ở so hd no, như kh 1 kỳ hđ”. ⚠️ Dùng dấu ` · ` (không phải `\n`): bản
+       SheetJS cộng đồng KHÔNG ghi được style wrap-text, xuống dòng trong ô sẽ hiện thành 1 dòng
+       dài khó đọc trong Excel. */
+    /* ⚠️ Xếp theo THÁNG NỢ tăng dần (cùng cách parse với `rowCompare`): `_hd` được đẩy vào theo thứ
+       tự của danh sách ĐANG SẮP XẾP (mặc định là danh số) nên các kỳ bị lộn xộn — đọc
+       “9/2026 · 6/2026 · 7/2026” rất khó đối chiếu với sổ. */
+    /* ⚠️ Tháng nợ có 2 dạng: `9/2026` (1 số) và `1-9/2026` (kỳ-tháng/năm). ⛔ Đừng dùng
+       `new Date(year, firstNumber)` như `rowCompare`: với `1-9/2026` số ĐẦU là KỲ (=1) chứ không
+       phải tháng ⇒ mọi kỳ ra cùng tháng 1 và phép sắp xếp thành vô nghĩa. Lấy số ÁP CHÓT làm
+       năm, số NGAY TRƯỚC nó làm tháng. */
+    const parseM = s => {
+      const nums = String(s || '').match(/\d+/g) || [];
+      if (!nums.length) return 0;
+      const year = nums.length > 1 ? +nums[nums.length - 1] : 0;
+      const month = nums.length > 1 ? +nums[nums.length - 2] : +nums[0];
+      return year * 100 + month;
+    };
+    const ds = (Array.isArray(r._hd) ? r._hd : []).slice().sort((a, b) => parseM(a.m) - parseM(b.m));
+    if (ds.length) return ds.length + 'HĐ:' + ds.map(motKy).join(' ');
+    /* Tab KHÔNG gộp (không có `_hd`): mỗi dòng là 1 hoá đơn ⇒ dựng từ `thang_no` + tổng của dòng. */
+    const n = Math.max(1, Number(r._count) || 1);
+    const ky = String(r.thang_no || '').trim();
+    const tien = (Number(r.tien_no) || 0).toLocaleString('vi-VN');
+    return n + 'HĐ:' + (ky ? 'k' + ky + ':' : (Number(r.tien_no) || 0).toLocaleString('vi-VN'));
+  };
+  const rows = (typeof filtered !== 'undefined' && filtered) ? filtered : [];
+  if (!rows.length) {
+    alert('Danh sách đang hiển thị trống nên không có gì để xuất.\nHãy bỏ bớt bộ lọc rồi thử lại.');
+    return;
+  }
+  /* STT = số thứ tự 1..n của DANH SÁCH ĐANG XEM (giống ảnh), ⛔ không lấy `r.stt`: ở các tab gộp
+     theo KH, bản ghi gộp chỉ mang `stt` của MỘT dòng trong nhóm ⇒ nhiều khách ra cùng một số. */
+  const data = rows.map((r, i) => ({
+    'STT': String(i + 1),
+    'MA_KHANG': r.ma_khach_hang || '',
+    'TEN_KHANG': r.ten_khach_hang || '',
+    'DIA_CHI': r.dia_chi || '',
+    'MA_SOGCS': r.ma_sogcs || '',
+    'MA_GCS': r.danh_so || '',
+    'SỐ HĐ NỢ': soHDNo(r),
+    'TỔNG NỢ': Number(r.tien_no) || 0,
+    'SỐ CT': r.so_tbi || '',
+    'ĐTKH': r.dien_thoai || '',
+    'NV': r.nhan_vien || r.ma_nhom || '',
+    'BANG CHU': docTienVn(r.tien_no),
+    'MA NHOM': maNhomHienThi(r.ma_nhom || r.nhan_vien),
+    'TIEN_NO': Number(r.tien_no) || 0
+  }));
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Danh sách đang xem');
+  const date = new Date().toISOString().slice(0,10);
+  /* ⇢ 2026-11-06 (yêu cầu “khi xuất file in cắt thì hiển thị thêm tên nhân viên ở tên file”):
+     tên tệp = `DS_TongNo_CAT_<TÊN NV>_<ngày>.xlsx` — NV lấy đúng người ĐANG LỌC ở ô “Nhân viên”
+     (`#filterNhom`) hoặc `nvScope` (bấm vào tên NV trong thẻ). Không lọc NV ⇒ giữ tên cũ
+     `DS_TongNo_CAT_<ngày>.xlsx`, ⛔ đừng ghép chuỗi rỗng thành `_ _`.
+     ⚠️ Bỏ các ký tự Windows không cho phép trong tên tệp (`\ / : * ? " < > |`) — tên NV là dữ
+     liệu tệp Excel nên có thể chứa chúng; giữ nguyên dấu tiếng Việt và khoảng cách cho dễ đọc. */
+  const nvTen = String(document.getElementById('filterNhom').value || nvScope || '').trim();
+  const nvPart = nvTen ? '_' + nvTen.replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, ' ').trim() : '';
+  XLSX.writeFile(wb, `DS_TongNo_CAT${nvPart}_${date}.xlsx`);
+}
+
+/* 🔢 SỐ TIỀN BẰNG CHỮ (2026-11-06 — cột `BANG CHU` của “Xuất file cắt”).
+   Dùng cho cột BANG CHU trong tệp xuất: vd 10.342.353 ⇒
+   “Mười triệu ba trăm bốn mươi hai nghìn ba trăm năm mươi ba đồng”.
+   Quy tắc tiếng Việt đã cài: `mười`/`mươi`, `mốt` (1 sau hàng chục > 1), `lăm` (5), `tư` (4 sau
+   hàng chục > 1), `lẻ` (hàng chục = 0), và các nhóm sau nhóm đầu luôn đọc đủ `… trăm` để không
+   mất nghĩa (vd 1.005 = “một triệu không trăm lẻ năm đồng”).
+   ⚠️ Làm tròn tới ĐỒNG (`Math.round`); số 0 ⇒ “Không đồng”. ⛔ Đừng dùng `toLocaleString` cho phần
+   chữ (ra số, không ra chữ). Tiền nợ lớn nhất vài tỷ nên chỉ cần tới nhóm `tỷ`. */
+/* ⇢ 2026-11-06 (yêu cầu “cho cột mã nhóm là ví dụ (ĐHL)”): cột `MA NHOM` trong tệp cắt trước đây in
+   NGUYÊN TÊN nhân viên (“Đỗ Hiếu Lễ”) vì tệp thật để trống `nhan_vien` và nhét tên NV vào `ma_nhom`.
+   Nay viết tắt bằng CHỮ ĐẦU của từng từ, bọc ngoặc: “Đỗ Hiếu Lễ” → **“(ĐHL)”**.
+   · Giữ nguyên dấu tiếng Việt (Đ, Ơ, Ư…) — ⛔ đừng `normalize('NFD')` bỏ dấu.
+   · Tách từ theo khoảng trắng VÀ `.`, `_`, `-` (mã kiểu “BT D”/“BT-D”/“bt_d” đều ra “(BTD)”).
+   · Giá trị ĐÃ có ngoặc từ trước thì để nguyên (xuất → nhập → xuất khép kín, không thành “((ĐHL))”).
+   · Rỗng ⇒ trả chuỗi rỗng (ô trống như cũ). */
+function maNhomVietTat(s) {
+  const t = String(s == null ? '' : s).trim();
+  if (!t) return '';
+  if (t.charAt(0) === '(' && t.charAt(t.length - 1) === ')') return t;
+  const parts = t.split(/[\s._-]+/).filter(Boolean);
+  if (!parts.length) return '';
+  /* Từ đã là MÃ ngắn (toàn chữ HOA, ≤ 2 ký tự: “BT”, “D”) thì giữ NGUYÊN cả từ, ⛔ đừng lấy 1 chữ
+     — nếu không “BT D” ra “(BD)” thay vì “(BTD)”. Từ thường (tên người) vẫn lấy chữ đầu.
+     ⚠️ Phải khai báo `Đ` trong lớp ký tự vì `Đ` KHÔNG thuộc `[A-Z]`. */
+  const viet = w => (/^[A-ZĐ]{1,2}$/.test(w) ? w : w.charAt(0).toUpperCase());
+  /* ⇢ 2026-11-06 (yêu cầu “chữ Đ đổi thành D”): mã nhóm trong tệp là MÃ nên viết không dấu —
+     `Đ` → `D` (Đỗ Hiếu Lễ → `(DHL)`, Đào Sơn Hà → `(DSH)`, Đỗ Thị Diễm Trang → `(DTDT)`).
+     ⚠️ CHỈ đổi Đ/đ, ⛔ đừng `normalize('NFD')` bỏ hết dấu: người dùng chỉ yêu cầu chữ Đ (và bỏ hết
+     dấu sẽ làm những tên bắt đầu bằng Á/Â/Ê thành mã khác hẳn suy nghĩ của họ). */
+  const asciiD = w => w.replace(/Đ/g, 'D').replace(/đ/g, 'd');
+  return '(' + parts.map(w => asciiD(viet(w))).join('') + ')';
+}
+/* ⇢ 2026-11-06 (yêu cầu “thêm chữ cột mã nhóm BR01(BTD), BR02(DSH)…”): mã nhóm = MÃ CHI NHÁNH/
+   PHÒNG đứng TRƯỚC + chữ viết tắt tên NV trong ngoặc, vd `BR01(BTD)`.
+   ⚠️ Bảng đưới đây là dữ liệu NGƯỜI DÙNG cung cấp — ⛔ đừng tự suy ra mã khác. Khoá là viết tắt
+   KHÔNG DẤU (`maNhomKhongDau`) để “DSH” khớp “ĐSH”, “DTDT” khớp “ĐTDT” (người dùng gõ thiếu Đ).
+   Viết tắt KHÔNG có trong bảng ⇒ chỉ in phần trong ngoặc, ⛔ đừng bịa mã.
+   ⟳ Chờ người dùng chốt mã cho: `TVP` (Trần Văn Phổ) và `HTP` (Huỳnh Tấn Phát). */
+const MA_NHOM_PREFIX = {
+  BTD: 'BR01',    // Bùi Thanh Dũng
+  DSH: 'BR02',    // Đào Sơn Hà
+  DHL: 'BR03',    // Đỗ Hiếu Lễ
+  DTDT: 'BR04',   // Đỗ Thị Diễm Trang
+  NNK: 'BR05',    // Nguyễn Ngọc Kỳ
+  PTTT: 'BR06',   // Phạm Trần Thanh Tâm
+  NBL: 'PM06',    // Nguyễn Bá Lạp
+  DDT: 'PM'       // (mã chưa gặp trong tệp hiện tại — giữ sẵn theo danh sách người dùng)
+};
+function maNhomKhongDau(s) {
+  return String(s == null ? '' : s)
+    .replace(/Đ/g, 'D').replace(/đ/g, 'd')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase();
+}
+function maNhomHienThi(s) {
+  const vt = maNhomVietTat(s);
+  if (!vt) return '';
+  const key = maNhomKhongDau(vt.replace(/[()]/g, ''));
+  return (MA_NHOM_PREFIX[key] || '') + vt;
+}
+function docTienVn(v) {
+  let n = Math.round(Math.abs(Number(v) || 0));
+  if (!n) return 'Không đồng';
+  const DV = ['không','một','hai','ba','bốn','năm','sáu','bảy','tám','chín'];
+  const docBa = (x, dayDu) => {
+    const h = Math.floor(x / 100), r = x % 100, t = Math.floor(r / 10), u = r % 10;
+    let s = '';
+    if (dayDu || h > 0) s = DV[h] + ' trăm';
+    if (r === 0) return s;
+    if (t === 0) return (s ? s + ' lẻ ' : '') + DV[u];
+    if (s) s += ' ';
+    s += (t === 1 ? 'mười' : DV[t] + ' mươi');
+    if (u === 0) return s;
+    if (u === 1 && t > 1) return s + ' mốt';
+    if (u === 5) return s + ' lăm';
+    if (u === 4 && t > 1) return s + ' tư';
+    return s + ' ' + DV[u];
+  };
+  const DONVI = ['', 'nghìn', 'triệu', 'tỷ', 'nghìn tỷ', 'triệu tỷ'];
+  const nhom = [];
+  let m = n;
+  while (m > 0) { nhom.push(m % 1000); m = Math.floor(m / 1000); }
+  const phan = [];
+  for (let i = nhom.length - 1; i >= 0; i--) {
+    if (!nhom[i]) continue;                       // nhóm toàn số 0 ⇒ bỏ (trừ khi cần “không trăm”, xem dưới)
+    phan.push(docBa(nhom[i], phan.length > 0) + (DONVI[i] ? ' ' + DONVI[i] : ''));
+  }
+  const chu = phan.join(' ');
+  return chu.charAt(0).toUpperCase() + chu.slice(1) + ' đồng';
+}
 function closeModal(e) { if (e.target===document.getElementById('modal')) closeModalDirect(); }
 function closeModalDirect() {
   document.getElementById('modal').classList.remove('open');
@@ -17184,7 +17782,7 @@ function clearNvScope() {
 
 // Esc đóng lần lượt: tấm “Thanh toán…” (nếu đang mở) rồi tới tấm “Chi tiết”.
 // ⟳ 2026-10-19: bỏ `lpCloseMaBox()` (hộp nhấn-giữ mã KH đã gỡ hẳn — gọi vào là ReferenceError).
-document.addEventListener('keydown', e => { if (e.key==='Escape') { lpCloseCopyBox(); lpCloseSdtBox(); pinMenuClose(); closeShotDirect(); photoCloseDirect(); closeKyDirect(); closeAdv(); closePayDirect(); closeModalDirect(); } });
+document.addEventListener('keydown', e => { if (e.key==='Escape') { lpCloseCopyBox(); lpCloseSdtBox(); pinMenuClose(); closeShotDirect(); photoCloseDirect(); closeKyDirect(); closeAdv(); closeSoList(); closePayDirect(); closeModalDirect(); } });
 
 // ── COLUMN RESIZE (desktop) ────────────────
 // ⚠️ v1 → v2 khi ĐỔI THỨ TỰ CỘT. Bản đồ độ rộng lưu theo **chỉ số cột**, nên bản lưu từ v1
@@ -17317,6 +17915,7 @@ function saveUiState() {
       loai: document.getElementById('filterLoai').value,
       nhom: document.getElementById('filterNhom').value,
       nv: nvScope,
+      so: soScope,          // ⇢ 2026-11-06: mã sổ đang lọc (rỗng = không lọc)
       q: document.getElementById('searchInput').value,
       sortCol: sortCol, sortDir: sortDir,
       page: currentPage,
@@ -17337,6 +17936,10 @@ function restoreUiState() {
     }
     if (typeof st.nhom === 'string' && st.nhom) selectNhom(st.nhom);   // áp nhãn + màu + lọc luôn
     if (typeof st.nv === 'string' && st.nv) nvScope = st.nv;           // SAU `selectNhom` (nó xoá `nvScope`)
+    /* ⇢ 2026-11-06: khôi phục mã sổ đang lọc. Đặt SAU `selectNhom` vì hàm đó xoá `soScope`
+       (đổi nhân viên là bỏ lọc sổ). */
+    soScope = (typeof st.so === 'string') ? st.so : '';
+    updateSoTab();
     /* ⟳ 2026-11-01 (yêu cầu “tất cả khi hiển thị thì mặc định luôn sort theo danh số”): KHÔNG khôi
        phục kiểu sắp xếp đã lưu nữa — mỗi lần mở app / nạp tệp đều xếp theo **DANH SỐ (A→Z)**.
        Người dùng vẫn đổi kiểu sắp xếp trong phiên làm việc (`sortBy`), nhưng lần mở sau quay về
