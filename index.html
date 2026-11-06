@@ -17616,14 +17616,29 @@ function exportExcelCut() {
       return year * 100 + month;
     };
     const ds = (Array.isArray(r._hd) ? r._hd : []).slice().sort((a, b) => parseM(a.m) - parseM(b.m));
-    if (ds.length) return ds.length + 'HĐ:' + ds.map(motKy).join(' ');
+    /* ⟳ 2026-11-06 (yêu cầu “chữ HĐ đổi thành HD”): `1HĐ:` → **`1HD:`** — CẢ HAI nhánh (gộp `_hd` và
+       không gộp) đều phải dùng `HD`, ⛔ đừng sửa một nhánh. Cột tiêu đề vẫn là “SỐ HĐ NỢ”
+       (giữ đúng tên cột của tệp gốc công ty) — nếu người dùng muốn đổi luôn tiêu đề thì sửa khoá
+       `'SỐ HĐ NỢ'` trong object bên dưới. */
+    if (ds.length) return ds.length + 'HD:' + ds.map(motKy).join(' ');
     /* Tab KHÔNG gộp (không có `_hd`): mỗi dòng là 1 hoá đơn ⇒ dựng từ `thang_no` + tổng của dòng. */
     const n = Math.max(1, Number(r._count) || 1);
     const ky = String(r.thang_no || '').trim();
     const tien = (Number(r.tien_no) || 0).toLocaleString('vi-VN');
-    return n + 'HĐ:' + (ky ? 'k' + ky + ':' : (Number(r.tien_no) || 0).toLocaleString('vi-VN'));
+    return n + 'HD:' + (ky ? 'k' + ky + ':' : (Number(r.tien_no) || 0).toLocaleString('vi-VN'));
   };
-  const rows = (typeof filtered !== 'undefined' && filtered) ? filtered : [];
+  /* ⇢ 2026-11-06 (yêu cầu “khi xuất file in cắt luôn luôn sort theo tên NV và mã sổ”): tệp cắt LUÔN
+     sắp theo **TÊN NV** (A→Z, tiếng Việt) rồi **MÃ SỔ** A→Z — không phụ thuộc danh sách đang sắp
+     kiểu gì trên màn hình. ⚠️ `slice()` để ⛔ không sắp xếp ngầm mảng `filtered` của app.
+     ⚠️ `localeCompare(b, 'vi')` chứ ⛔ không so sánh chuỗi thô: so thô thì “Đào” xuống cuối bảng chữ.
+     ⚠️ Mã sổ dùng `numeric: true` để `B1BBEA1ZA` < `B1BBEA2ZA` < `B1BBEA10ZA`.
+     NV lấy `nhan_vien || ma_nhom` (tệp thật để trống `nhan_vien`) — cùng nguồn với cột `NV`. */
+  const nvTenCua = r => String(r.nhan_vien || r.ma_nhom || '').trim();
+  const rows = ((typeof filtered !== 'undefined' && filtered) ? filtered : []).slice().sort((a, b) => {
+    const c = nvTenCua(a).localeCompare(nvTenCua(b), 'vi');
+    if (c) return c;
+    return String(a.ma_sogcs || '').localeCompare(String(b.ma_sogcs || ''), 'vi', { numeric: true });
+  });
   if (!rows.length) {
     alert('Danh sách đang hiển thị trống nên không có gì để xuất.\nHãy bỏ bớt bộ lọc rồi thử lại.');
     return;
