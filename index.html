@@ -11215,6 +11215,46 @@ function parseVnNumber(s) {
   const n = parseFloat(s);
   return isNaN(n) ? 0 : n;
 }
+/* 📅 CHUẨN HOÁ Ô “THÁNG NỢ” KHI NHẬP TỆP (2026-11-06 — yêu cầu “kiểm tra lại cột số hd nợ”).
+   Hiện tượng: tệp xuất trên ĐIỆN THOẠI ra `1HD:3.862.166` / `2HD:2.785.968 3.544.538` — MẤT KỲ.
+   Nguyên nhân: cột `SỐ HĐ NỢ` chỉ in kỳ khi `chiKy(thang_no)` khớp `kỳ-tháng/năm`; tệp nạp trên
+   điện thoại có ô tháng dạng NGÀY (Excel trả `Date`, hoặc chuỗi `01/09/2026`) nên bị chặn ⇒ chỉ
+   còn tiền. Nay chuẩn hoá NGAY KHI NHẬP: `Date` / `01/09/2026` / `9-2026` / `2026-09-01` /
+   `Tháng 9/2026` / `T9/2026` ⇒ **`9/2026`**.
+   ⚠️ Dạng đã đúng (`1-9/2026`, `9/2026`) phải trả NGUYÊN — ⛔ đừng để regex ngày ăn mất số KỲ
+   (`1-9/2026` cũng khớp mẫu `d-m-yyyy`!). Vì vậy phải kiểm mẫu đúng TRƯỚC.
+   ⛔ Chuỗi không phải ngày thì giữ nguyên, để `chiKy()` chặn ở bước xuất. */
+function chuanThangNo(v) {
+  if (v instanceof Date && !isNaN(v)) return (v.getMonth() + 1) + '/' + v.getFullYear();
+  /* ⚠️ QUAN TRỌNG — ô tháng kiểu NGÀY trong Excel: `XLSX.read` (không bật `cellDates`) trả về
+     SỐ SERI như `46280.00041666` (2026-09-15) ⇒ trước đây `thang_no` thành chuỗi số vô nghĩa và
+     cột `SỐ HĐ NỢ` chỉ còn tiền. Đổi seri → `9/2026`. Chỉ nhận số trong khoảng 20.000–80.000
+     (1954–2119) để ⛔ không “đoán” nhầm một số tháng bình thường (1..12) hay năm (2026). */
+  const seri = (typeof v === 'number') ? v : (/^\d{5}(\.\d+)?$/.test(String(v == null ? '' : v).trim()) ? Number(v) : NaN);
+  if (isFinite(seri) && seri > 20000 && seri < 80000) {
+    let d = null;
+    try { d = (typeof XLSX !== 'undefined' && XLSX.SSF && XLSX.SSF.parse_date_code) ? XLSX.SSF.parse_date_code(seri) : null; } catch (e) { d = null; }
+    if (d && d.y) return d.m + '/' + d.y;
+    const dt = new Date(Date.UTC(1899, 11, 30) + Math.floor(seri) * 86400000);
+    if (!isNaN(dt)) return (dt.getUTCMonth() + 1) + '/' + dt.getUTCFullYear();
+  }
+  const s = String(v == null ? '' : v).trim();
+  if (!s) return '';
+  if (/^\d{1,2}(?:-\d{1,2})?\/\d{4}$/.test(s)) return s;              // đã đúng: 1-9/2026 · 9/2026
+  let m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})$/);       // 01/09/2026 · 01.09.2026
+  if (m) return (+m[2]) + '/' + m[3];
+  m = s.match(/^(\d{4})[\/.\-](\d{1,2})[\/.\-](\d{1,2})/);            // 2026-09-01 (ISO, có thể kèm giờ)
+  if (m) return (+m[2]) + '/' + m[1];
+  m = s.match(/(?:tháng|thang|t)\s*(\d{1,2})[\/.\-](\d{4})/i);        // Tháng 9/2026 · T9/2026
+  if (m) return (+m[1]) + '/' + m[2];
+  return s;
+}
+/* Lấy kỳ từ chính ô “SỐ HĐ NỢ” (tệp do app xuất ra có `2HD:k1-9/2026:… k1-10/2026:…`) để nhập
+   lại tệp đó vẫn còn tháng. ⛔ Chỉ nhặt cụm `kỳ-tháng/năm`, không lấy gì khác trong ô. */
+function kyTuSoHD(s) {
+  const ds = String(s == null ? '' : s).match(/\d{1,2}(?:-\d{1,2})?\/\d{4}/g) || [];
+  return ds.length ? Array.from(new Set(ds)).join(', ') : '';
+}
 // Shorten an address for the card: drop everything from "thành phố hồ chí minh" onward
 function trimDiaChi(s) {
   if (!s) return s;
@@ -11335,6 +11375,37 @@ function processFile(file) {
       /* ⬅ 2026-10-30: đọc lại cột vị trí đã ghim khi NHẬP tệp (xem khối ngay dưới `allData`).
          Không có cột này (tệp gốc của công ty) thì `cViTri === null` ⇒ bỏ qua, không đổi gì. */
       const cViTri  = fc('VI TRI DA CAP NHAT','VITRIDACAPNHAT','VI TRI MOI','VITRIMOI');
+      /* ⬅ 2026-11-06: tệp xuất ra RỒI nhập lại (hoặc tệp không có cột tháng) vẫn giữ được kỳ —
+         đọc cụm `kỳ-tháng/năm` trong cột này khi cột tháng trống (xem `kyTuSoHD`). */
+      const cSoHD   = fc('SỐ HD NỢ','SỐ HĐ NỢ','SO HD NO','SO_HD_NO','SỐ HĐ','SO HD');
+      /* 🔎 2026-11-06 — CỘT THÁNG BỊ NHẬN NHẦM (yêu cầu “kiểm tra lại cột số hd nợ”, ảnh trên
+         điện thoại `1HD:3.862.166` MẤT KỲ): tệp tháng 11 nạp vào máy có cột điểm danh tên
+         **NHÂN VIÊN** lại mang tiêu đề khớp 'THANG NO' ⇒ `thang_no` toàn tên người ⇒ `chiKy()`
+         chặn hết ⇒ cột chỉ còn tiền. Nay KHÔNG tin tiêu đề nữa: đếm xem cột đó có ≥50% giá trị
+         đúng dạng kỳ/tháng không; không đạt (hoặc trùng cột NV/nhóm) thì **tự tìm cột khác** có
+         nhiều giá trị `kỳ-tháng/năm` nhất. Không cột nào đạt ⇒ bỏ trống tháng còn hơn lấy tên.
+         ⚠️ Chỉ quét 300 dòng đầu cho nhanh (tệp ~26.000 dòng). ⛔ Đừng bỏ vế “trùng cột NV”. */
+      const _laKyThang = v => /^\d{1,2}(?:-\d{1,2})?\/\d{4}$/.test(chuanThangNo(v).split(',')[0].trim());
+      const _tiLeKy = k => {
+        let ok = 0, n = 0;
+        for (let i = 0; i < rows.length && i < 300; i++) {
+          const v = rows[i][k];
+          if (v === '' || v === undefined || v === null) continue;
+          n++; if (_laKyThang(v)) ok++;
+        }
+        return n ? ok / n : 0;
+      };
+      const cThangDung = (() => {
+        const cam = [cNV, cNhom, cMaNhom, cTen, cMa, cDanhSo];
+        if (cThang && !cam.includes(cThang) && _tiLeKy(cThang) >= 0.5) return cThang;
+        let best = null, bestTi = 0.5;
+        keys.forEach(k => {
+          if (cam.includes(k) || k === cThang) return;
+          const t = _tiLeKy(k);
+          if (t > bestTi) { bestTi = t; best = k; }
+        });
+        return best;   // null ⇒ tệp không có cột tháng dùng được
+      })();
 
       // Giữ lại ghi chú cũ từ file trước (theo mã KH)
       const oldGhiChu = {};
@@ -11354,7 +11425,7 @@ function processFile(file) {
           dia_chi: String(r[cDchi]||'').trim(),
           ma_sogcs: String(r[cSoGcs]||'').trim(),
           danh_so: String(r[cDanhSo]||'').trim(),
-          thang_no: String(r[cThang]||'').trim(),
+          thang_no: chuanThangNo(r[cThangDung] || (cSoHD ? kyTuSoHD(r[cSoHD]) : '')),
           tien_no: parseVnNumber(r[cTien]),
           dien_thoai: String(r[cDt]||'').trim().replace(/\.0$/,''),
           so_tbi: String(r[cSoTbi]||'').trim(),
@@ -17601,7 +17672,7 @@ function exportExcelCut() {
      kỳ không đúng dạng `kỳ-tháng/năm` (`1-9/2026`, `9/2026`) thì KHÔNG in ra nội dung đó (in `?`)
      — dữ liệu tệp Excel đôi khi bị lệch cột, ⛔ đừng để một cái tên lọt vào ô này lần nữa. */
   const chiKy = s => {
-    const m = String(s == null ? '' : s).match(/\d{1,2}(?:-\d{1,2})?\/\d{4}/);
+    const m = kyTuSoHD(s).match(/\d{1,2}(?:-\d{1,2})?\/\d{4}/);
     return m ? m[0] : '';
   };
   const soHDNo = r => {
@@ -17630,9 +17701,9 @@ function exportExcelCut() {
     };
     const ds = (Array.isArray(r._hd) ? r._hd : []).slice().sort((a, b) => parseM(a.m) - parseM(b.m));
     /* ⟳ 2026-11-06 (yêu cầu “chữ HĐ đổi thành HD”): `1HĐ:` → **`1HD:`** — CẢ HAI nhánh (gộp `_hd` và
-       không gộp) đều phải dùng `HD`, ⛔ đừng sửa một nhánh. Cột tiêu đề vẫn là “SỐ HĐ NỢ”
-       (giữ đúng tên cột của tệp gốc công ty) — nếu người dùng muốn đổi luôn tiêu đề thì sửa khoá
-       `'SỐ HĐ NỢ'` trong object bên dưới. */
+       không gộp) đều phải dùng `HD`, ⛔ đừng sửa một nhánh.
+       ⟳ 2026-11-06 (yêu cầu “đổi thành chữ SỐ HD NỢ”, ảnh cột G): TIÊU ĐỀ CỘT cũng đổi
+       `SỐ HĐ NỢ` → **`SỐ HD NỢ`** cho khớp nội dung ô (`1HD:k1-10/2026:823.986`). */
     if (ds.length) return ds.length + 'HD:' + ds.map(motKy).join(' ');
     /* Tab KHÔNG gộp (không có `_hd`): mỗi dòng là 1 hoá đơn ⇒ dựng từ `thang_no` + tổng của dòng. */
     const n = Math.max(1, Number(r._count) || 1);
@@ -17640,17 +17711,18 @@ function exportExcelCut() {
     const tien = (Number(r.tien_no) || 0).toLocaleString('vi-VN');
     return n + 'HD:' + (ky ? 'k' + ky + ':' : (Number(r.tien_no) || 0).toLocaleString('vi-VN'));
   };
-  /* ⇢ 2026-11-06 (yêu cầu “khi xuất file in cắt luôn luôn sort theo tên NV và mã sổ”): tệp cắt LUÔN
-     sắp theo **TÊN NV** (A→Z, tiếng Việt) rồi **MÃ SỔ** A→Z — không phụ thuộc danh sách đang sắp
-     kiểu gì trên màn hình. ⚠️ `slice()` để ⛔ không sắp xếp ngầm mảng `filtered` của app.
+  /* ⇢ 2026-11-06 (yêu cầu “khi xuất file in cắt luôn luôn sort theo tên NV và mã sổ” → sau đó
+     “luôn sort theo tên nv và ma_gcs”): tệp cắt LUÔN sắp theo **TÊN NV** (A→Z, tiếng Việt) rồi
+     **MA_GCS** (cột `MA_GCS` của tệp = trường `danh_so`) — không phụ thuộc danh sách đang sắp kiểu
+     gì trên màn hình. ⚠️ `slice()` để ⛔ không sắp xếp ngầm mảng `filtered` của app.
      ⚠️ `localeCompare(b, 'vi')` chứ ⛔ không so sánh chuỗi thô: so thô thì “Đào” xuống cuối bảng chữ.
-     ⚠️ Mã sổ dùng `numeric: true` để `B1BBEA1ZA` < `B1BBEA2ZA` < `B1BBEA10ZA`.
+     ⚠️ `numeric: true` để `-9046` < `-71523`… xếp theo GIÁ TRỊ số chứ không theo ký tự đầu.
      NV lấy `nhan_vien || ma_nhom` (tệp thật để trống `nhan_vien`) — cùng nguồn với cột `NV`. */
   const nvTenCua = r => String(r.nhan_vien || r.ma_nhom || '').trim();
   const rows = ((typeof filtered !== 'undefined' && filtered) ? filtered : []).slice().sort((a, b) => {
     const c = nvTenCua(a).localeCompare(nvTenCua(b), 'vi');
     if (c) return c;
-    return String(a.ma_sogcs || '').localeCompare(String(b.ma_sogcs || ''), 'vi', { numeric: true });
+    return String(a.danh_so || '').localeCompare(String(b.danh_so || ''), 'vi', { numeric: true });
   });
   if (!rows.length) {
     alert('Danh sách đang hiển thị trống nên không có gì để xuất.\nHãy bỏ bớt bộ lọc rồi thử lại.');
@@ -17665,7 +17737,7 @@ function exportExcelCut() {
     'DIA_CHI': r.dia_chi || '',
     'MA_SOGCS': r.ma_sogcs || '',
     'MA_GCS': r.danh_so || '',
-    'SỐ HĐ NỢ': soHDNo(r),
+    'SỐ HD NỢ': soHDNo(r),
     'TỔNG NỢ': Number(r.tien_no) || 0,
     'SỐ CT': r.so_tbi || '',
     'ĐTKH': r.dien_thoai || '',
