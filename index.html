@@ -17595,8 +17595,21 @@ function exportExcelCut() {
      cũng ⛔ không ngăn bằng ` · `.
      ⚠️ Thứ tự: sắp theo THÁNG TĂNG DẦN (parse bên dưới) — ⛔ đừng bỏ `.sort()`: `_hd` được đẩy vào
      theo thứ tự danh sách đang sắp xếp (mặc định theo danh số) nên sẽ ra lộn xộn. */
+  /* ⇢ 2026-11-06 (yêu cầu “bỏ tên nhân viên ở cột này khi xuất file cắt”, ảnh = ô
+     `1HĐ:kBùi Thanh Dũng:3.862.166`): cột này CHỈ được chứa KỲ/THÁNG (`1-9/2026`), không bao giờ chứa
+     tên người. Ngoài việc lấy đúng trường (`hd.m` từ `_hd`, không lấy tên NV), thêm **CHỐT CHẶN**:
+     kỳ không đúng dạng `kỳ-tháng/năm` (`1-9/2026`, `9/2026`) thì KHÔNG in ra nội dung đó (in `?`)
+     — dữ liệu tệp Excel đôi khi bị lệch cột, ⛔ đừng để một cái tên lọt vào ô này lần nữa. */
+  const chiKy = s => {
+    const m = String(s == null ? '' : s).match(/\d{1,2}(?:-\d{1,2})?\/\d{4}/);
+    return m ? m[0] : '';
+  };
   const soHDNo = r => {
-    const motKy = hd => 'k' + (String(hd.m || '').trim() || '?') + ':' + (Number(hd.t) || 0).toLocaleString('vi-VN');
+    const motKy = hd => {
+      const ky = chiKy(hd.m);
+      const tien = (Number(hd.t) || 0).toLocaleString('vi-VN');
+      return ky ? 'k' + ky + ':' + tien : tien;   // ⛔ không có kỳ hợp lệ ⇒ chỉ in tiền, KHÔNG in chuỗi lạ
+    };
     /* KHÁCH NHIỀU KỲ: mỗi hoá đơn 1 mục, ngăn bằng ` · ` — yêu cầu “kh nào nhiều kỳ hđ thì hiển
        thị rõ ra từng kỳ ở so hd no, như kh 1 kỳ hđ”. ⚠️ Dùng dấu ` · ` (không phải `\n`): bản
        SheetJS cộng đồng KHÔNG ghi được style wrap-text, xuống dòng trong ô sẽ hiện thành 1 dòng
@@ -17623,7 +17636,7 @@ function exportExcelCut() {
     if (ds.length) return ds.length + 'HD:' + ds.map(motKy).join(' ');
     /* Tab KHÔNG gộp (không có `_hd`): mỗi dòng là 1 hoá đơn ⇒ dựng từ `thang_no` + tổng của dòng. */
     const n = Math.max(1, Number(r._count) || 1);
-    const ky = String(r.thang_no || '').trim();
+    const ky = chiKy(r.thang_no);
     const tien = (Number(r.tien_no) || 0).toLocaleString('vi-VN');
     return n + 'HD:' + (ky ? 'k' + ky + ':' : (Number(r.tien_no) || 0).toLocaleString('vi-VN'));
   };
@@ -17659,7 +17672,13 @@ function exportExcelCut() {
     'NV': r.nhan_vien || r.ma_nhom || '',
     'BANG CHU': docTienVn(r.tien_no),
     'MA NHOM': maNhomHienThi(r.ma_nhom || r.nhan_vien),
-    'TIEN_NO': Number(r.tien_no) || 0
+    /* ⇢ 2026-11-06 (yêu cầu “cột tien no cho dấu chấm chia hàng số tiền”): in **CHUỖI có dấu chấm**
+       (`881.874`) thay vì số trần `881874`.
+       ⚠️ Hệ quả có chủ ý: ô thành **TEXT** ⇒ Excel KHÔNG cộng/sắp xếp như số được nữa. Người dùng
+       cần đọc/in đúng như màn hình nên chọn cách này; nếu sau này cần tính toán thì phải trả về số
+       và dùng định dạng ô `#,##0` (bản SheetJS cộng đồng ghi định dạng không ổn định). Cột `TỔNG NỢ`
+       vẫn để SỐ để còn cộng được. */
+    'TIEN_NO': (Number(r.tien_no) || 0).toLocaleString('vi-VN')
   }));
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
